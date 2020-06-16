@@ -1,39 +1,62 @@
-# Rspec::Openapi
+# rspec-openapi
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/rspec/openapi`. To experiment with that code, run `bin/console` for an interactive prompt.
+Generate OpenAPI specs from RSpec request specs without any original DSL
 
-TODO: Delete this and the text above, and describe your gem
+## What's this?
+
+There are some gems which generate OpenAPI specs from RSpec request specs.
+However, they require a special DSL specific to these gems, and we can't reuse existing request specs as they are.
+
+Unlike such [existing gems](#links), rspec-openapi can generate OpenAPI specs without editing your request specs.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'rspec-openapi'
+gem 'rspec-openapi', group: :test
 ```
-
-And then execute:
-
-    $ bundle install
-
-Or install it yourself as:
-
-    $ gem install rspec-openapi
 
 ## Usage
 
-TODO: Write usage instructions here
+Run rspec with OPENAPI=1 to generate doc/openapi.yaml.
 
-## Development
+```bash
+$ OPENAPI=1 rspec
+```
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+### Example
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+```rb
+# TODO
+```
 
-## Contributing
+### Configuration
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/rspec-openapi.
+If you want to change the path to generate a spec from `doc/openapi.yaml`,
 
+```rb
+# TODO
+```
+
+### How can I add information which can't be generated from RSpec?
+
+rspec-openapi tries to keep manual modifications as much as possible when generating specs.
+You can directly edit `doc/openapi.yaml` as you like without spoiling the automatic generation capability.
+
+## Links
+
+Existing RSpec plugins which have OpenAPI integration:
+
+* [zipmark/rspec\_api\_documentation](https://github.com/zipmark/rspec_api_documentation)
+* [rswag/rswag](https://github.com/rswag/rswag)
+* [drewish/rspec-rails-swagger](https://github.com/drewish/rspec-rails-swagger)
+
+## Special Thanks
+
+This gem was heavily inspired by the following gem:
+
+* [r7kamura/autodoc](https://github.com/r7kamura/autodoc)
 
 ## License
 
