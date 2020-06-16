@@ -1,13 +1,14 @@
 # rspec-openapi
 
-Generate OpenAPI specs from RSpec request specs without any original DSL
+Generate OpenAPI specs from RSpec request specs.
 
 ## What's this?
 
 There are some gems which generate OpenAPI specs from RSpec request specs.
 However, they require a special DSL specific to these gems, and we can't reuse existing request specs as they are.
 
-Unlike such [existing gems](#links), rspec-openapi can generate OpenAPI specs without editing your request specs.
+Unlike such [existing gems](#links), rspec-openapi can generate OpenAPI specs by just adding `:openapi` tag
+without rewriting your actual test code.
 
 ## Installation
 
@@ -19,7 +20,7 @@ gem 'rspec-openapi', group: :test
 
 ## Usage
 
-Run rspec with OPENAPI=1 to generate doc/openapi.yaml.
+Run rspec with OPENAPI=1 to generate `doc/openapi.yaml` for your request specs tagged with `:openapi`.
 
 ```bash
 $ OPENAPI=1 rspec
