@@ -1,5 +1,5 @@
-module Rspec
-  module Openapi
-    VERSION = "0.1.0"
+module RSpec
+  module OpenAPI
+    VERSION = '0.1.0'
   end
 end
