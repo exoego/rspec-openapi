@@ -49,8 +49,8 @@ You can directly edit `doc/openapi.yaml` as you like without spoiling the automa
 
 ## TODO
 
-1. Basic specs to make it browsable on Redoc
-2. Know routed path from method / path (Rails-specific)
+1. Generate basic specs to make API browsable on Redoc
+2. Detect routed path from method / path (Rails-specific)
 3. Get request params
 4. Reducing the amount of Resource class duplications: Especially cursor-based pagination? (requires manual edit?)
 5. Represent a list of resources properly (do we need type merge from the beginning, or just pick the first element?)
