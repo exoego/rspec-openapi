@@ -9,6 +9,8 @@ However, they require a special DSL specific to these gems, and we can't reuse e
 
 Unlike such [existing gems](#links), rspec-openapi can generate OpenAPI specs by just adding `:openapi` tag
 without rewriting your actual test code.
+Furthermore, rspec-openapi allows manual edits while allowing automatic generation, in case we can't generate
+every information from request specs.
 
 ## Installation
 
@@ -45,6 +47,28 @@ If you want to change the path to generate a spec from `doc/openapi.yaml`,
 rspec-openapi tries to keep manual modifications as much as possible when generating specs.
 You can directly edit `doc/openapi.yaml` as you like without spoiling the automatic generation capability.
 
+## TODO
+
+1. Basic specs to make it browsable on Redoc
+2. Know routed path from method / path (Rails-specific)
+3. Get request params
+4. Reducing the amount of Resource class duplications: Especially cursor-based pagination? (requires manual edit?)
+5. Represent a list of resources properly (do we need type merge from the beginning, or just pick the first element?)
+
+## Design notes about missing features
+
+* Delete obsoleted endpoints
+  * Give up, or at least make the feature optional?
+  * Running all to detect obsoleted endpoints is sometimes not realistic anyway.
+* Guess "required" and "non-nullable"
+  * required → optional, non-nullable → nullable are obvious merges.
+  * But is it reasonable to generate required and non-nullable automatically,
+    often from a single spec? Should we leave it for manual changes?
+* Intelligent merges
+  * To maintain both automated changes and manual edits, the schema merge needs to be intelligent.
+  * We'll just deep-merge schema for now, but if a resource class is renamed, maybe merges should
+    be rerouted to the renamed class.
+
 ## Links
 
 Existing RSpec plugins which have OpenAPI integration:
@@ -53,7 +77,7 @@ Existing RSpec plugins which have OpenAPI integration:
 * [rswag/rswag](https://github.com/rswag/rswag)
 * [drewish/rspec-rails-swagger](https://github.com/drewish/rspec-rails-swagger)
 
-## Special Thanks
+## Acknowledgements
 
 This gem was heavily inspired by the following gem:
 

@@ -1,11 +1,17 @@
+require 'rspec/openapi/record'
+
 class << RSpec::OpenAPI::RecordBuilder = Object.new
-  def build(example)
+  # @param [RSpec::Core::Example] example
+  # @param [RSpec::ExampleGroups::*] context
+  # @return [RSpec::OpenAPI::Record]
+  def build(example, context:)
     RSpec::OpenAPI::Record.new(
-      method: 'GET',
-      path: '/v1/status',
-      description: 'returns a status',
-      status: 200,
-      body: { 'status' => 'ok' },
-    )
+      method: context.request.request_method,
+      path: context.request.path_info, # TODO: get Rails route
+      description: example.description,
+      status: context.response.status,
+      body: context.response.parsed_body,
+      # TODO: get params
+    ).freeze
   end
 end
