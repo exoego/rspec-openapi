@@ -4,4 +4,5 @@ RSpec::OpenAPI::Record = Struct.new(
   :description, # @param [String]  - ex) returns a status
   :status,      # @param [Integer] - ex) 200
   :body,        # @param [Object]  - ex) {"status" => "ok"}
+  keyword_init: true,
 )
