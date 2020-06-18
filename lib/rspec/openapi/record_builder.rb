@@ -5,13 +5,27 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
   # @param [RSpec::ExampleGroups::*] context
   # @return [RSpec::OpenAPI::Record]
   def build(example, context:)
+    route = find_route(context.request)
+    path = route.path.spec.to_s.delete_suffix('(.:format)')
+
     RSpec::OpenAPI::Record.new(
       method: context.request.request_method,
-      path: context.request.path_info, # TODO: get Rails route
+      path: path,
       description: example.description,
       status: context.response.status,
       body: context.response.parsed_body,
       # TODO: get params
     ).freeze
+  end
+
+  private
+
+  # TODO: Support Non-Rails frameworks
+  # @param [ActionDispatch::Request] request
+  def find_route(request)
+    Rails.application.routes.router.recognize(request) do |route|
+      return route
+    end
+    raise "No route matched for #{request.request_method} #{request.path_info}"
   end
 end

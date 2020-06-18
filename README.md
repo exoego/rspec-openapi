@@ -47,17 +47,27 @@ If you want to change the path to generate a spec from `doc/openapi.yaml`,
 rspec-openapi tries to keep manual modifications as much as possible when generating specs.
 You can directly edit `doc/openapi.yaml` as you like without spoiling the automatic generation capability.
 
-## TODO
+## Project status
 
-1. Detect routed path from method / path (Rails-specific)
-2. Get request params
-3. Reducing the amount of Resource class duplications: Especially cursor-based pagination? (requires manual edit?)
-4. Represent a list of resources properly (do we need type merge from the beginning, or just pick the first element?)
-5. Support nested object
-6. Change error response's recource class
-7. Do something for nil (nullable)
+PoC / Experimental
 
-## Design notes about missing features
+This worked for some of my Rails apps, but this may raise a basic error for your app.
+
+### TODO
+
+1. Get request params
+2. Reducing the amount of Resource class duplications: Especially cursor-based pagination? (requires manual edit?)
+3. Represent a list of resources properly (do we need type merge from the beginning, or just pick the first element?)
+4. Support nested object
+5. Change error response's recource class
+6. Do something for nil (nullable)
+
+### Current limitations
+
+* This only works for RSpec request specs
+* Only Rails is supported for looking up a request route
+
+### Other missing features with notes
 
 * Delete obsoleted endpoints
   * Give up, or at least make the feature optional?
@@ -68,8 +78,8 @@ You can directly edit `doc/openapi.yaml` as you like without spoiling the automa
     often from a single spec? Should we leave it for manual changes?
 * Intelligent merges
   * To maintain both automated changes and manual edits, the schema merge needs to be intelligent.
-  * We'll just deep-merge schema for now, but if a resource class is renamed, maybe merges should
-    be rerouted to the renamed class.
+  * We'll just deep-reverse-merge schema for now, but if there's a $ref for example, modifications
+    there should be rerouted to the referenced object.
 
 ## Links
 
