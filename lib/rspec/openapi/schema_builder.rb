@@ -11,7 +11,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
               record.status.to_s => {
                 description: record.description,
                 content: {
-                  'application/json': { # TODO: Extract this
+                  record.content_type => {
                     schema: {
                       '$ref': '#/components/schemas/Record', # TODO: generate name
                     },

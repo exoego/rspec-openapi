@@ -17,6 +17,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       description: example.description,
       status: context.response.status,
       body: context.response.parsed_body,
+      content_type: context.response.content_type,
       # TODO: get params
     ).freeze
   end
