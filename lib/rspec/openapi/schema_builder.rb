@@ -37,12 +37,22 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   def build_properties(record)
     {}.tap do |properties|
       record.body.each do |key, value|
-        properties[key] = {
-          type: build_type(value),
-        }
-        # TODO: set items for array
+        properties[key] = build_property(value)
       end
     end
+  end
+
+  def build_property(value)
+    property = {
+      type: build_type(value),
+    }
+    # TODO: support Hash
+    if value.is_a?(Array)
+      # TODO: support merging attributes across all elements
+      property[:items] = build_property(value.first)
+    end
+    # TODO: set nullable if nil
+    property
   end
 
   def build_type(value)

@@ -55,7 +55,7 @@ You can directly edit `doc/openapi.yaml` as you like without spoiling the automa
 4. Represent a list of resources properly (do we need type merge from the beginning, or just pick the first element?)
 5. Support nested object
 6. Change error response's recource class
-7. Do something for nullable?
+7. Do something for nil (nullable)
 
 ## Design notes about missing features
 
