@@ -60,6 +60,7 @@ This worked for some of my Rails apps, but this may raise a basic error for your
 3. Represent a list of resources properly (do we need type merge from the beginning, or just pick the first element?)
 4. Change error response's recource class
 5. Support integer
+6. Write tests and readme
 
 ### Current limitations
 

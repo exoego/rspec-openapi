@@ -9,7 +9,7 @@ records = []
 
 RSpec.configuration.after(:each, openapi: true) do |example|
   unless example.pending?
-    records << RSpec::OpenAPI::RecordBuilder.build(example, context: self)
+    records << RSpec::OpenAPI::RecordBuilder.build(self, example: example)
   end
 end
 

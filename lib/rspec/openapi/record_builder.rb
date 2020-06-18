@@ -1,24 +1,27 @@
 require 'rspec/openapi/record'
 
 class << RSpec::OpenAPI::RecordBuilder = Object.new
-  # @param [RSpec::Core::Example] example
   # @param [RSpec::ExampleGroups::*] context
+  # @param [RSpec::Core::Example] example
   # @return [RSpec::OpenAPI::Record]
-  def build(example, context:)
+  def build(context, example:)
     # TODO: Support Non-Rails frameworks
-    route = find_route(context.request)
-    path = route.path.spec.to_s.delete_suffix('(.:format)')
+    request = context.request
+    response = context.response
+    route = find_route(request)
 
     RSpec::OpenAPI::Record.new(
-      method: context.request.request_method,
-      path: path,
+      method: request.request_method,
+      path: route.path.spec.to_s.delete_suffix('(.:format)'),
+      path_params: request.path_parameters,
+      query_params: request.path_parameters,
+      request_params: request.request_parameters,
       controller: route.requirements[:controller],
       action: route.requirements[:action],
       description: example.description,
-      status: context.response.status,
-      body: context.response.parsed_body,
-      content_type: context.response.content_type,
-      # TODO: get params
+      status: response.status,
+      response: response.parsed_body,
+      content_type: response.content_type,
     ).freeze
   end
 
