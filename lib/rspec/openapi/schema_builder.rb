@@ -6,9 +6,10 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       paths: {
         record.path => {
           record.method.downcase => {
-            summary: record.description,
+            summary: "#{record.controller}##{record.action}",
             responses: {
               record.status.to_s => {
+                description: record.description,
                 content: {
                   'application/json': { # TODO: Extract this
                     schema: {

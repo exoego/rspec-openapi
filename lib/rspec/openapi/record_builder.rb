@@ -5,12 +5,15 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
   # @param [RSpec::ExampleGroups::*] context
   # @return [RSpec::OpenAPI::Record]
   def build(example, context:)
+    # TODO: Support Non-Rails frameworks
     route = find_route(context.request)
     path = route.path.spec.to_s.delete_suffix('(.:format)')
 
     RSpec::OpenAPI::Record.new(
       method: context.request.request_method,
       path: path,
+      controller: route.requirements[:controller],
+      action: route.requirements[:action],
       description: example.description,
       status: context.response.status,
       body: context.response.parsed_body,
@@ -20,7 +23,6 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
 
   private
 
-  # TODO: Support Non-Rails frameworks
   # @param [ActionDispatch::Request] request
   def find_route(request)
     Rails.application.routes.router.recognize(request) do |route|
