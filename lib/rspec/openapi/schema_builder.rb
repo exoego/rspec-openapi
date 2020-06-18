@@ -26,7 +26,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         schemas: {
           Record: { # TODO: generate name
             type: 'object',
-            properties: build_properties(record),
+            properties: build_properties(record.body),
           },
         },
       },
@@ -35,24 +35,23 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
   private
 
-  def build_properties(record)
+  def build_properties(value)
     {}.tap do |properties|
-      record.body.each do |key, value|
+      value.each do |key, value|
         properties[key] = build_property(value)
       end
     end
   end
 
   def build_property(value)
-    property = {
-      type: build_type(value),
-    }
-    # TODO: support Hash
-    if value.is_a?(Array)
+    property = { type: build_type(value) }
+    case value
+    when Array
       # TODO: support merging attributes across all elements
       property[:items] = build_property(value.first)
+    when Hash
+      property[:properties] = build_properties(value)
     end
-    # TODO: set nullable if nil
     property
   end
 
@@ -64,8 +63,12 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       'boolean'
     when Array
       'array'
+    when Hash
+      'object'
+    when NilClass
+      'null'
     else
-      raise NotImplementedError, "type inference is not implemented for: #{value.inspect}"
+      raise NotImplementedError, "type detection is not implemented for: #{value.inspect}"
     end
   end
 end

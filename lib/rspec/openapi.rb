@@ -1,2 +1,2 @@
 require 'rspec/openapi/version'
-require 'rspec/openapi/setup' if ENV['OPENAPI']
+require 'rspec/openapi/hooks' if ENV['OPENAPI']

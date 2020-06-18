@@ -58,9 +58,8 @@ This worked for some of my Rails apps, but this may raise a basic error for your
 1. Get request params
 2. Reducing the amount of Resource class duplications: Especially cursor-based pagination? (requires manual edit?)
 3. Represent a list of resources properly (do we need type merge from the beginning, or just pick the first element?)
-4. Support nested object
-5. Change error response's recource class
-6. Do something for nil (nullable)
+4. Change error response's recource class
+5. Support integer
 
 ### Current limitations
 
@@ -80,6 +79,7 @@ This worked for some of my Rails apps, but this may raise a basic error for your
   * To maintain both automated changes and manual edits, the schema merge needs to be intelligent.
   * We'll just deep-reverse-merge schema for now, but if there's a $ref for example, modifications
     there should be rerouted to the referenced object.
+  * A type could be an array of all possible types when merged.
 
 ## Links
 
