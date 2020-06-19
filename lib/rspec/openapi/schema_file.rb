@@ -20,7 +20,7 @@ class RSpec::OpenAPI::SchemaFile
   # @return [Hash]
   def read
     return {} unless File.exist?(@path)
-    YAML.safe_load(File.read(@path))
+    YAML.load(File.read(@path))
   end
 
   # @param [Hash] spec
