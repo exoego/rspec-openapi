@@ -6,6 +6,15 @@ paths:
   "/tables":
     get:
       summary: tables#index
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+      - name: per
+        in: query
+        schema:
+          type: integer
       responses:
         '200':
           description: returns a list of tables
@@ -44,6 +53,27 @@ paths:
                     type: string
     post:
       summary: tables#create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: 'null'
+                database_id:
+                  type: integer
+                table:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    description:
+                      type: 'null'
+                    database_id:
+                      type: integer
       responses:
         '201':
           description: returns a table

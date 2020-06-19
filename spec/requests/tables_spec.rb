@@ -3,7 +3,8 @@ require 'spec_helper'
 RSpec.describe 'Tables', type: :request do
   describe '#index' do
     it 'returns a list of tables' do
-      get '/tables', headers: { authorization: 'k0kubun' }
+      get '/tables', params: { page: '1', per: '10' },
+        headers: { authorization: 'k0kubun' }
       expect(response.status).to eq(200)
     end
 
@@ -32,7 +33,11 @@ RSpec.describe 'Tables', type: :request do
 
   describe '#create' do
     it 'returns a table' do
-      post '/tables', headers: { authorization: 'k0kubun' }
+      post '/tables', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {
+        name: 'k0kubun',
+        description: nil,
+        database_id: 2,
+      }.to_json
       expect(response.status).to eq(201)
     end
   end

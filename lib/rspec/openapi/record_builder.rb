@@ -14,14 +14,15 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       method: request.request_method,
       path: route.path.spec.to_s.delete_suffix('(.:format)'),
       path_params: request.path_parameters,
-      query_params: request.path_parameters,
+      query_params: request.query_parameters,
       request_params: request.request_parameters,
+      request_content_type: request.content_type,
       controller: route.requirements[:controller],
       action: route.requirements[:action],
       description: example.description,
       status: response.status,
-      response: response.parsed_body,
-      content_type: response.content_type.sub(/;.+\z/, ''),
+      response_body: response.parsed_body,
+      response_content_type: response.content_type,
     ).freeze
   end
 

@@ -72,8 +72,7 @@ This worked for some of my Rails apps, but this may raise a basic error for your
 
 ### TODO
 
-1. Show query, request params
-2. Write README
+1. Write README
 
 ### Current limitations
 
