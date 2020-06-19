@@ -33,3 +33,139 @@ paths:
                       type: string
                     updated_at:
                       type: string
+        '401':
+          description: does not return tables if unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+    post:
+      summary: tables#create
+      responses:
+        '201':
+          description: returns a table
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  description:
+                    type: 'null'
+                  database:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                  created_at:
+                    type: string
+                  updated_at:
+                    type: string
+  "/tables/:id":
+    get:
+      summary: tables#show
+      responses:
+        '200':
+          description: returns a table
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  description:
+                    type: 'null'
+                  database:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                  created_at:
+                    type: string
+                  updated_at:
+                    type: string
+        '401':
+          description: does not return a table if unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '404':
+          description: does not return a table if not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+    patch:
+      summary: tables#update
+      responses:
+        '200':
+          description: returns a table
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  description:
+                    type: 'null'
+                  database:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                  created_at:
+                    type: string
+                  updated_at:
+                    type: string
+    delete:
+      summary: tables#destroy
+      responses:
+        '200':
+          description: returns a table
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  description:
+                    type: 'null'
+                  database:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                  created_at:
+                    type: string
+                  updated_at:
+                    type: string
