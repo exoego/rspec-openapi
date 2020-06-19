@@ -1,3 +1,7 @@
+## v0.1.3
+
+* Add `RSpec::OpenAPI.comment` configuration
+
 ## v0.1.2
 
 * Generate `required: true` for path params [#1](https://github.com/k0kubun/rspec-openapi/issues/1)
