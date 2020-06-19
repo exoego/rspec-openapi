@@ -7,7 +7,7 @@ require 'rspec/openapi/schema_merger'
 
 records = []
 
-RSpec.configuration.after(:each, openapi: true) do |example|
+RSpec.configuration.after(:each) do |example|
   unless example.pending?
     records << RSpec::OpenAPI::RecordBuilder.build(self, example: example)
   end

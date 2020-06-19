@@ -7,10 +7,9 @@ Generate OpenAPI specs from RSpec request specs.
 There are some gems which generate OpenAPI specs from RSpec request specs.
 However, they require a special DSL specific to these gems, and we can't reuse existing request specs as they are.
 
-Unlike such [existing gems](#links), rspec-openapi can generate OpenAPI specs by just adding `:openapi` tag
-without rewriting your actual test code.
-Furthermore, rspec-openapi allows manual edits while allowing automatic generation, in case we can't generate
-every information from request specs.
+Unlike such [existing gems](#links), rspec-openapi can generate OpenAPI specs from request specs without requiring any special DSL.
+Furthermore, rspec-openapi keeps manual modifications when it merges automated changes to OpenAPI specs
+in case we can't generate everything from request specs.
 
 ## Installation
 
@@ -55,10 +54,9 @@ This worked for some of my Rails apps, but this may raise a basic error for your
 
 ### TODO
 
-1. Get request params
-2. Represent a list of resources properly (do we need type merge from the beginning, or just pick the first element?)
-3. Support integer
-4. Write tests and readme
+1. Write tests and readme, and support integer
+2. Show path, query, request params
+3. Make doc/openapi.yaml configurable
 
 ### Current limitations
 
