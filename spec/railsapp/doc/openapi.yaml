@@ -99,7 +99,7 @@ paths:
                     type: string
                   updated_at:
                     type: string
-  "/tables/:id":
+  "/tables/{id}":
     get:
       summary: tables#show
       parameters:

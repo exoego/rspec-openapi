@@ -4,7 +4,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   def build(record)
     {
       paths: {
-        record.path => {
+        normalize_path(record.path) => {
           record.method.downcase => {
             summary: "#{record.controller}##{record.action}",
             parameters: build_parameters(record),
@@ -105,6 +105,10 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     rescue TypeError, ArgumentError
       value
     end
+  end
+
+  def normalize_path(path)
+    path.gsub(%r|/:([^:/]+)|, '/{\1}')
   end
 
   def normalize_content_type(content_type)
