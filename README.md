@@ -54,9 +54,10 @@ This worked for some of my Rails apps, but this may raise a basic error for your
 
 ### TODO
 
-1. Write tests and readme, and support integer
-2. Show path, query, request params
-3. Make doc/openapi.yaml configurable
+1. Make doc/openapi.yaml configurable
+2. Write tests
+3. Show path, query, request params
+4. Write README
 
 ### Current limitations
 
