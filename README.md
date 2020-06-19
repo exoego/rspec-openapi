@@ -46,6 +46,24 @@ If you want to change the path to generate a spec from `doc/openapi.yaml`,
 rspec-openapi tries to keep manual modifications as much as possible when generating specs.
 You can directly edit `doc/openapi.yaml` as you like without spoiling the automatic generation capability.
 
+### Can I exclude specific specs from OpenAPI generation?
+
+Yes, you can specify `openapi: false` to disable the automatic generation.
+
+```rb
+RSpec.describe '/resources', type: :request, openapi: false do
+  # ...
+end
+
+# or
+
+RSpec.describe '/resources', type: :request do
+  it 'returns a resource', openapi: false do
+    # ...
+  end
+end
+```
+
 ## Project status
 
 PoC / Experimental

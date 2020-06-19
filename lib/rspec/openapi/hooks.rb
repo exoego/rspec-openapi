@@ -8,7 +8,7 @@ require 'rspec/openapi/schema_merger'
 records = []
 
 RSpec.configuration.after(:each) do |example|
-  if example.metadata[:type] == :request && request && response
+  if example.metadata[:type] == :request && example.metadata[:openapi] != false && request && response
     records << RSpec::OpenAPI::RecordBuilder.build(self, example: example)
   end
 end
