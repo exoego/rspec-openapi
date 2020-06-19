@@ -13,20 +13,13 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
                 content: {
                   record.content_type => {
                     schema: {
-                      '$ref': '#/components/schemas/Record', # TODO: generate name
+                      type: 'object',
+                      properties: build_properties(record.response),
                     },
                   },
                 },
               },
             },
-          },
-        },
-      },
-      components: {
-        schemas: {
-          Record: { # TODO: generate name
-            type: 'object',
-            properties: build_properties(record.response),
           },
         },
       },

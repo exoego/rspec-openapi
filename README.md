@@ -56,11 +56,9 @@ This worked for some of my Rails apps, but this may raise a basic error for your
 ### TODO
 
 1. Get request params
-2. Reducing the amount of Resource class duplications: Especially cursor-based pagination? (requires manual edit?)
-3. Represent a list of resources properly (do we need type merge from the beginning, or just pick the first element?)
-4. Change error response's recource class
-5. Support integer
-6. Write tests and readme
+2. Represent a list of resources properly (do we need type merge from the beginning, or just pick the first element?)
+3. Support integer
+4. Write tests and readme
 
 ### Current limitations
 
@@ -72,10 +70,6 @@ This worked for some of my Rails apps, but this may raise a basic error for your
 * Delete obsoleted endpoints
   * Give up, or at least make the feature optional?
   * Running all to detect obsoleted endpoints is sometimes not realistic anyway.
-* Guess "required" and "non-nullable"
-  * required → optional, non-nullable → nullable are obvious merges.
-  * But is it reasonable to generate required and non-nullable automatically,
-    often from a single spec? Should we leave it for manual changes?
 * Intelligent merges
   * To maintain both automated changes and manual edits, the schema merge needs to be intelligent.
   * We'll just deep-reverse-merge schema for now, but if there's a $ref for example, modifications
