@@ -21,7 +21,7 @@ gem 'rspec-openapi', group: :test
 
 ## Usage
 
-Run rspec with OPENAPI=1 to generate `doc/openapi.yaml` for your request specs tagged with `:openapi`.
+Run rspec with OPENAPI=1 to generate `doc/openapi.yaml` for your request specs.
 
 ```bash
 $ OPENAPI=1 rspec
@@ -35,10 +35,10 @@ $ OPENAPI=1 rspec
 
 ### Configuration
 
-If you want to change the path to generate a spec from `doc/openapi.yaml`,
+If you want to change the path to generate a spec from `doc/openapi.yaml`, use:
 
 ```rb
-# TODO
+RSpec::OpenAPI.path = 'doc/schema.yaml'
 ```
 
 ### How can I add information which can't be generated from RSpec?
@@ -72,10 +72,9 @@ This worked for some of my Rails apps, but this may raise a basic error for your
 
 ### TODO
 
-1. Make doc/openapi.yaml configurable
-2. Write tests
-3. Show path, query, request params
-4. Write README
+1. Write tests
+2. Show path, query, request params
+3. Write README
 
 ### Current limitations
 

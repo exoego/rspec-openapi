@@ -14,10 +14,8 @@ RSpec.configuration.after(:each) do |example|
 end
 
 RSpec.configuration.after(:suite) do
-  path = 'doc/openapi.yaml' # TODO: make this configurable
   title = File.basename(Dir.pwd)
-
-  RSpec::OpenAPI::SchemaFile.new(path).edit do |spec|
+  RSpec::OpenAPI::SchemaFile.new(RSpec::OpenAPI.path).edit do |spec|
     RSpec::OpenAPI::SchemaMerger.reverse_merge!(spec, RSpec::OpenAPI::DefaultSchema.build(title))
     records.each do |record|
       RSpec::OpenAPI::SchemaMerger.reverse_merge!(spec, RSpec::OpenAPI::SchemaBuilder.build(record))
