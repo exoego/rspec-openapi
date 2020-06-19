@@ -1,5 +1,8 @@
-require 'bundler/setup'
-require 'rspec/openapi'
+ENV['RAILS_ENV'] ||= 'test'
+require File.expand_path('railsapp/config/environment', __dir__)
+require 'rspec/rails'
+
+RSpec::OpenAPI.path = File.expand_path('railsapp/doc/openapi.yaml', __dir__)
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -10,5 +13,11 @@ RSpec.configure do |config|
 
   config.expect_with :rspec do |c|
     c.syntax = :expect
+  end
+
+  if ENV['OPENAPI']
+    config.before(:suite) do
+      FileUtils.rm_f(RSpec::OpenAPI.path)
+    end
   end
 end

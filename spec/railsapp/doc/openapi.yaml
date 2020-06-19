@@ -1,0 +1,35 @@
+---
+openapi: 3.0.3
+info:
+  title: rspec-openapi
+paths:
+  "/tables":
+    get:
+      summary: tables#index
+      responses:
+        '200':
+          description: returns a list of tables
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    description:
+                      type: 'null'
+                    database:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                    created_at:
+                      type: string
+                    updated_at:
+                      type: string

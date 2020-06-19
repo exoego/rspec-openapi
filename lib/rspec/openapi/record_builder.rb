@@ -21,7 +21,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       description: example.description,
       status: response.status,
       response: response.parsed_body,
-      content_type: response.content_type,
+      content_type: response.content_type.sub(/;.+\z/, ''),
     ).freeze
   end
 
