@@ -7,6 +7,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         record.path => {
           record.method.downcase => {
             summary: "#{record.controller}##{record.action}",
+            parameters: build_parameters(record),
             responses: {
               record.status.to_s => {
                 description: record.description,
@@ -17,13 +18,38 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
                 },
               },
             },
-          },
+          }.compact,
         },
       },
     }
   end
 
   private
+
+  def build_parameters(record)
+    parameters = []
+
+    record.path_params.each do |key, value|
+      next if %i[controller action].include?(key)
+
+      parameters << {
+        name: key.to_s,
+        in: 'path',
+        schema: build_property(
+          begin
+            Integer(value)
+          rescue TypeError, ArgumentError
+            value
+          end
+        ),
+      }
+    end
+
+    if parameters.empty?
+      return nil
+    end
+    parameters
+  end
 
   def build_property(value)
     property = { type: build_type(value) }

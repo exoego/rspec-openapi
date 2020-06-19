@@ -72,9 +72,8 @@ This worked for some of my Rails apps, but this may raise a basic error for your
 
 ### TODO
 
-1. Write tests
-2. Show path, query, request params
-3. Write README
+1. Show query, request params
+2. Write README
 
 ### Current limitations
 

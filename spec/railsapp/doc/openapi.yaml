@@ -72,6 +72,11 @@ paths:
   "/tables/:id":
     get:
       summary: tables#show
+      parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
       responses:
         '200':
           description: returns a table
@@ -117,6 +122,11 @@ paths:
                     type: string
     patch:
       summary: tables#update
+      parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
       responses:
         '200':
           description: returns a table
@@ -144,6 +154,11 @@ paths:
                     type: string
     delete:
       summary: tables#destroy
+      parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
       responses:
         '200':
           description: returns a table
