@@ -98,7 +98,7 @@ and the schema file can be used as an input of [Swagger UI](https://github.com/s
 
 ### Configuration
 
-If you want to change the path to generate a spec from `doc/openapi.yaml`, use:
+The following configurations are optional.
 
 ```rb
 # Change the path to generate schema from `doc/openapi.yaml`
