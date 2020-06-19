@@ -35,6 +35,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       parameters << {
         name: key.to_s,
         in: 'path',
+        required: true,
         schema: build_property(try_cast(value)),
       }
     end

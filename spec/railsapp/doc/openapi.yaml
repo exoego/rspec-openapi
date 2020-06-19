@@ -105,6 +105,7 @@ paths:
       parameters:
       - name: id
         in: path
+        required: true
         schema:
           type: integer
       responses:
@@ -155,6 +156,7 @@ paths:
       parameters:
       - name: id
         in: path
+        required: true
         schema:
           type: integer
       responses:
@@ -187,6 +189,7 @@ paths:
       parameters:
       - name: id
         in: path
+        required: true
         schema:
           type: integer
       responses:
