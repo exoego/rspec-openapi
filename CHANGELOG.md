@@ -1,6 +1,6 @@
 ## v0.1.2
 
-* Generate `required: true` for path params
+* Generate `required: true` for path params [#1](https://github.com/k0kubun/rspec-openapi/issues/1)
 
 ## v0.1.1
 
