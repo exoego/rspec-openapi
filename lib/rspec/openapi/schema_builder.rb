@@ -6,7 +6,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       paths: {
         normalize_path(record.path) => {
           record.method.downcase => {
-            summary: "#{record.controller}##{record.action}",
+            summary: "#{record.controller} ##{record.action}",
             parameters: build_parameters(record),
             requestBody: build_request_body(record),
             responses: {

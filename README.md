@@ -64,7 +64,7 @@ info:
 paths:
   "/tables":
     get:
-      summary: tables#index
+      summary: 'tables #index'
       parameters:
       - name: page
         in: query

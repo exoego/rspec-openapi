@@ -9,7 +9,7 @@ info:
 paths:
   "/tables":
     get:
-      summary: tables#index
+      summary: 'tables #index'
       parameters:
       - name: page
         in: query
@@ -56,7 +56,7 @@ paths:
                   message:
                     type: string
     post:
-      summary: tables#create
+      summary: 'tables #create'
       requestBody:
         content:
           application/json:
@@ -105,7 +105,7 @@ paths:
                     type: string
   "/tables/{id}":
     get:
-      summary: tables#show
+      summary: 'tables #show'
       parameters:
       - name: id
         in: path
@@ -156,7 +156,7 @@ paths:
                   message:
                     type: string
     patch:
-      summary: tables#update
+      summary: 'tables #update'
       parameters:
       - name: id
         in: path
@@ -189,7 +189,7 @@ paths:
                   updated_at:
                     type: string
     delete:
-      summary: tables#destroy
+      summary: 'tables #destroy'
       parameters:
       - name: id
         in: path
