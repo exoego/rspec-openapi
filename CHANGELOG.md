@@ -1,3 +1,8 @@
+## v0.1.4
+
+* Avoid NoMethodError on nil Content-Type
+* Include a space between controller and action in summary
+
 ## v0.1.3
 
 * Add `RSpec::OpenAPI.comment` configuration
