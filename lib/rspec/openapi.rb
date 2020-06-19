@@ -5,6 +5,6 @@ module RSpec::OpenAPI
   @path = 'doc/openapi.yaml'
 
   class << self
-    attr_accessor :path
+    attr_accessor :path, :comment
   end
 end
