@@ -26,7 +26,7 @@ class TablesController < ApplicationController
   private
 
   def authenticate
-    if params[:apikey] != APIKEY
+    if request.headers[:authorization] != APIKEY
       render json: { message: 'Unauthorized' }, status: 401
     end
   end
