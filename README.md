@@ -29,9 +29,72 @@ $ OPENAPI=1 rspec
 
 ### Example
 
+Let's say you have [a request spec](./spec/requests/table_spec.rb) like this:
+
 ```rb
-# TODO
+RSpec.describe 'Tables', type: :request do
+  describe '#index' do
+    it 'returns a list of tables' do
+      get '/tables', params: { page: '1', per: '10' }, headers: { authorization: 'k0kubun' }
+      expect(response.status).to eq(200)
+    end
+
+    it 'does not return tables if unauthorized' do
+      get '/tables'
+      expect(response.status).to eq(401)
+    end
+  end
+
+  # ...
+end
 ```
+
+If you run the spec with `OPENAPI=1`,
+
+```
+OPENAPI=1 be rspec spec/requests/tables_spec.rb
+```
+
+It will generate [`doc/openapi.yaml` file](./spec/railsapp/doc/openapi.yaml) like:
+
+```yml
+openapi: 3.0.3
+info:
+  title: rspec-openapi
+paths:
+  "/tables":
+    get:
+      summary: tables#index
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+      - name: per
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: returns a list of tables
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    # ...
+```
+
+and the schema file can be used as an input of [Swagger UI](https://github.com/swagger-api/swagger-ui) or [Redoc](https://github.com/Redocly/redoc).
+
+![Redoc example](./spec/railsapp/doc/screenshot.png)
+
 
 ### Configuration
 
@@ -70,12 +133,9 @@ PoC / Experimental
 
 This worked for some of my Rails apps, but this may raise a basic error for your app.
 
-### TODO
-
-1. Write README
-
 ### Current limitations
 
+* Generating a JSON file is not supported yet
 * This only works for RSpec request specs
 * Only Rails is supported for looking up a request route
 
