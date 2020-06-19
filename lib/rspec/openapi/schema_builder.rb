@@ -12,10 +12,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
                 description: record.description,
                 content: {
                   record.content_type => {
-                    schema: {
-                      type: 'object',
-                      properties: build_properties(record.response),
-                    },
+                    schema: build_property(record.response),
                   },
                 },
               },
@@ -28,22 +25,17 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
   private
 
-  def build_properties(value)
-    {}.tap do |properties|
-      value.each do |key, value|
-        properties[key] = build_property(value)
-      end
-    end
-  end
-
   def build_property(value)
     property = { type: build_type(value) }
     case value
     when Array
-      # TODO: support merging attributes across all elements
       property[:items] = build_property(value.first)
     when Hash
-      property[:properties] = build_properties(value)
+      property[:properties] = {}.tap do |properties|
+        value.each do |key, v|
+          properties[key] = build_property(v)
+        end
+      end
     end
     property
   end
