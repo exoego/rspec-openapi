@@ -1,5 +1,7 @@
 # rspec-openapi
 
+![test](https://github.com/k0kubun/rspec-openapi/workflows/test/badge.svg)
+
 Generate OpenAPI schema from RSpec request specs.
 
 ## What's this?
