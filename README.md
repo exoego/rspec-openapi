@@ -1,6 +1,6 @@
 # rspec-openapi
 
-Generate OpenAPI specs from RSpec request specs.
+Generate OpenAPI schema from RSpec request specs.
 
 ## What's this?
 
