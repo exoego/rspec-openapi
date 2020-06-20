@@ -84,6 +84,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     case value
     when String
       'string'
+    when Float
+      'float'
     when Integer
       'integer'
     when TrueClass, FalseClass
