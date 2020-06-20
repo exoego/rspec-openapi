@@ -42,6 +42,8 @@ paths:
                           type: integer
                         name:
                           type: string
+                    storage_size:
+                      type: float
                     created_at:
                       type: string
                     updated_at:
@@ -99,6 +101,8 @@ paths:
                         type: integer
                       name:
                         type: string
+                  storage_size:
+                    type: float
                   created_at:
                     type: string
                   updated_at:
@@ -133,6 +137,8 @@ paths:
                         type: integer
                       name:
                         type: string
+                  storage_size:
+                    type: float
                   created_at:
                     type: string
                   updated_at:
@@ -184,6 +190,8 @@ paths:
                         type: integer
                       name:
                         type: string
+                  storage_size:
+                    type: float
                   created_at:
                     type: string
                   updated_at:
@@ -217,6 +225,8 @@ paths:
                         type: integer
                       name:
                         type: string
+                  storage_size:
+                    type: float
                   created_at:
                     type: string
                   updated_at:

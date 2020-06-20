@@ -42,6 +42,7 @@ class TablesController < ApplicationController
           id: 2,
           name: 'production',
         },
+        storage_size: 12.3,
         created_at: Time.now,
         updated_at: Time.now,
       }
