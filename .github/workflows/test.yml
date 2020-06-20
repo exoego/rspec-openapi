@@ -1,0 +1,27 @@
+name: test
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: ${{ matrix.ruby }}
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby:
+          - ruby:2.5
+          - ruby:2.6
+          - ruby:2.7
+    steps:
+      - uses: actions/checkout@v2
+      - name: bundle install
+        run: bundle install -j$(nproc) --retry 3
+      - run: bundle exec rspec
+        timeout-minutes: 1
