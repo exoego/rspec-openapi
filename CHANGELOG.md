@@ -1,3 +1,7 @@
+## v0.1.5
+
+* Support detecting `float` type [#2](https://github.com/k0kubun/rspec-openapi/issues/2)
+
 ## v0.1.4
 
 * Avoid NoMethodError on nil Content-Type
