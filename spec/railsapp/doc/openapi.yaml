@@ -48,6 +48,16 @@ paths:
                       type: string
                     updated_at:
                       type: string
+              example:
+              - id: 1
+                name: access
+                description: 
+                database:
+                  id: 2
+                  name: production
+                storage_size: 12.3
+                created_at: '2020-06-22T18:19:22.398+09:00'
+                updated_at: '2020-06-22T18:19:22.398+09:00'
         '401':
           description: does not return tables if unauthorized
           content:
@@ -57,6 +67,8 @@ paths:
                 properties:
                   message:
                     type: string
+              example:
+                message: Unauthorized
     post:
       summary: 'tables #create'
       requestBody:
@@ -107,6 +119,16 @@ paths:
                     type: string
                   updated_at:
                     type: string
+              example:
+                id: 1
+                name: access
+                description: 
+                database:
+                  id: 2
+                  name: production
+                storage_size: 12.3
+                created_at: '2020-06-22T18:19:22.433+09:00'
+                updated_at: '2020-06-22T18:19:22.433+09:00'
   "/tables/{id}":
     get:
       summary: 'tables #show'
@@ -143,6 +165,16 @@ paths:
                     type: string
                   updated_at:
                     type: string
+              example:
+                id: 1
+                name: access
+                description: 
+                database:
+                  id: 2
+                  name: production
+                storage_size: 12.3
+                created_at: '2020-06-22T18:19:22.421+09:00'
+                updated_at: '2020-06-22T18:19:22.421+09:00'
         '401':
           description: does not return a table if unauthorized
           content:
@@ -152,6 +184,8 @@ paths:
                 properties:
                   message:
                     type: string
+              example:
+                message: Unauthorized
         '404':
           description: does not return a table if not found
           content:
@@ -161,6 +195,8 @@ paths:
                 properties:
                   message:
                     type: string
+              example:
+                message: not found
     patch:
       summary: 'tables #update'
       parameters:
@@ -196,6 +232,16 @@ paths:
                     type: string
                   updated_at:
                     type: string
+              example:
+                id: 1
+                name: access
+                description: 
+                database:
+                  id: 2
+                  name: production
+                storage_size: 12.3
+                created_at: '2020-06-22T18:19:22.440+09:00'
+                updated_at: '2020-06-22T18:19:22.440+09:00'
     delete:
       summary: 'tables #destroy'
       parameters:
@@ -231,3 +277,13 @@ paths:
                     type: string
                   updated_at:
                     type: string
+              example:
+                id: 1
+                name: access
+                description: 
+                database:
+                  id: 2
+                  name: production
+                storage_size: 12.3
+                created_at: '2020-06-22T18:19:22.444+09:00'
+                updated_at: '2020-06-22T18:19:22.444+09:00'
