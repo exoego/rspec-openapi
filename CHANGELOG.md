@@ -1,3 +1,7 @@
+## v0.2.0
+
+* Generate `example` of response body [#3](https://github.com/k0kubun/rspec-openapi/issues/3)
+
 ## v0.1.5
 
 * Support detecting `float` type [#2](https://github.com/k0kubun/rspec-openapi/issues/2)
