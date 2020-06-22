@@ -15,6 +15,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
                 content: {
                   normalize_content_type(record.response_content_type) => {
                     schema: build_property(record.response_body),
+                    example: record.response_body,
                   },
                 },
               },
