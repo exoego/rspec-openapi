@@ -38,6 +38,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         in: 'path',
         required: true,
         schema: build_property(try_cast(value)),
+        example: try_cast(value),
       }
     end
 
@@ -46,6 +47,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         name: key.to_s,
         in: 'query',
         schema: build_property(try_cast(value)),
+        example: try_cast(value),
       }
     end
 
@@ -61,6 +63,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       content: {
         normalize_content_type(record.request_content_type) => {
           schema: build_property(record.request_params),
+          example: record.request_params,
         }
       }
     }
