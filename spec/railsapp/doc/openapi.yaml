@@ -58,8 +58,8 @@ paths:
                   id: 2
                   name: production
                 storage_size: 12.3
-                created_at: '2020-06-24T19:33:40.118+09:00'
-                updated_at: '2020-06-24T19:33:40.118+09:00'
+                created_at: '2020-06-24T21:36:50.312+09:00'
+                updated_at: '2020-06-24T21:36:50.312+09:00'
         '401':
           description: does not return tables if unauthorized
           content:
@@ -85,23 +85,10 @@ paths:
                   type: 'null'
                 database_id:
                   type: integer
-                table:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                    description:
-                      type: 'null'
-                    database_id:
-                      type: integer
             example:
               name: k0kubun
               description: 
               database_id: 2
-              table:
-                name: k0kubun
-                description: 
-                database_id: 2
       responses:
         '201':
           description: returns a table
@@ -137,8 +124,8 @@ paths:
                   id: 2
                   name: production
                 storage_size: 12.3
-                created_at: '2020-06-24T19:33:40.238+09:00'
-                updated_at: '2020-06-24T19:33:40.238+09:00'
+                created_at: '2020-06-24T21:36:50.332+09:00'
+                updated_at: '2020-06-24T21:36:50.332+09:00'
   "/tables/{id}":
     get:
       summary: 'tables #show'
@@ -184,8 +171,8 @@ paths:
                   id: 2
                   name: production
                 storage_size: 12.3
-                created_at: '2020-06-24T19:33:40.181+09:00'
-                updated_at: '2020-06-24T19:33:40.181+09:00'
+                created_at: '2020-06-24T21:36:50.323+09:00'
+                updated_at: '2020-06-24T21:36:50.323+09:00'
         '401':
           description: does not return a table if unauthorized
           content:
@@ -252,8 +239,8 @@ paths:
                   id: 2
                   name: production
                 storage_size: 12.3
-                created_at: '2020-06-24T19:33:40.257+09:00'
-                updated_at: '2020-06-24T19:33:40.257+09:00'
+                created_at: '2020-06-24T21:36:50.341+09:00'
+                updated_at: '2020-06-24T21:36:50.341+09:00'
     delete:
       summary: 'tables #destroy'
       parameters:
@@ -298,5 +285,5 @@ paths:
                   id: 2
                   name: production
                 storage_size: 12.3
-                created_at: '2020-06-24T19:33:40.277+09:00'
-                updated_at: '2020-06-24T19:33:40.277+09:00'
+                created_at: '2020-06-24T21:36:50.346+09:00'
+                updated_at: '2020-06-24T21:36:50.346+09:00'

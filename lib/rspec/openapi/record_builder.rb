@@ -15,7 +15,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       path: route.path.spec.to_s.delete_suffix('(.:format)'),
       path_params: request.path_parameters,
       query_params: request.query_parameters,
-      request_params: request.request_parameters,
+      request_params: raw_request_params(request),
       request_content_type: request.content_type,
       controller: route.requirements[:controller],
       action: route.requirements[:action],
@@ -34,5 +34,15 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       return route
     end
     raise "No route matched for #{request.request_method} #{request.path_info}"
+  end
+
+  # workaround to get real request parameters
+  # because ActionController::ParamsWrapper overwrites request_parameters
+  def raw_request_params(request)
+    tmp = request.request_parameters
+    request.delete_header('action_dispatch.request.request_parameters')
+    raw = request.request_parameters
+    request.set_header('action_dispatch.request.request_parameters', tmp)
+    raw
   end
 end
