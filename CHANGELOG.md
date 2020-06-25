@@ -1,3 +1,10 @@
+## v0.2.1
+
+* Generate `example` of request body and path / query params
+  [#4](https://github.com/k0kubun/rspec-openapi/issues/4)
+* Remove a wrapper param created by Rails in request body
+  [#4](https://github.com/k0kubun/rspec-openapi/issues/4)
+
 ## v0.2.0
 
 * Generate `example` of response body [#3](https://github.com/k0kubun/rspec-openapi/issues/3)
