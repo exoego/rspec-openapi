@@ -32,6 +32,7 @@ class TablesController < ApplicationController
   end
 
   def find_table(id = nil)
+    time = Time.parse('2020-07-17 00:00:00')
     case id
     when '1', nil
       {
@@ -43,8 +44,8 @@ class TablesController < ApplicationController
           name: 'production',
         },
         storage_size: 12.3,
-        created_at: Time.now.iso8601,
-        updated_at: Time.now.iso8601,
+        created_at: time.iso8601,
+        updated_at: time.iso8601,
       }
     else
       raise NotFoundError
