@@ -43,8 +43,8 @@ class TablesController < ApplicationController
           name: 'production',
         },
         storage_size: 12.3,
-        created_at: Time.now,
-        updated_at: Time.now,
+        created_at: Time.now.iso8601,
+        updated_at: Time.now.iso8601,
       }
     else
       raise NotFoundError
