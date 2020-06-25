@@ -39,10 +39,9 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
   # workaround to get real request parameters
   # because ActionController::ParamsWrapper overwrites request_parameters
   def raw_request_params(request)
-    tmp = request.request_parameters
-    request.delete_header('action_dispatch.request.request_parameters')
-    raw = request.request_parameters
-    request.set_header('action_dispatch.request.request_parameters', tmp)
-    raw
+    original = request.delete_header('action_dispatch.request.request_parameters')
+    request.request_parameters
+  ensure
+    request.set_header('action_dispatch.request.request_parameters', original)
   end
 end
