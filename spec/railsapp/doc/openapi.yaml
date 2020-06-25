@@ -15,10 +15,12 @@ paths:
         in: query
         schema:
           type: integer
+        example: 1
       - name: per
         in: query
         schema:
           type: integer
+        example: 10
       responses:
         '200':
           description: returns a list of tables
@@ -83,15 +85,10 @@ paths:
                   type: 'null'
                 database_id:
                   type: integer
-                table:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                    description:
-                      type: 'null'
-                    database_id:
-                      type: integer
+            example:
+              name: k0kubun
+              description: 
+              database_id: 2
       responses:
         '201':
           description: returns a table
@@ -138,6 +135,7 @@ paths:
         required: true
         schema:
           type: integer
+        example: 1
       responses:
         '200':
           description: returns a table
@@ -205,6 +203,7 @@ paths:
         required: true
         schema:
           type: integer
+        example: 1
       responses:
         '200':
           description: returns a table
@@ -250,6 +249,7 @@ paths:
         required: true
         schema:
           type: integer
+        example: 1
       responses:
         '200':
           description: returns a table
