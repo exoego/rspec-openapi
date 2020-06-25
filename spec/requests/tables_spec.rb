@@ -1,6 +1,12 @@
 require 'spec_helper'
 
 RSpec.describe 'Tables', type: :request do
+  around do |example|
+    Timecop.freeze(Time.parse('2020-07-17 00:00:00')) do
+      example.run
+    end
+  end
+
   describe '#index' do
     it 'returns a list of tables' do
       get '/tables', params: { page: '1', per: '10' }, headers: { authorization: 'k0kubun' }

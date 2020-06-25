@@ -1,18 +1,18 @@
 # Configuring the hooks first to make the `after(:suite)` run at last
-if ENV['OPENAPI']
-  require 'rspec'
+require 'rspec'
 
-  RSpec.configure do |config|
-    config.before(:suite) do
-      FileUtils.rm_f(RSpec::OpenAPI.path)
-    end
+RSpec.configure do |config|
+  config.before(:suite) do
+    FileUtils.rm_f(RSpec::OpenAPI.path)
+  end
 
-    config.after(:suite) do
-      expect(system('git', 'diff', '--exit-code', '--', RSpec::OpenAPI.path)).to eq(true)
-    end
+  config.after(:suite) do
+    expect(system('git', 'diff', '--exit-code', '--', RSpec::OpenAPI.path)).to eq(true)
   end
 end
 
+ENV['TZ'] ||= 'UTC'
+ENV['OPENAPI'] ||= '1'
 ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('railsapp/config/environment', __dir__)
 require 'rspec/rails'
