@@ -1,3 +1,7 @@
+## v0.2.2
+
+* Allow disabling `example` by `RSpec::OpenAPI.enable_example = false`
+
 ## v0.2.1
 
 * Generate `example` of request body and path / query params
