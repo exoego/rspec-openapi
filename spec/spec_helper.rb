@@ -14,7 +14,13 @@ module SpecHelper
     env = { 'OPENAPI' => ('1' if openapi) }.compact
     Bundler.public_send(Bundler.respond_to?(:with_unbundled_env) ? :with_unbundled_env : :with_clean_env) do
       Dir.chdir(repo_root) do
-        assert_run env, 'bundle', 'exec', 'rspec', '--pattern', 'spec/requests/**/*_spec.rb', *args
+        original = File.read('.rspec')
+        begin
+          File.write('.rspec', original.gsub(/^--pattern [^\n]+/, ''))
+          assert_run env, 'bundle', 'exec', 'rspec', *args
+        ensure
+          File.write('.rspec', original)
+        end
       end
     end
   end
