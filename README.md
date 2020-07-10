@@ -145,11 +145,9 @@ Beta
 
 Basic features are there, and some people are already using this.
 
-### Current limitations
+### Current limitation
 
 * Generating a JSON file is not supported yet
-* This only works for RSpec request specs
-* Only Rails is supported for looking up a request route
 
 ### Other missing features with notes
 

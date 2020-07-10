@@ -1,3 +1,7 @@
+## v0.3.0
+
+* Initial support of rack-test and non-Rails apps
+
 ## v0.2.2
 
 * Allow disabling `example` by `RSpec::OpenAPI.enable_example = false`
