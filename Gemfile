@@ -4,5 +4,9 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'rails', '6.0.3.2'
+gem 'roda'
 gem 'rspec-rails'
-gem 'pry'
+
+group :development do
+  gem 'pry'
+end
