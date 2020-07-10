@@ -55,7 +55,7 @@ If you run the spec with `OPENAPI=1`,
 OPENAPI=1 rspec spec/requests/tables_spec.rb
 ```
 
-It will generate [`doc/openapi.yaml` file](./spec/railsapp/doc/openapi.yaml) like:
+It will generate [`doc/openapi.yaml` file](./spec/rails/doc/openapi.yaml) like:
 
 ```yml
 openapi: 3.0.3
@@ -93,7 +93,7 @@ paths:
 
 and the schema file can be used as an input of [Swagger UI](https://github.com/swagger-api/swagger-ui) or [Redoc](https://github.com/Redocly/redoc).
 
-![Redoc example](./spec/railsapp/doc/screenshot.png)
+![Redoc example](./spec/rails/doc/screenshot.png)
 
 
 ### Configuration
