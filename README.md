@@ -29,7 +29,7 @@ $ OPENAPI=1 rspec
 
 ### Example
 
-Let's say you have [a request spec](./spec/requests/tables_spec.rb) like this:
+Let's say you have [a request spec](./spec/requests/rails/tables_spec.rb) like this:
 
 ```rb
 RSpec.describe 'Tables', type: :request do
