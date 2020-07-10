@@ -1,3 +1,4 @@
+--pattern spec/rspec/openapi/**/*_spec.rb
 --format documentation
 --color
 --require spec_helper
