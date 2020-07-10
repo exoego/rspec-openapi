@@ -10,4 +10,3 @@ RSpec::OpenAPI.comment = <<~EOS
   When you write a spec in spec/requests, running the spec with `OPENAPI=1 rspec` will
   update this file automatically. You can also manually edit this file.
 EOS
-
