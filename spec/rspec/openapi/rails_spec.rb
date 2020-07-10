@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'open3'
 
 RSpec.describe 'rails request spec' do
   include SpecHelper

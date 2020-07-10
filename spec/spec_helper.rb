@@ -1,3 +1,5 @@
+require 'open3'
+
 module SpecHelper
   def repo_root
     File.expand_path('..', __dir__)
