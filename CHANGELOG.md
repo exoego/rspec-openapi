@@ -1,4 +1,4 @@
-## Unreleased
+## v0.3.1
 
 * Add `RSpec::OpenAPI.description_builder` config to dynamically generate a description [experimental]
   [#6](https://github.com/k0kubun/rspec-openapi/issues/6)
