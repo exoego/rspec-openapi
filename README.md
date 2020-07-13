@@ -114,6 +114,9 @@ RSpec::OpenAPI.comment = <<~EOS
   When you write a spec in spec/requests, running the spec with `OPENAPI=1 rspec` will
   update this file automatically. You can also manually edit this file.
 EOS
+
+# Generate a custom description, given a RSpec example
+RSpec::OpenAPI.description_builder = -> (example) { example.description }
 ```
 
 ### How can I add information which can't be generated from RSpec?

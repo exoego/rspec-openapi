@@ -32,7 +32,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       request_params: raw_request_params(request),
       request_content_type: request.content_type,
       summary: summary,
-      description: example.description,
+      description: RSpec::OpenAPI.description_builder.call(example),
       status: response.status,
       response_body: response.parsed_body,
       response_content_type: response.content_type,

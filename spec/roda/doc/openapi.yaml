@@ -18,7 +18,7 @@ paths:
               id: 1
       responses:
         '200':
-          description: returns 200
+          description: when id is given it returns 200
           content:
             application/json:
               schema:

@@ -1,6 +1,11 @@
+## Unreleased
+
+* Add `RSpec::OpenAPI.description_builder` config to dynamically generate a description [experimental]
+  [#6](https://github.com/k0kubun/rspec-openapi/issues/6)
+
 ## v0.3.0
 
-* Initial support of rack-test and non-Rails apps
+* Initial support of rack-test and non-Rails apps [#5](https://github.com/k0kubun/rspec-openapi/issues/5)
 
 ## v0.2.2
 
