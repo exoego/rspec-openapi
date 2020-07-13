@@ -115,7 +115,7 @@ RSpec::OpenAPI.comment = <<~EOS
   update this file automatically. You can also manually edit this file.
 EOS
 
-# Generate a custom description, given a RSpec example
+# Generate a custom description, given an RSpec example
 RSpec::OpenAPI.description_builder = -> (example) { example.description }
 ```
 
