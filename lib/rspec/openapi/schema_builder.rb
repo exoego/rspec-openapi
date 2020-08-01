@@ -36,7 +36,6 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     parameters = []
 
     record.path_params.each do |key, value|
-      next if %i[controller action].include?(key)
       parameters << {
         name: key.to_s,
         in: 'path',

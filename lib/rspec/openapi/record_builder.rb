@@ -15,7 +15,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
     end
 
     # Generate `path` and `summary` in a framework-friendly manner when possible
-    if defined?(Rails) && Rails.application
+    if rails?
       route = find_rails_route(request)
       path = route.path.spec.to_s.delete_suffix('(.:format)')
       summary = "#{route.requirements[:controller]} ##{route.requirements[:action]}"
@@ -27,7 +27,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
     RSpec::OpenAPI::Record.new(
       method: request.request_method,
       path: path,
-      path_params: request.path_parameters,
+      path_params: raw_path_params(request),
       query_params: request.query_parameters,
       request_params: raw_request_params(request),
       request_content_type: request.content_type,
@@ -41,6 +41,10 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
 
   private
 
+  def rails?
+    defined?(Rails) && Rails.application
+  end
+
   def rack_test?(context)
     defined?(Rack::Test::Methods) && context.class < Rack::Test::Methods
   end
@@ -51,6 +55,17 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       return route
     end
     raise "No route matched for #{request.request_method} #{request.path_info}"
+  end
+
+  # :controller and :action always exist. :format is added when routes is configured as such.
+  def raw_path_params(request)
+    if rails?
+      request.path_parameters.reject do |key, _value|
+        %i[controller action format].include?(key)
+      end
+    else
+      request.path_parameters
+    end
   end
 
   # workaround to get real request parameters
