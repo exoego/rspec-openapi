@@ -1,3 +1,8 @@
+## v0.3.2
+
+* Stop generating format as path parameters in Rails
+  [#8](https://github.com/k0kubun/rspec-openapi/issues/8)
+
 ## v0.3.1
 
 * Add `RSpec::OpenAPI.description_builder` config to dynamically generate a description [experimental]
