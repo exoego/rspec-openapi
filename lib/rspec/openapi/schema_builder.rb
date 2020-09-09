@@ -2,6 +2,19 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   # @param [RSpec::OpenAPI::Record] record
   # @return [Hash]
   def build(record)
+    response = {
+      description: record.description,
+    }
+
+    if record.response_body
+      response[:content] = {
+        normalize_content_type(record.response_content_type) => {
+          schema: build_property(record.response_body),
+          example: (record.response_body if example_enabled?),
+        }.compact,
+      }
+    end
+
     {
       paths: {
         normalize_path(record.path) => {
@@ -10,15 +23,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
             parameters: build_parameters(record),
             requestBody: build_request_body(record),
             responses: {
-              record.status.to_s => {
-                description: record.description,
-                content: {
-                  normalize_content_type(record.response_content_type) => {
-                    schema: build_property(record.response_body),
-                    example: (record.response_body if example_enabled?),
-                  }.compact,
-                },
-              },
+              record.status.to_s => response,
             },
           }.compact,
         },

@@ -67,7 +67,7 @@ RSpec.describe 'Tables', type: :request do
 
     it 'returns no content if specified' do
       delete '/tables/1', headers: { authorization: 'k0kubun' }, params: { no_content: true }
-      expect(response.status).to eq(200)
+      expect(response.status).to eq(202)
     end
   end
 end
