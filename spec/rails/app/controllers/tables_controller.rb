@@ -20,6 +20,10 @@ class TablesController < ApplicationController
   end
 
   def destroy
+    if params[:no_content]
+      return head :ok
+    end
+
     render json: find_table(params[:id])
   end
 
