@@ -1,3 +1,8 @@
+## v0.3.3
+
+* Avoid `JSON::ParserError` when a response body is no content
+  [#9](https://github.com/k0kubun/rspec-openapi/issues/9)
+
 ## v0.3.2
 
 * Stop generating format as path parameters in Rails
