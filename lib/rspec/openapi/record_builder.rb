@@ -24,6 +24,13 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       summary = "#{request.method} #{request.path}"
     end
 
+    response_body =
+      begin
+        response.parsed_body
+      rescue JSON::ParserError
+        nil
+      end
+
     RSpec::OpenAPI::Record.new(
       method: request.request_method,
       path: path,
@@ -34,7 +41,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       summary: summary,
       description: RSpec::OpenAPI.description_builder.call(example),
       status: response.status,
-      response_body: response.parsed_body,
+      response_body: response_body,
       response_content_type: response.content_type,
     ).freeze
   end
