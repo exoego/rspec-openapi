@@ -19,6 +19,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       route = find_rails_route(request)
       path = route.path.spec.to_s.delete_suffix('(.:format)')
       summary = "#{route.requirements[:controller]} ##{route.requirements[:action]}"
+      tags = [route.requirements[:controller]]
     else
       path = request.path
       summary = "#{request.method} #{request.path}"
@@ -39,6 +40,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       request_params: raw_request_params(request),
       request_content_type: request.content_type,
       summary: summary,
+      tags: tags,
       description: RSpec::OpenAPI.description_builder.call(example),
       status: response.status,
       response_body: response_body,
