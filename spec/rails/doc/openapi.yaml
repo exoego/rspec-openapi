@@ -10,6 +10,8 @@ paths:
   "/tables":
     get:
       summary: 'tables #index'
+      tags:
+      - tables
       parameters:
       - name: page
         in: query
@@ -73,6 +75,8 @@ paths:
                 message: Unauthorized
     post:
       summary: 'tables #create'
+      tags:
+      - tables
       requestBody:
         content:
           application/json:
@@ -129,6 +133,8 @@ paths:
   "/tables/{id}":
     get:
       summary: 'tables #show'
+      tags:
+      - tables
       parameters:
       - name: id
         in: path
@@ -197,6 +203,8 @@ paths:
                 message: not found
     patch:
       summary: 'tables #update'
+      tags:
+      - tables
       parameters:
       - name: id
         in: path
@@ -243,6 +251,8 @@ paths:
                 updated_at: '2020-07-17T00:00:00+00:00'
     delete:
       summary: 'tables #destroy'
+      tags:
+      - tables
       parameters:
       - name: id
         in: path
