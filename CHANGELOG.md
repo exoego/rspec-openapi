@@ -1,3 +1,8 @@
+## v0.3.4
+
+* Generate tags by controller names
+  [#10](https://github.com/k0kubun/rspec-openapi/issues/10)
+
 ## v0.3.3
 
 * Avoid `JSON::ParserError` when a response body is no content
