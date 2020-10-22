@@ -47,7 +47,8 @@ paths:
                         name:
                           type: string
                     storage_size:
-                      type: float
+                      type: number
+                      format: float
                     created_at:
                       type: string
                     updated_at:
@@ -115,7 +116,8 @@ paths:
                       name:
                         type: string
                   storage_size:
-                    type: float
+                    type: number
+                    format: float
                   created_at:
                     type: string
                   updated_at:
@@ -164,7 +166,8 @@ paths:
                       name:
                         type: string
                   storage_size:
-                    type: float
+                    type: number
+                    format: float
                   created_at:
                     type: string
                   updated_at:
@@ -234,7 +237,8 @@ paths:
                       name:
                         type: string
                   storage_size:
-                    type: float
+                    type: number
+                    format: float
                   created_at:
                     type: string
                   updated_at:
@@ -282,7 +286,8 @@ paths:
                       name:
                         type: string
                   storage_size:
-                    type: float
+                    type: number
+                    format: float
                   created_at:
                     type: string
                   updated_at:
