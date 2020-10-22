@@ -65,15 +65,19 @@ paths:
   "/tables":
     get:
       summary: 'tables #index'
+      tags:
+      - tables
       parameters:
       - name: page
         in: query
         schema:
           type: integer
+        example: 1
       - name: per
         in: query
         schema:
           type: integer
+        example: 10
       responses:
         '200':
           description: returns a list of tables
