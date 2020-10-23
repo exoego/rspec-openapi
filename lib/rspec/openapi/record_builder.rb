@@ -60,6 +60,12 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
 
   # @param [ActionDispatch::Request] request
   def find_rails_route(request)
+    # Reverse the destructive modification by Rails https://github.com/rails/rails/blob/v5.2.4.4/actionpack/lib/action_dispatch/journey/router.rb#L36-L44
+    unless request.script_name.empty?
+      request = request.dup
+      request.path_info = File.join(request.script_name, request.path_info)
+    end
+
     Rails.application.routes.router.recognize(request) do |route|
       return route
     end

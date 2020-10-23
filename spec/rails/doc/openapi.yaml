@@ -55,7 +55,7 @@ paths:
               example:
               - id: 1
                 name: access
-                description: 
+                description:
                 database:
                   id: 2
                   name: production
@@ -91,7 +91,7 @@ paths:
                   type: integer
             example:
               name: k0kubun
-              description: 
+              description:
               database_id: 2
       responses:
         '201':
@@ -123,7 +123,7 @@ paths:
               example:
                 id: 1
                 name: access
-                description: 
+                description:
                 database:
                   id: 2
                   name: production
@@ -172,7 +172,7 @@ paths:
               example:
                 id: 1
                 name: access
-                description: 
+                description:
                 database:
                   id: 2
                   name: production
@@ -242,7 +242,7 @@ paths:
               example:
                 id: 1
                 name: access
-                description: 
+                description:
                 database:
                   id: 2
                   name: production
@@ -290,7 +290,7 @@ paths:
               example:
                 id: 1
                 name: access
-                description: 
+                description:
                 database:
                   id: 2
                   name: production
