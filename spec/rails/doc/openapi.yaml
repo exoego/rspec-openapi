@@ -38,7 +38,7 @@ paths:
                     name:
                       type: string
                     description:
-                      type: 'null'
+                      type: string
                     database:
                       type: object
                       properties:
@@ -55,7 +55,7 @@ paths:
               example:
               - id: 1
                 name: access
-                description:
+                description: logs
                 database:
                   id: 2
                   name: production
@@ -106,7 +106,7 @@ paths:
                   name:
                     type: string
                   description:
-                    type: 'null'
+                    type: string
                   database:
                     type: object
                     properties:
@@ -123,7 +123,7 @@ paths:
               example:
                 id: 1
                 name: access
-                description:
+                description: logs
                 database:
                   id: 2
                   name: production
@@ -155,7 +155,7 @@ paths:
                   name:
                     type: string
                   description:
-                    type: 'null'
+                    type: string
                   database:
                     type: object
                     properties:
@@ -172,7 +172,7 @@ paths:
               example:
                 id: 1
                 name: access
-                description:
+                description: logs
                 database:
                   id: 2
                   name: production
@@ -225,7 +225,7 @@ paths:
                   name:
                     type: string
                   description:
-                    type: 'null'
+                    type: string
                   database:
                     type: object
                     properties:
@@ -242,7 +242,7 @@ paths:
               example:
                 id: 1
                 name: access
-                description:
+                description: logs
                 database:
                   id: 2
                   name: production
@@ -273,7 +273,7 @@ paths:
                   name:
                     type: string
                   description:
-                    type: 'null'
+                    type: string
                   database:
                     type: object
                     properties:
@@ -290,7 +290,7 @@ paths:
               example:
                 id: 1
                 name: access
-                description:
+                description: logs
                 database:
                   id: 2
                   name: production

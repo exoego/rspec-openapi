@@ -42,7 +42,7 @@ class TablesController < ApplicationController
       {
         id: 1,
         name: 'access',
-        description: nil,
+        description: 'logs',
         database: {
           id: 2,
           name: 'production',
