@@ -9,9 +9,9 @@ info:
 paths:
   "/tables":
     get:
-      summary: 'tables #index'
+      summary: index
       tags:
-      - tables
+      - Table
       parameters:
       - name: page
         in: query
@@ -74,9 +74,9 @@ paths:
               example:
                 message: Unauthorized
     post:
-      summary: 'tables #create'
+      summary: create
       tags:
-      - tables
+      - Table
       requestBody:
         content:
           application/json:
@@ -132,9 +132,9 @@ paths:
                 updated_at: '2020-07-17T00:00:00+00:00'
   "/tables/{id}":
     get:
-      summary: 'tables #show'
+      summary: show
       tags:
-      - tables
+      - Table
       parameters:
       - name: id
         in: path
@@ -202,9 +202,9 @@ paths:
               example:
                 message: not found
     patch:
-      summary: 'tables #update'
+      summary: update
       tags:
-      - tables
+      - Table
       parameters:
       - name: id
         in: path
@@ -250,9 +250,9 @@ paths:
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
     delete:
-      summary: 'tables #destroy'
+      summary: destroy
       tags:
-      - tables
+      - Table
       parameters:
       - name: id
         in: path
