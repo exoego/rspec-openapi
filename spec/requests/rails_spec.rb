@@ -45,7 +45,7 @@ RSpec.describe 'Tables', type: :request do
     it 'returns a table' do
       post '/tables', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {
         name: 'k0kubun',
-        description: nil,
+        description: 'description',
         database_id: 2,
       }.to_json
       expect(response.status).to eq(201)

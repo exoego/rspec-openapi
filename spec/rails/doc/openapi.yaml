@@ -86,12 +86,12 @@ paths:
                 name:
                   type: string
                 description:
-                  type: 'null'
+                  type: string
                 database_id:
                   type: integer
             example:
               name: k0kubun
-              description:
+              description: description
               database_id: 2
       responses:
         '201':
