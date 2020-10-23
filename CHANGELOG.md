@@ -1,3 +1,7 @@
+## v0.3.5
+
+* Support finding routes in Rails engines
+
 ## v0.3.4
 
 * Generate tags by controller names
