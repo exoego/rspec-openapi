@@ -53,8 +53,14 @@ RSpec.describe 'Tables', type: :request do
   end
 
   describe '#update' do
+    before do
+      png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
+      QBoAAAAASUVORK5CYII='.unpack('m').first
+      IO.binwrite('test.png', png)
+    end
+    let(:image) { Rack::Test::UploadedFile.new('test.png', 'image/png') }
     it 'returns a table' do
-      patch '/tables/1', headers: { authorization: 'k0kubun' }
+      patch '/tables/1', headers: { authorization: 'k0kubun' }, params: { image: image }
       expect(response.status).to eq(200)
     end
   end
