@@ -79,10 +79,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   end
 
   def build_property(value)
-    property = { type: build_type(value) }
-
-    format = build_format(value)
-    property[:format] = format if format
+    property = build_type(value)
 
     case value
     when Array
@@ -100,30 +97,21 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   def build_type(value)
     case value
     when String
-      'string'
+      { type: 'string' }
     when Integer
-      'integer'
-    when Numeric
-      'number'
+      { type: 'integer' }
+    when Float
+      { type: 'number', format: 'float' }
     when TrueClass, FalseClass
-      'boolean'
+      { type: 'boolean' }
     when Array
-      'array'
+      { type: 'array' }
     when Hash
-      'object'
+      { type: 'object' }
     when NilClass
-      'null'
+      { type: 'null' }
     else
       raise NotImplementedError, "type detection is not implemented for: #{value.inspect}"
-    end
-  end
-
-  def build_format(value)
-    case value
-    when Float
-      'float'
-    else
-      nil
     end
   end
 
