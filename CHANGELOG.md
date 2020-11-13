@@ -1,3 +1,8 @@
+## v0.3.8
+
+* Generate `type: 'number', format: 'float'` instead of `type: 'float'` for Float
+  [#11](https://github.com/k0kubun/rspec-openapi/issues/11)
+
 ## v0.3.7
 
 * Classify tag names and remove controller names from summary in Rails
