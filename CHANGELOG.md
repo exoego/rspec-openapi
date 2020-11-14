@@ -1,3 +1,8 @@
+## v0.3.9
+
+* Initial support for multipart/form-data
+  [#12](https://github.com/k0kubun/rspec-openapi/pull/12)
+
 ## v0.3.8
 
 * Generate `type: 'number', format: 'float'` instead of `type: 'float'` for Float
