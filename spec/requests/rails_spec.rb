@@ -14,7 +14,9 @@ EOS
 RSpec.describe 'Tables', type: :request do
   describe '#index' do
     it 'returns a list of tables' do
-      get '/tables', params: { page: '1', per: '10' }, headers: { authorization: 'k0kubun' }
+      get '/tables', params: {
+        page: '1', per: '10', filter: { read: true },
+      }, headers: { authorization: 'k0kubun' }
       expect(response.status).to eq(200)
     end
 

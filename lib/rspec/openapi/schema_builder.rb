@@ -55,9 +55,20 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       parameters << {
         name: key.to_s,
         in: 'query',
-        schema: build_property(try_cast(value)),
         example: (try_cast(value) if example_enabled?),
-      }.compact
+      }.compact.merge!(
+        if value.is_a?(Hash)
+          {
+            content: {
+              'application/json': {
+                schema: build_property(try_cast(value)),
+              },
+            },
+          }
+        else
+          { schema: build_property(try_cast(value)) }
+        end
+      )
     end
 
     return nil if parameters.empty?

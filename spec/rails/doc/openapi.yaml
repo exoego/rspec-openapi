@@ -15,14 +15,25 @@ paths:
       parameters:
       - name: page
         in: query
+        example: 1
         schema:
           type: integer
-        example: 1
       - name: per
         in: query
+        example: 10
         schema:
           type: integer
-        example: 10
+      - name: filter
+        in: query
+        example:
+          read: 'true'
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                read:
+                  type: string
       responses:
         '200':
           description: returns a list of tables
