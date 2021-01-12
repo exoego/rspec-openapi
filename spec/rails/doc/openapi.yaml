@@ -229,7 +229,7 @@ paths:
               image: !ruby/object:ActionDispatch::Http::UploadedFile
                 tempfile: !ruby/object:Tempfile
                   unlinked: true
-                  mode: 2562
+                  mode: 194
                   tmpfile: &1 !ruby/object:File {}
                   opts:
                     :perm: 384
