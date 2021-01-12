@@ -4,7 +4,7 @@ class << RSpec::OpenAPI::DefaultSchema = Object.new
       openapi: '3.0.3',
       info: {
         title: title,
-        version: RSpec::OpenAPI.application_version
+        version: RSpec::OpenAPI.application_version,
       },
       paths: {},
     }.freeze
