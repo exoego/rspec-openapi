@@ -6,6 +6,7 @@
 openapi: 3.0.3
 info:
   title: rspec-openapi
+  version: 1.0.0
 paths:
   "/tables":
     get:
@@ -228,7 +229,7 @@ paths:
               image: !ruby/object:ActionDispatch::Http::UploadedFile
                 tempfile: !ruby/object:Tempfile
                   unlinked: true
-                  mode: 194
+                  mode: 2562
                   tmpfile: &1 !ruby/object:File {}
                   opts:
                     :perm: 384
