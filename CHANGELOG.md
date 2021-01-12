@@ -1,3 +1,8 @@
+## v0.3.10
+
+* Add `info.version`
+  [#16](https://github.com/k0kubun/rspec-openapi/pull/16)
+
 ## v0.3.9
 
 * Initial support for multipart/form-data
