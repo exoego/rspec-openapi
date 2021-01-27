@@ -47,6 +47,8 @@ paths:
                           type: integer
                         name:
                           type: string
+                    null_sample:
+                      nullable: true
                     storage_size:
                       type: number
                       format: float
@@ -61,6 +63,7 @@ paths:
                 database:
                   id: 2
                   name: production
+                null_sample: 
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
@@ -116,6 +119,8 @@ paths:
                         type: integer
                       name:
                         type: string
+                  null_sample:
+                    nullable: true
                   storage_size:
                     type: number
                     format: float
@@ -130,6 +135,7 @@ paths:
                 database:
                   id: 2
                   name: production
+                null_sample: 
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
@@ -166,6 +172,8 @@ paths:
                         type: integer
                       name:
                         type: string
+                  null_sample:
+                    nullable: true
                   storage_size:
                     type: number
                     format: float
@@ -180,6 +188,7 @@ paths:
                 database:
                   id: 2
                   name: production
+                null_sample: 
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
@@ -248,6 +257,8 @@ paths:
                         type: integer
                       name:
                         type: string
+                  null_sample:
+                    nullable: true
                   storage_size:
                     type: number
                     format: float
@@ -262,6 +273,7 @@ paths:
                 database:
                   id: 2
                   name: production
+                null_sample: 
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
@@ -297,6 +309,8 @@ paths:
                         type: integer
                       name:
                         type: string
+                  null_sample:
+                    nullable: true
                   storage_size:
                     type: number
                     format: float
@@ -311,6 +325,7 @@ paths:
                 database:
                   id: 2
                   name: production
+                null_sample: 
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
