@@ -1,3 +1,8 @@
+## v0.3.11
+
+* Show a filename as an `example` for `ActionDispatch::Http::UploadedFile`
+  [#17](https://github.com/k0kubun/rspec-openapi/pull/17)
+
 ## v0.3.10
 
 * Add `info.version`
