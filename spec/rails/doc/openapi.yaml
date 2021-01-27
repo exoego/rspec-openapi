@@ -226,18 +226,7 @@ paths:
                   type: string
                   format: binary
             example:
-              image: !ruby/object:ActionDispatch::Http::UploadedFile
-                tempfile: !ruby/object:Tempfile
-                  unlinked: true
-                  mode: 194
-                  tmpfile: &1 !ruby/object:File {}
-                  opts:
-                    :perm: 384
-                  delegate_dc_obj: *1
-                original_filename: test.png
-                content_type: image/png
-                headers: "Content-Disposition: form-data; name=\"image\"; filename=\"test.png\"\r\nContent-Type:
-                  image/png\r\nContent-Length: 71\r\n"
+              image: test.png
       responses:
         '200':
           description: returns a table
