@@ -12,20 +12,20 @@ paths:
     get:
       summary: index
       tags:
-        - Table
+      - Table
       parameters:
-        - name: page
-          in: query
-          schema:
-            type: integer
-          example: 1
-        - name: per
-          in: query
-          schema:
-            type: integer
-          example: 10
+      - name: page
+        in: query
+        schema:
+          type: integer
+        example: 1
+      - name: per
+        in: query
+        schema:
+          type: integer
+        example: 10
       responses:
-        "200":
+        '200':
           description: returns a list of tables
           content:
             application/json:
@@ -57,17 +57,17 @@ paths:
                     updated_at:
                       type: string
               example:
-                - id: 1
-                  name: access
-                  description: logs
-                  database:
-                    id: 2
-                    name: production
-                  null_sample:
-                  storage_size: 12.3
-                  created_at: "2020-07-17T00:00:00+00:00"
-                  updated_at: "2020-07-17T00:00:00+00:00"
-        "401":
+              - id: 1
+                name: access
+                description: logs
+                database:
+                  id: 2
+                  name: production
+                null_sample:
+                storage_size: 12.3
+                created_at: '2020-07-17T00:00:00+00:00'
+                updated_at: '2020-07-17T00:00:00+00:00'
+        '401':
           description: does not return tables if unauthorized
           content:
             application/json:
@@ -81,7 +81,7 @@ paths:
     post:
       summary: create
       tags:
-        - Table
+      - Table
       requestBody:
         content:
           application/json:
@@ -99,7 +99,7 @@ paths:
               description: description
               database_id: 2
       responses:
-        "201":
+        '201':
           description: returns a table
           content:
             application/json:
@@ -137,22 +137,22 @@ paths:
                   name: production
                 null_sample:
                 storage_size: 12.3
-                created_at: "2020-07-17T00:00:00+00:00"
-                updated_at: "2020-07-17T00:00:00+00:00"
+                created_at: '2020-07-17T00:00:00+00:00'
+                updated_at: '2020-07-17T00:00:00+00:00'
   "/tables/{id}":
     get:
       summary: show
       tags:
-        - Table
+      - Table
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          example: 1
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
       responses:
-        "200":
+        '200':
           description: returns a table
           content:
             application/json:
@@ -190,9 +190,9 @@ paths:
                   name: production
                 null_sample:
                 storage_size: 12.3
-                created_at: "2020-07-17T00:00:00+00:00"
-                updated_at: "2020-07-17T00:00:00+00:00"
-        "401":
+                created_at: '2020-07-17T00:00:00+00:00'
+                updated_at: '2020-07-17T00:00:00+00:00'
+        '401':
           description: does not return a table if unauthorized
           content:
             application/json:
@@ -203,7 +203,7 @@ paths:
                     type: string
               example:
                 message: Unauthorized
-        "404":
+        '404':
           description: does not return a table if not found
           content:
             application/json:
@@ -217,14 +217,14 @@ paths:
     patch:
       summary: update
       tags:
-        - Table
+      - Table
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          example: 1
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
       requestBody:
         content:
           multipart/form-data:
@@ -237,7 +237,7 @@ paths:
             example:
               image: test.png
       responses:
-        "200":
+        '200':
           description: returns a table
           content:
             application/json:
@@ -275,21 +275,21 @@ paths:
                   name: production
                 null_sample:
                 storage_size: 12.3
-                created_at: "2020-07-17T00:00:00+00:00"
-                updated_at: "2020-07-17T00:00:00+00:00"
+                created_at: '2020-07-17T00:00:00+00:00'
+                updated_at: '2020-07-17T00:00:00+00:00'
     delete:
       summary: destroy
       tags:
-        - Table
+      - Table
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          example: 1
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
       responses:
-        "200":
+        '200':
           description: returns a table
           content:
             application/json:
@@ -327,9 +327,9 @@ paths:
                   name: production
                 null_sample:
                 storage_size: 12.3
-                created_at: "2020-07-17T00:00:00+00:00"
-                updated_at: "2020-07-17T00:00:00+00:00"
-        "202":
+                created_at: '2020-07-17T00:00:00+00:00'
+                updated_at: '2020-07-17T00:00:00+00:00'
+        '202':
           description: returns no content if specified
       requestBody:
         content:
@@ -340,4 +340,4 @@ paths:
                 no_content:
                   type: string
             example:
-              no_content: "true"
+              no_content: 'true'
