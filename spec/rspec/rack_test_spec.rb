@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'fileutils'
 
 RSpec.describe 'rack-test spec' do
   include SpecHelper

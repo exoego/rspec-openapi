@@ -128,15 +128,12 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
   def build_example(value)
     return nil if value.nil?
-    examples = {}
+    value = value.dup
     value.each do |key, v|
-      if v.is_a? ActionDispatch::Http::UploadedFile
-        examples[key] = v.original_filename
-      else
-        examples[key] = v
+      if v.is_a?(ActionDispatch::Http::UploadedFile)
+        value[key] = v.original_filename
       end
     end
-    examples
   end
 
   def normalize_path(path)
