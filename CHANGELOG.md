@@ -1,3 +1,8 @@
+## v0.3.12
+
+* Generate `nullable: true` for null fields in schema
+  [#18](https://github.com/k0kubun/rspec-openapi/pull/18)
+
 ## v0.3.11
 
 * Show a filename as an `example` for `ActionDispatch::Http::UploadedFile`
