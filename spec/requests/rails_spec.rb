@@ -18,6 +18,10 @@ RSpec.describe 'Tables', type: :request do
       expect(response.status).to eq(200)
     end
 
+    it 'has a request spec which does not make any request' do
+      expect(request).to eq(nil)
+    end
+
     it 'does not return tables if unauthorized' do
       get '/tables'
       expect(response.status).to eq(401)

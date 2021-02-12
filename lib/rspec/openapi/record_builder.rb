@@ -13,6 +13,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       request = context.request
       response = context.response
     end
+    return if request.nil?
 
     # Generate `path` and `summary` in a framework-friendly manner when possible
     if rails?
