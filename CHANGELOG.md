@@ -1,3 +1,8 @@
+## v0.3.13
+
+* Avoid crashing when there's no request made in a spec
+  [#19](https://github.com/k0kubun/rspec-openapi/pull/19)
+
 ## v0.3.12
 
 * Generate `nullable: true` for null fields in schema
