@@ -1,3 +1,8 @@
+## v0.3.14
+
+* Avoid an error when an application calls `request.body.read`
+  [#20](https://github.com/k0kubun/rspec-openapi/pull/20)
+
 ## v0.3.13
 
 * Avoid crashing when there's no request made in a spec
