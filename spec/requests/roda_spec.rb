@@ -1,4 +1,4 @@
-require_relative '../roda/app'
+require_relative '../roda/roda_app'
 require 'json'
 require 'rack/test'
 RSpec::OpenAPI.path = File.expand_path('../roda/doc/openapi.yaml', __dir__)
@@ -13,7 +13,7 @@ RSpec.describe 'Roda', type: :request do
   include Rack::Test::Methods
 
   let(:app) do
-    App
+    RodaApp
   end
 
   describe '/roda' do

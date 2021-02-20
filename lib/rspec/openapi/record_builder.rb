@@ -8,6 +8,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
   def build(context, example:)
     if rack_test?(context)
       request = ActionDispatch::Request.new(context.last_request.env)
+      request.body.rewind if request.body.respond_to?(:rewind)
       response = ActionDispatch::TestResponse.new(*context.last_response.to_a)
     else
       request = context.request
