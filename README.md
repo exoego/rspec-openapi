@@ -105,6 +105,16 @@ and the schema file can be used as an input of [Swagger UI](https://github.com/s
 The following configurations are optional.
 
 ```rb
+# Change the title
+RSpec::OpenAPI.title = 'My aswesome title'
+
+# Change the description
+RSpec::OpenAPI.description = <<~STR
+This is an introductory description of the API, what it does, how to use it,
+and other, general information that the developer consuming it might need to
+know.
+STR
+
 # Change the path to generate schema from `doc/openapi.yaml`
 RSpec::OpenAPI.path = 'doc/schema.yaml'
 
@@ -122,8 +132,25 @@ RSpec::OpenAPI.comment = <<~EOS
   update this file automatically. You can also manually edit this file.
 EOS
 
-# Generate a custom description, given an RSpec example
-RSpec::OpenAPI.description_builder = -> (example) { example.description }
+# Generate a custom response description, given an RSpec example
+RSpec::OpenAPI.response_description_builder = -> (example) { example.metadata[:result] }
+
+# Generate a custom operation description, given an RSpec example
+RSpec::OpenAPI.operation_description_builder = -> (example) { example.metadata[:description] }
+
+# Generate a custom summary, given an RSpec example
+RSpec::OpenAPI.summary_builder = -> (example) { example.metadata[:summary] }
+
+# Generate metadata about the tags used by your endpoints
+RSpec::OpenAPI.tags = [
+  {
+    name: "SomeTag",
+    description: "This is a more expansive description of what the tag does and how it works.",
+  },
+  {
+    name: "AnotherTag",
+  },
+]
 ```
 
 ### How can I add information which can't be generated from RSpec?

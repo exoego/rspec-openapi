@@ -3,10 +3,13 @@ class << RSpec::OpenAPI::DefaultSchema = Object.new
     {
       openapi: '3.0.3',
       info: {
-        title: title,
+        title: RSpec::OpenAPI.title,
         version: RSpec::OpenAPI.application_version,
       },
       paths: {},
+    }.tap { |h|
+      h[:tags] = RSpec::OpenAPI.tags if RSpec::OpenAPI.tags.any?
+      h[:info][:description] = RSpec::OpenAPI.description if RSpec::OpenAPI.description
     }.freeze
   end
 end

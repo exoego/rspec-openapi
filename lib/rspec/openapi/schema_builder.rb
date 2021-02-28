@@ -3,7 +3,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   # @return [Hash]
   def build(record)
     response = {
-      description: record.description,
+      description: record.response_description,
     }
 
     if record.response_body
@@ -20,6 +20,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         normalize_path(record.path) => {
           record.method.downcase => {
             summary: record.summary,
+            description: record.operation_description,
             tags: record.tags,
             parameters: build_parameters(record),
             requestBody: build_request_body(record),
