@@ -27,6 +27,11 @@ class RSpec::OpenAPI::SchemaFile
   def write(spec)
     FileUtils.mkdir_p(File.dirname(@path))
     File.write(@path, prepend_comment(YAML.dump(spec)))
+    File.write(json_path, JSON.pretty_generate(YAML.load_file(@path)))
+  end
+
+  def json_path
+    @path.to_s.gsub(".yaml", ".json")
   end
 
   def prepend_comment(content)
