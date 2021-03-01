@@ -151,6 +151,11 @@ RSpec::OpenAPI.tags = [
     name: "AnotherTag",
   },
 ]
+
+# Add Authorization header to documentation if given in request
+RSpec::OpenAPI.whitelisted_parameter_headers = %w(
+  Authorization
+)
 ```
 
 ### How can I add information which can't be generated from RSpec?
