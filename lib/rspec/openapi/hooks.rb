@@ -18,7 +18,7 @@ RSpec.configuration.after(:suite) do
   title = File.basename(Dir.pwd)
   RSpec::OpenAPI::SchemaFile.new(RSpec::OpenAPI.path).edit do |spec|
     RSpec::OpenAPI::SchemaMerger.reverse_merge!(spec, RSpec::OpenAPI::DefaultSchema.build(title))
-    records.each do |record|
+    records.sort_by(&:summary).each do |record|
       RSpec::OpenAPI::SchemaMerger.reverse_merge!(spec, RSpec::OpenAPI::SchemaBuilder.build(record))
     end
   end
