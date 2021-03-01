@@ -12,6 +12,7 @@ module RSpec::OpenAPI
   @summary_builder = -> (example) { example.metadata[:summary] }
   @tags = []
   @title = 'app'
+  @whitelisted_parameter_headers = []
 
   class << self
     attr_accessor \
@@ -25,6 +26,7 @@ module RSpec::OpenAPI
       :response_description_builder,
       :summary_builder,
       :tags,
-      :title
+      :title,
+      :whitelisted_parameter_headers
   end
 end

@@ -18,6 +18,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
 
     # Generate `path` and `summary` in a framework-friendly manner when possible
     if rails?
+      headers = extract_headers(request)
       route = find_rails_route(request)
       path = route.path.spec.to_s.delete_suffix('(.:format)')
       summary = "#{route.requirements[:action]}"
@@ -35,23 +36,31 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       end
 
     RSpec::OpenAPI::Record.new(
+      headers: headers,
       method: request.request_method,
+      operation_description: RSpec::OpenAPI.operation_description_builder.call(example).to_s,
       path: path,
       path_params: raw_path_params(request),
       query_params: request.query_parameters,
-      request_params: raw_request_params(request),
       request_content_type: request.content_type,
-      summary: RSpec::OpenAPI.summary_builder.call(example).presence || summary,
-      tags: tags,
-      response_description: RSpec::OpenAPI.response_description_builder.call(example).to_s,
-      operation_description: RSpec::OpenAPI.operation_description_builder.call(example).to_s,
-      status: response.status,
+      request_params: raw_request_params(request),
       response_body: response_body,
       response_content_type: response.content_type,
+      response_description: RSpec::OpenAPI.response_description_builder.call(example).to_s,
+      status: response.status,
+      summary: RSpec::OpenAPI.summary_builder.call(example).presence || summary,
+      tags: tags,
     ).freeze
   end
 
   private
+
+  def extract_headers(request)
+    # TODO: Can this be simplified?
+    humanized_headers = ActionDispatch::Http::Headers.from_hash(request.headers)
+    header_tuples = RSpec::OpenAPI.whitelisted_parameter_headers.collect { |h| [h, humanized_headers[h]] }
+    headers = Hash[header_tuples].compact
+  end
 
   def rails?
     defined?(Rails) && Rails.application

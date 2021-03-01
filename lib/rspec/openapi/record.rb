@@ -1,4 +1,5 @@
 RSpec::OpenAPI::Record = Struct.new(
+  :headers,               # @param [Hash]    - {"Authorization" => "Bearer abcdef123"}
   :method,                # @param [String]  - "GET"
   :operation_description, # @param [String]  - "returns a status"
   :path,                  # @param [String]  - "/v1/status/:id"
