@@ -14,20 +14,17 @@ module RSpec::OpenAPI
   @title = 'app'
 
   class << self
-    ACCESSORS = %i(
-      application_version
-      comment
-      description
-      description_builder
-      enable_example
-      operation_description_builder
-      path
-      response_description_builder
-      summary_builder
-      tags
-      title
-    )
-
-    attr_accessor(*ACCESSORS)
+    attr_accessor \
+      :application_version,
+      :comment,
+      :description,
+      :description_builder,
+      :enable_example,
+      :operation_description_builder,
+      :path,
+      :response_description_builder,
+      :summary_builder,
+      :tags,
+      :title
   end
 end
