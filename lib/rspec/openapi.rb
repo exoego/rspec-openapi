@@ -11,6 +11,7 @@ module RSpec::OpenAPI
   @path = 'doc/openapi.yaml'
   @summary_builder = -> (example) { example.metadata[:summary] }
   @tags = []
+  @tags_builder = nil
   @title = 'app'
   @whitelisted_parameter_headers = []
 
@@ -26,6 +27,7 @@ module RSpec::OpenAPI
       :response_description_builder,
       :summary_builder,
       :tags,
+      :tags_builder,
       :title,
       :whitelisted_parameter_headers
   end
