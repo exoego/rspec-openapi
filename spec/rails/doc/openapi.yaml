@@ -5,12 +5,75 @@
 ---
 openapi: 3.0.3
 info:
-  title: rspec-openapi
+  title: app
   version: 1.0.0
 paths:
   "/tables":
+    post:
+      summary: create
+      description: returns a table
+      tags:
+      - Table
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                database_id:
+                  type: integer
+            example:
+              name: k0kubun
+              description: description
+              database_id: 2
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  database:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                  null_sample:
+                    nullable: true
+                  storage_size:
+                    type: number
+                    format: float
+                  created_at:
+                    type: string
+                  updated_at:
+                    type: string
+              example:
+                id: 1
+                name: access
+                description: logs
+                database:
+                  id: 2
+                  name: production
+                null_sample:
+                storage_size: 12.3
+                created_at: '2020-07-17T00:00:00+00:00'
+                updated_at: '2020-07-17T00:00:00+00:00'
     get:
       summary: index
+      description: returns a list of tables
       tags:
       - Table
       parameters:
@@ -26,7 +89,7 @@ paths:
         example: 10
       responses:
         '200':
-          description: returns a list of tables
+          description: ''
           content:
             application/json:
               schema:
@@ -63,12 +126,12 @@ paths:
                 database:
                   id: 2
                   name: production
-                null_sample: 
+                null_sample:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
         '401':
-          description: does not return tables if unauthorized
+          description: ''
           content:
             application/json:
               schema:
@@ -78,70 +141,10 @@ paths:
                     type: string
               example:
                 message: Unauthorized
-    post:
-      summary: create
-      tags:
-      - Table
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                description:
-                  type: string
-                database_id:
-                  type: integer
-            example:
-              name: k0kubun
-              description: description
-              database_id: 2
-      responses:
-        '201':
-          description: returns a table
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-                  description:
-                    type: string
-                  database:
-                    type: object
-                    properties:
-                      id:
-                        type: integer
-                      name:
-                        type: string
-                  null_sample:
-                    nullable: true
-                  storage_size:
-                    type: number
-                    format: float
-                  created_at:
-                    type: string
-                  updated_at:
-                    type: string
-              example:
-                id: 1
-                name: access
-                description: logs
-                database:
-                  id: 2
-                  name: production
-                null_sample: 
-                storage_size: 12.3
-                created_at: '2020-07-17T00:00:00+00:00'
-                updated_at: '2020-07-17T00:00:00+00:00'
   "/tables/{id}":
-    get:
-      summary: show
+    delete:
+      summary: destroy
+      description: returns a table
       tags:
       - Table
       parameters:
@@ -153,7 +156,7 @@ paths:
         example: 1
       responses:
         '200':
-          description: returns a table
+          description: ''
           content:
             application/json:
               schema:
@@ -188,23 +191,37 @@ paths:
                 database:
                   id: 2
                   name: production
-                null_sample: 
+                null_sample:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
-        '401':
-          description: does not return a table if unauthorized
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-              example:
-                message: Unauthorized
+        '202':
+          description: ''
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                no_content:
+                  type: string
+            example:
+              no_content: 'true'
+    get:
+      summary: show
+      description: does not return a table if not found
+      tags:
+      - Table
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 2
+      responses:
         '404':
-          description: does not return a table if not found
+          description: ''
           content:
             application/json:
               schema:
@@ -214,8 +231,60 @@ paths:
                     type: string
               example:
                 message: not found
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: Unauthorized
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  database:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                  null_sample:
+                    nullable: true
+                  storage_size:
+                    type: number
+                    format: float
+                  created_at:
+                    type: string
+                  updated_at:
+                    type: string
+              example:
+                id: 1
+                name: access
+                description: logs
+                database:
+                  id: 2
+                  name: production
+                null_sample:
+                storage_size: 12.3
+                created_at: '2020-07-17T00:00:00+00:00'
+                updated_at: '2020-07-17T00:00:00+00:00'
     patch:
       summary: update
+      description: returns a table
       tags:
       - Table
       parameters:
@@ -238,7 +307,7 @@ paths:
               image: test.png
       responses:
         '200':
-          description: returns a table
+          description: ''
           content:
             application/json:
               schema:
@@ -273,71 +342,7 @@ paths:
                 database:
                   id: 2
                   name: production
-                null_sample: 
+                null_sample:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
-    delete:
-      summary: destroy
-      tags:
-      - Table
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-        example: 1
-      responses:
-        '200':
-          description: returns a table
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-                  description:
-                    type: string
-                  database:
-                    type: object
-                    properties:
-                      id:
-                        type: integer
-                      name:
-                        type: string
-                  null_sample:
-                    nullable: true
-                  storage_size:
-                    type: number
-                    format: float
-                  created_at:
-                    type: string
-                  updated_at:
-                    type: string
-              example:
-                id: 1
-                name: access
-                description: logs
-                database:
-                  id: 2
-                  name: production
-                null_sample: 
-                storage_size: 12.3
-                created_at: '2020-07-17T00:00:00+00:00'
-                updated_at: '2020-07-17T00:00:00+00:00'
-        '202':
-          description: returns no content if specified
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                no_content:
-                  type: string
-            example:
-              no_content: 'true'

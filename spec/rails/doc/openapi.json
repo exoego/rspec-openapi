@@ -1,0 +1,521 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "app",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/tables": {
+      "post": {
+        "summary": "create",
+        "description": "returns a table",
+        "tags": [
+          "Table"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "database_id": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "example": {
+                "name": "k0kubun",
+                "description": "description",
+                "database_id": 2
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "database": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "null_sample": {
+                      "nullable": true
+                    },
+                    "storage_size": {
+                      "type": "number",
+                      "format": "float"
+                    },
+                    "created_at": {
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "id": 1,
+                  "name": "access",
+                  "description": "logs",
+                  "database": {
+                    "id": 2,
+                    "name": "production"
+                  },
+                  "null_sample": null,
+                  "storage_size": 12.3,
+                  "created_at": "2020-07-17T00:00:00+00:00",
+                  "updated_at": "2020-07-17T00:00:00+00:00"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "index",
+        "description": "returns a list of tables",
+        "tags": [
+          "Table"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "name": "per",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 10
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "database": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "null_sample": {
+                        "nullable": true
+                      },
+                      "storage_size": {
+                        "type": "number",
+                        "format": "float"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      },
+                      "updated_at": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "example": [
+                  {
+                    "id": 1,
+                    "name": "access",
+                    "description": "logs",
+                    "database": {
+                      "id": 2,
+                      "name": "production"
+                    },
+                    "null_sample": null,
+                    "storage_size": 12.3,
+                    "created_at": "2020-07-17T00:00:00+00:00",
+                    "updated_at": "2020-07-17T00:00:00+00:00"
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Unauthorized"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tables/{id}": {
+      "delete": {
+        "summary": "destroy",
+        "description": "returns a table",
+        "tags": [
+          "Table"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "database": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "null_sample": {
+                      "nullable": true
+                    },
+                    "storage_size": {
+                      "type": "number",
+                      "format": "float"
+                    },
+                    "created_at": {
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "id": 1,
+                  "name": "access",
+                  "description": "logs",
+                  "database": {
+                    "id": 2,
+                    "name": "production"
+                  },
+                  "null_sample": null,
+                  "storage_size": 12.3,
+                  "created_at": "2020-07-17T00:00:00+00:00",
+                  "updated_at": "2020-07-17T00:00:00+00:00"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": ""
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "no_content": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "no_content": "true"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "show",
+        "description": "does not return a table if not found",
+        "tags": [
+          "Table"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 2
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "not found"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Unauthorized"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "database": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "null_sample": {
+                      "nullable": true
+                    },
+                    "storage_size": {
+                      "type": "number",
+                      "format": "float"
+                    },
+                    "created_at": {
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "id": 1,
+                  "name": "access",
+                  "description": "logs",
+                  "database": {
+                    "id": 2,
+                    "name": "production"
+                  },
+                  "null_sample": null,
+                  "storage_size": 12.3,
+                  "created_at": "2020-07-17T00:00:00+00:00",
+                  "updated_at": "2020-07-17T00:00:00+00:00"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "update",
+        "description": "returns a table",
+        "tags": [
+          "Table"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "example": {
+                "image": "test.png"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "database": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "null_sample": {
+                      "nullable": true
+                    },
+                    "storage_size": {
+                      "type": "number",
+                      "format": "float"
+                    },
+                    "created_at": {
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "id": 1,
+                  "name": "access",
+                  "description": "logs",
+                  "database": {
+                    "id": 2,
+                    "name": "production"
+                  },
+                  "null_sample": null,
+                  "storage_size": 12.3,
+                  "created_at": "2020-07-17T00:00:00+00:00",
+                  "updated_at": "2020-07-17T00:00:00+00:00"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

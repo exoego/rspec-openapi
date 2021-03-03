@@ -1,12 +1,13 @@
 ---
 openapi: 3.0.3
 info:
-  title: rspec-openapi
+  title: app
   version: 1.0.0
 paths:
   "/roda":
     post:
       summary: POST /roda
+      description: returns 200
       requestBody:
         content:
           application/json:
@@ -19,7 +20,7 @@ paths:
               id: 1
       responses:
         '200':
-          description: when id is given it returns 200
+          description: ''
           content:
             application/json:
               schema:

@@ -61,7 +61,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       }.compact
     end
 
-    record.headers.each do |key, value|
+    Array(record.headers).each do |key, value|
       parameters << {
         name: key.to_s,
         in: 'header',
