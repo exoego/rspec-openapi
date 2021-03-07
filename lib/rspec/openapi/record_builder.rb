@@ -22,7 +22,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       route = find_rails_route(request)
       path = route.path.spec.to_s.delete_suffix('(.:format)')
       summary = "#{route.requirements[:action]}"
-      tags = extract_tags(route)
+      tags = extract_tags(route, example)
     else
       path = request.path
       summary = "#{request.method} #{request.path}"
@@ -55,9 +55,9 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
 
   private
 
-  def extract_tags(route)
+  def extract_tags(route, example)
     if RSpec::OpenAPI.tags_builder
-      RSpec::OpenAPI.tags_builder.call route.requirements[:controller].classify
+      RSpec::OpenAPI.tags_builder.call example
     else
       [route.requirements[:controller].classify]
     end
