@@ -6,9 +6,10 @@ module RSpec::OpenAPI
   @comment = nil
   @description = nil
   @response_description_builder = -> (example) { example.metadata[:result] }
-  @operation_description_builder = -> (example) { example.metadata[:description] }
   @enable_example = true
+  @operation_description_builder = -> (example) { example.metadata[:description] }
   @path = 'doc/openapi.yaml'
+  @servers = []
   @summary_builder = -> (example) { example.metadata[:summary] }
   @tags = []
   @tags_builder = nil
@@ -25,6 +26,7 @@ module RSpec::OpenAPI
       :operation_description_builder,
       :path,
       :response_description_builder,
+      :servers,
       :summary_builder,
       :tags,
       :tags_builder,
