@@ -56,11 +56,13 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
   private
 
   def extract_tags(route, example)
-    if RSpec::OpenAPI.tags_builder
-      RSpec::OpenAPI.tags_builder.call example
-    else
-      [route.requirements[:controller].classify]
+    tags = [route.requirements[:controller].classify]
+
+    if RSpec::OpenAPI.tags_builder && RSpec::OpenAPI.tags_builder.call(example)
+      tags = RSpec::OpenAPI.tags_builder.call example
     end
+
+    tags
   end
 
   def extract_headers(request)
