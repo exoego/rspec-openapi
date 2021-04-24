@@ -1,3 +1,8 @@
+## v0.3.15
+
+* Fix an error when Content-Disposition header is inline
+  [#24](https://github.com/k0kubun/rspec-openapi/pull/24)
+
 ## v0.3.14
 
 * Avoid an error when an application calls `request.body.read`
