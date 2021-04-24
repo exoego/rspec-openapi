@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'yaml'
 
 RSpec.describe 'rails request spec' do
   include SpecHelper
@@ -8,8 +9,9 @@ RSpec.describe 'rails request spec' do
   end
 
   it 'generates the same spec/rails/doc/openapi.yaml' do
-    FileUtils.rm_f(openapi_path)
+    org_yaml = YAML.load(File.read(openapi_path))
     rspec 'spec/requests/rails_spec.rb', openapi: true
-    assert_run 'git', 'diff', '--exit-code', '--', openapi_path
+    new_yaml = YAML.load(File.read(openapi_path))
+    expect(new_yaml).to eq org_yaml
   end
 end
