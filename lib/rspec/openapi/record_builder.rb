@@ -47,6 +47,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       status: response.status,
       response_body: response_body,
       response_content_type: response.content_type,
+      response_content_disposition: response.header["Content-Disposition"],
     ).freeze
   end
 

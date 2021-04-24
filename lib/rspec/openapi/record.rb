@@ -11,5 +11,6 @@ RSpec::OpenAPI::Record = Struct.new(
   :status,                # @param [Integer] - 200
   :response_body,         # @param [Object]  - {"status" => "ok"}
   :response_content_type, # @param [String]  - "application/json"
+  :response_content_disposition, # @param [String]  - "inline"
   keyword_init: true,
 )
