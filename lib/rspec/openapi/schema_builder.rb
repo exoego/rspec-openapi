@@ -7,10 +7,11 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     }
 
     if record.response_body
+      disposition = normalize_content_disposition(record.response_content_disposition)
       response[:content] = {
         normalize_content_type(record.response_content_type) => {
-          schema: build_property(record.response_body),
-          example: (record.response_body if example_enabled?),
+          schema: build_property(record.response_body, disposition: disposition),
+          example: response_example(record, disposition: disposition),
         }.compact,
       }
     end
@@ -33,6 +34,12 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   end
 
   private
+
+  def response_example(record, disposition:)
+    return nil if !example_enabled? || disposition
+
+    record.response_body
+  end
 
   def example_enabled?
     RSpec::OpenAPI.enable_example
@@ -78,8 +85,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     }
   end
 
-  def build_property(value)
-    property = build_type(value)
+  def build_property(value, disposition: nil)
+    property = build_type(value, disposition)
 
     case value
     when Array
@@ -94,7 +101,9 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     property
   end
 
-  def build_type(value)
+  def build_type(value, disposition)
+    return { type: 'string', format: 'binary' } if disposition
+
     case value
     when String
       { type: 'string' }
@@ -142,5 +151,9 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
   def normalize_content_type(content_type)
     content_type&.sub(/;.+\z/, '')
+  end
+
+  def normalize_content_disposition(content_disposition)
+    content_disposition&.sub(/;.+\z/, '')
   end
 end

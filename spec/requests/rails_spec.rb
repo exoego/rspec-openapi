@@ -81,3 +81,12 @@ RSpec.describe 'Tables', type: :request do
     end
   end
 end
+
+RSpec.describe 'Images', type: :request do
+  describe '#payload' do
+    it 'returns a image payload' do
+      get '/images/1'
+      expect(response.status).to eq(200)
+    end
+  end
+end
