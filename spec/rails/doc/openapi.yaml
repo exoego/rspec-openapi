@@ -341,3 +341,23 @@ paths:
                   type: string
             example:
               no_content: 'true'
+  "/images/{id}":
+    get:
+      summary: show
+      tags:
+      - Image
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
+      responses:
+        '200':
+          description: returns a image payload
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
