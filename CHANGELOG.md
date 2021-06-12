@@ -1,3 +1,10 @@
+## v0.3.16
+
+* Use `media_type` instead of `content_type` for Rails 6.1
+  [#26](https://github.com/k0kubun/rspec-openapi/pull/26)
+* Avoid crashing the after suite hook when it fails to build schema
+  [#27](https://github.com/k0kubun/rspec-openapi/pull/27)
+
 ## v0.3.15
 
 * Fix an error when Content-Disposition header is inline
