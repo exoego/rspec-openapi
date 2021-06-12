@@ -30,7 +30,7 @@ RSpec.configuration.after(:suite) do
   end
   if records_errors.any?
     error_message = <<~EOS
-      RSpec::OpenAPIGot errors building #{records_errors.size} requests
+      RSpec::OpenAPI got errors building #{records_errors.size} requests
       
       #{records_errors.map {|e, record| "#{e.inspect}: #{record.inspect}" }.join("\n")}
     EOS
