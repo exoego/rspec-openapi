@@ -40,13 +40,13 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       path_params: raw_path_params(request),
       query_params: request.query_parameters,
       request_params: raw_request_params(request),
-      request_content_type: request.content_type,
+      request_content_type: request.media_type,
       summary: summary,
       tags: tags,
       description: RSpec::OpenAPI.description_builder.call(example),
       status: response.status,
       response_body: response_body,
-      response_content_type: response.content_type,
+      response_content_type: response.media_type,
       response_content_disposition: response.header["Content-Disposition"],
     ).freeze
   end
