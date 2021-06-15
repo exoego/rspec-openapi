@@ -1,3 +1,8 @@
+## v0.3.17
+
+* Rescue NotImplementedError in the after suite hook as well
+  [#28](https://github.com/k0kubun/rspec-openapi/pull/28)
+
 ## v0.3.16
 
 * Use `media_type` instead of `content_type` for Rails 6.1
