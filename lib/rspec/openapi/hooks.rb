@@ -22,7 +22,7 @@ RSpec.configuration.after(:suite) do
     records.each do |record|
       begin
         RSpec::OpenAPI::SchemaMerger.reverse_merge!(spec, RSpec::OpenAPI::SchemaBuilder.build(record))
-      rescue => e # e.g. SchemaBuilder raises a NotImplementedError
+      rescue StandardError, NotImplementedError => e # e.g. SchemaBuilder raises a NotImplementedError
         # NOTE: Don't fail the build
         records_errors << [e, record]
       end
