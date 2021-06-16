@@ -50,7 +50,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
     record.path_params.each do |key, value|
       parameters << {
-        name: key.to_s,
+        name: build_parameter_name(key, value),
         in: 'path',
         required: true,
         schema: build_property(try_cast(value)),
@@ -60,7 +60,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
     record.query_params.each do |key, value|
       parameters << {
-        name: key.to_s,
+        name: build_parameter_name(key, value),
         in: 'query',
         schema: build_property(try_cast(value)),
         example: (try_cast(value) if example_enabled?),
@@ -69,6 +69,16 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
     return nil if parameters.empty?
     parameters
+  end
+
+  def build_parameter_name(key, value)
+    key = key.to_s
+    if value.is_a?(Hash) && (value_keys = value.keys).size == 1
+      value_key = value_keys.first
+      build_parameter_name("#{key}[#{value_key}]", value[value_key])
+    else
+      key
+    end
   end
 
   def build_request_body(record)
