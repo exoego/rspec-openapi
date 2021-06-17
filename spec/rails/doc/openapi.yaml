@@ -24,6 +24,24 @@ paths:
         schema:
           type: integer
         example: 10
+      - name: filter[name]
+        in: query
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+        example:
+          name: Example Table
+      - name: filter[price]
+        in: query
+        schema:
+          type: object
+          properties:
+            price:
+              type: string
+        example:
+          price: '0'
       responses:
         '200':
           description: returns a list of tables
@@ -63,7 +81,7 @@ paths:
                 database:
                   id: 2
                   name: production
-                null_sample: 
+                null_sample:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
@@ -135,7 +153,7 @@ paths:
                 database:
                   id: 2
                   name: production
-                null_sample: 
+                null_sample:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
@@ -151,6 +169,12 @@ paths:
         schema:
           type: integer
         example: 1
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 2
       responses:
         '200':
           description: returns a table
@@ -188,7 +212,7 @@ paths:
                 database:
                   id: 2
                   name: production
-                null_sample: 
+                null_sample:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
@@ -273,7 +297,7 @@ paths:
                 database:
                   id: 2
                   name: production
-                null_sample: 
+                null_sample:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
@@ -325,7 +349,7 @@ paths:
                 database:
                   id: 2
                   name: production
-                null_sample: 
+                null_sample:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'

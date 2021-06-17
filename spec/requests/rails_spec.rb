@@ -13,9 +13,21 @@ EOS
 
 RSpec.describe 'Tables', type: :request do
   describe '#index' do
-    it 'returns a list of tables' do
-      get '/tables', params: { page: '1', per: '10' }, headers: { authorization: 'k0kubun' }
-      expect(response.status).to eq(200)
+    context it 'returns a list of tables' do
+      it 'with flat query parameters' do
+        get '/tables', params: { page: '1', per: '10' }, headers: { authorization: 'k0kubun' }
+        expect(response.status).to eq(200)
+      end
+
+      it 'with deep query parameters' do
+        get '/tables', params: { filter: { "name" => "Example Table" } }, headers: { authorization: 'k0kubun' }
+        expect(response.status).to eq(200)
+      end
+
+      it 'with different deep query parameters' do
+        get '/tables', params: { filter: { "price" => 0 } }, headers: { authorization: 'k0kubun' }
+        expect(response.status).to eq(200)
+      end
     end
 
     it 'has a request spec which does not make any request' do
