@@ -1,3 +1,8 @@
+## v0.3.18
+
+* Support nested query parameters
+  [#29](https://github.com/k0kubun/rspec-openapi/pull/29)
+
 ## v0.3.17
 
 * Rescue NotImplementedError in the after suite hook as well
