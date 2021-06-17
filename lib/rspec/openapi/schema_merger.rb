@@ -26,18 +26,17 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   # Should we probably force-merge `summary` regardless of manual modifications?
   def deep_reverse_merge!(base, spec)
     spec.each do |key, value|
-      base_key_value = base[key]
-      if base_key_value.is_a?(Hash) && value.is_a?(Hash)
-        deep_reverse_merge!(base_key_value, value)
+      if base[key].is_a?(Hash) && value.is_a?(Hash)
+        deep_reverse_merge!(base[key], value)
       elsif !base.key?(key)
         base[key] = value
-      elsif base_key_value.is_a?(Array) && value.is_a?(Array)
+      elsif base[key].is_a?(Array) && value.is_a?(Array)
         if key == "parameters"
           # merge arrays
           base[key] |= value
         end
       else
-        nil # no-op
+        # no-op
       end
     end
     base
