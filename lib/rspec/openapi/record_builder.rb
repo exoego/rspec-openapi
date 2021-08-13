@@ -34,6 +34,12 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
         nil
       end
 
+    request_headers = RSpec::OpenAPI.headers.each_with_object([]) do |header, headers_arr|
+      header_key = header.gsub(/-/, '_').upcase
+      header_value = request.get_header(['HTTP', header_key].join('_')) || request.get_header(header_key)
+      headers_arr << [header, header_value] if header_value
+    end
+
     RSpec::OpenAPI::Record.new(
       method: request.request_method,
       path: path,
@@ -41,6 +47,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       query_params: request.query_parameters,
       request_params: raw_request_params(request),
       request_content_type: request.media_type,
+      request_headers: request_headers,
       summary: summary,
       tags: tags,
       description: RSpec::OpenAPI.description_builder.call(example),

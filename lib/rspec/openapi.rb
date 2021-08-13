@@ -7,8 +7,9 @@ module RSpec::OpenAPI
   @enable_example = true
   @description_builder = -> (example) { example.description }
   @application_version = '1.0.0'
+  @headers = []
 
   class << self
-    attr_accessor :path, :comment, :enable_example, :description_builder, :application_version
+    attr_accessor :path, :comment, :enable_example, :description_builder, :application_version, :headers
   end
 end
