@@ -5,6 +5,7 @@ RSpec::OpenAPI::Record = Struct.new(
   :query_params,          # @param [Hash]    - {:query=>"string"}
   :request_params,        # @param [Hash]    - {:request=>"body"}
   :request_content_type,  # @param [String]  - "application/json"
+  :request_headers,       # @param [Array]  - [["header_key1", "header_value1"], ["header_key2", "header_value2"]]
   :summary,               # @param [String]  - "v1/statuses #show"
   :tags,                  # @param [Array]   - ["Status"]
   :description,           # @param [String]  - "returns a status"
