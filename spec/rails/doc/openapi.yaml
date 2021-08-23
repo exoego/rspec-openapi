@@ -7,6 +7,7 @@ openapi: 3.0.3
 info:
   title: rspec-openapi
   version: 1.0.0
+servers: []
 paths:
   "/tables":
     get:
@@ -42,6 +43,12 @@ paths:
               type: string
         example:
           price: '0'
+      - name: X-Authorization-Token
+        in: header
+        required: true
+        schema:
+          type: string
+        example: token
       responses:
         '200':
           description: returns a list of tables

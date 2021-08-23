@@ -3,6 +3,7 @@ openapi: 3.0.3
 info:
   title: rspec-openapi
   version: 1.0.0
+servers: []
 paths:
   "/roda":
     post:
