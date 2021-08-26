@@ -1,3 +1,8 @@
+## v0.3.19
+
+* Add `server_urls` and `request_headers` configs
+  [#30](https://github.com/k0kubun/rspec-openapi/pull/30)
+
 ## v0.3.18
 
 * Support nested query parameters
