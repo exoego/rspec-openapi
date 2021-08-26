@@ -114,8 +114,8 @@ RSpec::OpenAPI.enable_example = false
 # Change `info.version`
 RSpec::OpenAPI.application_version = '1.0.0'
 
-# Set `headers` - generate parameters with headers for request
-RSpec::OpenAPI.headers = %w[X-Authorization-Token]
+# Set `headers` - generate parameters with headers for a request
+RSpec::OpenAPI.request_headers = %w[X-Authorization-Token]
 
 # Set `server_urls` - generate servers of a schema file
 RSpec::OpenAPI.server_urls = %w[
