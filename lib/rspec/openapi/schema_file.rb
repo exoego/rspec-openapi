@@ -27,13 +27,12 @@ class RSpec::OpenAPI::SchemaFile
   # @param [Hash] spec
   def write(spec)
     FileUtils.mkdir_p(File.dirname(@path))
-
-    output = if json?
-               JSON.pretty_generate(spec)
-             else
-               prepend_comment(YAML.dump(spec))
-             end
-
+    output =
+      if json?
+        JSON.pretty_generate(spec)
+      else
+        prepend_comment(YAML.dump(spec))
+      end
     File.write(@path, output)
   end
 
