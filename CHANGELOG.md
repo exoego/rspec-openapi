@@ -1,3 +1,8 @@
+## v0.4.0
+
+* Drop `RSpec::OpenAPI.output` introduced in v0.3.20
+* Guess whether it's JSON or not by the extension of `RSpec::OpenAPI.path`
+
 ## v0.3.20
 
 * Add `RSpec::OpenAPI.output` config to output JSON
