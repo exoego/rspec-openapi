@@ -1,3 +1,8 @@
+## v0.3.20
+
+* Add `RSpec::OpenAPI.output` config to output JSON
+  [#31](https://github.com/k0kubun/rspec-openapi/pull/31)
+
 ## v0.3.19
 
 * Add `server_urls` and `request_headers` configs
