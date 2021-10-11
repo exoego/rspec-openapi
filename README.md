@@ -108,8 +108,8 @@ The following configurations are optional.
 # Change the path to generate schema from `doc/openapi.yaml`
 RSpec::OpenAPI.path = 'doc/schema.yaml'
 
-# Change the output type yaml or json
-RSpec::OpenAPI.output = :json
+# Change the output type to JSON
+RSpec::OpenAPI.path = 'doc/schema.json'
 
 # Disable generating `example`
 RSpec::OpenAPI.enable_example = false

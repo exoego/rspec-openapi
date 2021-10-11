@@ -47,6 +47,6 @@ class RSpec::OpenAPI::SchemaFile
   end
 
   def json?
-    RSpec::OpenAPI.output.to_s == 'json'
+    File.extname(@path) == '.json'
   end
 end
