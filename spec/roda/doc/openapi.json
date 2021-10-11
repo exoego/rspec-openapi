@@ -1,0 +1,58 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "rspec-openapi",
+    "version": "1.0.0"
+  },
+  "servers": [
+
+  ],
+  "paths": {
+    "/roda": {
+      "post": {
+        "summary": "POST /roda",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "example": {
+                "id": 1
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "when id is given it returns 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "id": 1,
+                  "name": "hello"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

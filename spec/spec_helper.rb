@@ -10,8 +10,8 @@ module SpecHelper
     expect(status.success?).to eq(true), "stdout:\n#{out}\nstderr:\n#{err}"
   end
 
-  def rspec(*args, openapi: false)
-    env = { 'OPENAPI' => ('1' if openapi) }.compact
+  def rspec(*args, openapi: false, output: :yaml)
+    env = { 'OPENAPI' => ('1' if openapi), 'OPENAPI_OUTPUT' => output.to_s }.compact
     Bundler.public_send(Bundler.respond_to?(:with_unbundled_env) ? :with_unbundled_env : :with_clean_env) do
       Dir.chdir(repo_root) do
         assert_run env, 'bundle', 'exec', 'rspec', *args

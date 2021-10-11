@@ -1,5 +1,6 @@
 require 'fileutils'
 require 'yaml'
+require 'json'
 
 # TODO: Support JSON
 class RSpec::OpenAPI::SchemaFile
@@ -20,13 +21,25 @@ class RSpec::OpenAPI::SchemaFile
   # @return [Hash]
   def read
     return {} unless File.exist?(@path)
-    YAML.load(File.read(@path))
+
+    content = File.read(@path)
+
+    return JSON.load(content) if json?
+
+    YAML.load(content)
   end
 
   # @param [Hash] spec
   def write(spec)
     FileUtils.mkdir_p(File.dirname(@path))
-    File.write(@path, prepend_comment(YAML.dump(spec)))
+
+    output = if json?
+               JSON.pretty_generate(spec)
+             else
+               prepend_comment(YAML.dump(spec))
+             end
+
+    File.write(@path, output)
   end
 
   def prepend_comment(content)
@@ -37,5 +50,9 @@ class RSpec::OpenAPI::SchemaFile
       comment << "\n"
     end
     "#{comment.gsub(/^/, '# ').gsub(/^# \n/, "#\n")}#{content}"
+  end
+
+  def json?
+    RSpec::OpenAPI.output.to_s == 'json'
   end
 end
