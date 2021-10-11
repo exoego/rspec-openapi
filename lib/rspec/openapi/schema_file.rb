@@ -21,12 +21,7 @@ class RSpec::OpenAPI::SchemaFile
   # @return [Hash]
   def read
     return {} unless File.exist?(@path)
-
-    content = File.read(@path)
-
-    return JSON.load(content) if json?
-
-    YAML.load(content)
+    YAML.load(File.read(@path)) # this can also parse JSON
   end
 
   # @param [Hash] spec
