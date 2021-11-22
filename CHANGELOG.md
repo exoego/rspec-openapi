@@ -1,3 +1,8 @@
+## v0.4.1
+
+* Add `RSpec::OpenAPI.example_types` to hook types other than `type: :request`.
+  [#32](https://github.com/k0kubun/rspec-openapi/pull/32)
+
 ## v0.4.0
 
 * Drop `RSpec::OpenAPI.output` introduced in v0.3.20
