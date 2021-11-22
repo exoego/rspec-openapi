@@ -9,7 +9,7 @@ records = []
 records_errors = []
 
 RSpec.configuration.after(:each) do |example|
-  if example.metadata[:type] == :request && example.metadata[:openapi] != false
+  if RSpec::OpenAPI.example_types.include?(example.metadata[:type]) && example.metadata[:openapi] != false
     record = RSpec::OpenAPI::RecordBuilder.build(self, example: example)
     records << record if record
   end
@@ -31,7 +31,7 @@ RSpec.configuration.after(:suite) do
   if records_errors.any?
     error_message = <<~EOS
       RSpec::OpenAPI got errors building #{records_errors.size} requests
-      
+
       #{records_errors.map {|e, record| "#{e.inspect}: #{record.inspect}" }.join("\n")}
     EOS
     colorizer = ::RSpec::Core::Formatters::ConsoleCodes
