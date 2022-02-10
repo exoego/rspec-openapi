@@ -163,23 +163,6 @@ RSpec.describe '/resources', type: :request do
 end
 ```
 
-## Project status
-
-Beta
-
-Basic features are there, and some people are already using this.
-
-### Other missing features with notes
-
-* Delete obsoleted endpoints
-  * Give up, or at least make the feature optional?
-  * Running all to detect obsoleted endpoints is sometimes not realistic anyway.
-* Intelligent merges
-  * To maintain both automated changes and manual edits, the schema merge needs to be intelligent.
-  * We'll just deep-reverse-merge schema for now, but if there's a $ref for example, modifications
-    there should be rerouted to the referenced object.
-  * A type could be an array of all possible types when merged.
-
 ## Links
 
 Existing RSpec plugins which have OpenAPI integration:
