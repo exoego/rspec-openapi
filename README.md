@@ -24,7 +24,7 @@ gem 'rspec-openapi', group: :test
 Run rspec with OPENAPI=1 to generate `doc/openapi.yaml` for your request specs.
 
 ```bash
-$ OPENAPI=1 rspec
+$ OPENAPI=1 bundle exec rspec
 ```
 
 ### Example
