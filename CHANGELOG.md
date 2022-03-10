@@ -1,3 +1,8 @@
+## v0.4.2
+
+* Allow using Proc as `RSpec::OpenAPI.path`
+  [#35](https://github.com/k0kubun/rspec-openapi/pull/35)
+
 ## v0.4.1
 
 * Add `RSpec::OpenAPI.example_types` to hook types other than `type: :request`.
