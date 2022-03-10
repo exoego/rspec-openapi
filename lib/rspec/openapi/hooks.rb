@@ -5,37 +5,36 @@ require 'rspec/openapi/schema_builder'
 require 'rspec/openapi/schema_file'
 require 'rspec/openapi/schema_merger'
 
-records = {}
-records_errors = []
+path_records = Hash.new { |h, k| h[k] = [] }
+error_records = {}
 
 RSpec.configuration.after(:each) do |example|
   if RSpec::OpenAPI.example_types.include?(example.metadata[:type]) && example.metadata[:openapi] != false
     path = RSpec::OpenAPI.path.yield_self { |path| path.is_a?(Proc) ? path.call(example) : path }
     record = RSpec::OpenAPI::RecordBuilder.build(self, example: example)
-    (records[path] ||= []) << record if record
+    path_records[path] << record if record
   end
 end
 
 RSpec.configuration.after(:suite) do
   title = File.basename(Dir.pwd)
-  records.each do |path, records_in_path|
+  path_records.each do |path, records|
     RSpec::OpenAPI::SchemaFile.new(path).edit do |spec|
       RSpec::OpenAPI::SchemaMerger.reverse_merge!(spec, RSpec::OpenAPI::DefaultSchema.build(title))
-      records_in_path.each do |record|
+      records.each do |record|
         begin
           RSpec::OpenAPI::SchemaMerger.reverse_merge!(spec, RSpec::OpenAPI::SchemaBuilder.build(record))
         rescue StandardError, NotImplementedError => e # e.g. SchemaBuilder raises a NotImplementedError
-          # NOTE: Don't fail the build
-          records_errors << [e, record]
+          error_records[e] = record # Avoid failing the build
         end
       end
     end
   end
-  if records_errors.any?
+  if error_records.any?
     error_message = <<~EOS
-      RSpec::OpenAPI got errors building #{records_errors.size} requests
+      RSpec::OpenAPI got errors building #{error_records.size} requests
 
-      #{records_errors.map {|e, record| "#{e.inspect}: #{record.inspect}" }.join("\n")}
+      #{error_records.map {|e, record| "#{e.inspect}: #{record.inspect}" }.join("\n")}
     EOS
     colorizer = ::RSpec::Core::Formatters::ConsoleCodes
     RSpec.configuration.reporter.message colorizer.wrap(error_message, :failure)
