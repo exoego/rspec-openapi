@@ -5,26 +5,29 @@ require 'rspec/openapi/schema_builder'
 require 'rspec/openapi/schema_file'
 require 'rspec/openapi/schema_merger'
 
-records = []
+records = {}
 records_errors = []
 
 RSpec.configuration.after(:each) do |example|
   if RSpec::OpenAPI.example_types.include?(example.metadata[:type]) && example.metadata[:openapi] != false
+    path = RSpec::OpenAPI.path.yield_self { |path| path.is_a?(Proc) ? path.call(example) : path }
     record = RSpec::OpenAPI::RecordBuilder.build(self, example: example)
-    records << record if record
+    (records[path] ||= []) << record if record
   end
 end
 
 RSpec.configuration.after(:suite) do
   title = File.basename(Dir.pwd)
-  RSpec::OpenAPI::SchemaFile.new(RSpec::OpenAPI.path).edit do |spec|
-    RSpec::OpenAPI::SchemaMerger.reverse_merge!(spec, RSpec::OpenAPI::DefaultSchema.build(title))
-    records.each do |record|
-      begin
-        RSpec::OpenAPI::SchemaMerger.reverse_merge!(spec, RSpec::OpenAPI::SchemaBuilder.build(record))
-      rescue StandardError, NotImplementedError => e # e.g. SchemaBuilder raises a NotImplementedError
-        # NOTE: Don't fail the build
-        records_errors << [e, record]
+  records.each do |path, records_in_path|
+    RSpec::OpenAPI::SchemaFile.new(path).edit do |spec|
+      RSpec::OpenAPI::SchemaMerger.reverse_merge!(spec, RSpec::OpenAPI::DefaultSchema.build(title))
+      records_in_path.each do |record|
+        begin
+          RSpec::OpenAPI::SchemaMerger.reverse_merge!(spec, RSpec::OpenAPI::SchemaBuilder.build(record))
+        rescue StandardError, NotImplementedError => e # e.g. SchemaBuilder raises a NotImplementedError
+          # NOTE: Don't fail the build
+          records_errors << [e, record]
+        end
       end
     end
   end

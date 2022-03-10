@@ -111,6 +111,15 @@ RSpec::OpenAPI.path = 'doc/schema.yaml'
 # Change the output type to JSON
 RSpec::OpenAPI.path = 'doc/schema.json'
 
+# Or generate multiple partial schema files, given an RSpec example
+RSpec::OpenAPI.path = -> (example) {
+  case example.file_path
+  when %r[spec/requests/api/v1/] then 'doc/openapi/v1.yaml'
+  when %r[spec/requests/api/v2/] then 'doc/openapi/v2.yaml'
+  else 'doc/openapi.yaml'
+  end
+}
+
 # Disable generating `example`
 RSpec::OpenAPI.enable_example = false
 
