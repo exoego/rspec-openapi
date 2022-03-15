@@ -172,6 +172,22 @@ RSpec.describe '/resources', type: :request do
 end
 ```
 
+## Customizations
+
+Some examples' attributes can be overwritten via RSpec metadata options. Example:
+
+```rb
+  describe 'GET /api/v1/posts', openapi: {
+    summary: 'list all posts',
+    description: 'list all posts ordered by pub_date',
+    tags: %w[v1 posts],
+  } do
+    # ...
+  end
+```
+
+**NOTE**: `description` key will override also the one provided by `RSpec::OpenAPI.description_builder` method.
+
 ## Links
 
 Existing RSpec plugins which have OpenAPI integration:
