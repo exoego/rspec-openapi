@@ -20,7 +20,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
     if rails?
       route = find_rails_route(request)
       path = route.path.spec.to_s.delete_suffix('(.:format)')
-      summary = "#{route.requirements[:action]}"
+      summary = route.requirements[:action] || "#{request.method} #{path}"
       tags = [route.requirements[:controller]&.classify].compact
     else
       path = request.path
