@@ -1,3 +1,8 @@
+## v0.4.3
+
+* Allow customizing `schema`, `description`, and `tags` through `:openapi` metadata
+  [#36](https://github.com/k0kubun/rspec-openapi/pull/36)
+
 ## v0.4.2
 
 * Allow using Proc as `RSpec::OpenAPI.path`
