@@ -40,6 +40,8 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       headers_arr << [header, header_value] if header_value
     end
 
+    metadata_options = example.metadata[:openapi] || {}
+
     RSpec::OpenAPI::Record.new(
       method: request.request_method,
       path: path,
@@ -48,9 +50,9 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       request_params: raw_request_params(request),
       request_content_type: request.media_type,
       request_headers: request_headers,
-      summary: summary,
-      tags: tags,
-      description: RSpec::OpenAPI.description_builder.call(example),
+      summary: metadata_options[:summary] || summary,
+      tags: metadata_options[:tags] || tags,
+      description: metadata_options[:description] || RSpec::OpenAPI.description_builder.call(example),
       status: response.status,
       response_body: response_body,
       response_content_type: response.media_type,
