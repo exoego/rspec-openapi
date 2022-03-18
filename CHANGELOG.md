@@ -1,3 +1,8 @@
+## v0.4.4
+
+- De-duplicate parameters by a combination of `name` and `in`
+  [#39](https://github.com/k0kubun/rspec-openapi/pull/39)
+
 ## v0.4.3
 
 * Allow customizing `schema`, `description`, and `tags` through `:openapi` metadata
