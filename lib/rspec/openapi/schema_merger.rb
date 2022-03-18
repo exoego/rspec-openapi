@@ -33,7 +33,8 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
       elsif base[key].is_a?(Array) && value.is_a?(Array)
         if key == "parameters"
           # merge arrays
-          base[key] |= value
+          keys = base[key].map { |val| val.slice('name', 'in') }
+          value.each { |val| base[key].push(val) if keys.exclude?(val.slice('name', 'in')) }
         end
       else
         # no-op
