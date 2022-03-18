@@ -262,15 +262,6 @@
               "type": "integer"
             },
             "example": 1
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            },
-            "example": 2
           }
         ],
         "responses": {
