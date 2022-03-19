@@ -1,3 +1,8 @@
+## v0.4.5
+
+- Fix linter issues for `tags` and `summary`
+  [#40](https://github.com/k0kubun/rspec-openapi/pull/40)
+
 ## v0.4.4
 
 - De-duplicate parameters by a combination of `name` and `in`
