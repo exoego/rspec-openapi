@@ -106,3 +106,12 @@ RSpec.describe 'Images', type: :request do
     end
   end
 end
+
+RSpec.describe 'Extra routes', type: :request do
+  describe '#test_block' do
+    it 'returns the block content' do
+      get '/test_block'
+      expect(response.status).to eq(200)
+    end
+  end
+end

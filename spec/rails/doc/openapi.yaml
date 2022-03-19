@@ -386,3 +386,15 @@ paths:
               schema:
                 type: string
                 format: binary
+  "/test_block":
+    get:
+      summary: GET /test_block
+      tags: []
+      responses:
+        '200':
+          description: returns the block content
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: A TEST
