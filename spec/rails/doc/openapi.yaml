@@ -7,7 +7,8 @@ openapi: 3.0.3
 info:
   title: rspec-openapi
   version: 1.0.0
-servers: []
+servers:
+- url: http://localhost:3000
 paths:
   "/tables":
     get:
