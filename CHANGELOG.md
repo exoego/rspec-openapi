@@ -1,11 +1,16 @@
+## v0.4.6
+
+* Fix "No route matched for" error in engine routes
+  [#38](https://github.com/k0kubun/rspec-openapi/pull/38)
+
 ## v0.4.5
 
-- Fix linter issues for `tags` and `summary`
+* Fix linter issues for `tags` and `summary`
   [#40](https://github.com/k0kubun/rspec-openapi/pull/40)
 
 ## v0.4.4
 
-- De-duplicate parameters by a combination of `name` and `in`
+* De-duplicate parameters by a combination of `name` and `in`
   [#39](https://github.com/k0kubun/rspec-openapi/pull/39)
 
 ## v0.4.3
