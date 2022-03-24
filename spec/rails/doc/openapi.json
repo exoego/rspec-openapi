@@ -606,6 +606,27 @@
           }
         }
       }
+    },
+    "/eng_route": {
+      "get": {
+        "summary": "GET /eng_route",
+        "tags": [
+
+        ],
+        "responses": {
+          "200": {
+            "description": "returns some content from the engine",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "AN ENGINE TEST"
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
