@@ -126,6 +126,15 @@ RSpec::OpenAPI.enable_example = false
 # Change `info.version`
 RSpec::OpenAPI.application_version = '1.0.0'
 
+# Set the info header details
+RSpec::OpenAPI.info = {
+  description: 'My beautiful API',
+  license: {
+    'name': 'Apache 2.0',
+    'url': 'https://www.apache.org/licenses/LICENSE-2.0.html'
+  }
+}
+
 # Set `headers` - generate parameters with headers for a request
 RSpec::OpenAPI.request_headers = %w[X-Authorization-Token]
 

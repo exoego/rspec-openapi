@@ -14,6 +14,13 @@ RSpec::OpenAPI.comment = <<~COMMENT
   update this file automatically. You can also manually edit this file.
 COMMENT
 RSpec::OpenAPI.server_urls = ['http://localhost:3000']
+RSpec::OpenAPI.info = {
+  description: 'My beautiful API',
+  license: {
+    'name': 'Apache 2.0',
+    'url': 'https://www.apache.org/licenses/LICENSE-2.0.html'
+  }
+}
 
 RSpec.describe 'Tables', type: :request do
   describe '#index' do
