@@ -1,3 +1,8 @@
+## v0.4.7
+
+* Add `info` config hash
+  [#43](https://github.com/k0kubun/rspec-openapi/pull/43)
+
 ## v0.4.6
 
 * Fix "No route matched for" error in engine routes
