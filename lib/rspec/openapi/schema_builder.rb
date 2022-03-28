@@ -158,9 +158,15 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   def build_example(value)
     return nil if value.nil?
     value = value.dup
+    adjust_params(value)
+  end
+
+  def adjust_params(value)
     value.each do |key, v|
       if v.is_a?(ActionDispatch::Http::UploadedFile)
         value[key] = v.original_filename
+      elsif v.is_a?(Hash)
+        adjust_params(v)
       end
     end
   end

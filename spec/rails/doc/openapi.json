@@ -390,14 +390,25 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "image": {
-                    "type": "string",
-                    "format": "binary"
+                  "nested": {
+                    "type": "object",
+                    "properties": {
+                      "image": {
+                        "type": "string",
+                        "format": "binary"
+                      },
+                      "caption": {
+                        "type": "string"
+                      }
+                    }
                   }
                 }
               },
               "example": {
-                "image": "test.png"
+                "nested": {
+                  "image": "#<ActionDispatch::Http::UploadedFile:0x00007fa723dec4a8>",
+                  "caption": "Some caption"
+                }
               }
             }
           }

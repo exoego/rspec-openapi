@@ -261,11 +261,18 @@ paths:
             schema:
               type: object
               properties:
-                image:
-                  type: string
-                  format: binary
+                nested:
+                  type: object
+                  properties:
+                    image:
+                      type: string
+                      format: binary
+                    caption:
+                      type: string
             example:
-              image: test.png
+              nested:
+                image: test.png
+                caption: Some caption
       responses:
         '200':
           description: returns a table
