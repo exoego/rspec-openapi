@@ -1,3 +1,8 @@
+## v0.4.8
+
+* Fix a bug in nested parameters handling
+  [#46](https://github.com/k0kubun/rspec-openapi/pull/46)
+
 ## v0.4.7
 
 * Add `info` config hash
