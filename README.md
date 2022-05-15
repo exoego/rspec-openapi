@@ -105,6 +105,8 @@ and the schema file can be used as an input of [Swagger UI](https://github.com/s
 The following configurations are optional.
 
 ```rb
+require 'rspec/openapi'
+
 # Change the path to generate schema from `doc/openapi.yaml`
 RSpec::OpenAPI.path = 'doc/schema.yaml'
 
