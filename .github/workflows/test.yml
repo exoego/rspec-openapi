@@ -20,6 +20,17 @@ jobs:
           - ruby:2.6
           - ruby:2.7
           - ruby:3.0
+        rails:
+          - 6.0.5
+          - 6.1.6
+          - 7.0.3
+        exclude:
+          - ruby: ruby:2.5
+            rails: 7.0.3
+          - ruby: ruby:2.6
+            rails: 7.0.3
+    env:
+      RAILS_VERSION: ${{ matrix.rails }}
     steps:
       - uses: actions/checkout@v2
       - name: bundle install
