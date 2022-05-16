@@ -6,6 +6,17 @@
         "tags": [
           "Table"
         ],
+        "parameters": [
+          {
+            "name": "foo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 9999
+          }
+        ],
         "responses": {
           "200": {
             "description": "foo",
@@ -31,8 +42,7 @@
               }
             }
           }
-        },
-        "parameters": []
+        }
       }
     }
   }

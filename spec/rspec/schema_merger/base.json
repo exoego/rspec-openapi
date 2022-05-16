@@ -12,6 +12,17 @@
         "tags": [
           "Table"
         ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
         "responses": {
           "200": {
             "description": "foo",
