@@ -106,6 +106,46 @@
         },
         "parameters": [
           {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "name": "per",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 10
+          },
+          {
+            "name": "X-Authorization-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "token"
+          },
+          {
+            "name": "filter[name]",
+            "in": "query",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              }
+            },
+            "example": {
+              "name": "Example Table"
+            }
+          },
+          {
             "name": "filter[price]",
             "in": "query",
             "schema": {
@@ -228,7 +268,7 @@
             "schema": {
               "type": "integer"
             },
-            "example": 2
+            "example": 1
           }
         ],
         "responses": {

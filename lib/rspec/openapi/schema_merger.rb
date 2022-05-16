@@ -32,6 +32,14 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
         if !base[key].key?("$ref")
           deep_reverse_merge!(base[key], value)
         end
+      elsif base[key].is_a?(Array) && value.is_a?(Array)
+        # parameters need to be merged as if `name` and `in` were the Hash keys.
+        if key == 'parameters'
+          base[key] |= value
+          base[key].uniq! { |param| param.slice('name', 'in') }
+        else
+          base[key] = value
+        end
       else
         base[key] = value
       end
