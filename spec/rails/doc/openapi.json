@@ -41,7 +41,7 @@
             }
           },
           "200": {
-            "description": "with flat query parameters",
+            "description": "with different deep query parameters",
             "content": {
               "application/json": {
                 "schema": {
@@ -105,46 +105,6 @@
           }
         },
         "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "schema": {
-              "type": "integer"
-            },
-            "example": 1
-          },
-          {
-            "name": "per",
-            "in": "query",
-            "schema": {
-              "type": "integer"
-            },
-            "example": 10
-          },
-          {
-            "name": "X-Authorization-Token",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "token"
-          },
-          {
-            "name": "filter[name]",
-            "in": "query",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string"
-                }
-              }
-            },
-            "example": {
-              "name": "Example Table"
-            }
-          },
           {
             "name": "filter[price]",
             "in": "query",
@@ -268,7 +228,7 @@
             "schema": {
               "type": "integer"
             },
-            "example": 1
+            "example": 2
           }
         ],
         "responses": {
@@ -406,7 +366,7 @@
               },
               "example": {
                 "nested": {
-                  "image": "#<ActionDispatch::Http::UploadedFile:0x00007fa723dec4a8>",
+                  "image": "test.png",
                   "caption": "Some caption"
                 }
               }

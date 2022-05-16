@@ -25,22 +25,15 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   # Also this needs to be aware of OpenAPI details unlike an ordinary deep_reverse_merge
   # because a Hash-like structure may be an array whose Hash elements have a key name.
   #
-  # TODO: Perform more intelligent merges like rerouting edits / merging types
   # TODO: Should we probably force-merge `summary` regardless of manual modifications?
   def deep_reverse_merge!(base, spec)
     spec.each do |key, value|
       if base[key].is_a?(Hash) && value.is_a?(Hash)
-        deep_reverse_merge!(base[key], value)
-      elsif !base.key?(key)
-        base[key] = value
-      elsif base[key].is_a?(Array) && value.is_a?(Array)
-        # parameters need to be merged as if `name` and `in` were the Hash keys.
-        if key == 'parameters'
-          base[key] |= value
-          base[key].uniq! { |param| param.slice('name', 'in') }
+        if !base[key].key?("$ref")
+          deep_reverse_merge!(base[key], value)
         end
       else
-        # no-op
+        base[key] = value
       end
     end
     base

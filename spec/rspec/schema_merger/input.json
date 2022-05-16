@@ -1,0 +1,39 @@
+{
+  "paths": {
+    "/tables": {
+      "get": {
+        "summary": "index",
+        "tags": [
+          "Table"
+        ],
+        "responses": {
+          "200": {
+            "description": "foo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": [
+                  {
+                    "id": 9999,
+                    "name": "UPDATED"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "parameters": []
+      }
+    }
+  }
+}

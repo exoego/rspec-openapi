@@ -1,0 +1,53 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "My API",
+    "version": "1.0.0"
+  },
+  "servers": [],
+  "paths": {
+    "/tables": {
+      "get": {
+        "summary": "index",
+        "tags": [
+          "Table"
+        ],
+        "responses": {
+          "200": {
+            "description": "foo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Table"
+                },
+                "example": [
+                  {
+                    "id": 9999,
+                    "name": "UPDATED"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "parameters": []
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Table": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
