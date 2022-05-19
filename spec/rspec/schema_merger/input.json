@@ -1,0 +1,49 @@
+{
+  "paths": {
+    "/tables": {
+      "get": {
+        "summary": "index",
+        "tags": [
+          "Table"
+        ],
+        "parameters": [
+          {
+            "name": "foo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 9999
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "foo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": [
+                  {
+                    "id": 9999,
+                    "name": "UPDATED"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

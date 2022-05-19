@@ -41,7 +41,7 @@
             }
           },
           "200": {
-            "description": "with flat query parameters",
+            "description": "with different deep query parameters",
             "content": {
               "application/json": {
                 "schema": {
@@ -406,7 +406,7 @@
               },
               "example": {
                 "nested": {
-                  "image": "#<ActionDispatch::Http::UploadedFile:0x00007fa723dec4a8>",
+                  "image": "test.png",
                   "caption": "Some caption"
                 }
               }
