@@ -22,10 +22,10 @@ RSpec.configuration.after(:suite) do
     RSpec::OpenAPI::SchemaFile.new(path).edit do |spec|
       schema = RSpec::OpenAPI::DefaultSchema.build(title)
       schema[:info].merge!(RSpec::OpenAPI.info)
-      RSpec::OpenAPI::SchemaMerger.reverse_merge!(spec, schema)
+      RSpec::OpenAPI::SchemaMerger.merge!(spec, schema)
       records.each do |record|
         begin
-          RSpec::OpenAPI::SchemaMerger.reverse_merge!(spec, RSpec::OpenAPI::SchemaBuilder.build(record))
+          RSpec::OpenAPI::SchemaMerger.merge!(spec, RSpec::OpenAPI::SchemaBuilder.build(record))
         rescue StandardError, NotImplementedError => e # e.g. SchemaBuilder raises a NotImplementedError
           error_records[e] = record # Avoid failing the build
         end

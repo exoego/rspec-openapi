@@ -1,9 +1,9 @@
 class << RSpec::OpenAPI::SchemaMerger = Object.new
   # @param [Hash] base
   # @param [Hash] spec
-  def reverse_merge!(base, spec)
+  def merge!(base, spec)
     spec = normalize_keys(spec)
-    deep_reverse_merge!(base, spec)
+    merge_schema!(base, spec)
   end
 
   private
@@ -22,15 +22,15 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   end
 
   # Not doing `base.replace(deep_merge(base, spec))` to preserve key orders.
-  # Also this needs to be aware of OpenAPI details unlike an ordinary deep_reverse_merge
-  # because a Hash-like structure may be an array whose Hash elements have a key name.
+  # Also this needs to be aware of OpenAPI details because a Hash-like structure 
+  # may be an array whose Hash elements have a key name.
   #
   # TODO: Should we probably force-merge `summary` regardless of manual modifications?
-  def deep_reverse_merge!(base, spec)
+  def merge_schema!(base, spec)
     spec.each do |key, value|
       if base[key].is_a?(Hash) && value.is_a?(Hash)
         if !base[key].key?("$ref")
-          deep_reverse_merge!(base[key], value)
+          merge_schema!(base[key], value)
         end
       elsif base[key].is_a?(Array) && value.is_a?(Array)
         # parameters need to be merged as if `name` and `in` were the Hash keys.

@@ -20,7 +20,7 @@ RSpec.describe "SchemaMerger" do
   it "overwrite the supported key, but leaves the unsupported keys" do
     base_json = JSON.load(File.read(base_path))
     input_json = JSON.load(File.read(input_path))
-    res = RSpec::OpenAPI::SchemaMerger.reverse_merge!(base_json, input_json)
+    res = RSpec::OpenAPI::SchemaMerger.merge!(base_json, input_json)
     expected_json = JSON.load(File.read(expected_path))
     expect(res).to eq(expected_json)
   end
