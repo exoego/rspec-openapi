@@ -1,3 +1,8 @@
+## v0.5.0
+
+* Overwrite fields in an existing schema file instead of leaving all existing fields as is
+  [#55](https://github.com/k0kubun/rspec-openapi/pull/55)
+
 ## v0.4.8
 
 * Fix a bug in nested parameters handling
