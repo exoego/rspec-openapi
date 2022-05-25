@@ -4,6 +4,7 @@ require 'rspec/openapi/record_builder'
 require 'rspec/openapi/schema_builder'
 require 'rspec/openapi/schema_file'
 require 'rspec/openapi/schema_merger'
+require 'rspec/openapi/schema_cleaner'
 
 path_records = Hash.new { |h, k| h[k] = [] }
 error_records = {}
@@ -23,13 +24,17 @@ RSpec.configuration.after(:suite) do
       schema = RSpec::OpenAPI::DefaultSchema.build(title)
       schema[:info].merge!(RSpec::OpenAPI.info)
       RSpec::OpenAPI::SchemaMerger.merge!(spec, schema)
+      new_from_zero = {}
       records.each do |record|
         begin
-          RSpec::OpenAPI::SchemaMerger.merge!(spec, RSpec::OpenAPI::SchemaBuilder.build(record))
+          record_schema = RSpec::OpenAPI::SchemaBuilder.build(record)
+          RSpec::OpenAPI::SchemaMerger.merge!(spec, record_schema)
+          RSpec::OpenAPI::SchemaMerger.merge!(new_from_zero, record_schema)
         rescue StandardError, NotImplementedError => e # e.g. SchemaBuilder raises a NotImplementedError
           error_records[e] = record # Avoid failing the build
         end
       end
+      RSpec::OpenAPI::SchemaCleaner.cleanup!(spec, new_from_zero)
     end
   end
   if error_records.any?
