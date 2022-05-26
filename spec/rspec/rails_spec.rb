@@ -33,23 +33,23 @@ RSpec.describe 'rails request spec' do
   end
 
   describe "smart merge" do
-    let(:openapi_path_for_smart_merge) do
-      File.expand_path('spec/rails/doc/smart/openapi.json', repo_root)
+    let(:openapi_path) do
+      File.expand_path('spec/rails/doc/smart/openapi.yaml', repo_root)
     end
 
-    let(:expected_path_for_smart_merge) do
-      File.expand_path('spec/rails/doc/smart/expected.json', repo_root)
+    let(:expected_path) do
+      File.expand_path('spec/rails/doc/smart/expected.yaml', repo_root)
     end
 
-    it 'updates the spec/rails/doc/smart/openapi.json as same as in expected.json' do
-      original_source = File.read(openapi_path_for_smart_merge)
+    it 'updates the spec/rails/doc/smart/openapi.yaml as same as in expected.yaml' do
+      original_source = File.read(openapi_path)
       begin
-        rspec 'spec/requests/rails_smart_merge_spec.rb', openapi: true, output: :json
-        new_json = YAML.load(File.read(openapi_path_for_smart_merge))
-        expected_json = YAML.load(File.read(expected_path_for_smart_merge))
-        expect(new_json).to eq expected_json
+        rspec 'spec/requests/rails_smart_merge_spec.rb', openapi: true, output: :yaml
+        new_yaml = YAML.load(File.read(openapi_path))
+        expected_yaml = YAML.load(File.read(expected_path))
+        expect(new_yaml).to eq expected_yaml
       ensure
-        File.write(openapi_path_for_smart_merge, original_source)
+        File.write(openapi_path, original_source)
       end
     end
   end
