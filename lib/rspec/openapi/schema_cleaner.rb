@@ -1,3 +1,6 @@
+# For Ruby 3.0+
+require 'set'
+
 class << RSpec::OpenAPI::SchemaCleaner = Object.new
   # Cleanup specific elements that exists in the base but not in the spec
   #
