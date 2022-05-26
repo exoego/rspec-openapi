@@ -1,0 +1,312 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "rspec-openapi",
+    "version": "1.0.0",
+    "description": "My beautiful API",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "paths": {
+    "/tables": {
+      "get": {
+        "summary": "index",
+        "tags": [
+          "Table"
+        ],
+        "responses": {
+          "401": {
+            "description": "does not return tables if unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "no_such_field": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Unauthorized"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "with flat query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Table"
+                  }
+                },
+                "example": [
+                  {
+                    "id": 1,
+                    "name": "access",
+                    "description": "logs",
+                    "database": {
+                      "id": 2,
+                      "name": "production"
+                    },
+                    "null_sample": null,
+                    "storage_size": 12.3,
+                    "created_at": "2020-07-17T00:00:00+00:00",
+                    "updated_at": "2020-07-17T00:00:00+00:00"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "name": "per",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 10
+          },
+          {
+            "name": "X-Authorization-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "token"
+          },
+          {
+            "name": "filter[name]",
+            "in": "query",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              }
+            },
+            "example": {
+              "name": "Example Table"
+            }
+          },
+          {
+            "name": "filter[price]",
+            "in": "query",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "price": {
+                  "type": "string"
+                }
+              }
+            },
+            "example": {
+              "price": "0"
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "create",
+        "tags": [
+          "Table"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "database_id": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "example": {
+                "name": "k0kubun",
+                "description": "description",
+                "database_id": 2
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "returns a table",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Table"
+                },
+                "example": {
+                  "id": 1,
+                  "name": "access",
+                  "description": "logs",
+                  "database": {
+                    "id": 2,
+                    "name": "production"
+                  },
+                  "null_sample": null,
+                  "storage_size": 12.3,
+                  "created_at": "2020-07-17T00:00:00+00:00",
+                  "updated_at": "2020-07-17T00:00:00+00:00"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tables/{id}": {
+      "get": {
+        "summary": "show",
+        "tags": [
+          "Table"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns a table with changes !!!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "database": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "null_sample": {
+                      "nullable": true
+                    },
+                    "storage_size": {
+                      "type": "number",
+                      "format": "float"
+                    },
+                    "created_at": {
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "id": 1,
+                  "name": "access",
+                  "description": "logs",
+                  "database": {
+                    "id": 2,
+                    "name": "production"
+                  },
+                  "null_sample": null,
+                  "storage_size": 12.3,
+                  "created_at": "2020-07-17T00:00:00+00:00",
+                  "updated_at": "2020-07-17T00:00:00+00:00"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Table": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "database": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          },
+          "null_sample": {
+            "nullable": true
+          },
+          "storage_size": {
+            "type": "number",
+            "format": "float"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
