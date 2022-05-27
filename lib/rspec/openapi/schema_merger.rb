@@ -39,7 +39,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
           # 9999 is a dummy for old spec.
           dummy = '9999-99-99 99:99:99 UTC'
           base[key]
-            .sort_by! { |param| param['__marker'] || dummy }
+            .sort_by! { |param| [param['in'], param['name'], param['__marker'] || dummy].join('-') }
             .uniq! { |param| param.slice('name', 'in') }
             .each { |param| param.delete('__marker') }
         else

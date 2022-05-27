@@ -20,15 +20,12 @@ paths:
       tags:
       - Table
       parameters:
-      - name: filter[price]
-        in: query
+      - name: X-Authorization-Token
+        in: header
+        required: true
         schema:
-          type: object
-          properties:
-            price:
-              type: string
-        example:
-          price: '0'
+          type: string
+        example: token
       - name: filter[name]
         in: query
         schema:
@@ -38,6 +35,15 @@ paths:
               type: string
         example:
           name: Example Table
+      - name: filter[price]
+        in: query
+        schema:
+          type: object
+          properties:
+            price:
+              type: string
+        example:
+          price: '0'
       - name: page
         in: query
         schema:
@@ -48,12 +54,6 @@ paths:
         schema:
           type: integer
         example: 10
-      - name: X-Authorization-Token
-        in: header
-        required: true
-        schema:
-          type: string
-        example: token
       responses:
         '200':
           description: with different deep query parameters
