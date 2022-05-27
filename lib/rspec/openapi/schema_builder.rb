@@ -48,6 +48,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   def build_parameters(record)
     parameters = []
 
+    marker_to_keep_last_duplicate = Time.now.utc.to_s
+
     record.path_params.each do |key, value|
       parameters << {
         name: build_parameter_name(key, value),
@@ -55,6 +57,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         required: true,
         schema: build_property(try_cast(value)),
         example: (try_cast(value) if example_enabled?),
+        __marker: marker_to_keep_last_duplicate,
       }.compact
     end
 
@@ -64,6 +67,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         in: 'query',
         schema: build_property(try_cast(value)),
         example: (try_cast(value) if example_enabled?),
+        __marker: marker_to_keep_last_duplicate,
       }.compact
     end
 
@@ -74,6 +78,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         required: true,
         schema: build_property(try_cast(value)),
         example: (try_cast(value) if example_enabled?),
+        __marker: marker_to_keep_last_duplicate,
       }.compact
     end
 

@@ -36,7 +36,12 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
         # parameters need to be merged as if `name` and `in` were the Hash keys.
         if key == 'parameters'
           base[key] |= value
-          base[key].uniq! { |param| param.slice('name', 'in') }
+          # 9999 is a dummy for old spec.
+          dummy = '9999-99-99 99:99:99 UTC'
+          base[key]
+            .sort_by! { |param| param['__marker'] || dummy }
+            .uniq! { |param| param.slice('name', 'in') }
+            .each { |param| param.delete('__marker') }
         else
           base[key] = value
         end
