@@ -1,3 +1,8 @@
+## v0.5.1
+
+* Clarify the version requirement for actionpack
+  [#62](https://github.com/k0kubun/rspec-openapi/pull/62)
+
 ## v0.5.0
 
 * Overwrite fields in an existing schema file instead of leaving all existing fields as is
