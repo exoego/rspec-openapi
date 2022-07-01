@@ -140,10 +140,8 @@ RSpec::OpenAPI.info = {
 # Set `headers` - generate parameters with headers for a request
 RSpec::OpenAPI.request_headers = %w[X-Authorization-Token]
 
-# Set `server_urls` - generate servers of a schema file
-RSpec::OpenAPI.server_urls = %w[
-  http://localhost:3000
-]
+# Set `servers` - generate servers of a schema file
+RSpec::OpenAPI.servers = [{ url: 'http://localhost:3000' }]
 
 # Generate a comment on top of a schema file
 RSpec::OpenAPI.comment = <<~EOS

@@ -9,10 +9,10 @@ module RSpec::OpenAPI
   @info = {}
   @application_version = '1.0.0'
   @request_headers = []
-  @server_urls = []
+  @servers = []
   @example_types = %i[request]
 
   class << self
-    attr_accessor :path, :comment, :enable_example, :description_builder, :info, :application_version, :request_headers, :server_urls, :example_types
+    attr_accessor :path, :comment, :enable_example, :description_builder, :info, :application_version, :request_headers, :servers, :example_types
   end
 end

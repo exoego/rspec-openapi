@@ -13,7 +13,7 @@ RSpec::OpenAPI.comment = <<~COMMENT
   When you write a spec in spec/requests, running the spec with `OPENAPI=1 rspec` will
   update this file automatically. You can also manually edit this file.
 COMMENT
-RSpec::OpenAPI.server_urls = ['http://localhost:3000']
+RSpec::OpenAPI.servers = [{ url: 'http://localhost:3000' }]
 RSpec::OpenAPI.info = {
   description: 'My beautiful API',
   license: {
