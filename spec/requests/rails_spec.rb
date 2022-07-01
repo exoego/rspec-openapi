@@ -42,6 +42,11 @@ RSpec.describe 'Tables', type: :request do
       end
     end
 
+    it 'can return an empty array' do
+      get '/tables', params: { filter: { "name" => "Never Match" } }, headers: { authorization: 'k0kubun' }
+      expect(response.status).to eq(200)
+    end
+
     it 'has a request spec which does not make any request' do
       expect(request).to eq(nil)
     end
