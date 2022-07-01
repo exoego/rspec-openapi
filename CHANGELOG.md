@@ -1,3 +1,8 @@
+## v0.6.0
+
+* Replace `RSpec::OpenAPI.server_urls` with `RSpec::OpenAPI.servers`
+  [#60](https://github.com/k0kubun/rspec-openapi/pull/60)
+
 ## v0.5.1
 
 * Clarify the version requirement for actionpack
