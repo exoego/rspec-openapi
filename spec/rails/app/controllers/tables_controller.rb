@@ -5,7 +5,7 @@ class TablesController < ApplicationController
 
   def index
     response.set_header('X-Cursor', 100)
-    render json: [find_table]
+    render json: find_tables
   end
 
   def show
@@ -34,6 +34,12 @@ class TablesController < ApplicationController
     if request.headers[:authorization] != APIKEY
       render json: { message: 'Unauthorized' }, status: 401
     end
+  end
+
+  def find_tables
+    return [] if params.dig(:filter, :name) == 'Never Match'
+
+    [find_table]
   end
 
   def find_table(id = nil)
