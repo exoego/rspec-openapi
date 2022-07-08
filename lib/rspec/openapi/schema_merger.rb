@@ -36,9 +36,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
         # parameters need to be merged as if `name` and `in` were the Hash keys.
         if key == 'parameters'
           base[key] = value | base[key]
-          base[key]
-            .sort_by! { |param| [param['in'], param['name']].join('-') }
-            .uniq! { |param| param.slice('name', 'in') }
+          base[key].uniq! { |param| param.slice('name', 'in') }
         else
           base[key] = value
         end

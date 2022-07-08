@@ -106,13 +106,19 @@
         },
         "parameters": [
           {
-            "name": "X-Authorization-Token",
-            "in": "header",
-            "required": true,
+            "name": "filter[price]",
+            "in": "query",
             "schema": {
-              "type": "string"
+              "type": "object",
+              "properties": {
+                "price": {
+                  "type": "string"
+                }
+              }
             },
-            "example": "token"
+            "example": {
+              "price": "0"
+            }
           },
           {
             "name": "filter[name]",
@@ -130,21 +136,6 @@
             }
           },
           {
-            "name": "filter[price]",
-            "in": "query",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "price": {
-                  "type": "string"
-                }
-              }
-            },
-            "example": {
-              "price": "0"
-            }
-          },
-          {
             "name": "page",
             "in": "query",
             "schema": {
@@ -159,6 +150,15 @@
               "type": "integer"
             },
             "example": 10
+          },
+          {
+            "name": "X-Authorization-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "token"
           }
         ]
       },

@@ -20,6 +20,16 @@ paths:
       tags:
       - Table
       parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+        example: 42
+      - name: per
+        in: query
+        schema:
+          type: integer
+        example: 10
       - name: X-Authorization-Token
         in: header
         required: true
@@ -44,16 +54,6 @@ paths:
               type: string
         example:
           price: '0'
-      - name: page
-        in: query
-        schema:
-          type: integer
-        example: 42
-      - name: per
-        in: query
-        schema:
-          type: integer
-        example: 10
       responses:
         '200':
           description: with flat query parameters
