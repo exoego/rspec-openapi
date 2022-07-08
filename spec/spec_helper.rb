@@ -1,4 +1,5 @@
 require 'open3'
+require 'super_diff/rspec'
 
 module SpecHelper
   def repo_root
