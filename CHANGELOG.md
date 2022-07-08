@@ -1,3 +1,8 @@
+## v0.6.1
+
+* Stabilize the order parameter objects and preserve newer examples
+  [#59](https://github.com/k0kubun/rspec-openapi/pull/59)
+
 ## v0.6.0
 
 * Replace `RSpec::OpenAPI.server_urls` with `RSpec::OpenAPI.servers`
