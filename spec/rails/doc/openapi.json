@@ -106,6 +106,36 @@
         },
         "parameters": [
           {
+            "name": "filter[price]",
+            "in": "query",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "price": {
+                  "type": "string"
+                }
+              }
+            },
+            "example": {
+              "price": "0"
+            }
+          },
+          {
+            "name": "filter[name]",
+            "in": "query",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              }
+            },
+            "example": {
+              "name": "Example Table"
+            }
+          },
+          {
             "name": "page",
             "in": "query",
             "schema": {
@@ -129,36 +159,6 @@
               "type": "string"
             },
             "example": "token"
-          },
-          {
-            "name": "filter[name]",
-            "in": "query",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string"
-                }
-              }
-            },
-            "example": {
-              "name": "Example Table"
-            }
-          },
-          {
-            "name": "filter[price]",
-            "in": "query",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "price": {
-                  "type": "string"
-                }
-              }
-            },
-            "example": {
-              "price": "0"
-            }
           }
         ]
       },
@@ -268,7 +268,7 @@
             "schema": {
               "type": "integer"
             },
-            "example": 1
+            "example": 2
           }
         ],
         "responses": {

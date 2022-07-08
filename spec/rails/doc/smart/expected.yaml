@@ -24,12 +24,18 @@ paths:
         in: query
         schema:
           type: integer
-        example: 1
+        example: 42
       - name: per
         in: query
         schema:
           type: integer
         example: 10
+      - name: X-Authorization-Token
+        in: header
+        required: true
+        schema:
+          type: string
+        example: token
       - name: filter[name]
         in: query
         schema:
@@ -48,12 +54,6 @@ paths:
               type: string
         example:
           price: '0'
-      - name: X-Authorization-Token
-        in: header
-        required: true
-        schema:
-          type: string
-        example: token
       responses:
         '200':
           description: with flat query parameters

@@ -20,6 +20,24 @@ paths:
       tags:
       - Table
       parameters:
+      - name: filter[price]
+        in: query
+        schema:
+          type: object
+          properties:
+            price:
+              type: string
+        example:
+          price: '0'
+      - name: filter[name]
+        in: query
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+        example:
+          name: Example Table
       - name: page
         in: query
         schema:
@@ -30,24 +48,6 @@ paths:
         schema:
           type: integer
         example: 10
-      - name: filter[name]
-        in: query
-        schema:
-          type: object
-          properties:
-            name:
-              type: string
-        example:
-          name: Example Table
-      - name: filter[price]
-        in: query
-        schema:
-          type: object
-          properties:
-            price:
-              type: string
-        example:
-          price: '0'
       - name: X-Authorization-Token
         in: header
         required: true
@@ -180,7 +180,7 @@ paths:
         required: true
         schema:
           type: integer
-        example: 1
+        example: 2
       responses:
         '200':
           description: returns a table
