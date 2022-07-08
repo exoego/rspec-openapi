@@ -27,6 +27,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   #
   # TODO: Should we probably force-merge `summary` regardless of manual modifications?
   def merge_schema!(base, spec)
+    marker_to_keep_last_duplicate = Time.now.utc.round.to_s
     spec.each do |key, value|
       if base[key].is_a?(Hash) && value.is_a?(Hash)
         if !base[key].key?("$ref")
@@ -35,6 +36,10 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
       elsif base[key].is_a?(Array) && value.is_a?(Array)
         # parameters need to be merged as if `name` and `in` were the Hash keys.
         if key == 'parameters'
+          value.each do |param|
+            param['__marker'] = marker_to_keep_last_duplicate
+          end
+
           base[key] |= value
           # 9999 is a dummy for old spec.
           dummy = '9999-99-99 99:99:99 UTC'

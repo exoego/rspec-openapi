@@ -37,6 +37,10 @@ RSpec.describe 'rails request spec' do
       File.expand_path('spec/rails/doc/smart/openapi.yaml', repo_root)
     end
 
+    let(:fallback_path) do
+      File.expand_path('spec/rails/doc/smart/openapi.fail.yaml', repo_root)
+    end
+
     let(:expected_path) do
       File.expand_path('spec/rails/doc/smart/expected.yaml', repo_root)
     end
@@ -47,6 +51,7 @@ RSpec.describe 'rails request spec' do
         rspec 'spec/requests/rails_smart_merge_spec.rb', openapi: true, output: :yaml
         new_yaml = YAML.load(File.read(openapi_path))
         expected_yaml = YAML.load(File.read(expected_path))
+        File.write(fallback_path, YAML.dump(new_yaml))
         expect(new_yaml).to eq expected_yaml
       ensure
         File.write(openapi_path, original_source)
