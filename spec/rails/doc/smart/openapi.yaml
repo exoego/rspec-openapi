@@ -14,6 +14,19 @@ info:
 servers:
 - url: http://localhost:3000
 paths:
+  "/no-such-path":
+    get:
+      summary: no such api
+      parameters: []
+      responses:
+        '200':
+          description: dummy
+          content:
+            application/json:
+              schema:
+                type: number
+              example:
+                - 1
   "/tables":
     get:
       summary: index
