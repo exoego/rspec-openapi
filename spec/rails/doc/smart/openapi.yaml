@@ -117,10 +117,13 @@ paths:
                   type: string
                 database_id:
                   type: integer
+                no_such_field_request:
+                  type: boolean
             example:
               name: k0kubun
               description: description
               database_id: 2
+              no_such_field_request: true
       responses:
         '201':
           description: returns a table
@@ -177,6 +180,8 @@ paths:
                   storage_size:
                     type: number
                     format: float
+                  no_such_field_response:
+                    type: boolean
                   created_at:
                     type: string
                   updated_at:
@@ -185,6 +190,7 @@ paths:
                 id: 1
                 name: access
                 description: logs
+                no_such_field_response: true
                 database:
                   id: 2
                   name: production

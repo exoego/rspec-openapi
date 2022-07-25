@@ -22,7 +22,7 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
 
     # cleanup responses
     cleanup_hash!(base, spec, 'paths.*.*.responses.*.content.application/json.schema.properties.*')
-    cleanup_array!(base, spec, 'paths.*.*.responses.*.content.application/json.example')
+    cleanup_hash!(base, spec, 'paths.*.*.responses.*.content.application/json.example.*')
     base
   end
 
