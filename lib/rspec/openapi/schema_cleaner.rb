@@ -26,6 +26,8 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
     base
   end
 
+  private
+
   def paths_to_all_fields(obj)
     case obj
     when Hash
@@ -88,8 +90,6 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
     end
     base
   end
-
-  private
 
   def slice(obj, fields_for_identity)
     if fields_for_identity.any?
