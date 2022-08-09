@@ -205,17 +205,15 @@ components:
       properties:
         id:
           type: integer
-        name:
+        # This filed should exists in expected
+        # name:
+        #  type: string
+        this_field_should_not_exist_in_expected:
           type: string
         description:
           type: string
         database:
-          type: object
-          properties:
-            id:
-              type: integer
-            name:
-              type: string
+          "$ref": "#/components/schemas/Database"
         null_sample:
           nullable: true
         storage_size:
@@ -224,4 +222,12 @@ components:
         created_at:
           type: string
         updated_at:
+          type: string
+    # Not updated automatically
+    Database:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
           type: string

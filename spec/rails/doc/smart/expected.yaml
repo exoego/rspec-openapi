@@ -136,12 +136,7 @@ components:
         description:
           type: string
         database:
-          type: object
-          properties:
-            id:
-              type: integer
-            name:
-              type: string
+          "$ref": "#/components/schemas/Database"
         null_sample:
           nullable: true
         storage_size:
@@ -150,4 +145,12 @@ components:
         created_at:
           type: string
         updated_at:
+          type: string
+    # Not updated automatically
+    Database:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
           type: string

@@ -1,6 +1,8 @@
 # For Ruby 3.0+
 require 'set'
 
+require_relative 'hash_helper'
+
 class << RSpec::OpenAPI::SchemaCleaner = Object.new
   # Cleanup specific elements that exists in the base but not in the spec
   #
@@ -28,34 +30,12 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
 
   private
 
-  def paths_to_all_fields(obj)
-    case obj
-    when Hash
-      obj.each.flat_map do |k,v|
-        k = k.to_s
-        [[k]] + paths_to_all_fields(v).map { |x| [k, *x] }
-      end
-    else
-      []
-    end
-  end
-
-  def matched_paths(obj, selector)
-    selector_parts = selector.split('.').map(&:to_s)
-    selectors = paths_to_all_fields(obj).select do |key_parts|
-      key_parts.size == selector_parts.size && key_parts.zip(selector_parts).all? do |kp, sp|
-        kp == sp || (sp == '*' && kp != nil)
-      end
-    end
-    selectors
-  end
-
   def cleanup_array!(base, spec, selector, fields_for_identity = [])
     marshal = lambda do |obj|
       Marshal.dump(slice(obj, fields_for_identity))
     end
 
-    matched_paths(base, selector).each do |paths|
+    RSpec::OpenAPI::HashHelper::matched_paths(base, selector).each do |paths|
       target_array = base.dig(*paths)
       spec_array = spec.dig(*paths)
       unless target_array.is_a?(Array) && spec_array.is_a?(Array)
@@ -72,7 +52,7 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
   end
 
   def cleanup_hash!(base, spec, selector)
-    matched_paths(base, selector).each do |paths|
+    RSpec::OpenAPI::HashHelper::matched_paths(base, selector).each do |paths|
       exist_in_base = !base.dig(*paths).nil?
       not_in_spec = spec.dig(*paths).nil?
       if exist_in_base && not_in_spec
