@@ -63,10 +63,8 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
       end
       spec_identities = Set.new(spec_array.map(&marshal))
       target_array.select! { |e| spec_identities.include?(marshal.call(e)) }
-      target_array
-        .sort_by! { |param| [param['__marker'], *fields_for_identity.map {|f| param[f] }].join('-') }
-        .each { |param| param.delete('__marker') }
-      # Keep the last duplicate with largest __marker, to produce the result stably
+      target_array.sort_by! { |param| fields_for_identity.map {|f| param[f] }.join('-') }
+      # Keep the last duplicate to produce the result stably
       deduplicated = (target_array.reverse.uniq do |param|
         slice(param, fields_for_identity)
       end).reverse
