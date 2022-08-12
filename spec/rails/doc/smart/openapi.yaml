@@ -225,13 +225,15 @@ components:
           type: string
     Database:
       type: object
+      description: 'this should be preserved'
       properties:
         id:
           type: integer
+          description: 'this should be preserved'
         # This filed should exists in expected
         # name:
         #  type: string
         this_field_should_not_exist_in_expected:
           type: string
-        this_reference_should_exist_in_expected_even_if_no_such_field_in_actual:
+        this_reference_should_not_exist_in_expected:
           "$ref": "#/components/schemas/Fire"

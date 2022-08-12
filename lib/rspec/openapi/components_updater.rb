@@ -40,27 +40,11 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
       end
     end
 
-    # Clear out all properties before merge.
-    # The properties using $ref are preserved since those are hand-crafted by user.
-    fresh_schemas.keys.each do |schema_name|
-      clear_properties_except_refs(base_schemas[schema_name])
-    end
     RSpec::OpenAPI::SchemaMerger.merge!(base_schemas, fresh_schemas)
+    RSpec::OpenAPI::SchemaCleaner.cleanup_components_schemas!(base, { 'components' => { 'schemas' => fresh_schemas } })
   end
 
   private
-
-  def clear_properties_except_refs(obj)
-    obj.each do |field_name, field_values|
-      if field_name == 'properties'
-        obj[field_name] = field_values.select do |key, value|
-          value['$ref'] || value['type'] == 'object'
-        end
-      elsif field_values.is_a?(Hash)
-        clear_properties_except_refs(field_values)
-      end
-    end
-  end
 
   def build_fresh_schemas(references, base, fresh)
     references.inject({}) do |acc, paths|

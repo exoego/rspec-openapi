@@ -4,6 +4,14 @@ require 'set'
 require_relative 'hash_helper'
 
 class << RSpec::OpenAPI::SchemaCleaner = Object.new
+  # Cleanup the properties, of component schemas, that exists in the base but not in the spec.
+  #
+  # @param [Hash] base
+  # @param [Hash] spec
+  def cleanup_components_schemas!(base, spec)
+    cleanup_hash!(base, spec, 'components.schemas.*.properties.*')
+  end
+
   # Cleanup specific elements that exists in the base but not in the spec
   #
   # @param [Hash] base
