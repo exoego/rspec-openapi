@@ -205,7 +205,7 @@ components:
       properties:
         id:
           type: integer
-        # This filed should exists in expected
+        # This field should exists in expected
         # name:
         #  type: string
         this_field_should_not_exist_in_expected:
@@ -223,11 +223,15 @@ components:
           type: string
         updated_at:
           type: string
-    # Not updated automatically
     Database:
       type: object
       properties:
         id:
           type: integer
-        name:
+        # This filed should exists in expected
+        # name:
+        #  type: string
+        this_field_should_not_exist_in_expected:
           type: string
+        this_reference_should_exist_in_expected_even_if_no_such_field_in_actual:
+          "$ref": "#/components/schemas/Fire"

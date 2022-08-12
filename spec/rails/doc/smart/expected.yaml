@@ -146,7 +146,6 @@ components:
           type: string
         updated_at:
           type: string
-    # Not updated automatically
     Database:
       type: object
       properties:
@@ -154,3 +153,5 @@ components:
           type: integer
         name:
           type: string
+        this_reference_should_exist_in_expected_even_if_no_such_field_in_actual:
+          "$ref": "#/components/schemas/Fire"
