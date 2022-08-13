@@ -161,6 +161,115 @@ RSpec::OpenAPI.description_builder = -> (example) { example.description }
 RSpec::OpenAPI.example_types = %i[request]
 ```
 
+### Can I use rspec-openapi with `$ref` to minimize duplication of schema?
+
+Yes, rspec-openapi v0.7.0+ supports [`$ref` mechanism](https://swagger.io/docs/specification/using-ref/) and generates
+schemas under `#/components/schemas` with some manual steps.
+
+1. First, generate plain OpenAPI file.
+2. Then, manually replace the duplications with `$ref` and define the placeholder of schema under
+`#/components/schemas/` section. Example:
+
+```yaml
+paths:
+  "/users":
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+  "/users/{id}":
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+components:
+  schemas:
+    User:
+      type: object
+```
+
+3. Then, re-run rspec-openapi. It tries to find the the referenced schema (`User` for example) and update `properties`.
+
+```yaml
+paths:
+  "/users":
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+  "/users/{id}":
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        role:
+          type: array
+          items:
+            type: string
+```
+
+rspec-openapi also supports `$ref` in `properties` of schemas. Example)
+
+```yaml
+paths:
+  "/locations":
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Location"
+components:
+  schemas:
+    Location:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        Coordinate:
+          "$ref": "#/components/schemas/Coordinate"
+    Coordinate:
+      type: object
+      properties:
+        lat:
+          type: string
+        lon:
+          type: string
+```
+
+Note that automatic `schemas` update feature is still new and may not work in complex scenario.
+If you find a room for improvement, open an issue.
+
 ### How can I add information which can't be generated from RSpec?
 
 rspec-openapi tries to keep manual modifications as much as possible when generating specs.
