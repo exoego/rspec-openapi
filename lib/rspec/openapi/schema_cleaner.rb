@@ -9,6 +9,7 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
   # @param [Hash] base
   # @param [Hash] spec
   def cleanup_components_schemas!(base, spec)
+    cleanup_hash!(base, spec, 'components.schemas.*')
     cleanup_hash!(base, spec, 'components.schemas.*.properties.*')
   end
 

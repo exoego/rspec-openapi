@@ -237,3 +237,9 @@ components:
           type: string
         this_reference_should_not_exist_in_expected:
           "$ref": "#/components/schemas/Fire"
+    NoSuchSchema:
+      type: object
+      description: 'should be deleted since not in use'
+      properties:
+        id:
+          type: integer
