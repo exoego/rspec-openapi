@@ -26,19 +26,17 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
 
       nested_refs.each do |paths|
         parent_name = paths[-4]
-
-        # Skip if parent schema is not generated yet. It may be generated on next iteration.
-        next if fresh_schemas.dig(parent_name).nil?
-
         property_name = paths[-2]
-        sub_schema = fresh_schemas.dig(parent_name, 'properties', property_name)
+        nested_schema = fresh_schemas.dig(parent_name, 'properties', property_name)
 
-        # Skip if the property using $ref is not found in the parent schema. The property may be removed.
-        next if sub_schema.nil?
+        # A nested schema can not be generated
+        # - if parent schema is not generated yet. It may be generated on next iteration.
+        # - if the property using $ref is not found in the parent schema. The property may be removed.
+        next if nested_schema.nil?
 
         schema_name = base.dig(*paths)&.gsub('#/components/schemas/', '')
         fresh_schemas[schema_name] ||= {}
-        RSpec::OpenAPI::SchemaMerger.merge!(fresh_schemas[schema_name], sub_schema)
+        RSpec::OpenAPI::SchemaMerger.merge!(fresh_schemas[schema_name], nested_schema)
       end
     end
 
