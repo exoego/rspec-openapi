@@ -192,8 +192,7 @@ paths:
                 $ref: "#/components/schemas/User"
 components:
   schemas:
-    User:
-      type: object
+    # No need to define User manually
 ```
 
 3. Then, re-run rspec-openapi. It tries to find the the referenced schema (`User` for example) and update `properties`.
