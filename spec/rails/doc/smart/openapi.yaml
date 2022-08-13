@@ -235,11 +235,11 @@ components:
         #  type: string
         this_field_should_not_exist_in_expected:
           type: string
-        this_reference_should_not_exist_in_expected:
-          "$ref": "#/components/schemas/Fire"
-    NoSuchSchema:
+        this_field_should_not_exist_in_expected_2:
+          "$ref": "#/components/schemas/NoSuchSchemaFound"
+    SchemaNotInUse:
       type: object
-      description: 'should be deleted since not in use'
+      description: 'should be deleted'
       properties:
         id:
           type: integer
