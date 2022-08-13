@@ -13,8 +13,10 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
     # Nested schema: References in Top-level schemas. May contain some top-level schema.
     nested_refs = RSpec::OpenAPI::HashHelper::matched_paths(base, 'components.schemas.*.properties.*.$ref')
 
+    # Loop over all the referenced schemas until all schemas are regenerated or loop counter exhausts.
+    # Repeating loop is needed because a schema may refer another schema which is not generated yet.
+    # Loop counter exhaust if some schemas can not generated due to removal. No need to raise error on the case.
     # We assume that super-deeply nested references are not common.
-    # Loop counter may exhaust if some of referenced are not generated due to removal. No need to raise error.
     5.times.each do
       generated_schema_names = fresh_schemas.keys
       nested_refs = filter_non_generated_refs(nested_refs, base, generated_schema_names)
