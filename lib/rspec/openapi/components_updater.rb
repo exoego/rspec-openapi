@@ -11,33 +11,19 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
     fresh_schemas = build_fresh_schemas(top_level_refs, base, fresh)
 
     # Nested schema: References in Top-level schemas. May contain some top-level schema.
-    nested_refs = RSpec::OpenAPI::HashHelper::matched_paths(base, 'components.schemas.*.properties.*.$ref')
+    generated_schema_names = fresh_schemas.keys
+    nested_refs = find_non_top_level_nested_refs(base, generated_schema_names)
+    nested_refs.each do |paths|
+      parent_name = paths[-4]
+      property_name = paths[-2]
+      nested_schema = fresh_schemas.dig(parent_name, 'properties', property_name)
 
-    # Loop over all the referenced schemas until all schemas are regenerated or loop counter exhausts.
-    # Repeating loop is needed because a schema may refer another schema which is not generated yet.
-    # Loop counter exhaust if some schemas can not generated due to removal. No need to raise error on the case.
-    # We assume that super-deeply nested references are not common.
-    5.times.each do
-      generated_schema_names = fresh_schemas.keys
-      nested_refs = filter_non_generated_refs(nested_refs, base, generated_schema_names)
+      # Skip if the property using $ref is not found in the parent schema. The property may be removed.
+      next if nested_schema.nil?
 
-      # Complete if all the referenced schemas are generated.
-      break if nested_refs.empty?
-
-      nested_refs.each do |paths|
-        parent_name = paths[-4]
-        property_name = paths[-2]
-        nested_schema = fresh_schemas.dig(parent_name, 'properties', property_name)
-
-        # A nested schema can not be generated
-        # - if parent schema is not generated yet. It may be generated on next iteration.
-        # - if the property using $ref is not found in the parent schema. The property may be removed.
-        next if nested_schema.nil?
-
-        schema_name = base.dig(*paths)&.gsub('#/components/schemas/', '')
-        fresh_schemas[schema_name] ||= {}
-        RSpec::OpenAPI::SchemaMerger.merge!(fresh_schemas[schema_name], nested_schema)
-      end
+      schema_name = base.dig(*paths)&.gsub('#/components/schemas/', '')
+      fresh_schemas[schema_name] ||= {}
+      RSpec::OpenAPI::SchemaMerger.merge!(fresh_schemas[schema_name], nested_schema)
     end
 
     RSpec::OpenAPI::SchemaMerger.merge!(base_schemas, fresh_schemas)
@@ -67,7 +53,9 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
     end
   end
 
-  def filter_non_generated_refs(nested_refs, base, generated_names)
+  def find_non_top_level_nested_refs(base, generated_names)
+    nested_refs = RSpec::OpenAPI::HashHelper::matched_paths(base, 'components.schemas.*.properties.*.$ref')
+
     # Reject already-generated schemas to reduce unnecessary loop
     nested_refs.reject do |paths|
       ref_link = base.dig(*paths)
