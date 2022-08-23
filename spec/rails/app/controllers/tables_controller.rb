@@ -4,7 +4,7 @@ class TablesController < ApplicationController
   before_action :authenticate
 
   def index
-    response.set_header('X-Cursor', '100')
+    response.set_header('X-Cursor', 100)
     render json: [find_table]
   end
 

@@ -30,7 +30,6 @@ RSpec.describe 'Tables', type: :request do
         get '/tables', params: { page: '1', per: '10' },
                        headers: { authorization: 'k0kubun', "X-Authorization-Token": 'token' }
         expect(response.status).to eq(200)
-        expect(response.headers['X-Cursor']).to eq '100'
       end
 
       it 'with deep query parameters' do
