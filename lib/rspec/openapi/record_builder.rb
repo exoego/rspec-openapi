@@ -42,6 +42,12 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
 
     metadata_options = example.metadata[:openapi] || {}
 
+    response_headers = RSpec::OpenAPI.response_headers.each_with_object([]) do |header, headers_arr|
+      header_key = header
+      header_value = response.headers[header_key]
+      headers_arr << [header_key, header_value] if header_value
+    end
+
     RSpec::OpenAPI::Record.new(
       method: request.request_method,
       path: path,
@@ -55,6 +61,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       description: metadata_options[:description] || RSpec::OpenAPI.description_builder.call(example),
       status: response.status,
       response_body: response_body,
+      response_headers: response_headers,
       response_content_type: response.media_type,
       response_content_disposition: response.header["Content-Disposition"],
     ).freeze

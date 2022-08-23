@@ -6,6 +6,9 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       description: record.description,
     }
 
+    response_headers = build_response_headers(record)
+    response[:headers] = response_headers unless response_headers.empty?
+
     if record.response_body
       disposition = normalize_content_disposition(record.response_content_disposition)
       response[:content] = {
@@ -79,6 +82,18 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
     return nil if parameters.empty?
     parameters
+  end
+
+  def build_response_headers(record)
+    headers = {}
+
+    record.response_headers.each do |key, value|
+      headers[key] = {
+        schema: build_property(try_cast(value)),
+      }.compact
+    end
+
+    headers
   end
 
   def build_parameter_name(key, value)
