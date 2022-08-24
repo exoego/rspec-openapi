@@ -116,6 +116,13 @@ RSpec.describe 'Images', type: :request do
       expect(response.status).to eq(200)
     end
   end
+
+  describe '#index' do
+    it 'can return an object with an attribute of empty array' do
+      get '/images'
+      expect(response.status).to eq(200)
+    end
+  end
 end
 
 RSpec.describe 'Extra routes', type: :request do

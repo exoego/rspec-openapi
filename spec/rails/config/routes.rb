@@ -3,7 +3,7 @@ Rails.application.routes.draw do
 
   defaults format: 'json' do
     resources :tables, only: [:index, :show, :create, :update, :destroy]
-    resources :images, only: [:show]
+    resources :images, only: [:index, :show]
 
     get '/test_block' => ->(_env) { [200, { 'Content-Type' => 'text/plain' }, ['A TEST']] }
   end

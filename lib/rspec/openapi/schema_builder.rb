@@ -125,7 +125,11 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
     case value
     when Array
-      property[:items] = build_property(value.first)
+      if value.empty?
+        property[:items] = {} # unknown
+      else
+        property[:items] = build_property(value.first)
+      end
     when Hash
       property[:properties] = {}.tap do |properties|
         value.each do |key, v|
