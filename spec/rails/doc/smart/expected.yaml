@@ -136,12 +136,7 @@ components:
         description:
           type: string
         database:
-          type: object
-          properties:
-            id:
-              type: integer
-            name:
-              type: string
+          "$ref": "#/components/schemas/Database"
         null_sample:
           nullable: true
         storage_size:
@@ -150,4 +145,13 @@ components:
         created_at:
           type: string
         updated_at:
+          type: string
+    Database:
+      type: object
+      description: 'this should be preserved'
+      properties:
+        id:
+          type: integer
+          description: 'this should be preserved'
+        name:
           type: string

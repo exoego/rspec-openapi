@@ -1,4 +1,5 @@
 require 'rspec'
+require 'rspec/openapi/components_updater'
 require 'rspec/openapi/default_schema'
 require 'rspec/openapi/record_builder'
 require 'rspec/openapi/schema_builder'
@@ -35,6 +36,7 @@ RSpec.configuration.after(:suite) do
         end
       end
       RSpec::OpenAPI::SchemaCleaner.cleanup!(spec, new_from_zero)
+      RSpec::OpenAPI::ComponentsUpdater.update!(spec, new_from_zero)
     end
   end
   if error_records.any?
