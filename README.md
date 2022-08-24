@@ -137,8 +137,11 @@ RSpec::OpenAPI.info = {
   }
 }
 
-# Set `headers` - generate parameters with headers for a request
+# Set request `headers` - generate parameters with headers for a request
 RSpec::OpenAPI.request_headers = %w[X-Authorization-Token]
+
+# Set response `headers` - generate parameters with headers for a response
+RSpec::OpenAPI.response_headers = %w[X-Cursor]
 
 # Set `servers` - generate servers of a schema file
 RSpec::OpenAPI.servers = [{ url: 'http://localhost:3000' }]

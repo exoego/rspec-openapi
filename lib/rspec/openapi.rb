@@ -11,8 +11,18 @@ module RSpec::OpenAPI
   @request_headers = []
   @servers = []
   @example_types = %i[request]
+  @response_headers = []
 
   class << self
-    attr_accessor :path, :comment, :enable_example, :description_builder, :info, :application_version, :request_headers, :servers, :example_types
+    attr_accessor :path,
+                  :comment,
+                  :enable_example,
+                  :description_builder,
+                  :info,
+                  :application_version,
+                  :request_headers,
+                  :servers,
+                  :example_types,
+                  :response_headers
   end
 end

@@ -101,6 +101,13 @@
                   }
                 ]
               }
+            },
+            "headers": {
+              "X-Cursor": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
             }
           }
         },
