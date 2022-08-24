@@ -426,3 +426,26 @@ paths:
               schema:
                 type: string
               example: AN ENGINE TEST
+  "/images":
+    get:
+      summary: index
+      tags:
+      - Image
+      responses:
+        '200':
+          description: can return an object with an attribute of empty array
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    tags:
+                      type: array
+                      items: {}
+              example:
+              - name: file.png
+                tags: []
