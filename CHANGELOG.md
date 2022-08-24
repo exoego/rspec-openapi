@@ -1,3 +1,11 @@
+## v0.7.0
+- Generate Response Headers
+  [#69](https://github.com/k0kubun/rspec-openapi/pull/69)
+- Initial support for $ref
+  [#67](https://github.com/k0kubun/rspec-openapi/pull/67)
+- Fixed an empty array is turned into nullable object wrongly
+  [#70](https://github.com/k0kubun/rspec-openapi/pull/70)
+
 ## v0.6.1
 
 * Stabilize the order parameter objects and preserve newer examples
