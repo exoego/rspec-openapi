@@ -167,8 +167,7 @@ Yes, rspec-openapi v0.7.0+ supports [`$ref` mechanism](https://swagger.io/docs/s
 schemas under `#/components/schemas` with some manual steps.
 
 1. First, generate plain OpenAPI file.
-2. Then, manually replace the duplications with `$ref` and define the placeholder of schema under
-`#/components/schemas/` section. Example:
+2. Then, manually replace the duplications with `$ref`.
 
 ```yaml
 paths:
@@ -190,12 +189,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
-components:
-  schemas:
-    # No need to define User manually
+# Note) #/components/schamas is not needed to be defined. 
 ```
 
-3. Then, re-run rspec-openapi. It tries to find the the referenced schema (`User` for example) and update `properties`.
+3. Then, re-run rspec-openapi. It will generate `#/components/schemas` with the referenced schema (`User` for example) newly-generated or updated.
 
 ```yaml
 paths:
