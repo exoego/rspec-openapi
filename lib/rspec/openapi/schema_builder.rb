@@ -22,7 +22,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     {
       paths: {
         normalize_path(record.path) => {
-          record.method.downcase => {
+          record.http_method.downcase => {
             summary: record.summary,
             tags: record.tags,
             parameters: build_parameters(record),
