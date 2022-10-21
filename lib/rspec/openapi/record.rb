@@ -1,5 +1,5 @@
 RSpec::OpenAPI::Record = Struct.new(
-  :method,                # @param [String]  - "GET"
+  :http_method,           # @param [String]  - "GET"
   :path,                  # @param [String]  - "/v1/status/:id"
   :path_params,           # @param [Hash]    - {:controller=>"v1/statuses", :action=>"create", :id=>"1"}
   :query_params,          # @param [Hash]    - {:query=>"string"}

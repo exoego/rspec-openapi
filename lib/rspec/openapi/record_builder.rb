@@ -49,7 +49,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
     end
 
     RSpec::OpenAPI::Record.new(
-      method: request.request_method,
+      http_method: request.method,
       path: path,
       path_params: raw_path_params(request),
       query_params: request.query_parameters,
