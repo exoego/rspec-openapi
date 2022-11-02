@@ -188,20 +188,28 @@
                   },
                   "database_id": {
                     "type": "integer"
+                  },
+                  "debug": {
+                    "type": "string"
+                  },
+                  "nickname": {
+                    "type": "string"
                   }
                 }
               },
               "example": {
                 "name": "k0kubun",
                 "description": "description",
-                "database_id": 2
+                "database_id": 2,
+                "debug": "true",
+                "nickname": "k0kubun"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "returns a table",
+            "description": "returns a table with debug",
             "content": {
               "application/json": {
                 "schema": {

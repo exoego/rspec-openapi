@@ -22,7 +22,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   end
 
   # Not doing `base.replace(deep_merge(base, spec))` to preserve key orders.
-  # Also this needs to be aware of OpenAPI details because a Hash-like structure 
+  # Also this needs to be aware of OpenAPI details because a Hash-like structure
   # may be an array whose Hash elements have a key name.
   #
   # TODO: Should we probably force-merge `summary` regardless of manual modifications?
@@ -33,10 +33,13 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
           merge_schema!(base[key], value)
         end
       elsif base[key].is_a?(Array) && value.is_a?(Array)
+        case key
         # parameters need to be merged as if `name` and `in` were the Hash keys.
-        if key == 'parameters'
+        when 'parameters'
           base[key] = value | base[key]
           base[key].uniq! { |param| param.slice('name', 'in') }
+        when 'requestBody'
+          base[key]['schema'] = value['schema'] | base[key]['schema']
         else
           base[key] = value
         end

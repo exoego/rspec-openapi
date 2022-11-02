@@ -33,12 +33,12 @@ RSpec.describe 'Tables', type: :request do
       end
 
       it 'with deep query parameters' do
-        get '/tables', params: { filter: { "name" => "Example Table" } }, headers: { authorization: 'k0kubun' }
+        get '/tables', params: { filter: { 'name' => 'Example Table' } }, headers: { authorization: 'k0kubun' }
         expect(response.status).to eq(200)
       end
 
       it 'with different deep query parameters' do
-        get '/tables', params: { filter: { "price" => 0 } }, headers: { authorization: 'k0kubun' }
+        get '/tables', params: { filter: { 'price' => 0 } }, headers: { authorization: 'k0kubun' }
         expect(response.status).to eq(200)
       end
     end
@@ -75,7 +75,24 @@ RSpec.describe 'Tables', type: :request do
       post '/tables', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {
         name: 'k0kubun',
         description: 'description',
-        database_id: 2,
+        database_id: 2
+      }.to_json
+      expect(response.status).to eq(201)
+    end
+    it 'returns a table with nickname' do
+      post '/tables', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {
+        name: 'k0kubun',
+        nickname: 'k0kubun',
+        description: 'description'
+      }.to_json
+      expect(response.status).to eq(201)
+    end
+    it 'returns a table with debug' do
+      post '/tables', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {
+        name: 'k0kubun',
+        description: 'description',
+        debug: 'true',
+        database_id: 2
       }.to_json
       expect(response.status).to eq(201)
     end
