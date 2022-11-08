@@ -1,3 +1,14 @@
+## v0.7.1
+- $ref enhancements: Generate Response Headers
+  [#80](https://github.com/k0kubun/rspec-openapi/pull/80)
+- Administration
+  - Setup RuboCop
+    [#73](https://github.com/k0kubun/rspec-openapi/pull/73)
+  - Setup CodeQL
+    [#73](https://github.com/k0kubun/rspec-openapi/pull/73)
+  - Bump Rails v6.0.3.x to fix bundle failure
+    [#72](https://github.com/k0kubun/rspec-openapi/pull/72)
+
 ## v0.7.0
 - Generate Response Headers
   [#69](https://github.com/k0kubun/rspec-openapi/pull/69)
