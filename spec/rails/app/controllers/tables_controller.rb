@@ -5,7 +5,11 @@ class TablesController < ApplicationController
 
   def index
     response.set_header('X-Cursor', 100)
-    render json: [find_table]
+    if params[:show_columns]
+      render json: [find_table('42')]
+    else
+      render json: [find_table]
+    end
   end
 
   def show
@@ -48,6 +52,24 @@ class TablesController < ApplicationController
           id: 2,
           name: 'production',
         },
+        null_sample: nil,
+        storage_size: 12.3,
+        created_at: time.iso8601,
+        updated_at: time.iso8601,
+      }
+    when '42'
+      {
+        id: 42,
+        name: 'access',
+        description: 'logs',
+        database: {
+          id: 4242,
+          name: 'production'
+        },
+        columns: [
+          { name: 'id', column_type: 'integer' },
+          { name: 'description', column_type: 'varchar' }
+        ],
         null_sample: nil,
         storage_size: 12.3,
         created_at: time.iso8601,

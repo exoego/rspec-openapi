@@ -36,6 +36,11 @@ paths:
         schema:
           type: integer
         example: 10
+      - name: show_columns
+        in: query
+        schema:
+          type: string
+        example: "true"
       responses:
         '200':
           description: with flat query parameters
@@ -46,16 +51,21 @@ paths:
                 items:
                   "$ref": "#/components/schemas/Table"
               example:
-              - id: 1
+              - id: 42
                 name: access
                 description: logs
                 database:
-                  id: 2
+                  id: 4242
                   name: production
                 null_sample:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
+                columns:
+                  - name: id
+                    column_type: integer
+                  - name: description
+                    column_type: varchar
           headers:
             X-Cursor:
               schema:
@@ -137,6 +147,10 @@ components:
           type: string
         database:
           "$ref": "#/components/schemas/Database"
+        columns:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Column"
         null_sample:
           nullable: true
         storage_size:
@@ -154,4 +168,11 @@ components:
           type: integer
           description: 'this should be preserved'
         name:
+          type: string
+    Column:
+      type: object
+      properties:
+        name:
+          type: string
+        column_type:
           type: string

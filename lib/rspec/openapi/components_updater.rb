@@ -13,9 +13,14 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
     generated_schema_names = fresh_schemas.keys
     nested_refs = find_non_top_level_nested_refs(base, generated_schema_names)
     nested_refs.each do |paths|
-      parent_name = paths[-4]
-      property_name = paths[-2]
-      nested_schema = fresh_schemas.dig(parent_name, 'properties', property_name)
+      # Slice between the parent name and the element before "$ref"
+      # [..., "Table", "properties", "database",           "$ref"]
+      #       ^idx-1   ^idx          ^size-idx
+      # [..., "Table", "properties", "columns", "items",   "$ref"]
+      #       ^idx-1   ^idx                     ^size-idx
+      idx_properties = paths.size - 1 - paths.reverse.find_index('properties')
+      needle = paths.slice(idx_properties - 1, paths.size - idx_properties)
+      nested_schema = fresh_schemas.dig(*needle)
 
       # Skip if the property using $ref is not found in the parent schema. The property may be removed.
       next if nested_schema.nil?
@@ -53,8 +58,10 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
   end
 
   def find_non_top_level_nested_refs(base, generated_names)
-    nested_refs = RSpec::OpenAPI::HashHelper::matched_paths(base, 'components.schemas.*.properties.*.$ref')
-
+    nested_refs = [
+      *RSpec::OpenAPI::HashHelper.matched_paths(base, 'components.schemas.*.properties.*.$ref'),
+      *RSpec::OpenAPI::HashHelper.matched_paths(base, 'components.schemas.*.properties.*.*.$ref')
+    ]
     # Reject already-generated schemas to reduce unnecessary loop
     nested_refs.reject do |paths|
       ref_link = base.dig(*paths)

@@ -214,6 +214,10 @@ components:
           type: string
         database:
           "$ref": "#/components/schemas/Database"
+        columns:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Column"
         null_sample:
           nullable: true
         storage_size:
