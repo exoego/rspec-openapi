@@ -20,4 +20,17 @@ class << RSpec::OpenAPI::HashHelper = Object.new
     end
     selectors
   end
+
+  def matched_paths_deeply_nested(obj, begin_selector, end_selector)
+    path_depth_sizes = paths_to_all_fields(obj).map(&:size).uniq
+    path_depth_sizes.map do |depth|
+      diff = depth - begin_selector.count('.') - end_selector.count('.')
+      if diff >= 0
+        selector = "#{begin_selector}.#{'*.' * diff}#{end_selector}"
+        matched_paths(obj, selector)
+      else
+        []
+      end
+    end.flatten(1)
+  end
 end

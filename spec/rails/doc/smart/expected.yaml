@@ -134,6 +134,33 @@ paths:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
+  "/users/{id}": 
+    get:
+      responses:
+        "200":
+          description: "returns a user"
+          content:
+            "application/json":
+              schema:
+                "$ref": "#/components/schemas/User"
+              example:
+                name: John Doe
+                relations:
+                  avatar:
+                    url: "https://example.com/avatar.jpg"
+                  pets:
+                    - name: doge
+                      age: 8
+      summary: show
+      tags:
+      - User
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
 components:
   schemas:
     Table:
@@ -176,3 +203,29 @@ components:
           type: string
         column_type:
           type: string
+    User:
+      type: object
+      properties:
+        name:
+          type: string
+        relations:
+          type: object
+          properties:
+            avatar:
+              "$ref": "#/components/schemas/Avatar"
+            pets:
+              type: array
+              items:
+                "$ref": "#/components/schemas/Pet"
+    Avatar:
+      type: object
+      properties:
+        url:
+          type: string
+    Pet:
+      type: object
+      properties:
+        name:
+          type: string
+        age:
+          type: integer
