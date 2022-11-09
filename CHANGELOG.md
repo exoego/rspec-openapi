@@ -1,5 +1,9 @@
+## v0.7.2
+- $ref enhancements: Support $ref in arbitrary depth
+  [#82](https://github.com/k0kubun/rspec-openapi/pull/82)
+
 ## v0.7.1
-- $ref enhancements: Generate Response Headers
+- $ref enhancements: Auto-generate components referenced in "items"
   [#80](https://github.com/k0kubun/rspec-openapi/pull/80)
 - Administration
   - Setup RuboCop
