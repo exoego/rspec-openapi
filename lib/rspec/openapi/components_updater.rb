@@ -14,12 +14,13 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
     nested_refs = find_non_top_level_nested_refs(base, generated_schema_names)
     nested_refs.each do |paths|
       # Slice between the parent name and the element before "$ref"
-      # [..., "Table", "properties", "database",           "$ref"]
-      #       ^idx-1   ^idx          ^size-idx
-      # [..., "Table", "properties", "columns", "items",   "$ref"]
-      #       ^idx-1   ^idx                     ^size-idx
-      idx_properties = paths.size - 1 - paths.reverse.find_index('properties')
-      needle = paths.slice(idx_properties - 1, paths.size - idx_properties)
+      # ["components", "schema", "Table", "properties", "database",                       "$ref"]
+      #  0             1         2 ^....................^
+      # ["components", "schema", "Table", "properties", "columns", "items",               "$ref"]
+      #  0             1         2 ^...............................^
+      # ["components", "schema", "Table", "properties", "owner", "properties", "company", "$ref"]
+      #  0             1         2 ^...........................................^
+      needle = paths.slice(2, paths.size - 3)
       nested_schema = fresh_schemas.dig(*needle)
 
       # Skip if the property using $ref is not found in the parent schema. The property may be removed.
@@ -59,8 +60,8 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
 
   def find_non_top_level_nested_refs(base, generated_names)
     nested_refs = [
-      *RSpec::OpenAPI::HashHelper.matched_paths(base, 'components.schemas.*.properties.*.$ref'),
-      *RSpec::OpenAPI::HashHelper.matched_paths(base, 'components.schemas.*.properties.*.*.$ref')
+      *RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, 'components.schemas', 'properties.*.$ref'),
+      *RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, 'components.schemas', 'properties.*.items.$ref')
     ]
     # Reject already-generated schemas to reduce unnecessary loop
     nested_refs.reject do |paths|

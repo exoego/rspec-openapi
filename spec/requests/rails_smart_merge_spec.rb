@@ -49,3 +49,12 @@ RSpec.describe 'Tables', type: :request do
     end
   end
 end
+
+RSpec.describe 'Users', type: :request do
+  describe '#show' do
+    it 'returns a user' do
+      get '/users/1'
+      expect(response.status).to eq(200)
+    end
+  end
+end
