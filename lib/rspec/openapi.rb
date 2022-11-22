@@ -10,6 +10,7 @@ module RSpec::OpenAPI
   @application_version = '1.0.0'
   @request_headers = []
   @servers = []
+  @security_schemes = []
   @example_types = %i[request]
   @response_headers = []
 
@@ -22,6 +23,7 @@ module RSpec::OpenAPI
                   :application_version,
                   :request_headers,
                   :servers,
+                  :security_schemes,
                   :example_types,
                   :response_headers
   end

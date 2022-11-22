@@ -1,6 +1,6 @@
 class << RSpec::OpenAPI::DefaultSchema = Object.new
   def build(title)
-    {
+    spec = {
       openapi: '3.0.3',
       info: {
         title: title,
@@ -8,6 +8,15 @@ class << RSpec::OpenAPI::DefaultSchema = Object.new
       },
       servers: RSpec::OpenAPI.servers,
       paths: {},
-    }.freeze
+    }
+
+    if RSpec::OpenAPI.security_schemes.present?
+      spec[:components] = {
+        securitySchemes: RSpec::OpenAPI.security_schemes
+      }
+    end
+
+
+    spec.freeze
   end
 end
