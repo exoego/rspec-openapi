@@ -15,6 +15,15 @@ RSpec::OpenAPI.comment = <<~COMMENT
   update this file automatically. You can also manually edit this file.
 COMMENT
 RSpec::OpenAPI.servers = [{ url: 'http://localhost:3000' }]
+RSpec::OpenAPI.security_schemes = {
+  'Scheme1' => {
+    description: 'Authentication scheme',
+    type: 'http',
+    scheme: 'bearer',
+    bearerFormat: 'JWT'
+  }
+}
+
 RSpec::OpenAPI.info = {
   description: 'My beautiful API',
   license: {

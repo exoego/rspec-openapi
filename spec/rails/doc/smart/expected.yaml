@@ -162,6 +162,12 @@ paths:
           type: integer
         example: 1
 components:
+  securitySchemes:
+    Scheme1:
+      description: Authentication scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     Table:
       type: object
