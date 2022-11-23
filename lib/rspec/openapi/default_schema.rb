@@ -16,7 +16,6 @@ class << RSpec::OpenAPI::DefaultSchema = Object.new
       }
     end
 
-
     spec.freeze
   end
 end

@@ -148,11 +148,11 @@ RSpec::OpenAPI.servers = [{ url: 'http://localhost:3000' }]
 
 # Set `security_schemes` - generate security schemes
 RSpec::OpenAPI.security_schemes = {
-  "MyToken" => {
-    description: "Authenticate API requests via a JWT",
-    type: "http",
-    scheme: "bearer",
-    bearerFormat: "JWT",
+  'MyToken' => {
+    description: 'Authenticate API requests via a JWT',
+    type: 'http',
+    scheme: 'bearer',
+    bearerFormat: 'JWT',
   },
 }
 
