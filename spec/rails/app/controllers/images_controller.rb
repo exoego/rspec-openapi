@@ -10,7 +10,7 @@ class ImagesController < ApplicationController
       {
         'name': 'file.png',
         'tags': [], # Keep this empty to check empty array is accepted
-      }
+      },
     ]
     render json: list
   end
