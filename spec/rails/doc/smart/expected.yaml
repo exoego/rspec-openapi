@@ -134,7 +134,7 @@ paths:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
-  "/users/{id}": 
+  "/users/{id}":
     get:
       responses:
         "200":
@@ -162,6 +162,12 @@ paths:
           type: integer
         example: 1
 components:
+  securitySchemes:
+    Scheme1:
+      description: Authentication scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     Table:
       type: object
