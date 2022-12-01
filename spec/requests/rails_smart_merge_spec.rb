@@ -20,16 +20,16 @@ RSpec::OpenAPI.security_schemes = {
     description: 'Authentication scheme',
     type: 'http',
     scheme: 'bearer',
-    bearerFormat: 'JWT'
-  }
+    bearerFormat: 'JWT',
+  },
 }
 
 RSpec::OpenAPI.info = {
   description: 'My beautiful API',
   license: {
     'name': 'Apache 2.0',
-    'url': 'https://www.apache.org/licenses/LICENSE-2.0.html'
-  }
+    'url': 'https://www.apache.org/licenses/LICENSE-2.0.html',
+  },
 }
 
 # Small subset of `rails_spec.rb` with slight changes

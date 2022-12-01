@@ -12,7 +12,7 @@ class << RSpec::OpenAPI::DefaultSchema = Object.new
 
     if RSpec::OpenAPI.security_schemes.present?
       spec[:components] = {
-        securitySchemes: RSpec::OpenAPI.security_schemes
+        securitySchemes: RSpec::OpenAPI.security_schemes,
       }
     end
 

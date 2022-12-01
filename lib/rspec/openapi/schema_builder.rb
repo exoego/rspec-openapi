@@ -116,8 +116,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         normalize_content_type(record.request_content_type) => {
           schema: build_property(record.request_params),
           example: (build_example(record.request_params) if example_enabled?),
-        }.compact
-      }
+        }.compact,
+      },
     }
   end
 

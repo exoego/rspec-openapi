@@ -61,7 +61,7 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
   def find_non_top_level_nested_refs(base, generated_names)
     nested_refs = [
       *RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, 'components.schemas', 'properties.*.$ref'),
-      *RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, 'components.schemas', 'properties.*.items.$ref')
+      *RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, 'components.schemas', 'properties.*.items.$ref'),
     ]
     # Reject already-generated schemas to reduce unnecessary loop
     nested_refs.reject do |paths|

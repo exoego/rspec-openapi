@@ -15,9 +15,9 @@ class UsersController < ApplicationController
             url: 'https://example.com/avatar.jpg',
           },
           pets: [
-            { name: 'doge', age: 8 }
-          ]
-        }
+            { name: 'doge', age: 8 },
+          ],
+        },
       }
     else
       raise NotFoundError

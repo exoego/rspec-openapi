@@ -64,11 +64,11 @@ class TablesController < ApplicationController
         description: 'logs',
         database: {
           id: 4242,
-          name: 'production'
+          name: 'production',
         },
         columns: [
           { name: 'id', column_type: 'integer' },
-          { name: 'description', column_type: 'varchar' }
+          { name: 'description', column_type: 'varchar' },
         ],
         null_sample: nil,
         storage_size: 12.3,

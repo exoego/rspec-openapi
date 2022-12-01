@@ -288,24 +288,10 @@ Style/SymbolArray:
 # Offense count: 2
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyleForMultiline.
-# SupportedStylesForMultiline: comma, consistent_comma, no_comma
-Style/TrailingCommaInArguments:
+# , no_comma
   Exclude:
     - 'lib/rspec/openapi/record.rb'
     - 'lib/rspec/openapi/record_builder.rb'
-
-# Offense count: 21
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyleForMultiline.
-# SupportedStylesForMultiline: comma, consistent_comma, no_comma
-Style/TrailingCommaInHashLiteral:
-  Exclude:
-    - 'lib/rspec/openapi/default_schema.rb'
-    - 'lib/rspec/openapi/schema_builder.rb'
-    - 'spec/rails/app/controllers/images_controller.rb'
-    - 'spec/rails/app/controllers/tables_controller.rb'
-    - 'spec/rails/app/controllers/users_controller.rb'
-    - 'spec/requests/rails_spec.rb'
 
 # Offense count: 2
 # Cop supports --auto-correct.

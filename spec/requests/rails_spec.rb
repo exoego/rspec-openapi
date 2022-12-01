@@ -19,8 +19,8 @@ RSpec::OpenAPI.info = {
   description: 'My beautiful API',
   license: {
     'name': 'Apache 2.0',
-    'url': 'https://www.apache.org/licenses/LICENSE-2.0.html'
-  }
+    'url': 'https://www.apache.org/licenses/LICENSE-2.0.html',
+  },
 }
 
 RSpec.describe 'Tables', type: :request do
@@ -90,7 +90,7 @@ RSpec.describe 'Tables', type: :request do
     let(:image) { Rack::Test::UploadedFile.new('test.png', 'image/png') }
     it 'returns a table' do
       patch '/tables/1', headers: { authorization: 'k0kubun' }, params: {
-        nested: { image: image, caption: 'Some caption' }
+        nested: { image: image, caption: 'Some caption' },
       }
       expect(response.status).to eq(200)
     end
