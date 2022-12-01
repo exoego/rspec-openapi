@@ -315,9 +315,9 @@ Existing RSpec plugins which have OpenAPI integration:
 
 ## Acknowledgements
 
-This gem was heavily inspired by the following gem:
+* Heavily inspired by [r7kamura/autodoc](https://github.com/r7kamura/autodoc)
+* Orignally created by [k0kubun](https://github.com/k0kubun) and the ownership was transferred to [exoego](https://github.com/exoego) in 2022-11-29.
 
-* [r7kamura/autodoc](https://github.com/r7kamura/autodoc)
 
 ## License
 
