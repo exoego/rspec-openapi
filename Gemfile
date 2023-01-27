@@ -6,6 +6,7 @@ gemspec
 gem 'rails', ENV['RAILS_VERSION'] || '6.0.3.7'
 gem 'roda'
 gem 'rspec-rails'
+gem 'rspec'
 
 group :test do
   gem 'super_diff'
