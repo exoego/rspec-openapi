@@ -26,7 +26,6 @@ module RSpec::OpenAPI
   @example_types = %i[request]
   @response_headers = []
   @path_records = Hash.new { |h, k| h[k] = [] }
-  @error_records = {}
 
   class << self
     attr_accessor :path,
@@ -40,7 +39,6 @@ module RSpec::OpenAPI
                   :security_schemes,
                   :example_types,
                   :response_headers,
-                  :path_records,
-                  :error_records
+                  :path_records
   end
 end
