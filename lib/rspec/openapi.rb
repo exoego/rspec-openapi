@@ -1,9 +1,16 @@
 require 'rspec/openapi/version'
-
-require 'rspec/openapi/minitest' if defined?(Minitest)
+require 'rspec/openapi/components_updater'
+require 'rspec/openapi/default_schema'
+require 'rspec/openapi/record_builder'
+require 'rspec/openapi/result_recorder'
+require 'rspec/openapi/schema_builder'
+require 'rspec/openapi/schema_file'
+require 'rspec/openapi/schema_merger'
+require 'rspec/openapi/schema_cleaner'
 
 if ENV['OPENAPI']
-  require 'rspec/openapi/hooks' if defined?(RSpec::Example)
+  require 'rspec/openapi/minitest_hooks'
+  require 'rspec/openapi/rspec_hooks'
 end
 
 module RSpec::OpenAPI
