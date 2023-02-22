@@ -316,6 +316,34 @@ Some examples' attributes can be overwritten via RSpec metadata options. Example
 
 **NOTE**: `description` key will override also the one provided by `RSpec::OpenAPI.description_builder` method.
 
+## Experimental minitest support
+
+Even if you are not using `rspec` this gem might help you with its experimental support for `minitest`.
+
+Example:
+
+```rb
+class TablesTest < ActionDispatch::IntegrationTest
+  openapi!
+
+  test "GET /index returns a list of tables" do
+    get '/tables', params: { page: '1', per: '10' }, headers: { authorization: 'k0kubun' }
+    assert_response :success
+  end
+
+  test "GET /index does not return tables if unauthorized" do
+    get '/tables'
+    assert_response :unauthorized
+  end
+
+  # ...
+end
+```
+
+It should work with both classes inheriting from `ActionDispatch::IntegrationTest` and with classes using `Rack::Test` directly, as long as you call `openapi!` in your test class.
+
+Please note that not all features present in the rspec integration work with minitest (yet). For example, custom per test case metadata is not supported. A custom `description_builder` will not work either.
+
 ## Links
 
 Existing RSpec plugins which have OpenAPI integration:
