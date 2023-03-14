@@ -3,7 +3,7 @@ require 'minitest'
 module RSpec
   module OpenAPI
     module Minitest
-      class Example < Struct.new(:context, :description, :metadata, :file_path); end
+      Example = Struct.new(:context, :description, :metadata, :file_path)
 
       module TestPatch
         def self.prepended(base)
