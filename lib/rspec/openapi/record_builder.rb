@@ -71,7 +71,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
   private
 
   def rails?
-    defined?(Rails) && Rails.application
+    defined?(Rails) && Rails.respond_to?(:application) && Rails.application
   end
 
   def rack_test?(context)

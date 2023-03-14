@@ -1,5 +1,17 @@
 require 'rspec/openapi/version'
-require 'rspec/openapi/hooks' if ENV['OPENAPI']
+require 'rspec/openapi/components_updater'
+require 'rspec/openapi/default_schema'
+require 'rspec/openapi/record_builder'
+require 'rspec/openapi/result_recorder'
+require 'rspec/openapi/schema_builder'
+require 'rspec/openapi/schema_file'
+require 'rspec/openapi/schema_merger'
+require 'rspec/openapi/schema_cleaner'
+
+if ENV['OPENAPI']
+  require 'rspec/openapi/minitest_hooks'
+  require 'rspec/openapi/rspec_hooks'
+end
 
 module RSpec::OpenAPI
   @path = 'doc/openapi.yaml'
@@ -13,6 +25,7 @@ module RSpec::OpenAPI
   @security_schemes = []
   @example_types = %i[request]
   @response_headers = []
+  @path_records = Hash.new { |h, k| h[k] = [] }
 
   class << self
     attr_accessor :path,
@@ -25,6 +38,7 @@ module RSpec::OpenAPI
                   :servers,
                   :security_schemes,
                   :example_types,
-                  :response_headers
+                  :response_headers,
+                  :path_records
   end
 end
