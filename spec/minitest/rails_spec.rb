@@ -25,9 +25,9 @@ RSpec.describe 'rails integration test' do
     end
 
     it 'generates the same spec/rails/doc/openapi.json' do
-      org_yaml = JSON.load(File.read(openapi_path))
+      org_yaml = JSON.parse(File.read(openapi_path))
       minitest 'spec/integration_tests/rails_test.rb', openapi: true, output: :json
-      new_yaml = JSON.load(File.read(openapi_path))
+      new_yaml = JSON.parse(File.read(openapi_path))
       expect(new_yaml).to eq org_yaml
     end
   end
