@@ -168,11 +168,9 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
   # Convert an always-String param to an appropriate type
   def try_cast(value)
-    begin
-      Integer(value)
-    rescue TypeError, ArgumentError
-      value
-    end
+    Integer(value)
+  rescue TypeError, ArgumentError
+    value
   end
 
   def build_example(value)

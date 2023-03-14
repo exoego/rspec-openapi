@@ -233,12 +233,6 @@ Style/NonNilCheck:
   Exclude:
     - 'lib/rspec/openapi/hash_helper.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/RedundantBegin:
-  Exclude:
-    - 'lib/rspec/openapi/schema_builder.rb'
-
 # Offense count: 2
 # Cop supports --auto-correct.
 Style/RedundantPercentQ:
