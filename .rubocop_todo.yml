@@ -233,14 +233,6 @@ Style/NonNilCheck:
   Exclude:
     - 'lib/rspec/openapi/hash_helper.rb'
 
-# Offense count: 3
-# Cop supports --auto-correct.
-# Configuration parameters: PreferredDelimiters.
-Style/PercentLiteralDelimiters:
-  Exclude:
-    - 'lib/rspec/openapi/schema_builder.rb'
-    - 'rspec-openapi.gemspec'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 Style/RedundantBegin:
