@@ -21,11 +21,11 @@ module SpecHelper
   end
 
   def rspec(*args, openapi: false, output: :yaml)
-    run_tests *args, command: "rspec", openapi: openapi, output: output
+    run_tests *args, command: 'rspec', openapi: openapi, output: output
   end
 
   def minitest(*args, openapi: false, output: :yaml)
-    run_tests *args, command: "ruby", openapi: openapi, output: output
+    run_tests *args, command: 'ruby', openapi: openapi, output: output
   end
 end
 

@@ -30,7 +30,7 @@ class TablesIndexTest < ActionDispatch::IntegrationTest
   # Patch minitest's ordering of examples to match RSpec's
   # in order to get comparable results
   def self.runnable_methods
-    %w[ test_with_flat_query_parameters test_with_deep_query_parameters test_with_different_deep_query_parameters test_has_a_request_spec_which_does_not_make_any_request test_does_not_return_tables_if_unauthorized ]
+    %w[test_with_flat_query_parameters test_with_deep_query_parameters test_with_different_deep_query_parameters test_has_a_request_spec_which_does_not_make_any_request test_does_not_return_tables_if_unauthorized]
   end
 
   def test_with_flat_query_parameters
@@ -40,12 +40,12 @@ class TablesIndexTest < ActionDispatch::IntegrationTest
   end
 
   def test_with_deep_query_parameters
-    get '/tables', params: { filter: { "name" => "Example Table" } }, headers: { authorization: 'k0kubun' }
+    get '/tables', params: { filter: { 'name' => 'Example Table' } }, headers: { authorization: 'k0kubun' }
     assert_response 200
   end
 
   def test_with_different_deep_query_parameters
-    get '/tables', params: { filter: { "price" => 0 } }, headers: { authorization: 'k0kubun' }
+    get '/tables', params: { filter: { 'price' => 0 } }, headers: { authorization: 'k0kubun' }
     assert_response 200
   end
 
@@ -65,7 +65,7 @@ class TablesShowTest < ActionDispatch::IntegrationTest
   # Patch minitest's ordering of examples to match RSpec's
   # in order to get comparable results
   def self.runnable_methods
-    %w[ test_returns_a_table test_does_not_return_a_table_if_unauthorized test_does_not_return_a_table_if_not_found ]
+    %w[test_returns_a_table test_does_not_return_a_table_if_unauthorized test_does_not_return_a_table_if_not_found]
   end
 
   def test_does_not_return_a_table_if_unauthorized
@@ -102,7 +102,7 @@ class TablesUpdateTest < ActionDispatch::IntegrationTest
 
   test 'returns a table' do
     png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
-    QBoAAAAASUVORK5CYII='.unpack('m').first
+    QBoAAAAASUVORK5CYII='.unpack1('m')
     IO.binwrite('test.png', png)
     image = Rack::Test::UploadedFile.new('test.png', 'image/png')
     patch '/tables/1', headers: { authorization: 'k0kubun' }, params: {

@@ -13,7 +13,7 @@ class RSpec::OpenAPI::ResultRecorder
         RSpec::OpenAPI::SchemaMerger.merge!(spec, schema)
         new_from_zero = {}
         records.each do |record|
-          File.open("/tmp/records", "a") { |f| f.puts record.to_yaml }
+          File.open('/tmp/records', 'a') { |f| f.puts record.to_yaml }
           begin
             record_schema = RSpec::OpenAPI::SchemaBuilder.build(record)
             RSpec::OpenAPI::SchemaMerger.merge!(spec, record_schema)
@@ -36,7 +36,7 @@ class RSpec::OpenAPI::ResultRecorder
     <<~EOS
       RSpec::OpenAPI got errors building #{@error_records.size} requests
 
-      #{@error_records.map {|e, record| "#{e.inspect}: #{record.inspect}" }.join("\n")}
+      #{@error_records.map { |e, record| "#{e.inspect}: #{record.inspect}" }.join("\n")}
     EOS
   end
 end
