@@ -6,8 +6,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Takashi Kokubun']
   spec.email         = ['takashikkbn@gmail.com']
 
-  spec.summary       = %q(Generate OpenAPI schema from RSpec request specs)
-  spec.description   = %q(Generate OpenAPI  from RSpec request specs)
+  spec.summary       = 'Generate OpenAPI schema from RSpec request specs'
+  spec.description   = 'Generate OpenAPI  from RSpec request specs'
   spec.homepage      = 'https://github.com/k0kubun/rspec-openapi'
   spec.license       = 'MIT'
   spec.required_ruby_version = Gem::Requirement.new('>= 2.5.0')

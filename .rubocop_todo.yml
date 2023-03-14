@@ -235,12 +235,6 @@ Style/NonNilCheck:
 
 # Offense count: 2
 # Cop supports --auto-correct.
-Style/RedundantPercentQ:
-  Exclude:
-    - 'rspec-openapi.gemspec'
-
-# Offense count: 2
-# Cop supports --auto-correct.
 Style/StderrPuts:
   Exclude:
     - 'spec/rails/bin/yarn'
