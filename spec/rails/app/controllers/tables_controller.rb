@@ -1,5 +1,5 @@
 class TablesController < ApplicationController
-  APIKEY = 'k0kubun'
+  APIKEY = 'k0kubun'.freeze
 
   before_action :authenticate
 

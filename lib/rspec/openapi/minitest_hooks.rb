@@ -3,7 +3,7 @@ require 'minitest'
 module RSpec
   module OpenAPI
     module Minitest
-      class Example < Struct.new(:context, :description, :metadata, :file_path) ; end
+      Example = Struct.new(:context, :description, :metadata, :file_path)
 
       module TestPatch
         def self.prepended(base)
@@ -13,8 +13,8 @@ module RSpec
         def run(*args)
           result = super
           if ENV['OPENAPI'] && self.class.openapi?
-            file_path = self.method(name).source_location.first
-            human_name = name.sub(/^test_/, "").gsub(/_/, " ")
+            file_path = method(name).source_location.first
+            human_name = name.sub(/^test_/, '').gsub(/_/, ' ')
             example = Example.new(self, human_name, {}, file_path)
             path = RSpec::OpenAPI.path.yield_self { |p| p.is_a?(Proc) ? p.call(example) : p }
             record = RSpec::OpenAPI::RecordBuilder.build(self, example: example)
