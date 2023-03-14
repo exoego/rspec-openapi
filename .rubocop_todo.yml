@@ -220,14 +220,6 @@ Style/MutableConstant:
 
 # Offense count: 1
 # Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: both, prefix, postfix
-Style/NegatedIf:
-  Exclude:
-    - 'lib/rspec/openapi/schema_merger.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
 # Configuration parameters: IncludeSemanticChanges.
 Style/NonNilCheck:
   Exclude:
