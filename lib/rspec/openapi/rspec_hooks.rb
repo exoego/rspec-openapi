@@ -1,4 +1,4 @@
-require 'rspec'
+require 'rspec/core'
 
 RSpec.configuration.after(:each) do |example|
   if RSpec::OpenAPI.example_types.include?(example.metadata[:type]) && example.metadata[:openapi] != false
