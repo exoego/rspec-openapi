@@ -3,8 +3,8 @@ inherit_from: .rubocop_todo.yml
 AllCops:
   TargetRubyVersion: 2.5
   Exclude:
-    # Dummy app for testing
     - 'spec/rails/**/*'
+    - 'vendor/**/*'
 
 Style/TrailingCommaInHashLiteral:
   EnforcedStyleForMultiline: consistent_comma
