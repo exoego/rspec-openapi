@@ -16,6 +16,8 @@ paths:
               properties:
                 id:
                   type: integer
+              required:
+              - id
             example:
               id: 1
       responses:

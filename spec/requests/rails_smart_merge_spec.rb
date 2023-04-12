@@ -60,6 +60,16 @@ RSpec.describe 'Tables', type: :request do
 end
 
 RSpec.describe 'Users', type: :request do
+  describe '#create' do
+    it 'returns an user' do
+      post '/users', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {
+        name: 'alice',
+        avatar_url: 'https://example.com/avatar.png',
+      }.to_json
+      expect(response.status).to eq(201)
+    end
+  end
+
   describe '#show' do
     it 'returns a user' do
       get '/users/1'

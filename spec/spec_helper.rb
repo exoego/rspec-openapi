@@ -40,3 +40,8 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 end
+
+SuperDiff.configure do |config|
+  config.diff_elision_enabled = true
+  config.diff_elision_maximum = 3
+end
