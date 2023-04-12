@@ -1,4 +1,17 @@
 class UsersController < ApplicationController
+  def create
+    res = {
+      name: params[:name],
+      relations: {
+        avatar: {
+          url: params[:avatar_url],
+        },
+        pets: params[:pets] || [],
+      },
+    }
+    render json: res, status: 201
+  end
+
   def show
     render json: find_user(params[:id])
   end

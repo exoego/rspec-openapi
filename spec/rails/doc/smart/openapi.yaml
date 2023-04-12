@@ -102,7 +102,7 @@ paths:
               example:
                 message: This field should be updated by rspec
     post:
-      summary: create
+      summary: This method should be removed!!
       tags:
       - Table
       requestBody:
@@ -119,6 +119,11 @@ paths:
                   type: integer
                 no_such_field_request:
                   type: boolean
+              required:
+                - name
+                - description
+                - database_id
+                - no_such_field_request
             example:
               name: k0kubun
               description: description
@@ -198,6 +203,32 @@ paths:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
+  "/users":
+    post:
+      summary: Create
+      tags:
+        - User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                avatar:
+                  "$ref": "#/components/schemas/Avatar"
+                pets:
+                  type: array
+                  items:
+                    "$ref": "#/components/schemas/Pet"
+      responses:
+        '201':
+          description: returns a user
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/User"
   "/users/{id}":
     get:
       responses:
