@@ -45,7 +45,6 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     else
       # TODO: Nested object
       required_keys = obj.dig(:schema, :properties)&.map do |key, value|
-        # TODO: add test for nullable
         return nil if value[:nullable] == true
         key
       end.compact

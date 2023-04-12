@@ -151,7 +151,6 @@ paths:
                   type: string
               required:
               - name
-              - avatar_url
             example:
               name: alice
               avatar_url: "https://example.com/avatar.png"
