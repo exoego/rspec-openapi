@@ -39,6 +39,21 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
   private
 
+  def enrich_with_required_keys(obj)
+    if obj.dig(:schema, :type) != 'object'
+      obj
+    else
+      # TODO: Nested object
+      required_keys = obj.dig(:schema, :properties)&.map do |key, value|
+        # TODO: add test for nullable
+        return nil if value[:nullable] == true
+        key
+      end.compact
+      obj[:schema][:required] = required_keys
+      obj
+    end
+  end
+
   def response_example(record, disposition:)
     return nil if !example_enabled? || disposition
 
@@ -113,10 +128,10 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
     {
       content: {
-        normalize_content_type(record.request_content_type) => {
+        normalize_content_type(record.request_content_type) => enrich_with_required_keys({
           schema: build_property(record.request_params),
           example: (build_example(record.request_params) if example_enabled?),
-        }.compact,
+        }).compact,
       },
     }
   end

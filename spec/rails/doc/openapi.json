@@ -189,7 +189,12 @@
                   "database_id": {
                     "type": "integer"
                   }
-                }
+                },
+                "required": [
+                  "name",
+                  "description",
+                  "database_id"
+                ]
               },
               "example": {
                 "name": "k0kubun",
@@ -409,7 +414,10 @@
                       }
                     }
                   }
-                }
+                },
+                "required": [
+                  "nested"
+                ]
               },
               "example": {
                 "nested": {
@@ -569,7 +577,10 @@
                   "no_content": {
                     "type": "string"
                   }
-                }
+                },
+                "required": [
+                  "no_content"
+                ]
               },
               "example": {
                 "no_content": "true"
