@@ -222,6 +222,9 @@ paths:
                   type: array
                   items:
                     "$ref": "#/components/schemas/Pet"
+              required:
+                - name
+                - no-such-field
       responses:
         '201':
           description: returns a user
