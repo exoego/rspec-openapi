@@ -6,26 +6,10 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
   # @param [RSpec::Core::Example] example
   # @return [RSpec::OpenAPI::Record,nil]
   def build(context, example:)
-    if rack_test?(context)
-      request = ActionDispatch::Request.new(context.last_request.env)
-      request.body.rewind if request.body.respond_to?(:rewind)
-      response = ActionDispatch::TestResponse.new(*context.last_response.to_a)
-    else
-      request = context.request
-      response = context.response
-    end
+    request, response = extract_request_response(context)
     return if request.nil?
 
-    # Generate `path` and `summary` in a framework-friendly manner when possible
-    if rails?
-      route = find_rails_route(request)
-      path = route.path.spec.to_s.delete_suffix('(.:format)')
-      summary = route.requirements[:action] || "#{request.method} #{path}"
-      tags = [route.requirements[:controller]&.classify].compact
-    else
-      path = request.path
-      summary = "#{request.method} #{request.path}"
-    end
+    path, summary, tags, raw_path_params = generate_path_summary_tags(request)
 
     response_body =
       begin
@@ -51,7 +35,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
     RSpec::OpenAPI::Record.new(
       http_method: request.method,
       path: path,
-      path_params: raw_path_params(request),
+      path_params: raw_path_params,
       query_params: request.query_parameters,
       request_params: raw_request_params(request),
       request_content_type: request.media_type,
@@ -69,6 +53,37 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
   end
 
   private
+
+  def generate_path_summary_tags(request)
+    if rails?
+      route = find_rails_route(request)
+      path = route.path.spec.to_s.delete_suffix('(.:format)')
+      summary = route.requirements[:action] || "#{request.method} #{path}"
+      tags = [route.requirements[:controller]&.classify].compact
+      # :controller and :action always exist. :format is added when routes is configured as such.
+      raw_path_params = request.path_parameters.reject do |key, _value|
+        %i[controller action format].include?(key)
+      end
+    else
+      path = request.path
+      summary = "#{request.method} #{request.path}"
+      tags = nil
+      raw_path_params = request.path_parameters
+    end
+    [path, summary, tags, raw_path_params]
+  end
+
+  def extract_request_response(context)
+    if rack_test?(context)
+      request = ActionDispatch::Request.new(context.last_request.env)
+      request.body.rewind if request.body.respond_to?(:rewind)
+      response = ActionDispatch::TestResponse.new(*context.last_response.to_a)
+    else
+      request = context.request
+      response = context.response
+    end
+    [request, response]
+  end
 
   def rails?
     defined?(Rails) && Rails.respond_to?(:application) && Rails.application
@@ -96,17 +111,6 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       end
     end
     raise "No route matched for #{request.request_method} #{request.path_info}"
-  end
-
-  # :controller and :action always exist. :format is added when routes is configured as such.
-  def raw_path_params(request)
-    if rails?
-      request.path_parameters.reject do |key, _value|
-        %i[controller action format].include?(key)
-      end
-    else
-      request.path_parameters
-    end
   end
 
   # workaround to get real request parameters
