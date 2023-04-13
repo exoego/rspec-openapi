@@ -68,6 +68,18 @@ RSpec.describe 'Users', type: :request do
       expect(response.status).to eq(201)
     end
 
+    it 'accepts nested object' do
+      post '/users', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {
+        name: 'alice',
+        foo: {
+          bar: {
+            baz: 42,
+          },
+        },
+      }.to_json
+      expect(response.status).to eq(201)
+    end
+
     it 'returns an user' do
       post '/users', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {
         name: 'alice',
