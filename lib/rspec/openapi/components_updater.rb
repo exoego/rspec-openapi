@@ -7,6 +7,7 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
     # Top-level schema: Used as the body of request or response
     top_level_refs = paths_to_top_level_refs(base)
     return if top_level_refs.empty?
+
     fresh_schemas = build_fresh_schemas(top_level_refs, base, fresh)
 
     # Nested schema: References in Top-level schemas. May contain some top-level schema.

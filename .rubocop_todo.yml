@@ -14,15 +14,6 @@ Bundler/OrderedGems:
   Exclude:
     - 'Gemfile'
 
-# Offense count: 5
-# Cop supports --auto-correct.
-Layout/EmptyLineAfterGuardClause:
-  Exclude:
-    - 'lib/rspec/openapi/components_updater.rb'
-    - 'lib/rspec/openapi/schema_builder.rb'
-    - 'lib/rspec/openapi/schema_cleaner.rb'
-    - 'lib/rspec/openapi/schema_file.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 # Configuration parameters: AllowForAlignment, AllowBeforeTrailingComments, ForceEqualSignAlignment.

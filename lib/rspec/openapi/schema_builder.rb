@@ -87,6 +87,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     end
 
     return nil if parameters.empty?
+
     parameters
   end
 
@@ -181,6 +182,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
   def build_example(value)
     return nil if value.nil?
+
     value = value.dup
     adjust_params(value)
   end
