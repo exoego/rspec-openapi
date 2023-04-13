@@ -17,7 +17,7 @@ class RodaTest < Minitest::Test
     RodaApp
   end
 
-  def test_when_id_is_given_it_returns_200
+  def test_when_id_is_given_it_returns200
     post '/roda', { id: 1 }.to_json, 'CONTENT_TYPE' => 'application/json'
     assert_equal 200, last_response.status
   end
