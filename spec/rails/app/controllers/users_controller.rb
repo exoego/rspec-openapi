@@ -4,7 +4,7 @@ class UsersController < ApplicationController
       name: params[:name],
       relations: {
         avatar: {
-          url: params[:avatar_url],
+          url: params[:avatar_url] || 'https://example.com/avatar.png',
         },
         pets: params[:pets] || [],
       },

@@ -37,7 +37,11 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
         if key == 'parameters'
           base[key] = value | base[key]
           base[key].uniq! { |param| param.slice('name', 'in') }
+        elsif key == 'required'
+          # Preserve properties that appears in all test cases
+          base[key] = value & base[key]
         else
+          # last one wins
           base[key] = value
         end
       else

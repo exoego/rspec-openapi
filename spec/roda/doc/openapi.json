@@ -20,7 +20,10 @@
                   "id": {
                     "type": "integer"
                   }
-                }
+                },
+                "required": [
+                  "id"
+                ]
               },
               "example": {
                 "id": 1

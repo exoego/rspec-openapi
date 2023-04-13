@@ -39,6 +39,11 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
   private
 
+  def enrich_with_required_keys(obj)
+    obj[:required] = obj[:properties]&.keys
+    obj
+  end
+
   def response_example(record, disposition:)
     return nil if !example_enabled? || disposition
 
@@ -114,14 +119,15 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     {
       content: {
         normalize_content_type(record.request_content_type) => {
-          schema: build_property(record.request_params),
+          schema: build_property(record.request_params, set_required: true),
           example: (build_example(record.request_params) if example_enabled?),
         }.compact,
       },
     }
   end
 
-  def build_property(value, disposition: nil)
+  # TODO: Remove set_required when implementing "required" to all places
+  def build_property(value, disposition: nil, set_required: false)
     property = build_type(value, disposition)
 
     case value
@@ -129,14 +135,15 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       if value.empty?
         property[:items] = {} # unknown
       else
-        property[:items] = build_property(value.first)
+        property[:items] = build_property(value.first, set_required: set_required)
       end
     when Hash
       property[:properties] = {}.tap do |properties|
         value.each do |key, v|
-          properties[key] = build_property(v)
+          properties[key] = build_property(v, set_required: set_required)
         end
       end
+      property = enrich_with_required_keys(property) if set_required
     end
     property
   end
