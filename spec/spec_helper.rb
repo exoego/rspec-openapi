@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'open3'
 require 'super_diff/rspec'
 

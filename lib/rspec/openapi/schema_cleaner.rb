@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # For Ruby 3.0+
 require 'set'
 

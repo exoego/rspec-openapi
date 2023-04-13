@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ENV['TZ'] ||= 'UTC'
 ENV['RAILS_ENV'] ||= 'test'
 ENV['OPENAPI_OUTPUT'] ||= 'json'

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class << RSpec::OpenAPI::HashHelper = Object.new
   def paths_to_all_fields(obj)
     case obj

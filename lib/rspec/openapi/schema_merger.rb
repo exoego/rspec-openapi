@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class << RSpec::OpenAPI::SchemaMerger = Object.new
   # @param [Hash] base
   # @param [Hash] spec

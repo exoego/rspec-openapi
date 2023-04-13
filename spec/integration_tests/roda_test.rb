@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../roda/roda_app'
 require 'json'
 require 'rack/test'

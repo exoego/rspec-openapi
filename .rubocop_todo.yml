@@ -116,13 +116,6 @@ Style/FetchEnvVar:
     - 'spec/requests/rails_spec.rb'
     - 'spec/requests/roda_spec.rb'
 
-# Offense count: 29
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: always, always_true, never
-Style/FrozenStringLiteralComment:
-  Enabled: false
-
 # Offense count: 1
 # This cop supports unsafe autocorrection (--autocorrect-all).
 Style/SelectByRegexp:

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class << RSpec::OpenAPI::SchemaBuilder = Object.new
   # @param [RSpec::OpenAPI::Record] record
   # @return [Hash]
