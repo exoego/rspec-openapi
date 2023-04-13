@@ -39,7 +39,7 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
 
   def build_fresh_schemas(references, base, fresh)
     references.inject({}) do |acc, paths|
-      ref_link = dig_schema(base, paths).dig('$ref')
+      ref_link = dig_schema(base, paths)['$ref']
       schema_name = ref_link.gsub('#/components/schemas/', '')
       schema_body = dig_schema(fresh, paths)
       RSpec::OpenAPI::SchemaMerger.merge!(acc, { schema_name => schema_body })
