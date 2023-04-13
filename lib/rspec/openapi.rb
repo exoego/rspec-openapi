@@ -17,7 +17,7 @@ module RSpec::OpenAPI
   @path = 'doc/openapi.yaml'
   @comment = nil
   @enable_example = true
-  @description_builder = -> (example) { example.description }
+  @description_builder = ->(example) { example.description }
   @info = {}
   @application_version = '1.0.0'
   @request_headers = []
