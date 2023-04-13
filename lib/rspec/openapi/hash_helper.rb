@@ -15,7 +15,7 @@ class << RSpec::OpenAPI::HashHelper = Object.new
     selector_parts = selector.split('.').map(&:to_s)
     paths_to_all_fields(obj).select do |key_parts|
       key_parts.size == selector_parts.size && key_parts.zip(selector_parts).all? do |kp, sp|
-        kp == sp || (sp == '*' && kp != nil)
+        kp == sp || (sp == '*' && !kp.nil?)
       end
     end
   end

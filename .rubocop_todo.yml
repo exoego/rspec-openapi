@@ -140,13 +140,6 @@ Style/IfUnlessModifier:
 
 # Offense count: 1
 # This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: IncludeSemanticChanges.
-Style/NonNilCheck:
-  Exclude:
-    - 'lib/rspec/openapi/hash_helper.rb'
-
-# Offense count: 1
-# This cop supports safe autocorrection (--autocorrect).
 Style/RedundantConstantBase:
   Exclude:
     - 'lib/rspec/openapi/rspec_hooks.rb'
