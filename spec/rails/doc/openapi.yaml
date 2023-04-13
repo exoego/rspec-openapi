@@ -33,6 +33,8 @@ paths:
           properties:
             name:
               type: string
+          required:
+          - name
         example:
           name: Example Table
       - name: filter[price]
@@ -42,6 +44,8 @@ paths:
           properties:
             price:
               type: string
+          required:
+          - price
         example:
           price: '0'
       - name: page
@@ -77,6 +81,9 @@ paths:
                           type: integer
                         name:
                           type: string
+                      required:
+                      - id
+                      - name
                     null_sample:
                       nullable: true
                     storage_size:
@@ -86,6 +93,15 @@ paths:
                       type: string
                     updated_at:
                       type: string
+                  required:
+                  - id
+                  - name
+                  - description
+                  - database
+                  - null_sample
+                  - storage_size
+                  - created_at
+                  - updated_at
               example:
               - id: 1
                 name: access
@@ -110,6 +126,8 @@ paths:
                 properties:
                   message:
                     type: string
+                required:
+                - message
               example:
                 message: Unauthorized
     post:
@@ -157,6 +175,9 @@ paths:
                         type: integer
                       name:
                         type: string
+                    required:
+                    - id
+                    - name
                   null_sample:
                     nullable: true
                   storage_size:
@@ -166,6 +187,15 @@ paths:
                     type: string
                   updated_at:
                     type: string
+                required:
+                - id
+                - name
+                - description
+                - database
+                - null_sample
+                - storage_size
+                - created_at
+                - updated_at
               example:
                 id: 1
                 name: access
@@ -210,6 +240,9 @@ paths:
                         type: integer
                       name:
                         type: string
+                    required:
+                    - id
+                    - name
                   null_sample:
                     nullable: true
                   storage_size:
@@ -219,6 +252,15 @@ paths:
                     type: string
                   updated_at:
                     type: string
+                required:
+                - id
+                - name
+                - description
+                - database
+                - null_sample
+                - storage_size
+                - created_at
+                - updated_at
               example:
                 id: 1
                 name: access
@@ -239,6 +281,8 @@ paths:
                 properties:
                   message:
                     type: string
+                required:
+                - message
               example:
                 message: Unauthorized
         '404':
@@ -250,6 +294,8 @@ paths:
                 properties:
                   message:
                     type: string
+                required:
+                - message
               example:
                 message: not found
     patch:
@@ -307,6 +353,9 @@ paths:
                         type: integer
                       name:
                         type: string
+                    required:
+                    - id
+                    - name
                   null_sample:
                     nullable: true
                   storage_size:
@@ -316,6 +365,15 @@ paths:
                     type: string
                   updated_at:
                     type: string
+                required:
+                - id
+                - name
+                - description
+                - database
+                - null_sample
+                - storage_size
+                - created_at
+                - updated_at
               example:
                 id: 1
                 name: access
@@ -359,6 +417,9 @@ paths:
                         type: integer
                       name:
                         type: string
+                    required:
+                    - id
+                    - name
                   null_sample:
                     nullable: true
                   storage_size:
@@ -368,6 +429,15 @@ paths:
                     type: string
                   updated_at:
                     type: string
+                required:
+                - id
+                - name
+                - description
+                - database
+                - null_sample
+                - storage_size
+                - created_at
+                - updated_at
               example:
                 id: 1
                 name: access
@@ -457,6 +527,9 @@ paths:
                     tags:
                       type: array
                       items: {}
+                  required:
+                  - name
+                  - tags
               example:
               - name: file.png
                 tags: []

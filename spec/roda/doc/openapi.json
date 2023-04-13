@@ -45,7 +45,11 @@
                     "name": {
                       "type": "string"
                     }
-                  }
+                  },
+                  "required": [
+                    "id",
+                    "name"
+                  ]
                 },
                 "example": {
                   "id": 1,
