@@ -79,6 +79,8 @@ paths:
                 properties:
                   message:
                     type: string
+                required:
+                  - message
               example:
                 message: Unauthorized
   "/tables/{id}":
@@ -114,6 +116,9 @@ paths:
                         type: integer
                       name:
                         type: string
+                    required:
+                      - id
+                      - name
                   null_sample:
                     nullable: true
                   storage_size:
@@ -123,6 +128,15 @@ paths:
                     type: string
                   updated_at:
                     type: string
+                required:
+                  - id
+                  - name
+                  - description
+                  - database
+                  - null_sample
+                  - storage_size
+                  - created_at
+                  - updated_at
               example:
                 id: 1
                 name: access
@@ -222,6 +236,16 @@ components:
           type: string
         updated_at:
           type: string
+      required:
+        - id
+        - name
+        - description
+        - database
+        - columns
+        - null_sample
+        - storage_size
+        - created_at
+        - updated_at
     Database:
       type: object
       description: 'this should be preserved'
@@ -231,6 +255,9 @@ components:
           description: 'this should be preserved'
         name:
           type: string
+      required:
+        - id
+        - name
     Column:
       type: object
       properties:
@@ -238,6 +265,9 @@ components:
           type: string
         column_type:
           type: string
+      required:
+        - name
+        - column_type
     User:
       type: object
       properties:
@@ -252,11 +282,19 @@ components:
               type: array
               items:
                 "$ref": "#/components/schemas/Pet"
+          required:
+            - avatar
+            - pets
+      required:
+        - name
+        - relations
     Avatar:
       type: object
       properties:
         url:
           type: string
+      required:
+        - url
     Pet:
       type: object
       properties:
@@ -264,6 +302,9 @@ components:
           type: string
         age:
           type: integer
+      required:
+        - name
+        - age
     PostUsersRequest:
       type: object
       properties:

@@ -32,7 +32,10 @@
                     "message": {
                       "type": "string"
                     }
-                  }
+                  },
+                  "required": [
+                    "message"
+                  ]
                 },
                 "example": {
                   "message": "Unauthorized"
@@ -67,7 +70,11 @@
                           "name": {
                             "type": "string"
                           }
-                        }
+                        },
+                        "required": [
+                          "id",
+                          "name"
+                        ]
                       },
                       "null_sample": {
                         "nullable": true
@@ -82,7 +89,17 @@
                       "updated_at": {
                         "type": "string"
                       }
-                    }
+                    },
+                    "required": [
+                      "id",
+                      "name",
+                      "description",
+                      "database",
+                      "null_sample",
+                      "storage_size",
+                      "created_at",
+                      "updated_at"
+                    ]
                   }
                 },
                 "example": [
@@ -130,7 +147,10 @@
                 "name": {
                   "type": "string"
                 }
-              }
+              },
+              "required": [
+                "name"
+              ]
             },
             "example": {
               "name": "Example Table"
@@ -145,7 +165,10 @@
                 "price": {
                   "type": "string"
                 }
-              }
+              },
+              "required": [
+                "price"
+              ]
             },
             "example": {
               "price": "0"
@@ -230,7 +253,11 @@
                         "name": {
                           "type": "string"
                         }
-                      }
+                      },
+                      "required": [
+                        "id",
+                        "name"
+                      ]
                     },
                     "null_sample": {
                       "nullable": true
@@ -245,7 +272,17 @@
                     "updated_at": {
                       "type": "string"
                     }
-                  }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "description",
+                    "database",
+                    "null_sample",
+                    "storage_size",
+                    "created_at",
+                    "updated_at"
+                  ]
                 },
                 "example": {
                   "id": 1,
@@ -309,7 +346,11 @@
                         "name": {
                           "type": "string"
                         }
-                      }
+                      },
+                      "required": [
+                        "id",
+                        "name"
+                      ]
                     },
                     "null_sample": {
                       "nullable": true
@@ -324,7 +365,17 @@
                     "updated_at": {
                       "type": "string"
                     }
-                  }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "description",
+                    "database",
+                    "null_sample",
+                    "storage_size",
+                    "created_at",
+                    "updated_at"
+                  ]
                 },
                 "example": {
                   "id": 1,
@@ -352,7 +403,10 @@
                     "message": {
                       "type": "string"
                     }
-                  }
+                  },
+                  "required": [
+                    "message"
+                  ]
                 },
                 "example": {
                   "message": "Unauthorized"
@@ -370,7 +424,10 @@
                     "message": {
                       "type": "string"
                     }
-                  }
+                  },
+                  "required": [
+                    "message"
+                  ]
                 },
                 "example": {
                   "message": "not found"
@@ -458,7 +515,11 @@
                         "name": {
                           "type": "string"
                         }
-                      }
+                      },
+                      "required": [
+                        "id",
+                        "name"
+                      ]
                     },
                     "null_sample": {
                       "nullable": true
@@ -473,7 +534,17 @@
                     "updated_at": {
                       "type": "string"
                     }
-                  }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "description",
+                    "database",
+                    "null_sample",
+                    "storage_size",
+                    "created_at",
+                    "updated_at"
+                  ]
                 },
                 "example": {
                   "id": 1,
@@ -535,7 +606,11 @@
                         "name": {
                           "type": "string"
                         }
-                      }
+                      },
+                      "required": [
+                        "id",
+                        "name"
+                      ]
                     },
                     "null_sample": {
                       "nullable": true
@@ -550,7 +625,17 @@
                     "updated_at": {
                       "type": "string"
                     }
-                  }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "description",
+                    "database",
+                    "null_sample",
+                    "storage_size",
+                    "created_at",
+                    "updated_at"
+                  ]
                 },
                 "example": {
                   "id": 1,
@@ -692,7 +777,11 @@
                         "items": {
                         }
                       }
-                    }
+                    },
+                    "required": [
+                      "name",
+                      "tags"
+                    ]
                   }
                 },
                 "example": [

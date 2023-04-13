@@ -32,6 +32,9 @@ paths:
                     type: integer
                   name:
                     type: string
+                required:
+                - id
+                - name
               example:
                 id: 1
                 name: hello
