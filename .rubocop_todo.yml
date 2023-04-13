@@ -85,12 +85,6 @@ Style/Documentation:
     - 'lib/rspec/openapi/schema_file.rb'
 
 # Offense count: 1
-# This cop supports safe autocorrection (--autocorrect).
-Style/ExpandPathArguments:
-  Exclude:
-    - 'rspec-openapi.gemspec'
-
-# Offense count: 1
 # This cop supports unsafe autocorrection (--autocorrect-all).
 Style/SelectByRegexp:
   Exclude:
