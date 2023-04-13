@@ -22,7 +22,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   end
 
   # Not doing `base.replace(deep_merge(base, spec))` to preserve key orders.
-  # Also this needs to be aware of OpenAPI details because a Hash-like structure 
+  # Also this needs to be aware of OpenAPI details because a Hash-like structure
   # may be an array whose Hash elements have a key name.
   #
   # TODO: Should we probably force-merge `summary` regardless of manual modifications?
