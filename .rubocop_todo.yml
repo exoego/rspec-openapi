@@ -18,15 +18,6 @@ Layout/HashAlignment:
 
 # Offense count: 1
 # Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, EnforcedStyleForEmptyBraces.
-# SupportedStyles: space, no_space, compact
-# SupportedStylesForEmptyBraces: space, no_space
-Layout/SpaceInsideHashLiteralBraces:
-  Exclude:
-    - 'lib/rspec/openapi/components_updater.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
 # Configuration parameters: AllowInHeredoc.
 Layout/TrailingWhitespace:
   Exclude:

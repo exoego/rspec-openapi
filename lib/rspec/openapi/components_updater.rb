@@ -32,7 +32,7 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
       RSpec::OpenAPI::SchemaMerger.merge!(fresh_schemas[schema_name], nested_schema)
     end
 
-    RSpec::OpenAPI::SchemaMerger.merge!(base, { 'components' => { 'schemas' => fresh_schemas }})
+    RSpec::OpenAPI::SchemaMerger.merge!(base, { 'components' => { 'schemas' => fresh_schemas } })
     RSpec::OpenAPI::SchemaCleaner.cleanup_components_schemas!(base, { 'components' => { 'schemas' => fresh_schemas } })
   end
 
