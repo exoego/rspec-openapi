@@ -14,16 +14,6 @@ Gemspec/RequireMFA:
   Exclude:
     - 'rspec-openapi.gemspec'
 
-# Offense count: 6
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: strict, consistent
-Lint/SymbolConversion:
-  Exclude:
-    - 'spec/integration_tests/rails_test.rb'
-    - 'spec/requests/rails_smart_merge_spec.rb'
-    - 'spec/requests/rails_spec.rb'
-
 # Offense count: 10
 # Configuration parameters: AllowedMethods, AllowedPatterns, CountRepeatedAttributes.
 Metrics/AbcSize:
