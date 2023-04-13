@@ -131,12 +131,6 @@ Style/GuardClause:
     - 'lib/rspec/openapi/record_builder.rb'
 
 # Offense count: 1
-# This cop supports safe autocorrection (--autocorrect).
-Style/RedundantConstantBase:
-  Exclude:
-    - 'lib/rspec/openapi/rspec_hooks.rb'
-
-# Offense count: 1
 # This cop supports unsafe autocorrection (--autocorrect-all).
 Style/SelectByRegexp:
   Exclude:
