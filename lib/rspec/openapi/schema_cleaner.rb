@@ -47,9 +47,7 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
     RSpec::OpenAPI::HashHelper::matched_paths(base, selector).each do |paths|
       target_array = base.dig(*paths)
       spec_array = spec.dig(*paths)
-      unless target_array.is_a?(Array) && spec_array.is_a?(Array)
-        next
-      end
+      next unless target_array.is_a?(Array) && spec_array.is_a?(Array)
 
       spec_identities = Set.new(spec_array.map(&marshal))
       target_array.select! { |e| spec_identities.include?(marshal.call(e)) }

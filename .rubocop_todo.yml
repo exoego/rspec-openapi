@@ -130,14 +130,6 @@ Style/GuardClause:
   Exclude:
     - 'lib/rspec/openapi/record_builder.rb'
 
-# Offense count: 3
-# This cop supports safe autocorrection (--autocorrect).
-Style/IfUnlessModifier:
-  Exclude:
-    - 'lib/rspec/openapi/schema_cleaner.rb'
-    - 'lib/rspec/openapi/schema_file.rb'
-    - 'lib/rspec/openapi/schema_merger.rb'
-
 # Offense count: 1
 # This cop supports safe autocorrection (--autocorrect).
 Style/RedundantConstantBase:

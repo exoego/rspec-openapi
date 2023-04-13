@@ -29,9 +29,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   def merge_schema!(base, spec)
     spec.each do |key, value|
       if base[key].is_a?(Hash) && value.is_a?(Hash)
-        unless base[key].key?('$ref')
-          merge_schema!(base[key], value)
-        end
+        merge_schema!(base[key], value) unless base[key].key?('$ref')
       elsif base[key].is_a?(Array) && value.is_a?(Array)
         # parameters need to be merged as if `name` and `in` were the Hash keys.
         if key == 'parameters'
