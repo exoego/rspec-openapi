@@ -29,7 +29,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   def merge_schema!(base, spec)
     spec.each do |key, value|
       if base[key].is_a?(Hash) && value.is_a?(Hash)
-        unless base[key].key?("$ref")
+        unless base[key].key?('$ref')
           merge_schema!(base[key], value)
         end
       elsif base[key].is_a?(Array) && value.is_a?(Array)

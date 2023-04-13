@@ -33,12 +33,12 @@ RSpec.describe 'Tables', type: :request do
       end
 
       it 'with deep query parameters' do
-        get '/tables', params: { filter: { "name" => "Example Table" } }, headers: { authorization: 'k0kubun' }
+        get '/tables', params: { filter: { 'name' => 'Example Table' } }, headers: { authorization: 'k0kubun' }
         expect(response.status).to eq(200)
       end
 
       it 'with different deep query parameters' do
-        get '/tables', params: { filter: { "price" => 0 } }, headers: { authorization: 'k0kubun' }
+        get '/tables', params: { filter: { 'price' => 0 } }, headers: { authorization: 'k0kubun' }
         expect(response.status).to eq(200)
       end
     end

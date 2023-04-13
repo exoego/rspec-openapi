@@ -167,20 +167,6 @@ Style/SelectByRegexp:
   Exclude:
     - 'spec/requests/roda_spec.rb'
 
-# Offense count: 12
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle, ConsistentQuotesInMultiline.
-# SupportedStyles: single_quotes, double_quotes
-Style/StringLiterals:
-  Exclude:
-    - 'Gemfile'
-    - 'Rakefile'
-    - 'bin/console'
-    - 'lib/rspec/openapi/record_builder.rb'
-    - 'lib/rspec/openapi/schema_merger.rb'
-    - 'spec/requests/rails_spec.rb'
-    - 'spec/rspec/rails_spec.rb'
-
 # Offense count: 1
 # This cop supports safe autocorrection (--autocorrect).
 Style/UnpackFirst:
