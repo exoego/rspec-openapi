@@ -40,16 +40,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   private
 
   def enrich_with_required_keys(obj)
-    if obj.dig(:type) != 'object'
-      obj
-    else
-      required_keys = obj.dig(:properties)&.map do |key, value|
-        return nil if value[:nullable] == true
-        key
-      end.compact
-      obj[:required] = required_keys
-      obj
-    end
+    obj[:required] = obj[:properties]&.keys
+    obj
   end
 
   def response_example(record, disposition:)
