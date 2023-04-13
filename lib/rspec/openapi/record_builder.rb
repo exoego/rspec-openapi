@@ -103,11 +103,9 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
 
     app.routes.router.recognize(request) do |route|
       if route.app.matches?(request)
-        if route.app.engine?
-          return find_rails_route(request, app: route.app.app, fix_path: false)
-        else
-          return route
-        end
+        return find_rails_route(request, app: route.app.app, fix_path: false) if route.app.engine?
+
+        return route
       end
     end
     raise "No route matched for #{request.request_method} #{request.path_info}"

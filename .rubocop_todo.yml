@@ -124,13 +124,6 @@ Style/FrozenStringLiteralComment:
   Enabled: false
 
 # Offense count: 1
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: MinBodyLength, AllowConsecutiveConditionals.
-Style/GuardClause:
-  Exclude:
-    - 'lib/rspec/openapi/record_builder.rb'
-
-# Offense count: 1
 # This cop supports unsafe autocorrection (--autocorrect-all).
 Style/SelectByRegexp:
   Exclude:
