@@ -16,15 +16,6 @@ Layout/HashAlignment:
   Exclude:
     - 'spec/requests/rails_smart_merge_spec.rb'
 
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, EnforcedStyleForEmptyBrackets.
-# SupportedStyles: space, no_space, compact
-# SupportedStylesForEmptyBrackets: space, no_space
-Layout/SpaceInsideArrayLiteralBrackets:
-  Exclude:
-    - 'spec/rails/config/environments/production.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, EnforcedStyleForEmptyBraces, SpaceBeforeBlockParameters.
