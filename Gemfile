@@ -12,6 +12,6 @@ group :test do
 end
 
 group :development do
-  gem 'pry'
   gem "code-scanning-rubocop"
+  gem 'pry'
 end
