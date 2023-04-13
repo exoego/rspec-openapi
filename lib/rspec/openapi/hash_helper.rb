@@ -13,12 +13,11 @@ class << RSpec::OpenAPI::HashHelper = Object.new
 
   def matched_paths(obj, selector)
     selector_parts = selector.split('.').map(&:to_s)
-    selectors = paths_to_all_fields(obj).select do |key_parts|
+    paths_to_all_fields(obj).select do |key_parts|
       key_parts.size == selector_parts.size && key_parts.zip(selector_parts).all? do |kp, sp|
         kp == sp || (sp == '*' && kp != nil)
       end
     end
-    selectors
   end
 
   def matched_paths_deeply_nested(obj, begin_selector, end_selector)
