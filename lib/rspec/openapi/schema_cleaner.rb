@@ -46,7 +46,7 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
       Marshal.dump(slice(obj, fields_for_identity))
     end
 
-    RSpec::OpenAPI::HashHelper::matched_paths(base, selector).each do |paths|
+    RSpec::OpenAPI::HashHelper.matched_paths(base, selector).each do |paths|
       target_array = base.dig(*paths)
       spec_array = spec.dig(*paths)
       next unless target_array.is_a?(Array) && spec_array.is_a?(Array)
@@ -62,7 +62,7 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
   end
 
   def cleanup_hash!(base, spec, selector)
-    RSpec::OpenAPI::HashHelper::matched_paths(base, selector).each do |paths|
+    RSpec::OpenAPI::HashHelper.matched_paths(base, selector).each do |paths|
       exist_in_base = !base.dig(*paths).nil?
       not_in_spec = spec.dig(*paths).nil?
       if exist_in_base && not_in_spec

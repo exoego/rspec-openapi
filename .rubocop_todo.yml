@@ -73,13 +73,6 @@ Style/ClassAndModuleChildren:
     - 'lib/rspec/openapi.rb'
     - 'lib/rspec/openapi/schema_file.rb'
 
-# Offense count: 4
-# This cop supports safe autocorrection (--autocorrect).
-Style/ColonMethodCall:
-  Exclude:
-    - 'lib/rspec/openapi/components_updater.rb'
-    - 'lib/rspec/openapi/schema_cleaner.rb'
-
 # Offense count: 5
 # Configuration parameters: AllowedConstants.
 Style/Documentation:
