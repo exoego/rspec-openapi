@@ -80,14 +80,6 @@ Style/ColonMethodCall:
     - 'lib/rspec/openapi/components_updater.rb'
     - 'lib/rspec/openapi/schema_cleaner.rb'
 
-# Offense count: 1
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle, SingleLineConditionsOnly, IncludeTernaryExpressions.
-# SupportedStyles: assign_to_condition, assign_inside_condition
-Style/ConditionalAssignment:
-  Exclude:
-    - 'lib/rspec/openapi/schema_builder.rb'
-
 # Offense count: 5
 # Configuration parameters: AllowedConstants.
 Style/Documentation:
