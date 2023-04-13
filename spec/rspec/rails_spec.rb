@@ -12,9 +12,9 @@ RSpec.describe 'rails request spec' do
     end
 
     it 'generates the same spec/rails/doc/openapi.yaml' do
-      org_yaml = YAML.load(File.read(openapi_path))
+      org_yaml = YAML.safe_load(File.read(openapi_path))
       rspec 'spec/requests/rails_spec.rb', openapi: true, output: :yaml
-      new_yaml = YAML.load(File.read(openapi_path))
+      new_yaml = YAML.safe_load(File.read(openapi_path))
       expect(new_yaml).to eq org_yaml
     end
   end
@@ -25,9 +25,9 @@ RSpec.describe 'rails request spec' do
     end
 
     it 'generates the same spec/rails/doc/openapi.json' do
-      org_yaml = JSON.load(File.read(openapi_path))
+      org_yaml = JSON.parse(File.read(openapi_path))
       rspec 'spec/requests/rails_spec.rb', openapi: true, output: :json
-      new_yaml = JSON.load(File.read(openapi_path))
+      new_yaml = JSON.parse(File.read(openapi_path))
       expect(new_yaml).to eq org_yaml
     end
   end
@@ -45,8 +45,8 @@ RSpec.describe 'rails request spec' do
       original_source = File.read(openapi_path)
       begin
         rspec 'spec/requests/rails_smart_merge_spec.rb', openapi: true, output: :yaml
-        new_yaml = YAML.load(File.read(openapi_path))
-        expected_yaml = YAML.load(File.read(expected_path))
+        new_yaml = YAML.safe_load(File.read(openapi_path))
+        expected_yaml = YAML.safe_load(File.read(expected_path))
         expect(new_yaml).to eq expected_yaml
       ensure
         File.write(openapi_path, original_source)

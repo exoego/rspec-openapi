@@ -22,7 +22,7 @@ class RSpec::OpenAPI::SchemaFile
   def read
     return {} unless File.exist?(@path)
 
-    YAML.load(File.read(@path)) # this can also parse JSON
+    YAML.safe_load(File.read(@path)) # this can also parse JSON
   end
 
   # @param [Hash] spec
