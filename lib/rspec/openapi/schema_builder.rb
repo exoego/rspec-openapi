@@ -40,15 +40,14 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   private
 
   def enrich_with_required_keys(obj)
-    if obj.dig(:schema, :type) != 'object'
+    if obj.dig(:type) != 'object'
       obj
     else
-      # TODO: Nested object
-      required_keys = obj.dig(:schema, :properties)&.map do |key, value|
+      required_keys = obj.dig(:properties)&.map do |key, value|
         return nil if value[:nullable] == true
         key
       end.compact
-      obj[:schema][:required] = required_keys
+      obj[:required] = required_keys
       obj
     end
   end
@@ -127,15 +126,16 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
     {
       content: {
-        normalize_content_type(record.request_content_type) => enrich_with_required_keys({
-          schema: build_property(record.request_params),
+        normalize_content_type(record.request_content_type) => {
+          schema: build_property(record.request_params, set_required: true),
           example: (build_example(record.request_params) if example_enabled?),
-        }).compact,
+        }.compact,
       },
     }
   end
 
-  def build_property(value, disposition: nil)
+  # TODO: Remove set_required when implementing "required" to all places
+  def build_property(value, disposition: nil, set_required: false)
     property = build_type(value, disposition)
 
     case value
@@ -143,14 +143,15 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       if value.empty?
         property[:items] = {} # unknown
       else
-        property[:items] = build_property(value.first)
+        property[:items] = build_property(value.first, set_required: set_required)
       end
     when Hash
       property[:properties] = {}.tap do |properties|
         value.each do |key, v|
-          properties[key] = build_property(v)
+          properties[key] = build_property(v, set_required: set_required)
         end
       end
+      property = enrich_with_required_keys(property) if set_required
     end
     property
   end

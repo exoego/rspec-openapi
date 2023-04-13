@@ -412,7 +412,11 @@
                       "caption": {
                         "type": "string"
                       }
-                    }
+                    },
+                    "required": [
+                      "image",
+                      "caption"
+                    ]
                   }
                 },
                 "required": [
