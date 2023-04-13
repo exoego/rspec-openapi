@@ -39,7 +39,7 @@ RSpec.describe 'Tables', type: :request do
       it 'with flat query parameters' do
         # These new params replace them in old spec
         get '/tables', params: { page: '42', per: '10', show_columns: true },
-                       headers: { authorization: 'k0kubun', "X-Authorization-Token": 'token' }
+                       headers: { authorization: 'k0kubun', 'X-Authorization-Token': 'token' }
         response.set_header('X-Cursor', 100)
         expect(response.status).to eq(200)
       end

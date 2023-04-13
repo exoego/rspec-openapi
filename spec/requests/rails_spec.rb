@@ -28,7 +28,7 @@ RSpec.describe 'Tables', type: :request do
     context it 'returns a list of tables' do
       it 'with flat query parameters' do
         get '/tables', params: { page: '1', per: '10' },
-                       headers: { authorization: 'k0kubun', "X-Authorization-Token": 'token' }
+                       headers: { authorization: 'k0kubun', 'X-Authorization-Token': 'token' }
         expect(response.status).to eq(200)
       end
 

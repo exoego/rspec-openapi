@@ -35,7 +35,7 @@ class TablesIndexTest < ActionDispatch::IntegrationTest
 
   def test_with_flat_query_parameters
     get '/tables', params: { page: '1', per: '10' },
-                   headers: { authorization: 'k0kubun', "X-Authorization-Token": 'token' }
+                   headers: { authorization: 'k0kubun', 'X-Authorization-Token': 'token' }
     assert_response 200
   end
 
