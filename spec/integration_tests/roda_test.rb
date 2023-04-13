@@ -8,7 +8,7 @@ require 'minitest/autorun'
 
 ENV['OPENAPI_OUTPUT'] ||= 'yaml'
 
-RSpec::OpenAPI.path = File.expand_path("../roda/doc/openapi.#{ENV['OPENAPI_OUTPUT']}", __dir__)
+RSpec::OpenAPI.path = File.expand_path("../roda/doc/openapi.#{ENV.fetch('OPENAPI_OUTPUT', nil)}", __dir__)
 
 class RodaTest < Minitest::Test
   include Rack::Test::Methods
