@@ -41,21 +41,6 @@ Naming/HeredocDelimiterNaming:
 
 # Offense count: 2
 # Cop supports --auto-correct.
-# Configuration parameters: AutoCorrect.
-Security/JSONLoad:
-  Exclude:
-    - 'spec/rspec/rails_spec.rb'
-
-# Offense count: 9
-# Cop supports --auto-correct.
-Security/YAMLLoad:
-  Exclude:
-    - 'lib/rspec/openapi/schema_file.rb'
-    - 'spec/rspec/rack_test_spec.rb'
-    - 'spec/rspec/rails_spec.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
 # Configuration parameters: AutoCorrect, EnforcedStyle.
 # SupportedStyles: nested, compact
 Style/ClassAndModuleChildren:
