@@ -143,14 +143,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                avatar_url:
-                  type: string
-              required:
-              - name
+              "$ref": "#/components/schemas/PostUsersRequest"
             example:
               name: alice
               avatar_url: "https://example.com/avatar.png"
@@ -268,3 +261,12 @@ components:
           type: string
         age:
           type: integer
+    PostUsersRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        avatar_url:
+          type: string
+      required:
+        - name

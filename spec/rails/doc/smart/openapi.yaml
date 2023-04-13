@@ -212,19 +212,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                avatar:
-                  "$ref": "#/components/schemas/Avatar"
-                pets:
-                  type: array
-                  items:
-                    "$ref": "#/components/schemas/Pet"
-              required:
-                - name
-                - no-such-field
+              "$ref": "#/components/schemas/PostUsersRequest"
       responses:
         '201':
           description: returns a user
