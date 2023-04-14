@@ -19,12 +19,6 @@ Gemspec/RequireMFA:
 Metrics/AbcSize:
   Max: 41
 
-# Offense count: 3
-# Configuration parameters: CountComments, CountAsOne, AllowedMethods, AllowedPatterns.
-# AllowedMethods: refine
-Metrics/BlockLength:
-  Max: 72
-
 # Offense count: 5
 # Configuration parameters: AllowedMethods, AllowedPatterns.
 Metrics/CyclomaticComplexity:

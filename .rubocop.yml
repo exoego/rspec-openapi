@@ -17,3 +17,6 @@ Style/ClassAndModuleChildren:
   EnforcedStyle: compact
   Exclude:
     - 'lib/rspec/openapi/version.rb'
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
