@@ -11,28 +11,9 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
     request, response = extract_request_response(context)
     return if request.nil?
 
-    path, summary, tags, raw_path_params = generate_path_summary_tags(request)
+    path, summary, tags, raw_path_params, description, security = extract_request_attributes(request, example)
 
-    response_body =
-      begin
-        response.parsed_body
-      rescue JSON::ParserError
-        nil
-      end
-
-    request_headers = RSpec::OpenAPI.request_headers.each_with_object([]) do |header, headers_arr|
-      header_key = header.gsub(/-/, '_').upcase
-      header_value = request.get_header(['HTTP', header_key].join('_')) || request.get_header(header_key)
-      headers_arr << [header, header_value] if header_value
-    end
-
-    metadata_options = example.metadata[:openapi] || {}
-
-    response_headers = RSpec::OpenAPI.response_headers.each_with_object([]) do |header, headers_arr|
-      header_key = header
-      header_value = response.headers[header_key]
-      headers_arr << [header_key, header_value] if header_value
-    end
+    request_headers, response_headers = extract_headers(request, response)
 
     RSpec::OpenAPI::Record.new(
       http_method: request.method,
@@ -42,12 +23,12 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       request_params: raw_request_params(request),
       request_content_type: request.media_type,
       request_headers: request_headers,
-      summary: metadata_options[:summary] || summary,
-      tags: metadata_options[:tags] || tags,
-      description: metadata_options[:description] || RSpec::OpenAPI.description_builder.call(example),
-      security: metadata_options[:security],
+      summary: summary,
+      tags: tags,
+      description: description,
+      security: security,
       status: response.status,
-      response_body: response_body,
+      response_body: safe_parse_body(response),
       response_headers: response_headers,
       response_content_type: response.media_type,
       response_content_disposition: response.header['Content-Disposition'],
@@ -56,23 +37,45 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
 
   private
 
-  def generate_path_summary_tags(request)
+  def safe_parse_body(response)
+    response.parsed_body
+  rescue JSON::ParserError
+    nil
+  end
+
+  def extract_headers(request, response)
+    request_headers = RSpec::OpenAPI.request_headers.each_with_object([]) do |header, headers_arr|
+      header_key = header.gsub(/-/, '_').upcase
+      header_value = request.get_header(['HTTP', header_key].join('_')) || request.get_header(header_key)
+      headers_arr << [header, header_value] if header_value
+    end
+    response_headers = RSpec::OpenAPI.response_headers.each_with_object([]) do |header, headers_arr|
+      header_key = header
+      header_value = response.headers[header_key]
+      headers_arr << [header_key, header_value] if header_value
+    end
+    [request_headers, response_headers]
+  end
+
+  def extract_request_attributes(request, example)
+    metadata = example.metadata[:openapi] || {}
+    summary = metadata[:summary]
+    tags = metadata[:tags]
+    security = metadata[:security]
+    description = metadata[:description] || RSpec::OpenAPI.description_builder.call(example)
+    raw_path_params = request.path_parameters
+    path = request.path
     if rails?
       route = find_rails_route(request)
       path = route.path.spec.to_s.delete_suffix('(.:format)')
-      summary = route.requirements[:action] || "#{request.method} #{path}"
-      tags = [route.requirements[:controller]&.classify].compact
+      summary ||= route.requirements[:action]
+      tags ||= [route.requirements[:controller]&.classify].compact
       # :controller and :action always exist. :format is added when routes is configured as such.
-      raw_path_params = request.path_parameters.reject do |key, _value|
-        %i[controller action format].include?(key)
-      end
-    else
-      path = request.path
-      summary = "#{request.method} #{request.path}"
-      tags = nil
-      raw_path_params = request.path_parameters
+      # TODO: Use .except(:controller, :action, :format) when we drop support for Ruby 2.x
+      raw_path_params = raw_path_params.slice(*(raw_path_params.keys - %i[controller action format]))
     end
-    [path, summary, tags, raw_path_params]
+    summary ||= "#{request.method} #{path}"
+    [path, summary, tags, raw_path_params, description, security]
   end
 
   def extract_request_response(context)
