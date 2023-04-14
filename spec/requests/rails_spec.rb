@@ -87,7 +87,7 @@ RSpec.describe 'Tables', type: :request do
     before do
       png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
       QBoAAAAASUVORK5CYII='.unpack1('m')
-      IO.binwrite('test.png', png)
+      File.binwrite('test.png', png)
     end
     let(:image) { Rack::Test::UploadedFile.new('test.png', 'image/png') }
     it 'returns a table' do

@@ -47,22 +47,6 @@ Naming/HeredocDelimiterNaming:
   Exclude:
     - 'lib/rspec/openapi/result_recorder.rb'
 
-# Offense count: 2
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Security/IoMethods:
-  Exclude:
-    - 'spec/integration_tests/rails_test.rb'
-    - 'spec/requests/rails_spec.rb'
-
-# Offense count: 2
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: nested, compact
-Style/ClassAndModuleChildren:
-  Exclude:
-    - 'lib/rspec/openapi.rb'
-    - 'lib/rspec/openapi/schema_file.rb'
-
 # Offense count: 5
 # Configuration parameters: AllowedConstants.
 Style/Documentation:
@@ -73,9 +57,3 @@ Style/Documentation:
     - 'lib/rspec/openapi/minitest_hooks.rb'
     - 'lib/rspec/openapi/result_recorder.rb'
     - 'lib/rspec/openapi/schema_file.rb'
-
-# Offense count: 1
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Style/SelectByRegexp:
-  Exclude:
-    - 'spec/requests/roda_spec.rb'
