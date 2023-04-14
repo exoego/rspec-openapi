@@ -40,13 +40,6 @@ Metrics/MethodLength:
 Metrics/PerceivedComplexity:
   Max: 12
 
-# Offense count: 1
-# Configuration parameters: ForbiddenDelimiters.
-# ForbiddenDelimiters: (?i-mx:(^|\s)(EO[A-Z]{1}|END)(\s|$))
-Naming/HeredocDelimiterNaming:
-  Exclude:
-    - 'lib/rspec/openapi/result_recorder.rb'
-
 # Offense count: 5
 # Configuration parameters: AllowedConstants.
 Style/Documentation:

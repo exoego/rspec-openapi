@@ -35,10 +35,10 @@ class RSpec::OpenAPI::ResultRecorder
   end
 
   def error_message
-    <<~EOS
+    <<~ERR_MSG
       RSpec::OpenAPI got errors building #{@error_records.size} requests
 
       #{@error_records.map { |e, record| "#{e.inspect}: #{record.inspect}" }.join("\n")}
-    EOS
+    ERR_MSG
   end
 end
