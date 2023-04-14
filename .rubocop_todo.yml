@@ -57,9 +57,3 @@ Style/Documentation:
     - 'lib/rspec/openapi/minitest_hooks.rb'
     - 'lib/rspec/openapi/result_recorder.rb'
     - 'lib/rspec/openapi/schema_file.rb'
-
-# Offense count: 1
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Style/SelectByRegexp:
-  Exclude:
-    - 'spec/requests/roda_spec.rb'
