@@ -11,9 +11,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
     request, response = extract_request_response(context)
     return if request.nil?
 
-    path, summary, tags, raw_path_params = generate_path_summary_tags(request)
-
-    metadata_options = example.metadata[:openapi] || {}
+    path, summary, tags, raw_path_params, description, security = extract_request_attributes(request, example)
 
     request_headers, response_headers = extract_headers(request, response)
 
@@ -25,10 +23,10 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       request_params: raw_request_params(request),
       request_content_type: request.media_type,
       request_headers: request_headers,
-      summary: metadata_options[:summary] || summary,
-      tags: metadata_options[:tags] || tags,
-      description: metadata_options[:description] || RSpec::OpenAPI.description_builder.call(example),
-      security: metadata_options[:security],
+      summary: summary,
+      tags: tags,
+      description: description,
+      security: security,
       status: response.status,
       response_body: safe_parse_body(response),
       response_headers: response_headers,
@@ -59,23 +57,28 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
     [request_headers, response_headers]
   end
 
-  def generate_path_summary_tags(request)
+  def extract_request_attributes(request, example)
+    metadata = example.metadata[:openapi] || {}
+    summary = metadata[:summary]
+    tags = metadata[:tags]
+    security = metadata[:security]
+    description = metadata[:description] || RSpec::OpenAPI.description_builder.call(example)
     if rails?
       route = find_rails_route(request)
       path = route.path.spec.to_s.delete_suffix('(.:format)')
-      summary = route.requirements[:action] || "#{request.method} #{path}"
-      tags = [route.requirements[:controller]&.classify].compact
+      summary ||= route.requirements[:action] || "#{request.method} #{path}"
+      tags ||= [route.requirements[:controller]&.classify].compact
       # :controller and :action always exist. :format is added when routes is configured as such.
       raw_path_params = request.path_parameters.reject do |key, _value|
         %i[controller action format].include?(key)
       end
     else
       path = request.path
-      summary = "#{request.method} #{request.path}"
-      tags = nil
+      summary ||= "#{request.method} #{request.path}"
+      tags ||= nil
       raw_path_params = request.path_parameters
     end
-    [path, summary, tags, raw_path_params]
+    [path, summary, tags, raw_path_params, description, security]
   end
 
   def extract_request_response(context)
