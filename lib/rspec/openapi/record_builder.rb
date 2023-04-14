@@ -19,20 +19,9 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       rescue JSON::ParserError
         nil
       end
-
-    request_headers = RSpec::OpenAPI.request_headers.each_with_object([]) do |header, headers_arr|
-      header_key = header.gsub(/-/, '_').upcase
-      header_value = request.get_header(['HTTP', header_key].join('_')) || request.get_header(header_key)
-      headers_arr << [header, header_value] if header_value
-    end
-
     metadata_options = example.metadata[:openapi] || {}
 
-    response_headers = RSpec::OpenAPI.response_headers.each_with_object([]) do |header, headers_arr|
-      header_key = header
-      header_value = response.headers[header_key]
-      headers_arr << [header_key, header_value] if header_value
-    end
+    request_headers, response_headers = extract_headers(request, response)
 
     RSpec::OpenAPI::Record.new(
       http_method: request.method,
@@ -55,6 +44,20 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
   end
 
   private
+
+  def extract_headers(request, response)
+    request_headers = RSpec::OpenAPI.request_headers.each_with_object([]) do |header, headers_arr|
+      header_key = header.gsub(/-/, '_').upcase
+      header_value = request.get_header(['HTTP', header_key].join('_')) || request.get_header(header_key)
+      headers_arr << [header, header_value] if header_value
+    end
+    response_headers = RSpec::OpenAPI.response_headers.each_with_object([]) do |header, headers_arr|
+      header_key = header
+      header_value = response.headers[header_key]
+      headers_arr << [header_key, header_value] if header_value
+    end
+    [request_headers, response_headers]
+  end
 
   def generate_path_summary_tags(request)
     if rails?
