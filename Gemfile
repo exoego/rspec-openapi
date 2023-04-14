@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 
 # Specify your gem's dependencies in rspec-openapi.gemspec
@@ -12,6 +14,6 @@ group :test do
 end
 
 group :development do
-  gem "code-scanning-rubocop"
+  gem 'code-scanning-rubocop'
   gem 'pry'
 end

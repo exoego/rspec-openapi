@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rspec/core'
 
 RSpec.configuration.after(:each) do |example|
@@ -13,7 +15,7 @@ RSpec.configuration.after(:suite) do
   result_recorder.record_results!
   if result_recorder.errors?
     error_message = result_recorder.error_message
-    colorizer = ::RSpec::Core::Formatters::ConsoleCodes
+    colorizer = RSpec::Core::Formatters::ConsoleCodes
     RSpec.configuration.reporter.message colorizer.wrap(error_message, :failure)
   end
 end

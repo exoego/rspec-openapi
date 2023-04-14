@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class << RSpec::OpenAPI::DefaultSchema = Object.new
   def build(title)
     spec = {

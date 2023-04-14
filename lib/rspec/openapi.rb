@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rspec/openapi/version'
 require 'rspec/openapi/components_updater'
 require 'rspec/openapi/default_schema'

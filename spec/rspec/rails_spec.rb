@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'yaml'
 require 'json'
@@ -32,7 +34,7 @@ RSpec.describe 'rails request spec' do
     end
   end
 
-  describe "smart merge" do
+  describe 'smart merge' do
     let(:openapi_path) do
       File.expand_path('spec/rails/doc/smart/openapi.yaml', repo_root)
     end

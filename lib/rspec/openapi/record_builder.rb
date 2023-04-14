@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'action_dispatch'
 require 'rspec/openapi/record'
 
@@ -48,7 +50,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       response_body: response_body,
       response_headers: response_headers,
       response_content_type: response.media_type,
-      response_content_disposition: response.header["Content-Disposition"],
+      response_content_disposition: response.header['Content-Disposition'],
     ).freeze
   end
 
@@ -103,11 +105,9 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
 
     app.routes.router.recognize(request) do |route|
       if route.app.matches?(request)
-        if route.app.engine?
-          return find_rails_route(request, app: route.app.app, fix_path: false)
-        else
-          return route
-        end
+        return find_rails_route(request, app: route.app.app, fix_path: false) if route.app.engine?
+
+        return route
       end
     end
     raise "No route matched for #{request.request_method} #{request.path_info}"

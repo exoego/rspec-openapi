@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'fileutils'
 require 'yaml'
 require 'json'
@@ -41,9 +43,7 @@ class RSpec::OpenAPI::SchemaFile
     return content if RSpec::OpenAPI.comment.nil?
 
     comment = RSpec::OpenAPI.comment.dup
-    unless comment.end_with?("\n")
-      comment << "\n"
-    end
+    comment << "\n" unless comment.end_with?("\n")
     "#{comment.gsub(/^/, '# ').gsub(/^# \n/, "#\n")}#{content}"
   end
 

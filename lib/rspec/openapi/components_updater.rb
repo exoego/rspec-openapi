@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'hash_helper'
 
 class << RSpec::OpenAPI::ComponentsUpdater = Object.new
@@ -52,8 +54,8 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
   end
 
   def paths_to_top_level_refs(base)
-    request_bodies = RSpec::OpenAPI::HashHelper::matched_paths(base, 'paths.*.*.requestBody.content.application/json')
-    responses = RSpec::OpenAPI::HashHelper::matched_paths(base, 'paths.*.*.responses.*.content.application/json')
+    request_bodies = RSpec::OpenAPI::HashHelper.matched_paths(base, 'paths.*.*.requestBody.content.application/json')
+    responses = RSpec::OpenAPI::HashHelper.matched_paths(base, 'paths.*.*.responses.*.content.application/json')
     (request_bodies + responses).select do |paths|
       dig_schema(base, paths)&.dig('$ref')&.start_with?('#/components/schemas/')
     end
