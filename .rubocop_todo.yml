@@ -35,13 +35,6 @@ Metrics/CyclomaticComplexity:
 Metrics/MethodLength:
   Max: 38
 
-# Offense count: 2
-# Configuration parameters: AllowedMethods, AllowedPatterns.
-Metrics/PerceivedComplexity:
-  Max: 12
-  Exclude:
-    - 'lib/rspec/openapi/scheme_merger.rb'
-
 # Offense count: 5
 # Configuration parameters: AllowedConstants.
 Style/Documentation:

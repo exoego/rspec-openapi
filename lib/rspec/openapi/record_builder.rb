@@ -63,21 +63,18 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
     tags = metadata[:tags]
     security = metadata[:security]
     description = metadata[:description] || RSpec::OpenAPI.description_builder.call(example)
+    raw_path_params = request.path_parameters
+    path = request.path
     if rails?
       route = find_rails_route(request)
       path = route.path.spec.to_s.delete_suffix('(.:format)')
-      summary ||= route.requirements[:action] || "#{request.method} #{path}"
+      summary ||= route.requirements[:action]
       tags ||= [route.requirements[:controller]&.classify].compact
       # :controller and :action always exist. :format is added when routes is configured as such.
-      raw_path_params = request.path_parameters.reject do |key, _value|
-        %i[controller action format].include?(key)
-      end
-    else
-      path = request.path
-      summary ||= "#{request.method} #{request.path}"
-      tags ||= nil
-      raw_path_params = request.path_parameters
+      # TODO: Use .except(:controller, :action, :format) when we drop support for Ruby 2.x
+      raw_path_params = raw_path_params.slice(*(raw_path_params.keys - %i[controller action format]))
     end
+    summary ||= "#{request.method} #{path}"
     [path, summary, tags, raw_path_params, description, security]
   end
 
