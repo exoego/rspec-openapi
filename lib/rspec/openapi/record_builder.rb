@@ -13,12 +13,6 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
 
     path, summary, tags, raw_path_params = generate_path_summary_tags(request)
 
-    response_body =
-      begin
-        response.parsed_body
-      rescue JSON::ParserError
-        nil
-      end
     metadata_options = example.metadata[:openapi] || {}
 
     request_headers, response_headers = extract_headers(request, response)
@@ -36,7 +30,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       description: metadata_options[:description] || RSpec::OpenAPI.description_builder.call(example),
       security: metadata_options[:security],
       status: response.status,
-      response_body: response_body,
+      response_body: safe_parse_body(response),
       response_headers: response_headers,
       response_content_type: response.media_type,
       response_content_disposition: response.header['Content-Disposition'],
@@ -44,6 +38,12 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
   end
 
   private
+
+  def safe_parse_body(response)
+    response.parsed_body
+  rescue JSON::ParserError
+    nil
+  end
 
   def extract_headers(request, response)
     request_headers = RSpec::OpenAPI.request_headers.each_with_object([]) do |header, headers_arr|
