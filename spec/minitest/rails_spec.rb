@@ -5,7 +5,7 @@ require 'yaml'
 require 'json'
 require 'pry'
 
-RSpec.describe 'rails integration test' do
+RSpec.describe 'rails integration minitest' do
   include SpecHelper
 
   describe 'yaml output' do
