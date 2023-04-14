@@ -49,13 +49,6 @@ Naming/HeredocDelimiterNaming:
 
 # Offense count: 2
 # This cop supports unsafe autocorrection (--autocorrect-all).
-Security/IoMethods:
-  Exclude:
-    - 'spec/integration_tests/rails_test.rb'
-    - 'spec/requests/rails_spec.rb'
-
-# Offense count: 2
-# This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: nested, compact
 Style/ClassAndModuleChildren:
