@@ -5,12 +5,12 @@ require_relative 'lib/rspec/openapi/version'
 Gem::Specification.new do |spec|
   spec.name          = 'rspec-openapi'
   spec.version       = RSpec::OpenAPI::VERSION
-  spec.authors       = ['Takashi Kokubun']
-  spec.email         = ['takashikkbn@gmail.com']
+  spec.authors       = ['Takashi Kokubun', 'TATSUNO Yasuhiro']
+  spec.email         = ['takashikkbn@gmail.com', 'ytatsuno.jp@gmail.com']
 
   spec.summary       = 'Generate OpenAPI schema from RSpec request specs'
-  spec.description   = 'Generate OpenAPI  from RSpec request specs'
-  spec.homepage      = 'https://github.com/k0kubun/rspec-openapi'
+  spec.description   = 'Generate OpenAPI from RSpec request specs'
+  spec.homepage      = 'https://github.com/exoego/rspec-openapi'
   spec.license       = 'MIT'
   spec.required_ruby_version = Gem::Requirement.new('>= 2.5.0')
 

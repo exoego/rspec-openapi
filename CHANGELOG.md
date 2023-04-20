@@ -1,3 +1,12 @@
+## v0.8.0
+- Set `required` in request body and response body
+  [#95](https://github.com/exoego/rspec-openapi/pull/95), [#98](https://github.com/exoego/rspec-openapi/pull/98)
+- Generate OpenAPI with minitest instead of RSpec
+  [#90](https://github.com/exoego/rspec-openapi/pull/90)
+- Generate security schemas via RSpec::OpenAPI.security_schemes
+  [#84](https://github.com/exoego/rspec-openapi/pull/84)
+- Bunch of refactorings
+
 ## v0.7.2
 - $ref enhancements: Support $ref in arbitrary depth
   [#82](https://github.com/k0kubun/rspec-openapi/pull/82)
