@@ -63,7 +63,7 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
 
   def cleanup_hash!(base, spec, selector)
     RSpec::OpenAPI::HashHelper.matched_paths(base, selector).each do |paths|
-      base.dig(*paths).delete('required') if base.dig(*paths)['required']&.empty?
+      base.dig(*paths).delete('required') if base.dig(*paths).is_a?(Hash) && base.dig(*paths)['required']&.empty?
       exist_in_base = !base.dig(*paths).nil?
       not_in_spec = spec.dig(*paths).nil?
       if exist_in_base && not_in_spec
