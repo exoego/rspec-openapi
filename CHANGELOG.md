@@ -1,3 +1,7 @@
+## v0.8.1
+- bugfix: Empty `required` array should not be present.
+  [#111](https://github.com/exoego/rspec-openapi/pull/111)
+
 ## v0.8.0
 - Set `required` in request body and response body
   [#95](https://github.com/exoego/rspec-openapi/pull/95), [#98](https://github.com/exoego/rspec-openapi/pull/98)
