@@ -285,7 +285,6 @@ components:
           required:
             - avatar
             - pets
-      required: []
     Avatar:
       type: object
       properties:
