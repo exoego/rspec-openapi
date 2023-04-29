@@ -96,5 +96,10 @@ RSpec.describe 'Users', type: :request do
       get '/users/1'
       expect(response.status).to eq(200)
     end
+
+    it 'returns a user whose fields may be missing' do
+      get '/users/2'
+      expect(response.status).to eq(200)
+    end
   end
 end

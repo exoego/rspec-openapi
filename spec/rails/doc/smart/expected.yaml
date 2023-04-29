@@ -181,7 +181,7 @@ paths:
     get:
       responses:
         "200":
-          description: "returns a user"
+          description: "returns a user whose fields may be missing"
           content:
             "application/json":
               schema:
@@ -203,7 +203,7 @@ paths:
         required: true
         schema:
           type: integer
-        example: 1
+        example: 2
 components:
   securitySchemes:
     Scheme1:
@@ -285,9 +285,7 @@ components:
           required:
             - avatar
             - pets
-      required:
-        - name
-        - relations
+      required: []
     Avatar:
       type: object
       properties:
