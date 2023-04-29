@@ -39,6 +39,18 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
     base
   end
 
+  def cleanup_empty_required_array!(base)
+    paths_to_objects = [
+      *RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, 'components.schemas', 'properties'),
+      *RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, 'paths', 'properties'),
+    ]
+    paths_to_objects.each do |path|
+      parent = base.dig(*path.take(path.length - 1))
+      # "required" array  must not be present if empty
+      parent.delete('required') if parent['required'].empty?
+    end
+  end
+
   private
 
   def cleanup_array!(base, spec, selector, fields_for_identity = [])
