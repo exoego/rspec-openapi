@@ -108,12 +108,15 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
 
     app.routes.router.recognize(request) do |route|
       if route.app.matches?(request)
-        return find_rails_route(request, app: route.app.app, fix_path: false) if route.app.engine?
-
+        if route.app.engine?
+          route = find_rails_route(request, app: route.app.app, fix_path: false)
+          next if route.nil?
+        end
         return route
       end
     end
-    raise "No route matched for #{request.request_method} #{request.path_info}"
+    raise "No route matched for #{request.request_method} #{request.path_info}" if fix_path
+    nil
   end
 
   # workaround to get real request parameters

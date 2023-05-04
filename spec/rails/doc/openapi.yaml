@@ -495,9 +495,9 @@ paths:
               schema:
                 type: string
               example: A TEST
-  "/eng_route":
+  "/my_engine/eng_route":
     get:
-      summary: GET /eng_route
+      summary: GET /my_engine/eng_route
       tags: []
       responses:
         '200':
