@@ -144,3 +144,12 @@ RSpec.describe 'Engine test', type: :request do
     end
   end
 end
+
+RSpec.describe 'Engine extra routes', type: :request do
+  describe '#test' do
+    it 'returns the block content' do
+      get '/my_engine/test'
+      expect(response.status).to eq(200)
+    end
+  end
+end

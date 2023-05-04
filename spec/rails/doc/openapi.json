@@ -753,6 +753,27 @@
         }
       }
     },
+    "/my_engine/test": {
+      "get": {
+        "summary": "GET /my_engine/test",
+        "tags": [
+
+        ],
+        "responses": {
+          "200": {
+            "description": "returns the block content",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "ANOTHER TEST"
+              }
+            }
+          }
+        }
+      }
+    },
     "/images": {
       "get": {
         "summary": "index",

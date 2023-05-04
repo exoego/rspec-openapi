@@ -160,3 +160,12 @@ class EngineTest < ActionDispatch::IntegrationTest
     assert_response 200
   end
 end
+
+class EngineExtraRoutesTest < ActionDispatch::IntegrationTest
+  openapi!
+
+  test 'returns the block content' do
+    get '/my_engine/test'
+    assert_response 200
+  end
+end
