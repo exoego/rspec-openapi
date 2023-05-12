@@ -28,16 +28,19 @@ paths:
         example: token
       - name: page
         in: query
+        required: false
         schema:
           type: integer
         example: 42
       - name: per
         in: query
+        required: false
         schema:
           type: integer
         example: 10
       - name: show_columns
         in: query
+        required: false
         schema:
           type: string
         example: "true"

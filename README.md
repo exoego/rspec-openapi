@@ -308,6 +308,7 @@ Some examples' attributes can be overwritten via RSpec metadata options. Example
     summary: 'list all posts',
     description: 'list all posts ordered by pub_date',
     tags: %w[v1 posts],
+    required_request_params: %w[limit],
     security: [{"MyToken" => []}],
   } do
     # ...
