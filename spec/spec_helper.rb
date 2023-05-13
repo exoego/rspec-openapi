@@ -17,7 +17,7 @@ module SpecHelper
     env = { 'OPENAPI' => ('1' if openapi), 'OPENAPI_OUTPUT' => output.to_s }.compact
     Bundler.public_send(Bundler.respond_to?(:with_unbundled_env) ? :with_unbundled_env : :with_clean_env) do
       Dir.chdir(repo_root) do
-        assert_run env, 'bundle', 'exec', command, *args
+        assert_run env, 'bundle', 'exec', command, '-r./.simplecov_spawn', *args
       end
     end
   end

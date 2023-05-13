@@ -26,11 +26,19 @@ jobs:
             rails: 6.1.6
           - ruby: ruby:3.1
             rails: 7.0.3
+            coverage: coverage
     env:
       RAILS_VERSION: ${{ matrix.rails == '' && '6.1.6' || matrix.rails }}
+      COVERAGE: ${{ matrix.coverage || '' }}
     steps:
       - uses: actions/checkout@v2
       - name: bundle install
         run: bundle install -j$(nproc) --retry 3
       - run: bundle exec rspec
         timeout-minutes: 1
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        if: matrix.coverage == 'coverage'
+        with:
+          fail_ci_if_error: true
+          files: ./coverage/coverage.xml
