@@ -40,7 +40,7 @@ paths:
         example: 10
       - name: show_columns
         in: query
-        required: false
+        required: true
         schema:
           type: string
         example: "true"
