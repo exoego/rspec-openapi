@@ -11,6 +11,8 @@ gem 'rspec-rails'
 
 group :test do
   gem 'super_diff'
+  gem 'simplecov'
+  gem 'simplecov-cobertura'
 end
 
 group :development do
