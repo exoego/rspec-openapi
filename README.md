@@ -344,6 +344,12 @@ It should work with both classes inheriting from `ActionDispatch::IntegrationTes
 
 Please note that not all features present in the rspec integration work with minitest (yet). For example, custom per test case metadata is not supported. A custom `description_builder` will not work either.
 
+Run minitest with OPENAPI=1 to generate `doc/openapi.yaml` for your request specs.
+
+```bash
+$ OPENAPI=1 bundle exec rails t
+```
+
 ## Links
 
 Existing RSpec plugins which have OpenAPI integration:
