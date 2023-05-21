@@ -103,14 +103,12 @@ end
 class TablesUpdateTest < ActionDispatch::IntegrationTest
   openapi!
 
-  test 'returns a table' do
+  test 'returns a table with array' do
     png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
     QBoAAAAASUVORK5CYII='.unpack1('m')
     File.binwrite('test.png', png)
     image = Rack::Test::UploadedFile.new('test.png', 'image/png')
-    patch '/tables/1', headers: { authorization: 'k0kubun' }, params: {
-      nested: { image: image, caption: 'Some caption' },
-    }
+    patch '/tables/1', headers: { authorization: 'k0kubun' }, params: { images: [image, image] }
     assert_response 200
   end
 end

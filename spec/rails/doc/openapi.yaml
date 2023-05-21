@@ -326,15 +326,20 @@ paths:
                   required:
                   - image
                   - caption
+                images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
               required:
-              - nested
+              - images
             example:
-              nested:
-                image: test.png
-                caption: Some caption
+              images:
+              - test.png
+              - test.png
       responses:
         '200':
-          description: returns a table
+          description: returns a table with array
           content:
             application/json:
               schema:

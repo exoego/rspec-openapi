@@ -195,6 +195,11 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         value[key] = v.original_filename
       elsif v.is_a?(Hash)
         adjust_params(v)
+      elsif v.is_a?(Array)
+        result = v.map do |item|
+          item.is_a?(ActionDispatch::Http::UploadedFile) ? item.original_filename : item
+        end
+        value[key] = result
       end
     end
   end

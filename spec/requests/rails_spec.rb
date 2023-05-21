@@ -90,10 +90,9 @@ RSpec.describe 'Tables', type: :request do
       File.binwrite('test.png', png)
     end
     let(:image) { Rack::Test::UploadedFile.new('test.png', 'image/png') }
-    it 'returns a table' do
-      patch '/tables/1', headers: { authorization: 'k0kubun' }, params: {
-        nested: { image: image, caption: 'Some caption' },
-      }
+
+    it 'returns a table with array' do
+      patch '/tables/1', headers: { authorization: 'k0kubun' }, params: { images: [image, image] }
       expect(response.status).to eq(200)
     end
   end
