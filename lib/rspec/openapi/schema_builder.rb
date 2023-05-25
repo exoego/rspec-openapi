@@ -73,6 +73,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       parameters << {
         name: build_parameter_name(key, value),
         in: 'query',
+        required: record.required_request_params.include?(key),
         schema: build_property(try_cast(value)),
         example: (try_cast(value) if example_enabled?),
       }.compact

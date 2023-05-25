@@ -141,6 +141,7 @@
           {
             "name": "filter[name]",
             "in": "query",
+            "required": false,
             "schema": {
               "type": "object",
               "properties": {
@@ -159,6 +160,7 @@
           {
             "name": "filter[price]",
             "in": "query",
+            "required": false,
             "schema": {
               "type": "object",
               "properties": {
@@ -177,6 +179,7 @@
           {
             "name": "page",
             "in": "query",
+            "required": false,
             "schema": {
               "type": "integer"
             },
@@ -185,6 +188,7 @@
           {
             "name": "per",
             "in": "query",
+            "required": false,
             "schema": {
               "type": "integer"
             },
