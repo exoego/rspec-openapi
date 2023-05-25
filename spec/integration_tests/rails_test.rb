@@ -104,13 +104,7 @@ class TablesUpdateTest < ActionDispatch::IntegrationTest
   openapi!
 
   test 'returns a table' do
-    png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
-    QBoAAAAASUVORK5CYII='.unpack1('m')
-    File.binwrite('test.png', png)
-    image = Rack::Test::UploadedFile.new('test.png', 'image/png')
-    patch '/tables/1', headers: { authorization: 'k0kubun' }, params: {
-      nested: { image: image, caption: 'Some caption' },
-    }
+    patch '/tables/1', headers: { authorization: 'k0kubun' }, params: { name: 'test' }
     assert_response 200
   end
 end
@@ -139,6 +133,33 @@ class ImageTest < ActionDispatch::IntegrationTest
 
   test 'can return an object with an attribute of empty array' do
     get '/images'
+    assert_response 200
+  end
+
+  test 'returns a image payload with upload' do
+    png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
+    QBoAAAAASUVORK5CYII='.unpack1('m')
+    File.binwrite('test.png', png)
+    image = Rack::Test::UploadedFile.new('test.png', 'image/png')
+    post '/images/upload', params: { image: image }
+    assert_response 200
+  end
+
+  test 'returns a image payload with upload nested' do
+    png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
+    QBoAAAAASUVORK5CYII='.unpack1('m')
+    File.binwrite('test.png', png)
+    image = Rack::Test::UploadedFile.new('test.png', 'image/png')
+    post '/images/upload_nested', params: { nested_image: { image: image, caption: 'Some caption' } }
+    assert_response 200
+  end
+
+  test 'returns a image payload with upload multiple' do
+    png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
+    QBoAAAAASUVORK5CYII='.unpack1('m')
+    File.binwrite('test.png', png)
+    image = Rack::Test::UploadedFile.new('test.png', 'image/png')
+    post '/images/upload_multiple', params: { images: [image, image] }
     assert_response 200
   end
 end
