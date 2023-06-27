@@ -11,7 +11,8 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
     request, response = extract_request_response(context)
     return if request.nil?
 
-    path, summary, tags, required_request_params, raw_path_params, description, security = extract_request_attributes(request, example)
+    path, summary, tags, required_request_params, raw_path_params, description, security =
+      extract_request_attributes(request, example)
 
     request_headers, response_headers = extract_headers(request, response)
 
