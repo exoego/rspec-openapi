@@ -17,6 +17,8 @@ Style/ClassAndModuleChildren:
   EnforcedStyle: compact
   Exclude:
     - 'lib/rspec/openapi/version.rb'
+Layout/FirstArrayElementIndentation:
+  EnforcedStyle: consistent
 Metrics/BlockLength:
   Exclude:
     - 'spec/**/*'
