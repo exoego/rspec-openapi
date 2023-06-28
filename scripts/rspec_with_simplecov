@@ -43,6 +43,7 @@ begin
     end
   end
 rescue LoadError
+  # simplecov is not available
 ensure
   $VERBOSE = old_verbose
 end
