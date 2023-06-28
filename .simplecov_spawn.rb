@@ -7,9 +7,9 @@ unless ENV['COVERAGE'] && ENV['COVERAGE'].empty?
   SimpleCov.command_name 'spawn'
   SimpleCov.at_fork.call(Process.pid)
   SimpleCov.formatter SimpleCov::Formatter::MultiFormatter.new([
-    SimpleCov::Formatter::CoberturaFormatter,
-  ])
-  SimpleCov.start do |pid|
-    add_filter "/spec/"
+                                                                 SimpleCov::Formatter::CoberturaFormatter,
+                                                               ])
+  SimpleCov.start do
+    add_filter '/spec/'
   end
 end

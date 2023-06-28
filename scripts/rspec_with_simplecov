@@ -11,14 +11,14 @@ $VERBOSE = true
 
 # So our "did they run the rspec command?" detection logic thinks
 # that we run `rspec`.
-$0 = "rspec"
+$0 = 'rspec'
 
 # This is necessary for when `--standalone` is being used.
-$:.unshift File.expand_path '../../bundle', __FILE__
+$:.unshift File.expand_path '../bundle', __dir__
 
 # For the travis build we put the bundle directory up a directory
 # so it can be shared among the repos for faster bundle installs.
-$:.unshift File.expand_path '../../../bundle', __FILE__
+$:.unshift File.expand_path '../../bundle', __dir__
 
 require 'bundler/setup'
 
@@ -28,15 +28,16 @@ require 'bundler/setup'
 # first loads simplecov, and then loads rspec.
 begin
   # Simplecov emits some ruby warnings when loaded, so silence them.
-  old_verbose, $VERBOSE = $VERBOSE, false
+  old_verbose = $VERBOSE
+  $VERBOSE = false
 
   unless ENV['NO_COVERAGE'] || RUBY_VERSION < '1.9.3'
     require 'simplecov'
 
     SimpleCov.start do
-      add_filter "./bundle/"
-      add_filter "./tmp/"
-      add_filter "./spec/"
+      add_filter './bundle/'
+      add_filter './tmp/'
+      add_filter './spec/'
       minimum_coverage(RUBY_PLATFORM == 'java' ? 94 : 97)
     end
   end
@@ -45,4 +46,4 @@ ensure
   $VERBOSE = old_verbose
 end
 
-load File.expand_path("../rspec", __FILE__)
+load File.expand_path('rspec', __dir__)
