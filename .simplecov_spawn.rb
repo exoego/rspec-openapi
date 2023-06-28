@@ -11,5 +11,6 @@ unless ENV['COVERAGE'] && ENV['COVERAGE'].empty?
   ])
   SimpleCov.start do
     add_filter '/spec/'
+    add_filter '/scripts/'
   end
 end
