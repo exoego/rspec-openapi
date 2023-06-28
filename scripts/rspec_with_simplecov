@@ -15,11 +15,11 @@ $VERBOSE = true
 $0 = 'rspec'
 
 # This is necessary for when `--standalone` is being used.
-$:.unshift File.expand_path '../bundle', __dir__
+$LOAD_PATH.unshift File.expand_path '../bundle', __dir__
 
 # For the travis build we put the bundle directory up a directory
 # so it can be shared among the repos for faster bundle installs.
-$:.unshift File.expand_path '../../bundle', __dir__
+$LOAD_PATH.unshift File.expand_path '../../bundle', __dir__
 
 require 'bundler/setup'
 
