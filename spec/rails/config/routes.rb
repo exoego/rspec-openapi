@@ -10,7 +10,9 @@ Rails.application.routes.draw do
         post 'upload_multiple'
       end
     end
-    resources :users,  only: [:show, :create]
+    resources :users,  only: [:show, :create] do
+      get 'active'
+    end
 
     get '/test_block' => ->(_env) { [200, { 'Content-Type' => 'text/plain' }, ['A TEST']] }
   end

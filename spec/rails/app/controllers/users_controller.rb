@@ -16,6 +16,10 @@ class UsersController < ApplicationController
     render json: find_user(params[:id])
   end
 
+  def active
+    render json: find_user(params[:id]).present?
+  end
+
   private
 
   def find_user(id = nil)

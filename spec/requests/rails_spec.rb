@@ -70,6 +70,11 @@ RSpec.describe 'Tables', type: :request do
       get '/tables/2', headers: { authorization: 'k0kubun' }
       expect(response.status).to eq(404)
     end
+
+    it 'does not return a table if not found (openapi: false)', openapi: false do
+      get '/tables/3', headers: { authorization: 'k0kubun' }
+      expect(response.status).to eq(404)
+    end
   end
 
   describe '#create' do

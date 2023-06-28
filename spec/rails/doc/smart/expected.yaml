@@ -207,6 +207,26 @@ paths:
         schema:
           type: integer
         example: 2
+  "/users/{user_id}/active":
+    get:
+      responses:
+        "200":
+          description: "returns a boolean"
+          content:
+            "application/json":
+              schema:
+                type: boolean
+              example: true
+      summary: active
+      tags:
+        - User
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
 components:
   securitySchemes:
     Scheme1:
