@@ -4,7 +4,6 @@ unless ENV['COVERAGE'] && ENV['COVERAGE'].empty?
   require 'simplecov'
   require 'simplecov-cobertura'
 
-  SimpleCov.command_name 'spawn'
   SimpleCov.at_fork.call(Process.pid)
   SimpleCov.formatter SimpleCov::Formatter::MultiFormatter.new([
     SimpleCov::Formatter::CoberturaFormatter,

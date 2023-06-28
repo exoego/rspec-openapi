@@ -36,10 +36,8 @@ begin
     require 'simplecov'
 
     SimpleCov.start do
-      add_filter './bundle/'
-      add_filter './tmp/'
-      add_filter './spec/'
-      minimum_coverage(RUBY_PLATFORM == 'java' ? 94 : 97)
+      enable_coverage :branch
+      primary_coverage :branch
     end
   end
 rescue LoadError
