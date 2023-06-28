@@ -102,4 +102,11 @@ RSpec.describe 'Users', type: :request do
       expect(response.status).to eq(200)
     end
   end
+
+  describe '#active' do
+    it 'returns a boolean' do
+      get '/users/1/active'
+      expect(response.status).to eq(200)
+    end
+  end
 end
