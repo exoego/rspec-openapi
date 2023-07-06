@@ -5,7 +5,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   # @return [Hash]
   def build(record)
     response = {
-      description: record.description,
+      description: record.description
     }
 
     response_headers = build_response_headers(record)
@@ -16,8 +16,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       response[:content] = {
         normalize_content_type(record.response_content_type) => {
           schema: build_property(record.response_body, disposition: disposition),
-          example: response_example(record, disposition: disposition),
-        }.compact,
+          example: response_example(record, disposition: disposition)
+        }.compact
       }
     end
 
@@ -31,11 +31,11 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
             parameters: build_parameters(record),
             requestBody: build_request_body(record),
             responses: {
-              record.status.to_s => response,
-            },
-          }.compact,
-        },
-      },
+              record.status.to_s => response
+            }
+          }.compact
+        }
+      }
     }
   end
 
@@ -65,7 +65,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         in: 'path',
         required: true,
         schema: build_property(try_cast(value)),
-        example: (try_cast(value) if example_enabled?),
+        example: (try_cast(value) if example_enabled?)
       }.compact
     end
 
@@ -75,7 +75,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         in: 'query',
         required: record.required_request_params.include?(key),
         schema: build_property(try_cast(value)),
-        example: (try_cast(value) if example_enabled?),
+        example: (try_cast(value) if example_enabled?)
       }.compact
     end
 
@@ -85,7 +85,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         in: 'header',
         required: true,
         schema: build_property(try_cast(value)),
-        example: (try_cast(value) if example_enabled?),
+        example: (try_cast(value) if example_enabled?)
       }.compact
     end
 
@@ -99,7 +99,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
     record.response_headers.each do |key, value|
       headers[key] = {
-        schema: build_property(try_cast(value)),
+        schema: build_property(try_cast(value))
       }.compact
     end
 
@@ -124,9 +124,9 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       content: {
         normalize_content_type(record.request_content_type) => {
           schema: build_property(record.request_params),
-          example: (build_example(record.request_params) if example_enabled?),
-        }.compact,
-      },
+          example: (build_example(record.request_params) if example_enabled?)
+        }.compact
+      }
     }
   end
 
@@ -199,7 +199,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         adjust_params(v)
       when Array
         result = v.map do |item|
-          item.is_a?(ActionDispatch::Http::UploadedFile) ? item.original_filename : item
+          adjust_params(item)
         end
         value[key] = result
       end
