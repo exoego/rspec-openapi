@@ -526,36 +526,6 @@ paths:
               example:
               - name: file.png
                 tags: []
-  "/images/upload_multiple":
-    post:
-      summary: upload_multiple
-      tags:
-      - Image
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                images:
-                  type: array
-                  items:
-                    type: string
-                    format: binary
-              required:
-              - images
-            example:
-              images:
-              - test.png
-              - test.png
-      responses:
-        '200':
-          description: returns a image payload with upload multiple
-          content:
-            image/png:
-              schema:
-                type: string
-                format: binary
   "/images/upload":
     post:
       summary: upload
@@ -613,6 +583,71 @@ paths:
       responses:
         '200':
           description: returns a image payload with upload nested
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+  "/images/upload_multiple_nested":
+    post:
+      summary: upload_multiple_nested
+      tags:
+      - Image
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                images:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      image:
+                        type: string
+                        format: binary
+                    required:
+                    - image
+              required:
+              - images
+            example:
+              images:
+              - image: test.png
+              - image: test.png
+      responses:
+        '200':
+          description: returns a image payload with upload multiple nested
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+  "/images/upload_multiple":
+    post:
+      summary: upload_multiple
+      tags:
+      - Image
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+              required:
+              - images
+            example:
+              images:
+              - test.png
+              - test.png
+      responses:
+        '200':
+          description: returns a image payload with upload multiple
           content:
             image/png:
               schema:

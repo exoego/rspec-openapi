@@ -164,6 +164,20 @@ RSpec.describe 'Images', type: :request do
       expect(response.status).to eq(200)
     end
   end
+
+  describe '#upload_multiple_nested' do
+    before do
+      png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
+      QBoAAAAASUVORK5CYII='.unpack1('m')
+      File.binwrite('test.png', png)
+    end
+    let(:image) { Rack::Test::UploadedFile.new('test.png', 'image/png') }
+
+    it 'returns a image payload with upload multiple nested' do
+      post '/images/upload_multiple_nested', params: { images: [{ image: image }, { image: image }] }
+      expect(response.status).to eq(200)
+    end
+  end
 end
 
 RSpec.describe 'Extra routes', type: :request do
