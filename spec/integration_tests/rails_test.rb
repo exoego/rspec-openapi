@@ -4,9 +4,8 @@ ENV['TZ'] ||= 'UTC'
 ENV['RAILS_ENV'] ||= 'test'
 ENV['OPENAPI_OUTPUT'] ||= 'yaml'
 
-require File.expand_path('../rails/config/environment', __dir__)
-
 require 'minitest/autorun'
+require File.expand_path('../rails/config/environment', __dir__)
 
 RSpec::OpenAPI.request_headers = %w[X-Authorization-Token]
 RSpec::OpenAPI.response_headers = %w[X-Cursor]

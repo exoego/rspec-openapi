@@ -3,8 +3,8 @@
 require_relative '../roda/roda_app'
 require 'json'
 require 'rack/test'
-require 'rspec/openapi'
 require 'minitest/autorun'
+require 'rspec/openapi'
 
 ENV['OPENAPI_OUTPUT'] ||= 'yaml'
 
