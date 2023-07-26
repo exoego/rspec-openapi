@@ -15,7 +15,6 @@ class RSpec::OpenAPI::ResultRecorder
         RSpec::OpenAPI::SchemaMerger.merge!(spec, schema)
         new_from_zero = {}
         records.each do |record|
-          File.open('/tmp/records', 'a') { |f| f.puts record.to_yaml }
           begin
             record_schema = RSpec::OpenAPI::SchemaBuilder.build(record)
             RSpec::OpenAPI::SchemaMerger.merge!(spec, record_schema)
