@@ -32,4 +32,10 @@ RSpec.describe 'rack-test minitest' do
       expect(new_yaml).to eq org_yaml
     end
   end
+
+  describe 'with disabled OpenAPI generation' do
+    it 'can run tests' do
+      minitest 'spec/integration_tests/roda_test.rb'
+    end
+  end
 end
