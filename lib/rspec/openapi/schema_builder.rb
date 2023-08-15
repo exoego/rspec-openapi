@@ -199,7 +199,14 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         adjust_params(v)
       when Array
         result = v.map do |item|
-          item.is_a?(ActionDispatch::Http::UploadedFile) ? item.original_filename : item
+          case item
+          when ActionDispatch::Http::UploadedFile
+            item.original_filename
+          when Hash
+            adjust_params(item)
+          else
+            item
+          end
         end
         value[key] = result
       end

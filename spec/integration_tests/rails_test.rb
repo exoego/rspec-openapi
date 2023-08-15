@@ -161,6 +161,15 @@ class ImageTest < ActionDispatch::IntegrationTest
     post '/images/upload_multiple', params: { images: [image, image] }
     assert_response 200
   end
+
+  test 'returns a image payload with upload multiple nested' do
+    png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
+    QBoAAAAASUVORK5CYII='.unpack1('m')
+    File.binwrite('test.png', png)
+    image = Rack::Test::UploadedFile.new('test.png', 'image/png')
+    post '/images/upload_multiple_nested', params: { images: [{ image: image }, { image: image }] }
+    assert_response 200
+  end
 end
 
 class ExtraRoutesTest < ActionDispatch::IntegrationTest

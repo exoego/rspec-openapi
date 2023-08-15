@@ -25,6 +25,10 @@ class ImagesController < ApplicationController
     send_image
   end
 
+  def upload_multiple_nested
+    send_image
+  end
+
   private
 
   def send_image

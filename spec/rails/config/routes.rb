@@ -8,6 +8,7 @@ Rails.application.routes.draw do
         post 'upload'
         post 'upload_nested'
         post 'upload_multiple'
+        post 'upload_multiple_nested'
       end
     end
     resources :users,  only: [:show, :create] do
