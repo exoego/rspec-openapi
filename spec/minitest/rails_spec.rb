@@ -33,4 +33,10 @@ RSpec.describe 'rails integration minitest' do
       expect(new_yaml).to eq org_yaml
     end
   end
+
+  describe 'with disabled OpenAPI generation' do
+    it 'can run tests' do
+      minitest 'spec/integration_tests/rails_test.rb'
+    end
+  end
 end
