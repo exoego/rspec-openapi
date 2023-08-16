@@ -71,9 +71,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
     if rails?
       # Reverse the destructive modification by Rails https://github.com/rails/rails/blob/v6.0.3.4/actionpack/lib/action_dispatch/journey/router.rb#L33-L41
       fixed_request = request.dup
-      if request.script_name.present?
-        fixed_request.path_info = File.join(request.script_name, request.path_info)
-      end
+      fixed_request.path_info = File.join(request.script_name, request.path_info) if request.script_name.present?
 
       route, path = find_rails_route(fixed_request)
       raise "No route matched for #{fixed_request.request_method} #{fixed_request.path_info}" if route.nil?
@@ -110,7 +108,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
   end
 
   # @param [ActionDispatch::Request] request
-  def find_rails_route(request, app: Rails.application, path_prefix: "")
+  def find_rails_route(request, app: Rails.application, path_prefix: '')
     app.routes.router.recognize(request) do |route|
       path = route.path.spec.to_s
       if route.app.matches?(request)
