@@ -1,4 +1,4 @@
-# rspec-openapi ![test](https://github.com/k0kubun/rspec-openapi/workflows/test/badge.svg)
+# rspec-openapi ![test](https://github.com/exoego/rspec-openapi/workflows/test/badge.svg) [![codecov](https://codecov.io/gh/exoego/rspec-openapi/branch/master/graph/badge.svg?token=egYm6AlxkD)](https://codecov.io/gh/exoego/rspec-openapi)
 
 Generate OpenAPI schema from RSpec request specs.
 
@@ -308,6 +308,7 @@ Some examples' attributes can be overwritten via RSpec metadata options. Example
     summary: 'list all posts',
     description: 'list all posts ordered by pub_date',
     tags: %w[v1 posts],
+    required_request_params: %w[limit],
     security: [{"MyToken" => []}],
   } do
     # ...
@@ -343,6 +344,12 @@ end
 It should work with both classes inheriting from `ActionDispatch::IntegrationTest` and with classes using `Rack::Test` directly, as long as you call `openapi!` in your test class.
 
 Please note that not all features present in the rspec integration work with minitest (yet). For example, custom per test case metadata is not supported. A custom `description_builder` will not work either.
+
+Run minitest with OPENAPI=1 to generate `doc/openapi.yaml` for your request specs.
+
+```bash
+$ OPENAPI=1 bundle exec rails t
+```
 
 ## Links
 

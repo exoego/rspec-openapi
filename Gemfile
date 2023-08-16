@@ -10,6 +10,8 @@ gem 'roda'
 gem 'rspec-rails'
 
 group :test do
+  gem 'simplecov'
+  gem 'simplecov-cobertura'
   gem 'super_diff'
 end
 

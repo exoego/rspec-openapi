@@ -36,7 +36,7 @@ RSpec::OpenAPI.info = {
 
 # Small subset of `rails_spec.rb` with slight changes
 RSpec.describe 'Tables', type: :request do
-  describe '#index' do
+  describe '#index', openapi: { required_request_params: 'show_columns' } do
     context it 'returns a list of tables' do
       it 'with flat query parameters' do
         # These new params replace them in old spec
@@ -99,6 +99,13 @@ RSpec.describe 'Users', type: :request do
 
     it 'returns a user whose fields may be missing' do
       get '/users/2'
+      expect(response.status).to eq(200)
+    end
+  end
+
+  describe '#active' do
+    it 'returns a boolean' do
+      get '/users/1/active'
       expect(response.status).to eq(200)
     end
   end

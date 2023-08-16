@@ -1,0 +1,49 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# (The MIT License)
+# Copyright (c) 2012 Chad Humphries, David Chelimsky, Myron Marston
+# Copyright (c) 2009 Chad Humphries, David Chelimsky
+# Copyright (c) 2006 David Chelimsky, The RSpec Development Team
+# Copyright (c) 2005 Steven Baker
+
+# Turn on verbose to make sure we not generating any ruby warning
+$VERBOSE = true
+
+# So our "did they run the rspec command?" detection logic thinks
+# that we run `rspec`.
+$0 = 'rspec'
+
+# This is necessary for when `--standalone` is being used.
+$LOAD_PATH.unshift File.expand_path '../bundle', __dir__
+
+# For the travis build we put the bundle directory up a directory
+# so it can be shared among the repos for faster bundle installs.
+$LOAD_PATH.unshift File.expand_path '../../bundle', __dir__
+
+require 'bundler/setup'
+
+# To use simplecov while running rspec-core's test suite, we must
+# load simplecov _before_ loading any of rspec-core's files.
+# So, this executable exists purely as a wrapper script that
+# first loads simplecov, and then loads rspec.
+begin
+  # Simplecov emits some ruby warnings when loaded, so silence them.
+  old_verbose = $VERBOSE
+  $VERBOSE = false
+
+  unless (ENV.fetch('COVERAGE', nil) && ENV['COVERAGE'].empty?) || RUBY_VERSION < '1.9.3'
+    require 'simplecov'
+
+    SimpleCov.start do
+      # Flaky :(
+      # enable_coverage :branch
+    end
+  end
+rescue LoadError
+  # simplecov is not available
+ensure
+  $VERBOSE = old_verbose
+end
+
+load File.expand_path('rspec', __dir__)

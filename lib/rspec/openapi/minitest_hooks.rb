@@ -5,11 +5,7 @@ require 'minitest'
 module RSpec::OpenAPI::Minitest
   Example = Struct.new(:context, :description, :metadata, :file_path)
 
-  module TestPatch
-    def self.prepended(base)
-      base.extend(ClassMethods)
-    end
-
+  module RunPatch
     def run(*args)
       result = super
       if ENV['OPENAPI'] && self.class.openapi?
@@ -21,6 +17,12 @@ module RSpec::OpenAPI::Minitest
         RSpec::OpenAPI.path_records[path] << record if record
       end
       result
+    end
+  end
+
+  module ActivateOpenApiClassMethods
+    def self.prepended(base)
+      base.extend(ClassMethods)
     end
 
     module ClassMethods
@@ -35,10 +37,12 @@ module RSpec::OpenAPI::Minitest
   end
 end
 
-Minitest::Test.prepend RSpec::OpenAPI::Minitest::TestPatch
+Minitest::Test.prepend RSpec::OpenAPI::Minitest::ActivateOpenApiClassMethods
 
-Minitest.after_run do
-  if ENV['OPENAPI']
+if ENV['OPENAPI']
+  Minitest::Test.prepend RSpec::OpenAPI::Minitest::RunPatch
+
+  Minitest.after_run do
     result_recorder = RSpec::OpenAPI::ResultRecorder.new(RSpec::OpenAPI.path_records)
     result_recorder.record_results!
     puts result_record.error_message if result_recorder.errors?

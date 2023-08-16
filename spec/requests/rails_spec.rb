@@ -70,6 +70,11 @@ RSpec.describe 'Tables', type: :request do
       get '/tables/2', headers: { authorization: 'k0kubun' }
       expect(response.status).to eq(404)
     end
+
+    it 'does not return a table if not found (openapi: false)', openapi: false do
+      get '/tables/3', headers: { authorization: 'k0kubun' }
+      expect(response.status).to eq(404)
+    end
   end
 
   describe '#create' do
@@ -84,16 +89,8 @@ RSpec.describe 'Tables', type: :request do
   end
 
   describe '#update' do
-    before do
-      png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
-      QBoAAAAASUVORK5CYII='.unpack1('m')
-      File.binwrite('test.png', png)
-    end
-    let(:image) { Rack::Test::UploadedFile.new('test.png', 'image/png') }
     it 'returns a table' do
-      patch '/tables/1', headers: { authorization: 'k0kubun' }, params: {
-        nested: { image: image, caption: 'Some caption' },
-      }
+      patch '/tables/1', headers: { authorization: 'k0kubun' }, params: { name: 'test' }
       expect(response.status).to eq(200)
     end
   end
@@ -122,6 +119,62 @@ RSpec.describe 'Images', type: :request do
   describe '#index' do
     it 'can return an object with an attribute of empty array' do
       get '/images'
+      expect(response.status).to eq(200)
+    end
+  end
+
+  describe '#upload' do
+    before do
+      png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
+      QBoAAAAASUVORK5CYII='.unpack1('m')
+      File.binwrite('test.png', png)
+    end
+    let(:image) { Rack::Test::UploadedFile.new('test.png', 'image/png') }
+
+    it 'returns a image payload with upload' do
+      post '/images/upload', params: { image: image }
+      expect(response.status).to eq(200)
+    end
+  end
+
+  describe '#upload_nested' do
+    before do
+      png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
+      QBoAAAAASUVORK5CYII='.unpack1('m')
+      File.binwrite('test.png', png)
+    end
+    let(:image) { Rack::Test::UploadedFile.new('test.png', 'image/png') }
+
+    it 'returns a image payload with upload nested' do
+      post '/images/upload_nested', params: { nested_image: { image: image, caption: 'Some caption' } }
+      expect(response.status).to eq(200)
+    end
+  end
+
+  describe '#upload_multiple' do
+    before do
+      png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
+      QBoAAAAASUVORK5CYII='.unpack1('m')
+      File.binwrite('test.png', png)
+    end
+    let(:image) { Rack::Test::UploadedFile.new('test.png', 'image/png') }
+
+    it 'returns a image payload with upload multiple' do
+      post '/images/upload_multiple', params: { images: [image, image] }
+      expect(response.status).to eq(200)
+    end
+  end
+
+  describe '#upload_multiple_nested' do
+    before do
+      png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
+      QBoAAAAASUVORK5CYII='.unpack1('m')
+      File.binwrite('test.png', png)
+    end
+    let(:image) { Rack::Test::UploadedFile.new('test.png', 'image/png') }
+
+    it 'returns a image payload with upload multiple nested' do
+      post '/images/upload_multiple_nested', params: { images: [{ image: image }, { image: image }] }
       expect(response.status).to eq(200)
     end
   end

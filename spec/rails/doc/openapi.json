@@ -141,6 +141,7 @@
           {
             "name": "filter[name]",
             "in": "query",
+            "required": false,
             "schema": {
               "type": "object",
               "properties": {
@@ -159,6 +160,7 @@
           {
             "name": "filter[price]",
             "in": "query",
+            "required": false,
             "schema": {
               "type": "object",
               "properties": {
@@ -177,6 +179,7 @@
           {
             "name": "page",
             "in": "query",
+            "required": false,
             "schema": {
               "type": "integer"
             },
@@ -185,6 +188,7 @@
           {
             "name": "per",
             "in": "query",
+            "required": false,
             "schema": {
               "type": "integer"
             },
@@ -455,36 +459,20 @@
         ],
         "requestBody": {
           "content": {
-            "multipart/form-data": {
+            "application/x-www-form-urlencoded": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "nested": {
-                    "type": "object",
-                    "properties": {
-                      "image": {
-                        "type": "string",
-                        "format": "binary"
-                      },
-                      "caption": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "image",
-                      "caption"
-                    ]
+                  "name": {
+                    "type": "string"
                   }
                 },
                 "required": [
-                  "nested"
+                  "name"
                 ]
               },
               "example": {
-                "nested": {
-                  "image": "test.png",
-                  "caption": "Some caption"
-                }
+                "name": "test"
               }
             }
           }
@@ -813,6 +801,213 @@
                     ]
                   }
                 ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/images/upload_nested": {
+      "post": {
+        "summary": "upload_nested",
+        "tags": [
+          "Image"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nested_image": {
+                    "type": "object",
+                    "properties": {
+                      "image": {
+                        "type": "string",
+                        "format": "binary"
+                      },
+                      "caption": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "image",
+                      "caption"
+                    ]
+                  }
+                },
+                "required": [
+                  "nested_image"
+                ]
+              },
+              "example": {
+                "nested_image": {
+                  "image": "test.png",
+                  "caption": "Some caption"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "returns a image payload with upload nested",
+            "content": {
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/images/upload": {
+      "post": {
+        "summary": "upload",
+        "tags": [
+          "Image"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "image"
+                ]
+              },
+              "example": {
+                "image": "test.png"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "returns a image payload with upload",
+            "content": {
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/images/upload_multiple_nested": {
+      "post": {
+        "summary": "upload_multiple_nested",
+        "tags": [
+          "Image"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "images": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "image": {
+                          "type": "string",
+                          "format": "binary"
+                        }
+                      },
+                      "required": [
+                        "image"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "images"
+                ]
+              },
+              "example": {
+                "images": [
+                  {
+                    "image": "test.png"
+                  },
+                  {
+                    "image": "test.png"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "returns a image payload with upload multiple nested",
+            "content": {
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/images/upload_multiple": {
+      "post": {
+        "summary": "upload_multiple",
+        "tags": [
+          "Image"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "images": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                },
+                "required": [
+                  "images"
+                ]
+              },
+              "example": {
+                "images": [
+                  "test.png",
+                  "test.png"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "returns a image payload with upload multiple",
+            "content": {
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
               }
             }
           }

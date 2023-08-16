@@ -73,6 +73,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       parameters << {
         name: build_parameter_name(key, value),
         in: 'query',
+        required: record.required_request_params.include?(key),
         schema: build_property(try_cast(value)),
         example: (try_cast(value) if example_enabled?),
       }.compact
@@ -191,10 +192,23 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
   def adjust_params(value)
     value.each do |key, v|
-      if v.is_a?(ActionDispatch::Http::UploadedFile)
+      case v
+      when ActionDispatch::Http::UploadedFile
         value[key] = v.original_filename
-      elsif v.is_a?(Hash)
+      when Hash
         adjust_params(v)
+      when Array
+        result = v.map do |item|
+          case item
+          when ActionDispatch::Http::UploadedFile
+            item.original_filename
+          when Hash
+            adjust_params(item)
+          else
+            item
+          end
+        end
+        value[key] = result
       end
     end
   end
