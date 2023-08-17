@@ -27,6 +27,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
           record.http_method.downcase => {
             summary: record.summary,
             tags: record.tags,
+            operationId: record.operation_id,
             security: record.security,
             parameters: build_parameters(record),
             requestBody: build_request_body(record),
