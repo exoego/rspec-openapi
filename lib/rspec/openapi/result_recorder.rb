@@ -9,6 +9,10 @@ class RSpec::OpenAPI::ResultRecorder
   def record_results!
     title = File.basename(Dir.pwd)
     @path_records.each do |path, records|
+      # Look for a path-specific config file and run it.
+      config_file = File.join(File.dirname(path), RSpec::OpenAPI.config_filename)
+      eval(File.read(config_file)) if File.exist?(config_file)
+
       RSpec::OpenAPI::SchemaFile.new(path).edit do |spec|
         schema = RSpec::OpenAPI::DefaultSchema.build(title)
         schema[:info].merge!(RSpec::OpenAPI.info)
