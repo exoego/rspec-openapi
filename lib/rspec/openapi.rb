@@ -26,6 +26,8 @@ module RSpec::OpenAPI
   @example_types = %i[request]
   @response_headers = []
   @path_records = Hash.new { |h, k| h[k] = [] }
+
+  # This is the configuraion override file name we look for within each path.
   @config_filename = 'rspec_openapi.rb'
 
   class << self
@@ -40,7 +42,8 @@ module RSpec::OpenAPI
                   :security_schemes,
                   :example_types,
                   :response_headers,
-                  :path_records,
-                  :config_filename
+                  :path_records
+
+    attr_reader   :config_filename
   end
 end
