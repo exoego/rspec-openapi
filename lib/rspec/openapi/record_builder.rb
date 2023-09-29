@@ -69,8 +69,14 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
     raw_path_params = request.path_parameters
     path = request.path
     if rails?
-      route = find_rails_route(request)
-      path = route.path.spec.to_s.delete_suffix('(.:format)')
+      # Reverse the destructive modification by Rails https://github.com/rails/rails/blob/v6.0.3.4/actionpack/lib/action_dispatch/journey/router.rb#L33-L41
+      fixed_request = request.dup
+      fixed_request.path_info = File.join(request.script_name, request.path_info) if request.script_name.present?
+
+      route, path = find_rails_route(fixed_request)
+      raise "No route matched for #{fixed_request.request_method} #{fixed_request.path_info}" if route.nil?
+
+      path = path.delete_suffix('(.:format)')
       summary ||= route.requirements[:action]
       tags ||= [route.requirements[:controller]&.classify].compact
       # :controller and :action always exist. :format is added when routes is configured as such.
@@ -102,21 +108,18 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
   end
 
   # @param [ActionDispatch::Request] request
-  def find_rails_route(request, app: Rails.application, fix_path: true)
-    # Reverse the destructive modification by Rails https://github.com/rails/rails/blob/v6.0.3.4/actionpack/lib/action_dispatch/journey/router.rb#L33-L41
-    if fix_path && !request.script_name.empty?
-      request = request.dup
-      request.path_info = File.join(request.script_name, request.path_info)
-    end
-
+  def find_rails_route(request, app: Rails.application, path_prefix: '')
     app.routes.router.recognize(request) do |route|
+      path = route.path.spec.to_s
       if route.app.matches?(request)
-        return find_rails_route(request, app: route.app.app, fix_path: false) if route.app.engine?
-
-        return route
+        if route.app.engine?
+          route, path = find_rails_route(request, app: route.app.app, path_prefix: path)
+          next if route.nil?
+        end
+        return [route, path_prefix + path]
       end
     end
-    raise "No route matched for #{request.request_method} #{request.path_info}"
+    nil
   end
 
   # workaround to get real request parameters
