@@ -86,6 +86,7 @@ paths:
                   - message
               example:
                 message: Unauthorized
+      operationId: table-index
   "/tables/{id}":
     get:
       summary: show
