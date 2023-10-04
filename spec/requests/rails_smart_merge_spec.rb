@@ -36,7 +36,7 @@ RSpec::OpenAPI.info = {
 
 # Small subset of `rails_spec.rb` with slight changes
 RSpec.describe 'Tables', type: :request do
-  describe '#index', openapi: { required_request_params: 'show_columns' } do
+  describe '#index', openapi: { required_request_params: 'show_columns', operation_id: 'table-index' } do
     context it 'returns a list of tables' do
       it 'with flat query parameters' do
         # These new params replace them in old spec
