@@ -488,9 +488,9 @@ paths:
               schema:
                 type: string
               example: A TEST
-  "/eng_route":
+  "/my_engine/eng_route":
     get:
-      summary: GET /eng_route
+      summary: GET /my_engine/eng_route
       tags: []
       responses:
         '200':
@@ -526,6 +526,18 @@ paths:
               example:
               - name: file.png
                 tags: []
+  "/my_engine/test":
+    get:
+      summary: GET /my_engine/test
+      tags: []
+      responses:
+        '200':
+          description: returns the block content
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: ANOTHER TEST
   "/images/upload":
     post:
       summary: upload
