@@ -1,3 +1,17 @@
+## v0.9.0
+- bugfix: Fix engine path resolution
+  [#113](https://github.com/exoego/rspec-openapi/pull/113)
+- bugfix: fix multiple uploaded files
+  [#117](https://github.com/exoego/rspec-openapi/pull/117), [#126](https://github.com/exoego/rspec-openapi/pull/126)
+- feat: Add required_request_params to metadata
+ [#114](https://github.com/exoego/rspec-openapi/pull/114)
+- bugfix(minitest):
+  [#128](https://github.com/exoego/rspec-openapi/pull/128)
+- doc(minitest): Add instructions for minitest triggered yaml generation
+  [#116](https://github.com/exoego/rspec-openapi/pull/116)
+- chore: Don't dump records into temporary file
+  [#127](https://github.com/exoego/rspec-openapi/pull/127)
+
 ## v0.8.1
 - bugfix: Empty `required` array should not be present.
   [#111](https://github.com/exoego/rspec-openapi/pull/111)
