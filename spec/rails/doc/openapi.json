@@ -218,13 +218,12 @@
                   }
                 },
                 "required": [
-                  "name",
                   "description",
                   "database_id"
                 ]
               },
               "example": {
-                "name": "k0kubun",
+                "name": "some_invalid_name",
                 "description": "description",
                 "database_id": 2
               }
@@ -300,6 +299,27 @@
                   "storage_size": 12.3,
                   "created_at": "2020-07-17T00:00:00+00:00",
                   "updated_at": "2020-07-17T00:00:00+00:00"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "fails to create a table (2)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                },
+                "example": {
+                  "error": "invalid name parameter"
                 }
               }
             }
@@ -784,7 +804,7 @@
                       "tags": {
                         "type": "array",
                         "items": {
-                        }
+}
                       }
                     },
                     "required": [
