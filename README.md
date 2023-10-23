@@ -199,7 +199,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
-# Note) #/components/schamas is not needed to be defined.
+# Note) #/components/schemas is not needed to be defined.
 ```
 
 3. Then, re-run rspec-openapi. It will generate `#/components/schemas` with the referenced schema (`User` for example) newly-generated or updated.
