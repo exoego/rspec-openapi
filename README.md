@@ -278,7 +278,7 @@ If you find a room for improvement, open an issue.
 
 ### How can I add information which can't be generated from RSpec?
 
-rspec-openapi tries to keep manual modifications as much as possible when generating specs.
+rspec-openapi tries to preserve manual modifications as much as possible when generating specs.
 You can directly edit `doc/openapi.yaml` as you like without spoiling the automatic generation capability.
 
 ### Can I exclude specific specs from OpenAPI generation?
