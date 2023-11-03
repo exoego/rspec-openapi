@@ -1,4 +1,4 @@
-# rspec-openapi ![test](https://github.com/exoego/rspec-openapi/workflows/test/badge.svg) [![codecov](https://codecov.io/gh/exoego/rspec-openapi/branch/master/graph/badge.svg?token=egYm6AlxkD)](https://codecov.io/gh/exoego/rspec-openapi)
+# rspec-openapi [![test](https://github.com/exoego/rspec-openapi/actions/workflows/test.yml/badge.svg)](https://github.com/exoego/rspec-openapi/actions/workflows/test.yml) [![codecov](https://codecov.io/gh/exoego/rspec-openapi/branch/master/graph/badge.svg?token=egYm6AlxkD)](https://codecov.io/gh/exoego/rspec-openapi)
 
 Generate OpenAPI schema from RSpec request specs.
 
