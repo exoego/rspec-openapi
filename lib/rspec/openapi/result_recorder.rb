@@ -7,7 +7,7 @@ class RSpec::OpenAPI::ResultRecorder
   end
 
   def record_results!
-    title = File.basename(Dir.pwd)
+    title = RSpec::OpenAPI.title
     @path_records.each do |path, records|
       RSpec::OpenAPI::SchemaFile.new(path).edit do |spec|
         schema = RSpec::OpenAPI::DefaultSchema.build(title)
