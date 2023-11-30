@@ -19,6 +19,8 @@ module RSpec::OpenAPI
   @comment = nil
   @enable_example = true
   @description_builder = ->(example) { example.description }
+  @summary_builder = ->(example) { example.metadata[:summary] }
+  @tags_builder = ->(example) { example.metadata[:tags] }
   @info = {}
   @application_version = '1.0.0'
   @request_headers = []
@@ -35,6 +37,8 @@ module RSpec::OpenAPI
                   :comment,
                   :enable_example,
                   :description_builder,
+                  :summary_builder,
+                  :tags_builder,
                   :info,
                   :application_version,
                   :request_headers,
