@@ -142,6 +142,7 @@
             "name": "filter[name]",
             "in": "query",
             "required": false,
+            "description": "Filter by name",
             "schema": {
               "type": "object",
               "properties": {
