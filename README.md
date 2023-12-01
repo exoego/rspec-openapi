@@ -169,6 +169,11 @@ RSpec::OpenAPI.description_builder = -> (example) { example.description }
 
 # Change the example type(s) that will generate schema
 RSpec::OpenAPI.example_types = %i[request]
+
+# Configure which path params to ignore
+# :controller and :action always exist. :format is added when routes is configured as such.
+RSpec::OpenAPI.ignored_path_params = %i[controller action format]
+
 ```
 
 ### Can I use rspec-openapi with `$ref` to minimize duplication of schema?

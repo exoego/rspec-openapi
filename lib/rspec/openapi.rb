@@ -26,6 +26,7 @@ module RSpec::OpenAPI
   @example_types = %i[request]
   @response_headers = []
   @path_records = Hash.new { |h, k| h[k] = [] }
+  @ignored_path_params = %i[controller action format]
 
   class << self
     attr_accessor :path,
@@ -39,6 +40,7 @@ module RSpec::OpenAPI
                   :security_schemes,
                   :example_types,
                   :response_headers,
-                  :path_records
+                  :path_records,
+                  :ignored_path_params
   end
 end
