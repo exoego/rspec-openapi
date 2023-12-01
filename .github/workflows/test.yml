@@ -31,7 +31,7 @@ jobs:
       RAILS_VERSION: ${{ matrix.rails == '' && '6.1.6' || matrix.rails }}
       COVERAGE: ${{ matrix.coverage || '' }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: bundle install
         run: bundle install -j$(nproc) --retry 3
       - name: install simplecov-fork only for minitest with coverage
