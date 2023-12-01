@@ -5,7 +5,7 @@
 ---
 openapi: 3.0.3
 info:
-  title: OpenAPI Documentation
+  title: rspec-openapi
   version: 1.0.0
   description: My beautiful API
   license:
