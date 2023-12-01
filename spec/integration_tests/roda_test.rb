@@ -8,6 +8,7 @@ require 'rspec/openapi'
 
 ENV['OPENAPI_OUTPUT'] ||= 'yaml'
 
+RSpec::OpenAPI.title = 'OpenAPI Documentation'
 RSpec::OpenAPI.path = File.expand_path("../roda/doc/openapi.#{ENV.fetch('OPENAPI_OUTPUT', nil)}", __dir__)
 
 class RodaTest < Minitest::Test

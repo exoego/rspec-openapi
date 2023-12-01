@@ -15,6 +15,7 @@ require 'rspec/openapi/rspec_hooks' if ENV['OPENAPI'] && Object.const_defined?('
 
 module RSpec::OpenAPI
   @path = 'doc/openapi.yaml'
+  @title = File.basename(Dir.pwd)
   @comment = nil
   @enable_example = true
   @description_builder = ->(example) { example.description }
@@ -30,6 +31,7 @@ module RSpec::OpenAPI
 
   class << self
     attr_accessor :path,
+                  :title,
                   :comment,
                   :enable_example,
                   :description_builder,

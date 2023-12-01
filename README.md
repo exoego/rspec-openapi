@@ -122,6 +122,8 @@ RSpec::OpenAPI.path = -> (example) {
   end
 }
 
+RSpec::OpenAPI.title = 'OpenAPI Documentation'
+
 # Disable generating `example`
 RSpec::OpenAPI.enable_example = false
 
