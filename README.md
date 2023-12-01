@@ -170,10 +170,12 @@ EOS
 RSpec::OpenAPI.description_builder = -> (example) { example.description }
 
 # Generate a custom summary, given an RSpec example
-RSpec::OpenAPI.summary_builder = -> (example) { example.metadata[:summary] }
+# This example uses the summary from the example_group.
+RSpec::OpenAPI.summary_builder = ->(example) { example.metadata.dig(:example_group, :openapi, :summary) }
 
 # Generate a custom tags, given an RSpec example
-RSpec::OpenAPI.tags_builder = -> (example) { example.metadata[:tags] }
+# This example uses the tags from the parent_example_group
+RSpec::OpenAPI.tags_builder = -> (example) { example.metadata.dig(:example_group, :parent_example_group, :openapi, :tags) }
 
 # Change the example type(s) that will generate schema
 RSpec::OpenAPI.example_types = %i[request]
