@@ -62,8 +62,8 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
 
   def extract_request_attributes(request, example)
     metadata = example.metadata[:openapi] || {}
-    summary = metadata[:summary]
-    tags = metadata[:tags]
+    summary = metadata[:summary] || RSpec::OpenAPI.summary_builder.call(example)
+    tags = metadata[:tags] || RSpec::OpenAPI.tags_builder.call(example)
     operation_id = metadata[:operation_id]
     required_request_params = metadata[:required_request_params] || []
     security = metadata[:security]
