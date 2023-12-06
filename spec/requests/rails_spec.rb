@@ -87,6 +87,23 @@ RSpec.describe 'Tables', type: :request do
       }.to_json
       expect(response.status).to eq(201)
     end
+
+    it 'fails to create a table' do
+      post '/tables', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {
+        description: 'description',
+        database_id: 2,
+      }.to_json
+      expect(response.status).to eq(422)
+    end
+
+    it 'fails to create a table (2)' do
+      post '/tables', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {
+        name: 'some_invalid_name',
+        description: 'description',
+        database_id: 2,
+      }.to_json
+      expect(response.status).to eq(422)
+    end
   end
 
   describe '#update' do
