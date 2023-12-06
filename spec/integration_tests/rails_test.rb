@@ -98,6 +98,23 @@ class TablesCreateTest < ActionDispatch::IntegrationTest
     }.to_json
     assert_response 201
   end
+
+  test 'fails to create a table (2)' do
+    post '/tables', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {
+      description: 'description',
+      database_id: 2,
+    }.to_json
+    assert_response 422
+  end
+
+  test 'fails to create a table' do
+    post '/tables', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {
+      name: 'some_invalid_name',
+      description: 'description',
+      database_id: 2,
+    }.to_json
+    assert_response 422
+  end
 end
 
 class TablesUpdateTest < ActionDispatch::IntegrationTest
