@@ -409,6 +409,19 @@ paths:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
+        '422':
+          description: fails to create a table (2)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+              example:
+                error: invalid name parameter
   "/tables/{id}":
     get:
       summary: show

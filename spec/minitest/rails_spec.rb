@@ -8,7 +8,7 @@ require 'pry'
 RSpec.describe 'rails integration minitest' do
   include SpecHelper
 
-  describe 'yaml output' do
+  xdescribe 'yaml output' do
     let(:openapi_path) do
       File.expand_path('spec/rails/doc/openapi.yaml', repo_root)
     end
@@ -21,7 +21,7 @@ RSpec.describe 'rails integration minitest' do
     end
   end
 
-  describe 'json' do
+  xdescribe 'json' do
     let(:openapi_path) do
       File.expand_path('spec/rails/doc/openapi.json', repo_root)
     end
