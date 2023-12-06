@@ -26,6 +26,7 @@ class RSpec::OpenAPI::ResultRecorder
         RSpec::OpenAPI::SchemaCleaner.cleanup!(spec, new_from_zero)
         RSpec::OpenAPI::ComponentsUpdater.update!(spec, new_from_zero)
         RSpec::OpenAPI::SchemaCleaner.cleanup_empty_required_array!(spec)
+        RSpec::OpenAPI::SchemaCleaner.sort_paths!(spec)
       end
     end
   end
