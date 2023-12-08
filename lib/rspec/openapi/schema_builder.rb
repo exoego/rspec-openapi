@@ -120,6 +120,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   def build_request_body(record)
     return nil if record.request_content_type.nil?
     return nil if record.request_params.empty?
+    return nil if record.status >= 400
 
     {
       content: {
