@@ -27,6 +27,7 @@ RSpec::OpenAPI.info = {
 }
 
 class TablesIndexTest < ActionDispatch::IntegrationTest
+  i_suck_and_my_tests_are_order_dependent!
   openapi!
 
   # Patch minitest's ordering of examples to match RSpec's
@@ -63,6 +64,7 @@ class TablesIndexTest < ActionDispatch::IntegrationTest
 end
 
 class TablesShowTest < ActionDispatch::IntegrationTest
+  i_suck_and_my_tests_are_order_dependent!
   openapi!
 
   # Patch minitest's ordering of examples to match RSpec's
@@ -88,6 +90,7 @@ class TablesShowTest < ActionDispatch::IntegrationTest
 end
 
 class TablesCreateTest < ActionDispatch::IntegrationTest
+  i_suck_and_my_tests_are_order_dependent!
   openapi!
 
   test 'returns a table' do
@@ -99,14 +102,6 @@ class TablesCreateTest < ActionDispatch::IntegrationTest
     assert_response 201
   end
 
-  test 'fails to create a table (2)' do
-    post '/tables', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {
-      description: 'description',
-      database_id: 2,
-    }.to_json
-    assert_response 422
-  end
-
   test 'fails to create a table' do
     post '/tables', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {
       name: 'some_invalid_name',
@@ -115,9 +110,18 @@ class TablesCreateTest < ActionDispatch::IntegrationTest
     }.to_json
     assert_response 422
   end
+
+  test 'fails to create a table (2)' do
+    post '/tables', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {
+      description: 'description',
+      database_id: 2,
+    }.to_json
+    assert_response 422
+  end
 end
 
 class TablesUpdateTest < ActionDispatch::IntegrationTest
+  i_suck_and_my_tests_are_order_dependent!
   openapi!
 
   test 'returns a table' do
@@ -127,6 +131,7 @@ class TablesUpdateTest < ActionDispatch::IntegrationTest
 end
 
 class TablesDestroyTest < ActionDispatch::IntegrationTest
+  i_suck_and_my_tests_are_order_dependent!
   openapi!
 
   test 'returns a table' do
@@ -141,6 +146,7 @@ class TablesDestroyTest < ActionDispatch::IntegrationTest
 end
 
 class ImageTest < ActionDispatch::IntegrationTest
+  i_suck_and_my_tests_are_order_dependent!
   openapi!
 
   test 'returns a image payload' do
@@ -191,6 +197,7 @@ class ImageTest < ActionDispatch::IntegrationTest
 end
 
 class ExtraRoutesTest < ActionDispatch::IntegrationTest
+  i_suck_and_my_tests_are_order_dependent!
   openapi!
 
   test 'returns the block content' do
@@ -200,6 +207,7 @@ class ExtraRoutesTest < ActionDispatch::IntegrationTest
 end
 
 class EngineTest < ActionDispatch::IntegrationTest
+  i_suck_and_my_tests_are_order_dependent!
   openapi!
 
   test 'returns some content from the engine' do
@@ -209,6 +217,7 @@ class EngineTest < ActionDispatch::IntegrationTest
 end
 
 class EngineExtraRoutesTest < ActionDispatch::IntegrationTest
+  i_suck_and_my_tests_are_order_dependent!
   openapi!
 
   test 'returns the block content' do
