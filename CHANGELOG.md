@@ -1,3 +1,17 @@
+## v0.10.0
+- bugfix: Merge parameter data to preserve description in manually edited Openapi spec 
+  [#149](https://github.com/exoego/rspec-openapi/pull/149)
+- feat: Add ability to configure which path params to ignore
+  [#150](https://github.com/exoego/rspec-openapi/pull/150)
+- feat: Add custom title 
+  [#147](https://github.com/exoego/rspec-openapi/pull/147)
+- feat: Add ability to define custom summary and tags builders
+  [#148](https://github.com/exoego/rspec-openapi/pull/148)
+- enhancement: Sort paths lexicographically so the order of paths is more stable and predictable
+  [#155](https://github.com/exoego/rspec-openapi/pull/155)
+- enhancement: requestBody should not merge requestBody from error examples
+  [#154](https://github.com/exoego/rspec-openapi/pull/154)
+
 ## v0.9.0
 - bugfix: Fix engine path resolution
   [#113](https://github.com/exoego/rspec-openapi/pull/113)
