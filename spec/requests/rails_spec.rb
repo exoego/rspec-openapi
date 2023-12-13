@@ -7,6 +7,7 @@ ENV['OPENAPI_OUTPUT'] ||= 'yaml'
 require File.expand_path('../rails/config/environment', __dir__)
 require 'rspec/rails'
 
+RSpec::OpenAPI.title = 'OpenAPI Documentation'
 RSpec::OpenAPI.request_headers = %w[X-Authorization-Token]
 RSpec::OpenAPI.response_headers = %w[X-Cursor]
 RSpec::OpenAPI.path = File.expand_path("../rails/doc/openapi.#{ENV.fetch('OPENAPI_OUTPUT', nil)}", __dir__)
@@ -85,6 +86,23 @@ RSpec.describe 'Tables', type: :request do
         database_id: 2,
       }.to_json
       expect(response.status).to eq(201)
+    end
+
+    it 'fails to create a table' do
+      post '/tables', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {
+        description: 'description',
+        database_id: 2,
+      }.to_json
+      expect(response.status).to eq(422)
+    end
+
+    it 'fails to create a table (2)' do
+      post '/tables', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {
+        name: 'some_invalid_name',
+        description: 'description',
+        database_id: 2,
+      }.to_json
+      expect(response.status).to eq(422)
     end
   end
 

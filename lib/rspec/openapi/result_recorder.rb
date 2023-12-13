@@ -7,7 +7,7 @@ class RSpec::OpenAPI::ResultRecorder
   end
 
   def record_results!
-    title = File.basename(Dir.pwd)
+    title = RSpec::OpenAPI.title
     @path_records.each do |path, records|
       # Look for a path-specific config file and run it.
       config_file = File.join(File.dirname(path), RSpec::OpenAPI.config_filename)
@@ -19,17 +19,16 @@ class RSpec::OpenAPI::ResultRecorder
         RSpec::OpenAPI::SchemaMerger.merge!(spec, schema)
         new_from_zero = {}
         records.each do |record|
-          begin
-            record_schema = RSpec::OpenAPI::SchemaBuilder.build(record)
-            RSpec::OpenAPI::SchemaMerger.merge!(spec, record_schema)
-            RSpec::OpenAPI::SchemaMerger.merge!(new_from_zero, record_schema)
-          rescue StandardError, NotImplementedError => e # e.g. SchemaBuilder raises a NotImplementedError
-            @error_records[e] = record # Avoid failing the build
-          end
+          record_schema = RSpec::OpenAPI::SchemaBuilder.build(record)
+          RSpec::OpenAPI::SchemaMerger.merge!(spec, record_schema)
+          RSpec::OpenAPI::SchemaMerger.merge!(new_from_zero, record_schema)
+        rescue StandardError, NotImplementedError => e # e.g. SchemaBuilder raises a NotImplementedError
+          @error_records[e] = record # Avoid failing the build
         end
         RSpec::OpenAPI::SchemaCleaner.cleanup!(spec, new_from_zero)
         RSpec::OpenAPI::ComponentsUpdater.update!(spec, new_from_zero)
         RSpec::OpenAPI::SchemaCleaner.cleanup_empty_required_array!(spec)
+        RSpec::OpenAPI::SchemaCleaner.sort_paths!(spec)
       end
     end
   end

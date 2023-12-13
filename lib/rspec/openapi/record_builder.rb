@@ -62,8 +62,8 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
 
   def extract_request_attributes(request, example)
     metadata = example.metadata[:openapi] || {}
-    summary = metadata[:summary]
-    tags = metadata[:tags]
+    summary = metadata[:summary] || RSpec::OpenAPI.summary_builder.call(example)
+    tags = metadata[:tags] || RSpec::OpenAPI.tags_builder.call(example)
     operation_id = metadata[:operation_id]
     required_request_params = metadata[:required_request_params] || []
     security = metadata[:security]
@@ -83,7 +83,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       tags ||= [route.requirements[:controller]&.classify].compact
       # :controller and :action always exist. :format is added when routes is configured as such.
       # TODO: Use .except(:controller, :action, :format) when we drop support for Ruby 2.x
-      raw_path_params = raw_path_params.slice(*(raw_path_params.keys - %i[controller action format]))
+      raw_path_params = raw_path_params.slice(*(raw_path_params.keys - RSpec::OpenAPI.ignored_path_params))
     end
     summary ||= "#{request.method} #{path}"
     [path, summary, tags, operation_id, required_request_params, raw_path_params, description, security]

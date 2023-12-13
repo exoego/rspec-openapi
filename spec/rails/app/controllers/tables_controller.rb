@@ -17,7 +17,11 @@ class TablesController < ApplicationController
   end
 
   def create
-    render json: find_table, status: 201
+    if params[:name].blank? || params[:name] == 'some_invalid_name'
+      render json: { error: 'invalid name parameter' }, status: 422
+    else
+      render json: find_table, status: 201
+    end
   end
 
   def update

@@ -36,8 +36,7 @@ begin
     require 'simplecov'
 
     SimpleCov.start do
-      # Flaky :(
-      # enable_coverage :branch
+      enable_coverage :branch
     end
   end
 rescue LoadError

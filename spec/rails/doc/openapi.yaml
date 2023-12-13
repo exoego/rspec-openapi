@@ -5,7 +5,7 @@
 ---
 openapi: 3.0.3
 info:
-  title: rspec-openapi
+  title: OpenAPI Documentation
   version: 1.0.0
   description: My beautiful API
   license:
@@ -14,6 +14,203 @@ info:
 servers:
 - url: http://localhost:3000
 paths:
+  "/images":
+    get:
+      summary: index
+      tags:
+      - Image
+      responses:
+        '200':
+          description: can return an object with an attribute of empty array
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    tags:
+                      type: array
+                      items: {}
+                  required:
+                  - name
+                  - tags
+              example:
+              - name: file.png
+                tags: []
+  "/images/upload":
+    post:
+      summary: upload
+      tags:
+      - Image
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+              required:
+              - image
+            example:
+              image: test.png
+      responses:
+        '200':
+          description: returns a image payload with upload
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+  "/images/upload_multiple":
+    post:
+      summary: upload_multiple
+      tags:
+      - Image
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+              required:
+              - images
+            example:
+              images:
+              - test.png
+              - test.png
+      responses:
+        '200':
+          description: returns a image payload with upload multiple
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+  "/images/upload_multiple_nested":
+    post:
+      summary: upload_multiple_nested
+      tags:
+      - Image
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                images:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      image:
+                        type: string
+                        format: binary
+                    required:
+                    - image
+              required:
+              - images
+            example:
+              images:
+              - image: test.png
+              - image: test.png
+      responses:
+        '200':
+          description: returns a image payload with upload multiple nested
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+  "/images/upload_nested":
+    post:
+      summary: upload_nested
+      tags:
+      - Image
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                nested_image:
+                  type: object
+                  properties:
+                    image:
+                      type: string
+                      format: binary
+                    caption:
+                      type: string
+                  required:
+                  - image
+                  - caption
+              required:
+              - nested_image
+            example:
+              nested_image:
+                image: test.png
+                caption: Some caption
+      responses:
+        '200':
+          description: returns a image payload with upload nested
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+  "/images/{id}":
+    get:
+      summary: show
+      tags:
+      - Image
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
+      responses:
+        '200':
+          description: returns a image payload
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+  "/my_engine/eng_route":
+    get:
+      summary: GET /my_engine/eng_route
+      tags: []
+      responses:
+        '200':
+          description: returns some content from the engine
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: AN ENGINE TEST
+  "/my_engine/test":
+    get:
+      summary: GET /my_engine/test
+      tags: []
+      responses:
+        '200':
+          description: returns the block content
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: ANOTHER TEST
   "/tables":
     get:
       summary: index
@@ -29,6 +226,7 @@ paths:
       - name: filter[name]
         in: query
         required: false
+        description: Filter by name
         schema:
           type: object
           properties:
@@ -211,6 +409,19 @@ paths:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
+        '422':
+          description: fails to create a table (2)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+              example:
+                error: invalid name parameter
   "/tables/{id}":
     get:
       summary: show
@@ -456,26 +667,6 @@ paths:
               - no_content
             example:
               no_content: 'true'
-  "/images/{id}":
-    get:
-      summary: show
-      tags:
-      - Image
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-        example: 1
-      responses:
-        '200':
-          description: returns a image payload
-          content:
-            image/png:
-              schema:
-                type: string
-                format: binary
   "/test_block":
     get:
       summary: GET /test_block
@@ -488,180 +679,3 @@ paths:
               schema:
                 type: string
               example: A TEST
-  "/my_engine/eng_route":
-    get:
-      summary: GET /my_engine/eng_route
-      tags: []
-      responses:
-        '200':
-          description: returns some content from the engine
-          content:
-            text/plain:
-              schema:
-                type: string
-              example: AN ENGINE TEST
-  "/images":
-    get:
-      summary: index
-      tags:
-      - Image
-      responses:
-        '200':
-          description: can return an object with an attribute of empty array
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                    tags:
-                      type: array
-                      items: {}
-                  required:
-                  - name
-                  - tags
-              example:
-              - name: file.png
-                tags: []
-  "/my_engine/test":
-    get:
-      summary: GET /my_engine/test
-      tags: []
-      responses:
-        '200':
-          description: returns the block content
-          content:
-            text/plain:
-              schema:
-                type: string
-              example: ANOTHER TEST
-  "/images/upload":
-    post:
-      summary: upload
-      tags:
-      - Image
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                image:
-                  type: string
-                  format: binary
-              required:
-              - image
-            example:
-              image: test.png
-      responses:
-        '200':
-          description: returns a image payload with upload
-          content:
-            image/png:
-              schema:
-                type: string
-                format: binary
-  "/images/upload_nested":
-    post:
-      summary: upload_nested
-      tags:
-      - Image
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                nested_image:
-                  type: object
-                  properties:
-                    image:
-                      type: string
-                      format: binary
-                    caption:
-                      type: string
-                  required:
-                  - image
-                  - caption
-              required:
-              - nested_image
-            example:
-              nested_image:
-                image: test.png
-                caption: Some caption
-      responses:
-        '200':
-          description: returns a image payload with upload nested
-          content:
-            image/png:
-              schema:
-                type: string
-                format: binary
-  "/images/upload_multiple_nested":
-    post:
-      summary: upload_multiple_nested
-      tags:
-      - Image
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                images:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      image:
-                        type: string
-                        format: binary
-                    required:
-                    - image
-              required:
-              - images
-            example:
-              images:
-              - image: test.png
-              - image: test.png
-      responses:
-        '200':
-          description: returns a image payload with upload multiple nested
-          content:
-            image/png:
-              schema:
-                type: string
-                format: binary
-  "/images/upload_multiple":
-    post:
-      summary: upload_multiple
-      tags:
-      - Image
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                images:
-                  type: array
-                  items:
-                    type: string
-                    format: binary
-              required:
-              - images
-            example:
-              images:
-              - test.png
-              - test.png
-      responses:
-        '200':
-          description: returns a image payload with upload multiple
-          content:
-            image/png:
-              schema:
-                type: string
-                format: binary

@@ -43,16 +43,28 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   end
 
   def merge_arrays(base, key, value)
-    case key
-    when 'parameters'
-      base[key] = value | base[key]
-      base[key].uniq! { |param| param.slice('name', 'in') }
-    when 'required'
-      # Preserve properties that appears in all test cases
-      base[key] = value & base[key]
-    else
-      # last one wins
-      base[key] = value
+    base[key] = case key
+                when 'parameters'
+                  merge_parameters(base, key, value)
+                when 'required'
+                  # Preserve properties that appears in all test cases
+                  value & base[key]
+                else
+                  # last one wins
+                  value
+                end
+  end
+
+  def merge_parameters(base, key, value)
+    all_parameters = value | base[key]
+
+    unique_base_parameters = base[key].index_by { |parameter| [parameter['name'], parameter['in']] }
+    all_parameters = all_parameters.map do |parameter|
+      base_parameter = unique_base_parameters[[parameter['name'], parameter['in']]] || {}
+      base_parameter ? base_parameter.merge(parameter) : parameter
     end
+
+    all_parameters.uniq! { |param| param.slice('name', 'in') }
+    base[key] = all_parameters
   end
 end

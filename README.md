@@ -1,4 +1,4 @@
-# rspec-openapi ![test](https://github.com/exoego/rspec-openapi/workflows/test/badge.svg) [![codecov](https://codecov.io/gh/exoego/rspec-openapi/branch/master/graph/badge.svg?token=egYm6AlxkD)](https://codecov.io/gh/exoego/rspec-openapi)
+# rspec-openapi [![Gem Version](https://badge.fury.io/rb/rspec-openapi.svg)](https://badge.fury.io/rb/rspec-openapi) [![test](https://github.com/exoego/rspec-openapi/actions/workflows/test.yml/badge.svg)](https://github.com/exoego/rspec-openapi/actions/workflows/test.yml) [![codecov](https://codecov.io/gh/exoego/rspec-openapi/branch/master/graph/badge.svg?token=egYm6AlxkD)](https://codecov.io/gh/exoego/rspec-openapi)
 
 Generate OpenAPI schema from RSpec request specs.
 
@@ -122,6 +122,8 @@ RSpec::OpenAPI.path = -> (example) {
   end
 }
 
+RSpec::OpenAPI.title = 'OpenAPI Documentation'
+
 # Disable generating `example`
 RSpec::OpenAPI.enable_example = false
 
@@ -167,8 +169,21 @@ EOS
 # Generate a custom description, given an RSpec example
 RSpec::OpenAPI.description_builder = -> (example) { example.description }
 
+# Generate a custom summary, given an RSpec example
+# This example uses the summary from the example_group.
+RSpec::OpenAPI.summary_builder = ->(example) { example.metadata.dig(:example_group, :openapi, :summary) }
+
+# Generate a custom tags, given an RSpec example
+# This example uses the tags from the parent_example_group
+RSpec::OpenAPI.tags_builder = -> (example) { example.metadata.dig(:example_group, :parent_example_group, :openapi, :tags) }
+
 # Change the example type(s) that will generate schema
 RSpec::OpenAPI.example_types = %i[request]
+
+# Configure which path params to ignore
+# :controller and :action always exist. :format is added when routes is configured as such.
+RSpec::OpenAPI.ignored_path_params = %i[controller action format]
+
 ```
 
 ### Can I use rspec-openapi with `$ref` to minimize duplication of schema?
@@ -199,7 +214,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
-# Note) #/components/schamas is not needed to be defined.
+# Note) #/components/schemas is not needed to be defined.
 ```
 
 3. Then, re-run rspec-openapi. It will generate `#/components/schemas` with the referenced schema (`User` for example) newly-generated or updated.
@@ -278,7 +293,7 @@ If you find a room for improvement, open an issue.
 
 ### How can I add information which can't be generated from RSpec?
 
-rspec-openapi tries to keep manual modifications as much as possible when generating specs.
+rspec-openapi tries to preserve manual modifications as much as possible when generating specs.
 You can directly edit `doc/openapi.yaml` as you like without spoiling the automatic generation capability.
 
 ### Can I exclude specific specs from OpenAPI generation?
