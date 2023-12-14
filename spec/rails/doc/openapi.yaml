@@ -226,7 +226,6 @@ paths:
       - name: filter[name]
         in: query
         required: false
-        description: Filter by name
         schema:
           type: object
           properties:
@@ -263,6 +262,10 @@ paths:
       responses:
         '200':
           description: with different deep query parameters
+          headers:
+            X-Cursor:
+              schema:
+                type: integer
           content:
             application/json:
               schema:
@@ -315,10 +318,6 @@ paths:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
-          headers:
-            X-Cursor:
-              schema:
-                type: integer
         '401':
           description: does not return tables if unauthorized
           content:
@@ -336,26 +335,6 @@ paths:
       summary: create
       tags:
       - Table
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                description:
-                  type: string
-                database_id:
-                  type: integer
-              required:
-              - name
-              - description
-              - database_id
-            example:
-              name: k0kubun
-              description: description
-              database_id: 2
       responses:
         '201':
           description: returns a table
@@ -422,7 +401,105 @@ paths:
                 - error
               example:
                 error: invalid name parameter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                database_id:
+                  type: integer
+              required:
+              - name
+              - description
+              - database_id
+            example:
+              name: k0kubun
+              description: description
+              database_id: 2
   "/tables/{id}":
+    delete:
+      summary: destroy
+      tags:
+      - Table
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
+      responses:
+        '200':
+          description: returns a table
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  database:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                    required:
+                    - id
+                    - name
+                  null_sample:
+                    nullable: true
+                  storage_size:
+                    type: number
+                    format: float
+                  created_at:
+                    type: string
+                  updated_at:
+                    type: string
+                required:
+                - id
+                - name
+                - description
+                - database
+                - null_sample
+                - storage_size
+                - created_at
+                - updated_at
+              example:
+                id: 1
+                name: access
+                description: logs
+                database:
+                  id: 2
+                  name: production
+                null_sample:
+                storage_size: 12.3
+                created_at: '2020-07-17T00:00:00+00:00'
+                updated_at: '2020-07-17T00:00:00+00:00'
+        '202':
+          description: returns no content if specified
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                no_content:
+                  type: string
+              required:
+              - no_content
+            example:
+              no_content: 'true'
     get:
       summary: show
       tags:
@@ -589,84 +666,6 @@ paths:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
-    delete:
-      summary: destroy
-      tags:
-      - Table
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-        example: 1
-      responses:
-        '200':
-          description: returns a table
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-                  description:
-                    type: string
-                  database:
-                    type: object
-                    properties:
-                      id:
-                        type: integer
-                      name:
-                        type: string
-                    required:
-                    - id
-                    - name
-                  null_sample:
-                    nullable: true
-                  storage_size:
-                    type: number
-                    format: float
-                  created_at:
-                    type: string
-                  updated_at:
-                    type: string
-                required:
-                - id
-                - name
-                - description
-                - database
-                - null_sample
-                - storage_size
-                - created_at
-                - updated_at
-              example:
-                id: 1
-                name: access
-                description: logs
-                database:
-                  id: 2
-                  name: production
-                null_sample:
-                storage_size: 12.3
-                created_at: '2020-07-17T00:00:00+00:00'
-                updated_at: '2020-07-17T00:00:00+00:00'
-        '202':
-          description: returns no content if specified
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                no_content:
-                  type: string
-              required:
-              - no_content
-            example:
-              no_content: 'true'
   "/test_block":
     get:
       summary: GET /test_block
