@@ -51,13 +51,6 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
     end
   end
 
-  # Sort "paths" lexicographically to make the order more predictable
-  #
-  # @param [Hash]   #
-  def sort_paths!(spec)
-    spec['paths'] = spec['paths']&.entries&.sort_by! { |path, _| path }.to_h
-  end
-
   private
 
   def cleanup_array!(base, spec, selector, fields_for_identity = [])
