@@ -7,12 +7,12 @@ class RSpec::OpenAPI::ResultRecorder
   end
 
   def record_results!
-    title = RSpec::OpenAPI.title
     @path_records.each do |path, records|
       # Look for a path-specific config file and run it.
       config_file = File.join(File.dirname(path), RSpec::OpenAPI.config_filename)
       eval(File.read(config_file)) if File.exist?(config_file)
 
+      title = RSpec::OpenAPI.title
       RSpec::OpenAPI::SchemaFile.new(path).edit do |spec|
         schema = RSpec::OpenAPI::DefaultSchema.build(title)
         schema[:info].merge!(RSpec::OpenAPI.info)
