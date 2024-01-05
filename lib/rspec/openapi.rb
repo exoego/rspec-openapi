@@ -32,6 +32,9 @@ module RSpec::OpenAPI
   @path_records = Hash.new { |h, k| h[k] = [] }
   @ignored_path_params = %i[controller action format]
 
+  # This is the configuraion override file name we look for within each path.
+  @config_filename = 'rspec_openapi.rb'
+
   class << self
     attr_accessor :path,
                   :title,
@@ -49,5 +52,7 @@ module RSpec::OpenAPI
                   :response_headers,
                   :path_records,
                   :ignored_path_params
+
+    attr_reader   :config_filename
   end
 end
