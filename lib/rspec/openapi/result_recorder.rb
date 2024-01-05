@@ -10,7 +10,11 @@ class RSpec::OpenAPI::ResultRecorder
     @path_records.each do |path, records|
       # Look for a path-specific config file and run it.
       config_file = File.join(File.dirname(path), RSpec::OpenAPI.config_filename)
-      eval(File.read(config_file)) if File.exist?(config_file)
+      begin
+        require config_file if File.exist?(config_file)
+      rescue => e
+        puts "WARNING: Unable to load #{config_file}: #{e}"
+      end
 
       title = RSpec::OpenAPI.title
       RSpec::OpenAPI::SchemaFile.new(path).edit do |spec|
