@@ -1066,8 +1066,8 @@
     "securitySchemes": {
       "SecretApiKeyAuth": {
         "type": "apiKey",
-         "in": "header",
-         "name": "Secret-Key"
+        "in": "header",
+        "name": "Secret-Key"
       }
     }
   }

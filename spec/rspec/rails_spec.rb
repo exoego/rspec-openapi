@@ -29,7 +29,7 @@ RSpec.describe 'rails request spec' do
     it 'generates the same spec/rails/doc/openapi.json' do
       org_json = JSON.parse(File.read(openapi_path))
       rspec 'spec/requests/rails_spec.rb', openapi: true, output: :json
-      new_json = JSON.parse(File.read(openapi_path).tap {|j| puts j; puts j.inspect })
+      new_json = JSON.parse(File.read(openapi_path))
       expect(new_json).to eq org_json
     end
   end
