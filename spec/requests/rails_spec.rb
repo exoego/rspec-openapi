@@ -215,6 +215,7 @@ RSpec.describe 'SecretKey securityScheme',
           headers: {
             'Secret-Key' => '42',
           }
+      expect(response.status).to eq(200)
     end
   end
 end

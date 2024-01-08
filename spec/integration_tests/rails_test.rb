@@ -25,6 +25,13 @@ RSpec::OpenAPI.info = {
     url: 'https://www.apache.org/licenses/LICENSE-2.0.html',
   },
 }
+RSpec::OpenAPI.security_schemes = {
+  SecretApiKeyAuth: {
+    type: 'apiKey',
+    in: 'header',
+    name: 'Secret-Key',
+  },
+}
 
 class TablesIndexTest < ActionDispatch::IntegrationTest
   i_suck_and_my_tests_are_order_dependent!
@@ -192,6 +199,19 @@ class ImageTest < ActionDispatch::IntegrationTest
     File.binwrite('test.png', png)
     image = Rack::Test::UploadedFile.new('test.png', 'image/png')
     post '/images/upload_multiple_nested', params: { images: [{ image: image }, { image: image }] }
+    assert_response 200
+  end
+end
+
+class SecretKeyTest < ActionDispatch::IntegrationTest
+  i_suck_and_my_tests_are_order_dependent!
+  openapi!
+
+  test 'authorizes with secret key' do
+    get '/secret_items',
+        headers: {
+          'Secret-Key' => '42',
+        }
     assert_response 200
   end
 end
