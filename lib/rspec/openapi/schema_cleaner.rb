@@ -41,23 +41,18 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
 
   def cleanup_conflicting_security_parameters!(base)
     security_schemes = base.dig('components', 'securitySchemes') || {}
-    paths_to_parameters = RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, 'paths', 'security')
 
-    paths_to_parameters.each do |path|
-      parent = base.dig(*path.take(path.length - 1))
+    return if security_schemes.empty?
 
-      security_schemes_for_parent = security_schemes.select do |security_scheme_name, _security_scheme|
-        parent.dig('security', 0).keys.include?(security_scheme_name)
-      end
+    paths_to_security_definitions = RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, 'paths', 'security')
 
-      security_schemes_for_parent.each_value do |security_scheme|
-        next unless parent['parameters']
+    paths_to_security_definitions.each do |path|
+      parent_path_definition = base.dig(*path.take(path.length - 1))
 
-        parent['parameters'].reject! do |parameter|
-          parameter['in'] == security_scheme['in'] && # same location (ie. header)
-            parameter['name'] == security_scheme['name'] # same name (ie. AUTHORIZATION)
-        end
-        parent.delete('parameters') if parent['parameters'].empty?
+      security_schemes.each do |security_scheme_name, security_scheme|
+        remove_parameters_conflicting_with_security_sceheme!(
+          parent_path_definition, security_scheme, security_scheme_name,
+        )
       end
     end
   end
@@ -75,6 +70,18 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
   end
 
   private
+
+  def remove_parameters_conflicting_with_security_sceheme!(path_definition, security_scheme, security_scheme_name)
+    return unless path_definition['security']
+    return unless path_definition['parameters']
+    return unless path_definition.dig('security', 0).keys.include?(security_scheme_name)
+
+    path_definition['parameters'].reject! do |parameter|
+      parameter['in'] == security_scheme['in'] && # same location (ie. header)
+        parameter['name'] == security_scheme['name'] # same name (ie. AUTHORIZATION)
+    end
+    path_definition.delete('parameters') if path_definition['parameters'].empty?
+  end
 
   def cleanup_array!(base, spec, selector, fields_for_identity = [])
     marshal = lambda do |obj|
