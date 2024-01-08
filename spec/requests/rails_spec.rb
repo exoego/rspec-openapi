@@ -213,7 +213,7 @@ RSpec.describe 'SecretKey securityScheme',
     it 'authorizes with secret key' do
       get '/secret_items',
           headers: {
-            'Secret-Key' => '42'
+            'Secret-Key' => '42',
           }
     end
   end
