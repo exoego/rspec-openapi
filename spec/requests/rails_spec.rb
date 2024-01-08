@@ -8,7 +8,7 @@ require File.expand_path('../rails/config/environment', __dir__)
 require 'rspec/rails'
 
 RSpec::OpenAPI.title = 'OpenAPI Documentation'
-RSpec::OpenAPI.request_headers = %w[X-Authorization-Token]
+RSpec::OpenAPI.request_headers = %w[X-Authorization-Token Secret-Key]
 RSpec::OpenAPI.response_headers = %w[X-Cursor]
 RSpec::OpenAPI.path = File.expand_path("../rails/doc/openapi.#{ENV.fetch('OPENAPI_OUTPUT', nil)}", __dir__)
 RSpec::OpenAPI.comment = <<~COMMENT
