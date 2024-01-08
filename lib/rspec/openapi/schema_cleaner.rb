@@ -39,6 +39,27 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
     base
   end
 
+  def cleanup_conflicting_security_parameters!(base)
+    security_schemes = base.dig('components', 'securitySchemes') || {}
+    paths_to_parameters = RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, 'paths', 'parameters')
+
+    paths_to_parameters.each do |path|
+      parent = base.dig(*path.take(path.length - 1))
+
+      security_schemes_for_parent = security_schemes.select do |security_scheme_name, _security_scheme|
+        parent['security'][0].keys.include?(security_scheme_name)
+      end
+
+      security_schemes_for_parent.each_value do |security_scheme|
+        parent['parameters'].reject! do |parameter|
+          parameter['in'] == security_scheme['in'] && # same location (ie. header)
+            parameter['name'] == security_scheme['name'] # same name (ie. AUTHORIZATION)
+        end
+        parent.delete('parameters') if parent['parameters'].empty?
+      end
+    end
+  end
+
   def cleanup_empty_required_array!(base)
     paths_to_objects = [
       *RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, 'components.schemas', 'properties'),

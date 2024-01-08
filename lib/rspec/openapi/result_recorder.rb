@@ -12,7 +12,7 @@ class RSpec::OpenAPI::ResultRecorder
       config_file = File.join(File.dirname(path), RSpec::OpenAPI.config_filename)
       begin
         require config_file if File.exist?(config_file)
-      rescue => e
+      rescue StandardError => e
         puts "WARNING: Unable to load #{config_file}: #{e}"
       end
 
@@ -32,6 +32,7 @@ class RSpec::OpenAPI::ResultRecorder
         RSpec::OpenAPI::SchemaCleaner.cleanup!(spec, new_from_zero)
         RSpec::OpenAPI::ComponentsUpdater.update!(spec, new_from_zero)
         RSpec::OpenAPI::SchemaCleaner.cleanup_empty_required_array!(spec)
+        RSpec::OpenAPI::SchemaCleaner.cleanup_conflicting_security_parameters!(spec)
         RSpec::OpenAPI::SchemaSorter.deep_sort!(spec)
       end
     end
