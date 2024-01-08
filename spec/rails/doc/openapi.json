@@ -341,6 +341,32 @@
         }
       }
     },
+    "/secret_items": {
+      "get": {
+        "summary": "index",
+        "tags": [
+          "SecretItem"
+        ],
+        "security": [
+          {
+            "SecretApiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "authorizes with secret key",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": ""
+              }
+            }
+          }
+        }
+      }
+    },
     "/tables": {
       "get": {
         "summary": "index",
@@ -1033,6 +1059,15 @@
             }
           }
         }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "SecretApiKeyAuth": {
+        "type": "apiKey",
+         "in": "header",
+         "name": "Secret-Key"
       }
     }
   }
