@@ -29,10 +29,10 @@ class RSpec::OpenAPI::ResultRecorder
         rescue StandardError, NotImplementedError => e # e.g. SchemaBuilder raises a NotImplementedError
           @error_records[e] = record # Avoid failing the build
         end
+        RSpec::OpenAPI::SchemaCleaner.cleanup_conflicting_security_parameters!(spec)
         RSpec::OpenAPI::SchemaCleaner.cleanup!(spec, new_from_zero)
         RSpec::OpenAPI::ComponentsUpdater.update!(spec, new_from_zero)
         RSpec::OpenAPI::SchemaCleaner.cleanup_empty_required_array!(spec)
-        RSpec::OpenAPI::SchemaCleaner.cleanup_conflicting_security_parameters!(spec)
         RSpec::OpenAPI::SchemaSorter.deep_sort!(spec)
       end
     end

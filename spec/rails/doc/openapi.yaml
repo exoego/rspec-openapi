@@ -213,19 +213,19 @@ paths:
               example: ANOTHER TEST
   "/secret_items":
     get:
-      summary: "index",
+      summary: index
       tags:
-        - "SecretItem"
+      - SecretItem
       security:
-        - SecretApiKeyAuth: []
+      - SecretApiKeyAuth: []
       responses:
-        401:
-          description: "authorizes with secret key",
+        '401':
+          description: authorizes with secret key
           content:
             text/html:
               schema:
-                type: "string"
-              example: ""
+                type: string
+              example: ''
   "/tables":
     get:
       summary: index

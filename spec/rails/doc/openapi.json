@@ -349,7 +349,9 @@
         ],
         "security": [
           {
-            "SecretApiKeyAuth": []
+            "SecretApiKeyAuth": [
+
+            ]
           }
         ],
         "responses": {
