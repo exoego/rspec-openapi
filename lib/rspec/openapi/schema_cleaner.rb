@@ -51,6 +51,8 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
       end
 
       security_schemes_for_parent.each_value do |security_scheme|
+        next unless parent['parameters']
+
         parent['parameters'].reject! do |parameter|
           parameter['in'] == security_scheme['in'] && # same location (ie. header)
             parameter['name'] == security_scheme['name'] # same name (ie. AUTHORIZATION)
