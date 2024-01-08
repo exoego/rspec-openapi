@@ -47,7 +47,7 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
       parent = base.dig(*path.take(path.length - 1))
 
       security_schemes_for_parent = security_schemes.select do |security_scheme_name, _security_scheme|
-        parent.dig('security', 0)&.keys&.include?(security_scheme_name)
+        parent.dig('security', 0).keys.include?(security_scheme_name)
       end
 
       security_schemes_for_parent.each_value do |security_scheme|
