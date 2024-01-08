@@ -26,6 +26,14 @@ RSpec::OpenAPI.info = {
   },
 }
 
+RSpec::OpenAPI.security_schemes = {
+  SecretApiKeyAuth: {
+    type: 'apiKey',
+    in: 'header',
+    name: 'Secret-Key',
+  },
+}
+
 RSpec.describe 'Tables', type: :request do
   describe '#index' do
     context it 'returns a list of tables' do
@@ -194,6 +202,19 @@ RSpec.describe 'Images', type: :request do
     it 'returns a image payload with upload multiple nested' do
       post '/images/upload_multiple_nested', params: { images: [{ image: image }, { image: image }] }
       expect(response.status).to eq(200)
+    end
+  end
+end
+
+RSpec.describe 'SecretKey securityScheme',
+               type: :request,
+               openapi: { security: [{ 'SecretApiKeyAuth' => [] }] } do
+  describe '#secret_items' do
+    it 'authorizes with secret key' do
+      get '/secret_items',
+          headers: {
+            'Secret-Key' => '42'
+          }
     end
   end
 end
