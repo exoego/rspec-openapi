@@ -211,6 +211,37 @@ paths:
               schema:
                 type: string
               example: ANOTHER TEST
+  "/secret_items":
+    get:
+      summary: index
+      tags:
+      - SecretItem
+      security:
+      - SecretApiKeyAuth: []
+      responses:
+        '200':
+          description: authorizes with secret key
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: string
+                required:
+                - items
+              example:
+                items:
+                - secrets
+        '401':
+          description: authorizes with secret key
+          content:
+            text/html:
+              schema:
+                type: string
+              example: ''
   "/tables":
     get:
       summary: index
@@ -678,3 +709,9 @@ paths:
               schema:
                 type: string
               example: A TEST
+components:
+  securitySchemes:
+    SecretApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Secret-Key

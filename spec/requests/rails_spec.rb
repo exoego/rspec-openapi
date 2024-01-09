@@ -8,7 +8,7 @@ require File.expand_path('../rails/config/environment', __dir__)
 require 'rspec/rails'
 
 RSpec::OpenAPI.title = 'OpenAPI Documentation'
-RSpec::OpenAPI.request_headers = %w[X-Authorization-Token]
+RSpec::OpenAPI.request_headers = %w[X-Authorization-Token Secret-Key]
 RSpec::OpenAPI.response_headers = %w[X-Cursor]
 RSpec::OpenAPI.path = File.expand_path("../rails/doc/openapi.#{ENV.fetch('OPENAPI_OUTPUT', nil)}", __dir__)
 RSpec::OpenAPI.comment = <<~COMMENT
@@ -23,6 +23,14 @@ RSpec::OpenAPI.info = {
   license: {
     name: 'Apache 2.0',
     url: 'https://www.apache.org/licenses/LICENSE-2.0.html',
+  },
+}
+
+RSpec::OpenAPI.security_schemes = {
+  SecretApiKeyAuth: {
+    type: 'apiKey',
+    in: 'header',
+    name: 'Secret-Key',
   },
 }
 
@@ -193,6 +201,20 @@ RSpec.describe 'Images', type: :request do
 
     it 'returns a image payload with upload multiple nested' do
       post '/images/upload_multiple_nested', params: { images: [{ image: image }, { image: image }] }
+      expect(response.status).to eq(200)
+    end
+  end
+end
+
+RSpec.describe 'SecretKey securityScheme',
+               type: :request,
+               openapi: { security: [{ 'SecretApiKeyAuth' => [] }] } do
+  describe '#secret_items' do
+    it 'authorizes with secret key' do
+      get '/secret_items',
+          headers: {
+            'Secret-Key' => '42',
+          }
       expect(response.status).to eq(200)
     end
   end
