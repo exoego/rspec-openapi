@@ -211,6 +211,32 @@ paths:
               schema:
                 type: string
               example: ANOTHER TEST
+  "/optional_params(/{id})":
+    get:
+      summary: display
+      tags:
+      - OptionalParam
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 17
+      responses:
+        '200':
+          description: returns a payload
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                required:
+                - id
+              example:
+                id: '17'
   "/secret_items":
     get:
       summary: index

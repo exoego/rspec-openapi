@@ -216,7 +216,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   end
 
   def normalize_path(path)
-    path.gsub(%r{/:([^:/]+)}, '/{\1}')
+    path.gsub(%r{/:([^:/)]+)}, '/{\1}')
   end
 
   def normalize_content_type(content_type)

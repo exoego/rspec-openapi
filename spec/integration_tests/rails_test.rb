@@ -203,6 +203,16 @@ class ImageTest < ActionDispatch::IntegrationTest
   end
 end
 
+class OptionalParamTest < ActionDispatch::IntegrationTest
+  i_suck_and_my_tests_are_order_dependent!
+  openapi!
+
+  test 'returns a payload' do
+    get '/optional_params/17'
+    assert_response 200
+  end
+end
+
 class SecretKeyTest < ActionDispatch::IntegrationTest
   i_suck_and_my_tests_are_order_dependent!
   openapi!

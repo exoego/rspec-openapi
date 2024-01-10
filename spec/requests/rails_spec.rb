@@ -206,6 +206,15 @@ RSpec.describe 'Images', type: :request do
   end
 end
 
+RSpec.describe 'OptionalParams', type: :request do
+  describe '#display' do
+    it 'returns a payload' do
+      get '/optional_params/17'
+      expect(response.status).to eq(200)
+    end
+  end
+end
+
 RSpec.describe 'SecretKey securityScheme',
                type: :request,
                openapi: { security: [{ 'SecretApiKeyAuth' => [] }] } do
