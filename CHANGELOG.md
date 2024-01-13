@@ -1,3 +1,13 @@
+## v0.11.0
+
+## What's Changed
+- feat: Allow path-based config overrides
+  [#162](https://github.com/exoego/rspec-openapi/pull/162)
+- enhancement: Sort HTTP methods, response status codes, and contents lexicographically
+  [#163](https://github.com/exoego/rspec-openapi/pull/163)
+- enhancement: Remove parameters that conflict with security schemas
+  [#166](https://github.com/exoego/rspec-openapi/pull/166)
+
 ## v0.10.0
 - bugfix: Merge parameter data to preserve description in manually edited Openapi spec 
   [#149](https://github.com/exoego/rspec-openapi/pull/149)
