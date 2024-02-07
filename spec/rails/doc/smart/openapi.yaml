@@ -174,12 +174,27 @@ paths:
                   description:
                     type: string
                   database:
-                    type: object
-                    properties:
-                      id:
-                        type: integer
-                      name:
-                        type: string
+                    discriminator:
+                      propertyName: name
+                    oneOf:
+                    - type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                    - type: object
+                      properties:
+                        name:
+                          type: string
+                        host:
+                          type: string
+                        port:
+                          type: integer
+                        user:
+                          type: string
+                        schema:
+                          type: string
                   null_sample:
                     nullable: true
                   storage_size:

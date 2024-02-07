@@ -29,6 +29,12 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   #
   # TODO: Should we probably force-merge `summary` regardless of manual modifications?
   def merge_schema!(base, spec)
+    if (options = base['oneOf'])
+      merge_closest_match!(options, spec)
+
+      return base
+    end
+
     spec.each do |key, value|
       if base[key].is_a?(Hash) && value.is_a?(Hash)
         merge_schema!(base[key], value) unless base[key].key?('$ref')
@@ -66,5 +72,38 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
 
     all_parameters.uniq! { |param| param.slice('name', 'in') }
     base[key] = all_parameters
+  end
+
+  SIMILARITY_THRESHOLD = 0.5
+
+  def merge_closest_match!(options, spec)
+    score, option = options.map { |option| [similarity(option, spec), option] }.max_by(&:first)
+
+    if score && score > SIMILARITY_THRESHOLD
+      merge_schema!(option, spec)
+    else
+      options.push(spec)
+    end
+  end
+
+  def similarity(first, second)
+    return 1 if first == second
+
+    score =
+      case [first.class, second.class]
+      when [Array, Array]
+        (first & second).size / [first.size, second.size].max.to_f
+      when [Hash, Hash]
+        intersection = first.keys & second.keys
+        total_size = [first.size, second.size].max.to_f
+        keys_score = intersection.size / total_size
+        values_score = intersection.sum { |key| similarity(first[key], second[key]) } / total_size
+
+        (keys_score + values_score) / 2.0
+      else
+        0
+      end
+
+    score.finite? ? score : 0
   end
 end
