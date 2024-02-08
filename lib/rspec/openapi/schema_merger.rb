@@ -79,7 +79,9 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   def merge_closest_match!(options, spec)
     score, option = options.map { |option| [similarity(option, spec), option] }.max_by(&:first)
 
-    if score && score > SIMILARITY_THRESHOLD
+    return if option&.key?('$ref')
+
+    if score.to_f > SIMILARITY_THRESHOLD
       merge_schema!(option, spec)
     else
       options.push(spec)
@@ -94,6 +96,8 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
       when [Array, Array]
         (first & second).size / [first.size, second.size].max.to_f
       when [Hash, Hash]
+        return 1 if first.merge(second).key?('$ref')
+
         intersection = first.keys & second.keys
         total_size = [first.size, second.size].max.to_f
         keys_score = intersection.size / total_size

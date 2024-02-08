@@ -308,22 +308,37 @@ components:
         - name
         - column_type
     User:
-      type: object
-      properties:
-        name:
-          type: string
-        relations:
-          type: object
-          properties:
-            avatar:
-              "$ref": "#/components/schemas/Avatar"
-            pets:
-              type: array
-              items:
-                "$ref": "#/components/schemas/Pet"
-          required:
-            - avatar
-            - pets
+      discriminator:
+        propertyName: name
+      oneOf:
+      - type: object
+        properties:
+          name:
+            type: string
+          foo:
+            type: string
+          bar:
+            type: string
+          baz:
+            type: string
+          quux:
+            type: string
+      - type: object
+        properties:
+          name:
+            type: string
+          relations:
+            type: object
+            properties:
+              avatar:
+                "$ref": "#/components/schemas/Avatar"
+              pets:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/Pet"
+            required:
+              - avatar
+              - pets
     Avatar:
       type: object
       properties:

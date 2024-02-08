@@ -23,7 +23,8 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
       #  0             1         2 ^...............................^
       # ["components", "schema", "Table", "properties", "owner", "properties", "company", "$ref"]
       #  0             1         2 ^...........................................^
-      needle = paths.slice(2, paths.size - 3)
+      needle = paths.reject { _1.is_a?(Integer) || _1 == 'oneOf' }
+      needle = needle.slice(2, needle.size - 3)
       nested_schema = fresh_schemas.dig(*needle)
 
       # Skip if the property using $ref is not found in the parent schema. The property may be removed.
@@ -44,20 +45,28 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
     references.inject({}) do |acc, paths|
       ref_link = dig_schema(base, paths)['$ref']
       schema_name = ref_link.gsub('#/components/schemas/', '')
-      schema_body = dig_schema(fresh, paths)
+      schema_body = dig_schema(fresh, paths.reject { |path| path.is_a?(Integer) })
+
       RSpec::OpenAPI::SchemaMerger.merge!(acc, { schema_name => schema_body })
     end
   end
 
   def dig_schema(obj, paths)
-    obj.dig(*paths, 'schema', 'items') || obj.dig(*paths, 'schema')
+    item_schema = obj.dig(*paths, 'schema', 'items')
+    object_schema = obj.dig(*paths, 'schema')
+    one_of_schema = obj.dig(*paths.take(paths.size - 1), 'schema', 'oneOf', paths.last)
+
+    item_schema || object_schema || one_of_schema
   end
 
   def paths_to_top_level_refs(base)
     request_bodies = RSpec::OpenAPI::HashHelper.matched_paths(base, 'paths.*.*.requestBody.content.application/json')
     responses = RSpec::OpenAPI::HashHelper.matched_paths(base, 'paths.*.*.responses.*.content.application/json')
-    (request_bodies + responses).select do |paths|
-      dig_schema(base, paths)&.dig('$ref')&.start_with?('#/components/schemas/')
+    (request_bodies + responses).flat_map do |paths|
+      object_paths = find_object_refs(base, paths)
+      one_of_paths = find_one_of_refs(base, paths)
+
+      object_paths || one_of_paths || []
     end
   end
 
@@ -72,5 +81,15 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
       schema_name = ref_link.gsub('#/components/schemas/', '')
       generated_names.include?(schema_name)
     end
+  end
+
+  def find_one_of_refs(base, paths)
+    dig_schema(base, paths)&.dig('oneOf')&.filter_map&.with_index do |schema, index|
+      paths + [index] if schema&.dig('$ref')&.start_with?('#/components/schemas/')
+    end
+  end
+
+  def find_object_refs(base, paths)
+    [paths] if dig_schema(base, paths)&.dig('$ref')&.start_with?('#/components/schemas/')
   end
 end
