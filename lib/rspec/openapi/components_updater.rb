@@ -23,7 +23,7 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
       #  0             1         2 ^...............................^
       # ["components", "schema", "Table", "properties", "owner", "properties", "company", "$ref"]
       #  0             1         2 ^...........................................^
-      needle = paths.reject { _1.is_a?(Integer) || _1 == 'oneOf' }
+      needle = paths.reject { |path| path.is_a?(Integer) || path == 'oneOf' }
       needle = needle.slice(2, needle.size - 3)
       nested_schema = fresh_schemas.dig(*needle)
 
