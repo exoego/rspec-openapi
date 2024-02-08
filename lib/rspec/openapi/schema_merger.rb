@@ -100,10 +100,8 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
 
         intersection = first.keys & second.keys
         total_size = [first.size, second.size].max.to_f
-        keys_score = intersection.size / total_size
-        values_score = intersection.sum { |key| similarity(first[key], second[key]) } / total_size
 
-        (keys_score + values_score) / 2.0
+        intersection.sum { |key| similarity(first[key], second[key]) } / total_size
       else
         0
       end
