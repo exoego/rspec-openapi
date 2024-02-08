@@ -117,6 +117,34 @@ paths:
                     discriminator:
                       propertyName: name
                     oneOf:
+                    - type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          host:
+                            type: string
+                          port:
+                            type: integer
+                          user:
+                            type: string
+                          schema:
+                            type: string
+                    - type: object
+                      properties:
+                        host:
+                          type: string
+                        port:
+                          type: integer
+                        user:
+                          type: string
+                        schema:
+                          type: string
+                      required:
+                        - host
+                        - port
+                        - schema
                     - type: object
                       properties:
                         id:
@@ -126,18 +154,6 @@ paths:
                       required:
                         - id
                         - name
-                    - type: object
-                      properties:
-                        name:
-                          type: string
-                        host:
-                          type: string
-                        port:
-                          type: integer
-                        user:
-                          type: string
-                        schema:
-                          type: string
                   null_sample:
                     nullable: true
                   storage_size:
@@ -176,7 +192,9 @@ paths:
         content:
           application/json:
             schema:
-              "$ref": "#/components/schemas/PostUsersRequest"
+              oneOf:
+              - "$ref": "#/components/schemas/PostUsersRequest"
+              - type: string
             example:
               name: alice
               avatar_url: "https://example.com/avatar.png"

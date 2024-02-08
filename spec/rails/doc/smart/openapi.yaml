@@ -177,16 +177,22 @@ paths:
                     discriminator:
                       propertyName: name
                     oneOf:
+                    - type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          host:
+                            type: string
+                          port:
+                            type: integer
+                          user:
+                            type: string
+                          schema:
+                            type: string
                     - type: object
                       properties:
-                        id:
-                          type: integer
-                        name:
-                          type: string
-                    - type: object
-                      properties:
-                        name:
-                          type: string
                         host:
                           type: string
                         port:
@@ -195,6 +201,10 @@ paths:
                           type: string
                         schema:
                           type: string
+                      required:
+                        - host
+                        - port
+                        - schema
                   null_sample:
                     nullable: true
                   storage_size:
@@ -227,7 +237,9 @@ paths:
         content:
           application/json:
             schema:
-              "$ref": "#/components/schemas/PostUsersRequest"
+              oneOf:
+              - "$ref": "#/components/schemas/PostUsersRequest"
+              - type: string
       responses:
         '201':
           description: returns a user
