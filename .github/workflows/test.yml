@@ -48,5 +48,6 @@ jobs:
         if: matrix.coverage == 'coverage'
         with:
           fail_ci_if_error: true
-          files: ./coverage/coverage.xml
+          directory: ./coverage/
+          files: coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
