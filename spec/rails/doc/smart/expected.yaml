@@ -114,15 +114,46 @@ paths:
                   description:
                     type: string
                   database:
-                    type: object
-                    properties:
-                      id:
-                        type: integer
-                      name:
-                        type: string
-                    required:
-                      - id
-                      - name
+                    discriminator:
+                      propertyName: name
+                    oneOf:
+                    - type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          host:
+                            type: string
+                          port:
+                            type: integer
+                          user:
+                            type: string
+                          schema:
+                            type: string
+                    - type: object
+                      properties:
+                        host:
+                          type: string
+                        port:
+                          type: integer
+                        user:
+                          type: string
+                        schema:
+                          type: string
+                      required:
+                        - host
+                        - port
+                        - schema
+                    - type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                      required:
+                        - id
+                        - name
                   null_sample:
                     nullable: true
                   storage_size:
@@ -161,7 +192,9 @@ paths:
         content:
           application/json:
             schema:
-              "$ref": "#/components/schemas/PostUsersRequest"
+              oneOf:
+              - "$ref": "#/components/schemas/PostUsersRequest"
+              - type: string
             example:
               name: alice
               avatar_url: "https://example.com/avatar.png"
@@ -293,22 +326,37 @@ components:
         - name
         - column_type
     User:
-      type: object
-      properties:
-        name:
-          type: string
-        relations:
-          type: object
-          properties:
-            avatar:
-              "$ref": "#/components/schemas/Avatar"
-            pets:
-              type: array
-              items:
-                "$ref": "#/components/schemas/Pet"
-          required:
-            - avatar
-            - pets
+      discriminator:
+        propertyName: name
+      oneOf:
+      - type: object
+        properties:
+          name:
+            type: string
+          foo:
+            type: string
+          bar:
+            type: string
+          baz:
+            type: string
+          quux:
+            type: string
+      - type: object
+        properties:
+          name:
+            type: string
+          relations:
+            type: object
+            properties:
+              avatar:
+                "$ref": "#/components/schemas/Avatar"
+              pets:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/Pet"
+            required:
+              - avatar
+              - pets
     Avatar:
       type: object
       properties:

@@ -8,6 +8,10 @@ class << RSpec::OpenAPI::HashHelper = Object.new
         k = k.to_s
         [[k]] + paths_to_all_fields(v).map { |x| [k, *x] }
       end
+    when Array
+      obj.flat_map.with_index do |value, i|
+        [[i]] + paths_to_all_fields(value).map { |x| [i, *x] }
+      end
     else
       []
     end

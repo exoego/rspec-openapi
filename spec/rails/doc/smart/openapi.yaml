@@ -174,12 +174,37 @@ paths:
                   description:
                     type: string
                   database:
-                    type: object
-                    properties:
-                      id:
-                        type: integer
-                      name:
-                        type: string
+                    discriminator:
+                      propertyName: name
+                    oneOf:
+                    - type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          host:
+                            type: string
+                          port:
+                            type: integer
+                          user:
+                            type: string
+                          schema:
+                            type: string
+                    - type: object
+                      properties:
+                        host:
+                          type: string
+                        port:
+                          type: integer
+                        user:
+                          type: string
+                        schema:
+                          type: string
+                      required:
+                        - host
+                        - port
+                        - schema
                   null_sample:
                     nullable: true
                   storage_size:
@@ -212,7 +237,9 @@ paths:
         content:
           application/json:
             schema:
-              "$ref": "#/components/schemas/PostUsersRequest"
+              oneOf:
+              - "$ref": "#/components/schemas/PostUsersRequest"
+              - type: string
       responses:
         '201':
           description: returns a user
@@ -279,16 +306,31 @@ components:
         id:
           type: integer
     User:
-      type: object
-      properties:
-        name:
-          type: string
-        relations:
-          type: object
-          properties:
-            avatar:
-              "$ref": "#/components/schemas/Avatar"
-            pets:
-              type: array
-              items:
-                "$ref": "#/components/schemas/Pet"
+      discriminator:
+        propertyName: name
+      oneOf:
+      - type: object
+        properties:
+          name:
+            type: string
+          foo:
+            type: string
+          bar:
+            type: string
+          baz:
+            type: string
+          quux:
+            type: string
+      - type: object
+        properties:
+          name:
+            type: string
+          relations:
+            type: object
+            properties:
+              avatar:
+                "$ref": "#/components/schemas/Avatar"
+              pets:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/Pet"
