@@ -49,3 +49,4 @@ jobs:
         with:
           fail_ci_if_error: true
           files: ./coverage/coverage.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
