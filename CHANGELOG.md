@@ -1,6 +1,11 @@
-## v0.11.0
+## v0.12.0
 
-## What's Changed
+- feat: Initial support of complex schema with manually-added `oneOf`
+  [#174](https://github.com/exoego/rspec-openapi/pull/174)
+- chore: Test with Ruby 3.3 and Rails 7.1.x 
+  [#169](https://github.com/exoego/rspec-openapi/pull/169)
+
+## v0.11.0
 - feat: Allow path-based config overrides
   [#162](https://github.com/exoego/rspec-openapi/pull/162)
 - enhancement: Sort HTTP methods, response status codes, and contents lexicographically
