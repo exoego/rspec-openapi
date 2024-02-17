@@ -43,11 +43,12 @@ jobs:
         if: matrix.coverage == 'coverage'
       - run: bundle exec rspec
         timeout-minutes: 1
+      - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+        name: codecov-action@v4 workaround
       - name: Upload coverage reports
         uses: codecov/codecov-action@v4
         if: matrix.coverage == 'coverage'
         with:
           fail_ci_if_error: true
-          directory: ./coverage/
-          files: coverage.xml
+          files: ./coverage/coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
