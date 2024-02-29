@@ -6,6 +6,7 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'rails', ENV['RAILS_VERSION'] || '6.0.3.7'
+gem 'rails-dom-testing', '~> 2.2'
 gem 'roda'
 gem 'rspec-rails'
 
