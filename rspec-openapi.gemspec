@@ -27,5 +27,6 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'actionpack', '>= 5.2.0'
   spec.add_dependency 'rspec-core'
+  spec.add_dependency 'rails-dom-testing'
   spec.metadata['rubygems_mfa_required'] = 'true'
 end
