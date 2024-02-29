@@ -21,7 +21,7 @@ paths:
       - AdditionalProperty
       responses:
         '200':
-          description: returns some content
+          description: returns the block content
           content:
             application/json:
               schema:
