@@ -245,3 +245,13 @@ class EngineExtraRoutesTest < ActionDispatch::IntegrationTest
     assert_response 200
   end
 end
+
+class AdditionalPropertiesTest < ActionDispatch::IntegrationTest
+  i_suck_and_my_tests_are_order_dependent!
+  openapi!
+
+  test 'returns some content' do
+    get '/additional_properties'
+    assert_response 200
+  end
+end

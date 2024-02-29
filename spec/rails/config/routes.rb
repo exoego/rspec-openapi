@@ -20,5 +20,7 @@ Rails.application.routes.draw do
     get '/test_block' => ->(_env) { [200, { 'Content-Type' => 'text/plain' }, ['A TEST']] }
 
     get '/secret_items' => 'secret_items#index'
+
+    get '/additional_properties' => 'additional_properties#index'
   end
 end

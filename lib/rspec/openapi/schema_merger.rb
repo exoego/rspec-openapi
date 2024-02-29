@@ -36,16 +36,14 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
     end
 
     spec.each do |key, value|
-      # allow `additionalProperties` to override generated property modifications
-      next if base.key?('additionalProperties') && %w[properties required].include?(key)
-
       if base[key].is_a?(Hash) && value.is_a?(Hash)
         merge_schema!(base[key], value) unless base[key].key?('$ref')
       elsif base[key].is_a?(Array) && value.is_a?(Array)
         # parameters need to be merged as if `name` and `in` were the Hash keys.
         merge_arrays(base, key, value)
       else
-        base[key] = value
+        # do not add `properties` or `required` fields if `additionalProperties` field is present
+        base[key] = value unless base.key?('additionalProperties') && %w[properties required].include?(key)
       end
     end
     base
