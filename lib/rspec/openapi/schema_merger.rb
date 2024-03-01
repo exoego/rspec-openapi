@@ -42,7 +42,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
         # parameters need to be merged as if `name` and `in` were the Hash keys.
         merge_arrays(base, key, value)
       else
-        # do not add `properties` or `required` fields if `additionalProperties` field is present
+        # do not ADD `properties` or `required` fields if `additionalProperties` field is present
         base[key] = value unless base.key?('additionalProperties') && %w[properties required].include?(key)
       end
     end
