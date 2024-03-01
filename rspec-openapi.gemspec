@@ -15,9 +15,10 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = Gem::Requirement.new('>= 2.5.0')
 
   spec.metadata = {
-    'homepage_uri'    => 'https://github.com/exoego/rspec-openapi',
+    'homepage_uri' => 'https://github.com/exoego/rspec-openapi',
     'source_code_uri' => 'https://github.com/exoego/rspec-openapi',
-    'changelog_uri'   => "https://github.com/exoego/rspec-openapi/releases/tag/v#{RSpec::OpenAPI::VERSION}",
+    'changelog_uri' => "https://github.com/exoego/rspec-openapi/releases/tag/v#{RSpec::OpenAPI::VERSION}",
+    'rubygems_mfa_required' => 'true',
   }
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
