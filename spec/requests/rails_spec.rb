@@ -249,7 +249,7 @@ end
 
 RSpec.describe 'Additional Properties test', type: :request do
   describe '#test' do
-    it 'returns the block content' do
+    it 'returns some content' do
       get '/additional_properties'
       expect(response.status).to eq(200)
     end
