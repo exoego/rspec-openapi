@@ -10,7 +10,7 @@ module RSpec::OpenAPI::Minitest
       result = super
       if ENV['OPENAPI'] && self.class.openapi?
         file_path = method(name).source_location.first
-        human_name = name.sub(/^test_/, '').gsub(/_/, ' ')
+        human_name = name.sub(/^test_/, '').gsub('_', ' ')
         example = Example.new(self, human_name, {}, file_path)
         path = RSpec::OpenAPI.path.yield_self { |p| p.is_a?(Proc) ? p.call(example) : p }
         record = RSpec::OpenAPI::RecordBuilder.build(self, example: example)
