@@ -22,5 +22,9 @@ Rails.application.routes.draw do
     get '/secret_items' => 'secret_items#index'
 
     get '/additional_properties' => 'additional_properties#index'
+
+    namespace :admin do
+      resources :extensions, only: [:index, :create]
+    end
   end
 end
