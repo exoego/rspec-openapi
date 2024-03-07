@@ -58,11 +58,11 @@
         }
       }
     },
-    "/admin/extensions": {
+    "/admin/masters/extensions": {
       "get": {
         "summary": "index",
         "tags": [
-          "Admin::Extension"
+          "Masters::Extension"
         ],
         "responses": {
           "200": {
@@ -96,7 +96,7 @@
       "post": {
         "summary": "create",
         "tags": [
-          "Admin::Extension"
+          "Masters::Extension"
         ],
         "responses": {
           "200": {

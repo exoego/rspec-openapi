@@ -23,8 +23,10 @@ Rails.application.routes.draw do
 
     get '/additional_properties' => 'additional_properties#index'
 
-    namespace :admin do
-      resources :extensions, only: [:index, :create]
+    scope :admin do
+      namespace :masters do
+        resources :extensions, only: [:index, :create]
+      end
     end
   end
 end

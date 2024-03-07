@@ -42,11 +42,11 @@ paths:
                   gold: 1
                   silver: 2
                   bronze: 3
-  "/admin/extensions":
+  "/admin/masters/extensions":
     get:
       summary: index
       tags:
-      - Admin::Extension
+      - Masters::Extension
       responses:
         '200':
           description: returns some content
@@ -66,7 +66,7 @@ paths:
     post:
       summary: create
       tags:
-      - Admin::Extension
+      - Masters::Extension
       responses:
         '200':
           description: creates a content

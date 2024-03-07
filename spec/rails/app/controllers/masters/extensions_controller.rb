@@ -1,4 +1,4 @@
-class Admin::ExtensionsController < ApplicationController
+class Masters::ExtensionsController < ApplicationController
   def index
     render json: [{ name: 'my-ext-1' }]
   end
