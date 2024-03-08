@@ -8,7 +8,7 @@ ENV['OPENAPI_OUTPUT'] ||= 'yaml'
 
 RSpec::OpenAPI.title = 'OpenAPI Documentation'
 RSpec::OpenAPI.path = File.expand_path("../roda/doc/openapi.#{ENV.fetch('OPENAPI_OUTPUT', nil)}", __dir__)
-RSpec::OpenAPI.ignored_paths = ["/admin/masters/extensions"]
+RSpec::OpenAPI.ignored_paths = ['/admin/masters/extensions']
 
 RSpec::OpenAPI.description_builder = lambda do |example|
   contexts = example.example_group.parent_groups.map(&:description).grep(/\Awhen /)
