@@ -255,3 +255,17 @@ RSpec.describe 'Additional Properties test', type: :request do
     end
   end
 end
+
+RSpec.describe 'Namespace test', type: :request do
+  describe '/admin/masters/extensions' do
+    it 'returns some content' do
+      get '/admin/masters/extensions'
+      expect(response.status).to eq(200)
+    end
+
+    it 'creates a content' do
+      post '/admin/masters/extensions'
+      expect(response.status).to eq(200)
+    end
+  end
+end

@@ -58,6 +58,71 @@
         }
       }
     },
+    "/admin/masters/extensions": {
+      "get": {
+        "summary": "index",
+        "tags": [
+          "Masters::Extension"
+        ],
+        "responses": {
+          "200": {
+            "description": "returns some content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name"
+                    ]
+                  }
+                },
+                "example": [
+                  {
+                    "name": "my-ext-1"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "create",
+        "tags": [
+          "Masters::Extension"
+        ],
+        "responses": {
+          "200": {
+            "description": "creates a content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                },
+                "example": {
+                  "message": "created"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/images": {
       "get": {
         "summary": "index",

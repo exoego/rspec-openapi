@@ -255,3 +255,18 @@ class AdditionalPropertiesTest < ActionDispatch::IntegrationTest
     assert_response 200
   end
 end
+
+class NamespaceTest < ActionDispatch::IntegrationTest
+  i_suck_and_my_tests_are_order_dependent!
+  openapi!
+
+  test 'returns some content' do
+    get '/admin/masters/extensions'
+    assert_response 200
+  end
+
+  test 'creates a content' do
+    post '/admin/masters/extensions'
+    assert_response 200
+  end
+end
