@@ -184,6 +184,12 @@ RSpec::OpenAPI.example_types = %i[request]
 # :controller and :action always exist. :format is added when routes is configured as such.
 RSpec::OpenAPI.ignored_path_params = %i[controller action format]
 
+# Configure which paths to ignore.
+# You can exclude some specs via `openapi: false`.
+# But, in a complex API usage scenario, you may need to include spec itself, but exclude some private paths.
+# In that case, you can specify the paths to ignore.
+# String or Regexp is acceptable.
+RSpec::OpenAPI.ignored_paths = ["/admin/full/path/", Regexp.new("^/_internal/")]
 ```
 
 ### Can I use rspec-openapi with `$ref` to minimize duplication of schema?

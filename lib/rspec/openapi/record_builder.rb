@@ -14,6 +14,8 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
     path, summary, tags, operation_id, required_request_params, raw_path_params, description, security =
       extract_request_attributes(request, example)
 
+    return if RSpec::OpenAPI.ignored_paths.any? { |ignored_path| path.match?(ignored_path) }
+
     request_headers, response_headers = extract_headers(request, response)
 
     RSpec::OpenAPI::Record.new(
