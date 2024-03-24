@@ -110,3 +110,17 @@ RSpec.describe 'Users', type: :request do
     end
   end
 end
+
+RSpec.describe 'Pages', type: :request do
+  describe '#get' do
+    it 'return HTML' do
+      get '/pages'
+      expect(response.status).to eq(200)
+    end
+
+    it 'return no content' do
+      get '/pages?head=1'
+      expect(response.status).to eq(204)
+    end
+  end
+end

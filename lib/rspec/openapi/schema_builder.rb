@@ -13,12 +13,16 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
     if record.response_body
       disposition = normalize_content_disposition(record.response_content_disposition)
-      response[:content] = {
-        normalize_content_type(record.response_content_type) => {
-          schema: build_property(record.response_body, disposition: disposition),
-          example: response_example(record, disposition: disposition),
-        }.compact,
-      }
+
+      has_content = !normalize_content_type(record.response_content_type).nil?
+      if has_content
+        response[:content] = {
+          normalize_content_type(record.response_content_type) => {
+            schema: build_property(record.response_body, disposition: disposition),
+            example: response_example(record, disposition: disposition),
+          }.compact,
+        }
+      end
     end
 
     {
@@ -50,7 +54,16 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   def response_example(record, disposition:)
     return nil if !example_enabled? || disposition
 
-    record.response_body
+    response_body = record.response_body
+
+    if defined?(Nokogiri)
+      case response_body
+      when Nokogiri::HTML4::Document, Nokogiri::HTML5::Document
+        return response_body.to_s
+      end
+    end
+
+    response_body
   end
 
   def example_enabled?
@@ -174,6 +187,12 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     when NilClass
       { nullable: true }
     else
+      if defined?(Nokogiri)
+        case value
+        when Nokogiri::HTML4::Document, Nokogiri::HTML5::Document
+          return { type: 'string' }
+        end
+      end
       raise NotImplementedError, "type detection is not implemented for: #{value.inspect}"
     end
   end
