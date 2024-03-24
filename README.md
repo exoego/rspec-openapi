@@ -29,7 +29,7 @@ $ OPENAPI=1 bundle exec rspec
 
 ### Example
 
-Let's say you have [a request spec](./spec/requests/rails/tables_spec.rb) like this:
+Let's say you have [a request spec](https://github.com/exoego/rspec-openapi/blob/24e5c567c2e90945c7a41f19f71634ac028cc314/spec/requests/rails_spec.rb#L38) like this:
 
 ```rb
 RSpec.describe 'Tables', type: :request do
