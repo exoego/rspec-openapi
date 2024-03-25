@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description   = 'Generate OpenAPI from RSpec request specs'
   spec.homepage      = 'https://github.com/exoego/rspec-openapi'
   spec.license       = 'MIT'
-  spec.required_ruby_version = Gem::Requirement.new('>= 2.5.0')
+  spec.required_ruby_version = Gem::Requirement.new('>= 2.7.0')
 
   spec.metadata = {
     'homepage_uri' => 'https://github.com/exoego/rspec-openapi',
