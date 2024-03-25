@@ -3,7 +3,7 @@ class PagesController < ApplicationController
     if params[:head] == '1'
       head :no_content
     else
-      render html: '<div>hello</div>'.html_safe
+      render html: '<!DOCTYPE html><html lang="en"><head><title>Hello</title></head><body>Hello</body></html>'.html_safe
     end
   end
 end

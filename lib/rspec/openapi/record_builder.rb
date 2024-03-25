@@ -33,7 +33,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       description: description,
       security: security,
       status: response.status,
-      response_body: safe_parse_body(response),
+      response_body: safe_parse_body(response, response.media_type),
       response_headers: response_headers,
       response_content_type: response.media_type,
       response_content_disposition: response.header['Content-Disposition'],
@@ -42,7 +42,9 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
 
   private
 
-  def safe_parse_body(response)
+  def safe_parse_body(response, media_type)
+    # Use raw body without Nokogiri parsing, because Nokogiri modifies HTML content :()
+    return response.body if media_type == 'text/html'
     response.parsed_body
   rescue JSON::ParserError
     nil

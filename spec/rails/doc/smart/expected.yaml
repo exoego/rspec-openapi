@@ -33,7 +33,7 @@ paths:
             "text/html":
               schema:
                 type: string
-              example: "<div>hello</div>"
+              example: '<!DOCTYPE html><html lang="en"><head><title>Hello</title></head><body>Hello</body></html>'
         '204':
           description: return no content
   "/tables":
