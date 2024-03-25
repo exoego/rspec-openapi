@@ -16,8 +16,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - ruby: ruby:2.5
-          - ruby: ruby:2.6
           - ruby: ruby:2.7
           - ruby: ruby:3.0
           - ruby: ruby:3.1

@@ -13,9 +13,9 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   def normalize_keys(spec)
     case spec
     when Hash
-      spec.map do |key, value|
+      spec.to_h do |key, value|
         [key.to_s, normalize_keys(value)]
-      end.to_h
+      end
     when Array
       spec.map { |s| normalize_keys(s) }
     else

@@ -4,7 +4,7 @@ require 'rspec/core'
 
 RSpec.configuration.after(:each) do |example|
   if RSpec::OpenAPI.example_types.include?(example.metadata[:type]) && example.metadata[:openapi] != false
-    path = RSpec::OpenAPI.path.yield_self { |p| p.is_a?(Proc) ? p.call(example) : p }
+    path = RSpec::OpenAPI.path.then { |p| p.is_a?(Proc) ? p.call(example) : p }
     record = RSpec::OpenAPI::RecordBuilder.build(self, example: example)
     RSpec::OpenAPI.path_records[path] << record if record
   end
