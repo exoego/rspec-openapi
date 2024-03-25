@@ -35,11 +35,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: bundle install
-        run: bundle install -j$(nproc) --retry 3
-      - name: install simplecov-fork only for minitest with coverage
-        run: |
-          gem install specific_install
-          gem specific_install https://github.com/exoego/simplecov.git branch-fix
+        run: bundle install -j$(nproc) --retry 3 --without simplecov
+      - name: install simplecov when coverage is enabled
+        run: bundle install --with simplecov
         if: matrix.coverage == 'coverage'
       - run: bundle exec rspec
         timeout-minutes: 1
