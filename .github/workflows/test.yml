@@ -35,9 +35,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: bundle install
-        run: bundle install -j$(nproc) --retry 3 --without simplecov
+        run: |
+          bundle config set without 'simplecov'
+          bundle install -j$(nproc) --retry 3
       - name: install simplecov when coverage is enabled
-        run: bundle install --with simplecov
+        run: |
+          bundle config set with 'simplecov'
+          bundle install
         if: matrix.coverage == 'coverage'
       - run: bundle exec rspec
         timeout-minutes: 1
