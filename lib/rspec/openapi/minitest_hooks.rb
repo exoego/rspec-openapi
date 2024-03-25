@@ -45,6 +45,6 @@ if ENV['OPENAPI']
   Minitest.after_run do
     result_recorder = RSpec::OpenAPI::ResultRecorder.new(RSpec::OpenAPI.path_records)
     result_recorder.record_results!
-    puts result_record.error_message if result_recorder.errors?
+    puts result_recorder.error_message if result_recorder.errors?
   end
 end
