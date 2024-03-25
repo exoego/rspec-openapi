@@ -10,9 +10,12 @@ gem 'roda'
 gem 'rspec-rails'
 
 group :test do
+  gem 'super_diff'
+end
+
+group :simplecov do
   gem 'simplecov', git: 'https://github.com/exoego/simplecov.git', branch: 'branch-fix'
   gem 'simplecov-cobertura'
-  gem 'super_diff'
 end
 
 group :development do
