@@ -43,7 +43,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
   private
 
   def safe_parse_body(response, media_type)
-    # Use raw body without Nokogiri parsing, because Nokogiri modifies HTML content :()
+    # Use raw body, because Nokogiri-parsed HTML are modified (new lines injection, meta injection, and so on) :(
     return response.body if media_type == 'text/html'
 
     response.parsed_body
