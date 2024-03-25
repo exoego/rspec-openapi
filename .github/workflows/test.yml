@@ -40,7 +40,7 @@ jobs:
           bundle install -j$(nproc) --retry 3
       - name: install simplecov when coverage is enabled
         run: |
-          bundle config set with 'simplecov'
+          bundle config unset without
           bundle install
         if: matrix.coverage == 'coverage'
       - run: bundle exec rspec
