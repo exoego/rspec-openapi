@@ -19,6 +19,13 @@ paths:
       summary: get
       tags:
       - Page
+      parameters:
+        - name: head
+          in: query
+          required: false
+          schema:
+            type: integer
+          example: 1
       responses:
         '200':
           description: return HTML
@@ -27,8 +34,8 @@ paths:
               schema:
                 type: string
               example: '<!DOCTYPE html><html lang="en"><head><title>Hello</title></head><body>Hello</body></html>'
-#        '204':
-#          description: return no content
+        '204':
+          description: return no content
   "/tables":
     get:
       summary: index
