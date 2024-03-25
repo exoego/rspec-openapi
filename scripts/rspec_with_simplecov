@@ -32,7 +32,7 @@ begin
   old_verbose = $VERBOSE
   $VERBOSE = false
 
-  unless ENV.fetch('COVERAGE', '').empty?
+  unless (ENV.fetch('COVERAGE', nil) && ENV['COVERAGE'].empty?) || RUBY_VERSION < '1.9.3'
     require 'simplecov'
 
     SimpleCov.start do

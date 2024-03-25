@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-unless ENV.fetch('COVERAGE', '').empty?
+unless ENV['COVERAGE'] && ENV['COVERAGE'].empty?
   require 'simplecov'
   require 'simplecov-cobertura'
 
