@@ -14,6 +14,21 @@ info:
 servers:
 - url: http://localhost:3000
 paths:
+  "/pages":
+    get:
+      summary: get
+      tags:
+      - Page
+      responses:
+        '200':
+          description: return HTML
+          content:
+            "text/html":
+              schema:
+                type: string
+              example: '<!DOCTYPE html><html lang="en"><head><title>Hello</title></head><body>Hello</body></html>'
+#        '204':
+#          description: return no content
   "/tables":
     get:
       summary: index
