@@ -3,6 +3,6 @@
 require "hanami"
 
 module Hanami
-  class App < Hanami::App
+  class AppTest < Hanami::App
   end
 end
