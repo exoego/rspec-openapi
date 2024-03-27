@@ -47,7 +47,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   private
 
   def enrich_with_required_keys(obj)
-    obj[:required] = obj[:properties]&.keys
+    obj[:required] = obj[:properties]&.keys || []
     obj
   end
 

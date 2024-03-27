@@ -82,6 +82,22 @@ RSpec.describe 'Users', type: :request do
       expect(response.status).to eq(201)
     end
 
+    it 'accepts nested object where some fields are missing' do
+      post '/users', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {
+        name: 'alice',
+        foo: {
+          bar: {
+          },
+        },
+      }.to_json
+      expect(response.status).to eq(201)
+    end
+
+    it 'can accept empty body' do
+      post '/users', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {}.to_json
+      expect(response.status).to eq(201)
+    end
+
     it 'returns an user' do
       post '/users', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {
         name: 'alice',
