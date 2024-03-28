@@ -86,8 +86,7 @@ RSpec.describe 'Users', type: :request do
       post '/users', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {
         name: 'alice',
         foo: {
-          bar: {
-          },
+          bar: {},
         },
       }.to_json
       expect(response.status).to eq(201)
