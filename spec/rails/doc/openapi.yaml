@@ -735,6 +735,7 @@ paths:
               schema:
                 type: string
               example: A TEST
+      deprecated: true
 components:
   securitySchemes:
     SecretApiKeyAuth:

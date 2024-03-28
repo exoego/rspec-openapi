@@ -222,7 +222,7 @@ RSpec.describe 'SecretKey securityScheme',
 end
 
 RSpec.describe 'Extra routes', type: :request do
-  describe '#test_block' do
+  describe '#test_block', openapi: { deprecated: true } do
     it 'returns the block content' do
       get '/test_block'
       expect(response.status).to eq(200)
