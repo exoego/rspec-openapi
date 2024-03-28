@@ -5,6 +5,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   # @param [Hash] spec
   def merge!(base, spec)
     spec = normalize_keys(spec)
+    base = normalize_keys(base)
     merge_schema!(base, spec)
   end
 
