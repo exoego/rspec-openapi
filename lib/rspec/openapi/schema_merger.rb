@@ -4,25 +4,12 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   # @param [Hash] base
   # @param [Hash] spec
   def merge!(base, spec)
-    spec = normalize_keys(spec)
-    base.replace(normalize_keys(base))
+    spec = RSpec::OpenAPI::KeyTransformer.symbolize(spec)
+    base.replace(RSpec::OpenAPI::KeyTransformer.symbolize(base))
     merge_schema!(base, spec)
   end
 
   private
-
-  def normalize_keys(spec)
-    case spec
-    when Hash
-      spec.to_h do |key, value|
-        [key.to_sym, normalize_keys(value)]
-      end
-    when Array
-      spec.map { |s| normalize_keys(s) }
-    else
-      spec
-    end
-  end
 
   # Not doing `base.replace(deep_merge(base, spec))` to preserve key orders.
   # Also this needs to be aware of OpenAPI details because a Hash-like structure
