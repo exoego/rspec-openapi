@@ -50,18 +50,17 @@ RSpec.describe 'Tables', type: :request do
   describe '#index' do
     context 'returns a list of tables' do
       it 'with flat query parameters' do
-        get '/tables', { page: '1', per: '10' }.to_json,
-            { 'authorization' => 'k0kubun', 'X-Authorization-Token' => 'token' }
+        get '/tables', { page: '1', per: '10' }, { 'AUTHORIZATION' => 'k0kubun', 'X_AUTHORIZATION_TOKEN' => 'token' }
         expect(last_response.status).to eq(200)
       end
 
       it 'with deep query parameters' do
-        get '/tables', { filter: { 'name' => 'Example Table' } }.to_json, { 'authorization' => 'k0kubun' }
+        get '/tables', { filter: { 'name' => 'Example Table' } }, { 'AUTHORIZATION' => 'k0kubun' }
         expect(last_response.status).to eq(200)
       end
 
       it 'with different deep query parameters' do
-        get '/tables', { filter: { 'price' => 0 } }.to_json, { 'authorization' => 'k0kubun' }
+        get '/tables', { filter: { 'price' => 0 } }, { 'AUTHORIZATION' => 'k0kubun' }
         expect(last_response.status).to eq(200)
       end
     end
@@ -80,7 +79,7 @@ RSpec.describe 'Tables', type: :request do
 
   describe '#show' do
     it 'returns a table' do
-      get '/tables/1', nil, { 'authorization' => 'k0kubun' }
+      get '/tables/1', nil, { 'AUTHORIZATION' => 'k0kubun' }
       expect(last_response.status).to eq(200)
     end
 
@@ -90,12 +89,12 @@ RSpec.describe 'Tables', type: :request do
     end
 
     it 'does not return a table if not found' do
-      get '/tables/2', nil, { 'authorization' => 'k0kubun' }
+      get '/tables/2', nil, { 'AUTHORIZATION' => 'k0kubun' }
       expect(last_response.status).to eq(404)
     end
 
     it 'does not return a table if not found (openapi: false)', openapi: false do
-      get '/tables/3', nil, { 'authorization' => 'k0kubun' }
+      get '/tables/3', nil, { 'AUTHORIZATION' => 'k0kubun' }
       expect(last_response.status).to eq(404)
     end
   end
@@ -107,7 +106,7 @@ RSpec.describe 'Tables', type: :request do
         description: 'description',
         database_id: 2,
       }.to_json,
-           { 'authorization' => 'k0kubun', 'CONTENT_TYPE' => 'application/json' }
+           { 'AUTHORIZATION' => 'k0kubun', 'CONTENT_TYPE' => 'application/json' }
       expect(last_response.status).to eq(201)
     end
 
@@ -116,7 +115,7 @@ RSpec.describe 'Tables', type: :request do
         description: 'description',
         database_id: 2,
       }.to_json,
-           { 'authorization' => 'k0kubun', 'CONTENT_TYPE' => 'application/json' }
+           { 'AUTHORIZATION' => 'k0kubun', 'CONTENT_TYPE' => 'application/json' }
       expect(last_response.status).to eq(422)
     end
 
@@ -126,7 +125,7 @@ RSpec.describe 'Tables', type: :request do
         description: 'description',
         database_id: 2,
       }.to_json,
-           { 'authorization' => 'k0kubun', 'CONTENT_TYPE' => 'application/json' }
+           { 'AUTHORIZATION' => 'k0kubun', 'CONTENT_TYPE' => 'application/json' }
       expect(last_response.status).to eq(422)
     end
   end
@@ -134,20 +133,20 @@ RSpec.describe 'Tables', type: :request do
   describe '#update' do
     it 'returns a table' do
       patch '/tables/1', { name: 'test' },
-            { 'authorization' => 'k0kubun', 'CONTENT_TYPE' => 'application/x-www-form-urlencoded' }
+            { 'AUTHORIZATION' => 'k0kubun', 'CONTENT_TYPE' => 'application/x-www-form-urlencoded' }
       expect(last_response.status).to eq(200)
     end
   end
 
   describe '#destroy' do
     it 'returns a table' do
-      delete '/tables/1', nil, { 'authorization' => 'k0kubun' }
+      delete '/tables/1', nil, { 'AUTHORIZATION' => 'k0kubun' }
       expect(last_response.status).to eq(200)
     end
 
     it 'returns no content if specified' do
       delete '/tables/1', { no_content: true },
-             { 'authorization' => 'k0kubun', 'CONTENT_TYPE' => 'application/x-www-form-urlencoded' }
+             { 'AUTHORIZATION' => 'k0kubun', 'CONTENT_TYPE' => 'application/x-www-form-urlencoded' }
       expect(last_response.status).to eq(202)
     end
   end
@@ -231,7 +230,7 @@ RSpec.describe 'SecretKey securityScheme',
                openapi: { security: [{ 'SecretApiKeyAuth' => [] }] } do
   describe '#secret_items' do
     it 'authorizes with secret key' do
-      get '/secret_items',
+      get '/secret_items', nil,
           {
             'Secret-Key' => '42',
           }
