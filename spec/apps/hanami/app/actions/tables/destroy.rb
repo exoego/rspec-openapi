@@ -5,6 +5,7 @@ module HanamiTest
     module Tables
       class Destroy < TableAction
         def handle(request, response)
+          response.format = :json
           if request.params[:no_content]
             response.status = 202
           else

@@ -8,8 +8,10 @@ module HanamiTest
           response.headers['X-Cursor'] = 100
 
           if request.params[:show_columns]
+            response.format = :json
             response.body = [find_table('42')].to_json
           else
+            response.format = :json
             response.body = [find_table].to_json
           end
         end

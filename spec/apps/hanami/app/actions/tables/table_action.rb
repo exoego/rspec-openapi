@@ -15,12 +15,12 @@ module HanamiTest
         private
 
         def handle_not_fount_error(_request, response, _exception)
-          response.status = 404
-          response.body = { message: 'not found' }.to_json
+          halt 404, { message: 'not found' }.to_json
         end
 
-        def authenticate(request, _response)
-          if request.get_header('authorization') != APIKEY
+        def authenticate(request, response)
+          if request.get_header('AUTHORIZATION') != APIKEY
+            response.format = :json
             halt 401, { message: 'Unauthorized' }.to_json
           end
         end
