@@ -854,10 +854,7 @@
                   "no_content": {
                     "type": "string"
                   }
-                },
-                "required": [
-                  "no_content"
-                ]
+                }
               },
               "example": {
                 "no_content": "true"
