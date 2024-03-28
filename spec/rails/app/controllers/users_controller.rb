@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   def create
     res = {
-      name: params[:name],
+      name: params[:name] || 'alice',
       relations: {
         avatar: {
           url: params[:avatar_url] || 'https://example.com/avatar.png',

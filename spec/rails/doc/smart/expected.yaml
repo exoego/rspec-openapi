@@ -411,9 +411,5 @@ components:
               properties:
                 baz:
                   type: integer
-              required:
-                - baz
           required:
             - bar
-      required:
-        - name
