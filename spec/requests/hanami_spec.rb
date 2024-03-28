@@ -177,7 +177,6 @@ RSpec.describe 'Images', type: :request do
 
     it 'returns a image payload with upload' do
       post '/images/upload', { 'image' => image }
-      # binding.irb
       expect(last_response.status).to eq(200)
     end
   end
