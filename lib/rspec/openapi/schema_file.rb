@@ -15,7 +15,7 @@ class RSpec::OpenAPI::SchemaFile
     spec = read
     block.call(spec)
   ensure
-    write(spec)
+    write(stringify(spec))
   end
 
   private
@@ -24,7 +24,29 @@ class RSpec::OpenAPI::SchemaFile
   def read
     return {} unless File.exist?(@path)
 
-    YAML.safe_load(File.read(@path)) # this can also parse JSON
+    symbolize(YAML.safe_load(File.read(@path))) # this can also parse JSON
+  end
+
+  def symbolize(value)
+    case value
+    when Hash
+      value.to_h { |k, v| [k.to_sym, symbolize(v)] }
+    when Array
+      value.map { |v| symbolize(v) }
+    else
+      value
+    end
+  end
+
+  def stringify(value)
+    case value
+    when Hash
+      value.to_h { |k, v| [k.to_s, stringify(v)] }
+    when Array
+      value.map { |v| stringify(v) }
+    else
+      value
+    end
   end
 
   # @param [Hash] spec

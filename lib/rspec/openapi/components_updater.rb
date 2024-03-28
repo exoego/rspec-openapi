@@ -23,28 +23,29 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
       #  0             1         2 ^...............................^
       # ["components", "schema", "Table", "properties", "owner", "properties", "company", "$ref"]
       #  0             1         2 ^...........................................^
-      needle = paths.reject { |path| path.is_a?(Integer) || path == 'oneOf' }
+      needle = paths.reject { |path| path.is_a?(Integer) || path == :oneOf }
       needle = needle.slice(2, needle.size - 3)
       nested_schema = fresh_schemas.dig(*needle)
 
       # Skip if the property using $ref is not found in the parent schema. The property may be removed.
       next if nested_schema.nil?
 
-      schema_name = base.dig(*paths)&.gsub('#/components/schemas/', '')
+      schema_name = base.dig(*paths)&.gsub('#/components/schemas/', '')&.to_sym
       fresh_schemas[schema_name] ||= {}
       RSpec::OpenAPI::SchemaMerger.merge!(fresh_schemas[schema_name], nested_schema)
     end
 
-    RSpec::OpenAPI::SchemaMerger.merge!(base, { 'components' => { 'schemas' => fresh_schemas } })
-    RSpec::OpenAPI::SchemaCleaner.cleanup_components_schemas!(base, { 'components' => { 'schemas' => fresh_schemas } })
+    RSpec::OpenAPI::SchemaMerger.merge!(base, { components: { schemas: fresh_schemas } })
+    RSpec::OpenAPI::SchemaCleaner.cleanup_components_schemas!(base, { components: { schemas: fresh_schemas } })
   end
 
   private
 
   def build_fresh_schemas(references, base, fresh)
     references.inject({}) do |acc, paths|
-      ref_link = dig_schema(base, paths)['$ref']
-      schema_name = ref_link.gsub('#/components/schemas/', '')
+      ref_link = dig_schema(base, paths)[:$ref]
+      puts "ref_link: #{ref_link}"
+      schema_name = ref_link.to_s.gsub('#/components/schemas/', '')
       schema_body = dig_schema(fresh, paths.reject { |path| path.is_a?(Integer) })
 
       RSpec::OpenAPI::SchemaMerger.merge!(acc, { schema_name => schema_body })
@@ -52,9 +53,11 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
   end
 
   def dig_schema(obj, paths)
-    item_schema = obj.dig(*paths, 'schema', 'items')
-    object_schema = obj.dig(*paths, 'schema')
-    one_of_schema = obj.dig(*paths.take(paths.size - 1), 'schema', 'oneOf', paths.last)
+    # Response code can be an integer
+    paths = paths.map { |path| path.is_a?(Integer) ? path : path.to_sym }
+    item_schema = obj.dig(*paths, :schema, :items)
+    object_schema = obj.dig(*paths, :schema)
+    one_of_schema = obj.dig(*paths.take(paths.size - 1), :schema, :oneOf, paths.last)
 
     item_schema || object_schema || one_of_schema
   end
@@ -85,12 +88,12 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
   end
 
   def find_one_of_refs(base, paths)
-    dig_schema(base, paths)&.dig('oneOf')&.map&.with_index do |schema, index|
-      paths + [index] if schema&.dig('$ref')&.start_with?('#/components/schemas/')
+    dig_schema(base, paths)&.dig(:oneOf)&.map&.with_index do |schema, index|
+      paths + [index] if schema&.dig(:$ref)&.start_with?('#/components/schemas/')
     end&.compact
   end
 
   def find_object_refs(base, paths)
-    [paths] if dig_schema(base, paths)&.dig('$ref')&.start_with?('#/components/schemas/')
+    [paths] if dig_schema(base, paths)&.dig(:$ref)&.start_with?('#/components/schemas/')
   end
 end

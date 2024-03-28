@@ -27,7 +27,7 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
     cleanup_hash!(base, spec, 'paths.*.*')
 
     # cleanup parameters
-    cleanup_array!(base, spec, 'paths.*.*.parameters', %w[name in])
+    cleanup_array!(base, spec, 'paths.*.*.parameters', %i[name in])
 
     # cleanup requestBody
     cleanup_hash!(base, spec, 'paths.*.*.requestBody.content.application/json.schema.properties.*')
@@ -40,7 +40,7 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
   end
 
   def cleanup_conflicting_security_parameters!(base)
-    security_schemes = base.dig('components', 'securitySchemes') || {}
+    security_schemes = base.dig(:components, :securitySchemes) || {}
 
     return if security_schemes.empty?
 
@@ -65,22 +65,22 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
     paths_to_objects.each do |path|
       parent = base.dig(*path.take(path.length - 1))
       # "required" array  must not be present if empty
-      parent.delete('required') if parent['required'] && parent['required'].empty?
+      parent.delete(:required) if parent[:required] && parent[:required].empty?
     end
   end
 
   private
 
   def remove_parameters_conflicting_with_security_sceheme!(path_definition, security_scheme, security_scheme_name)
-    return unless path_definition['security']
-    return unless path_definition['parameters']
-    return unless path_definition.dig('security', 0).keys.include?(security_scheme_name)
+    return unless path_definition[:security]
+    return unless path_definition[:parameters]
+    return unless path_definition.dig(:security, 0).keys.include?(security_scheme_name)
 
-    path_definition['parameters'].reject! do |parameter|
-      parameter['in'] == security_scheme['in'] && # same location (ie. header)
-        parameter['name'] == security_scheme['name'] # same name (ie. AUTHORIZATION)
+    path_definition[:parameters].reject! do |parameter|
+      parameter[:in] == security_scheme[:in] && # same location (ie. header)
+        parameter[:name] == security_scheme[:name] # same name (ie. AUTHORIZATION)
     end
-    path_definition.delete('parameters') if path_definition['parameters'].empty?
+    path_definition.delete(:parameters) if path_definition[:parameters].empty?
   end
 
   def cleanup_array!(base, spec, selector, fields_for_identity = [])

@@ -5,6 +5,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   # @param [Hash] spec
   def merge!(base, spec)
     spec = normalize_keys(spec)
+    base.replace(normalize_keys(base))
     merge_schema!(base, spec)
   end
 
@@ -14,7 +15,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
     case spec
     when Hash
       spec.to_h do |key, value|
-        [key.to_s, normalize_keys(value)]
+        [key.to_sym, normalize_keys(value)]
       end
     when Array
       spec.map { |s| normalize_keys(s) }
@@ -29,7 +30,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   #
   # TODO: Should we probably force-merge `summary` regardless of manual modifications?
   def merge_schema!(base, spec)
-    if (options = base['oneOf'])
+    if (options = base[:oneOf])
       merge_closest_match!(options, spec)
 
       return base
@@ -37,13 +38,13 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
 
     spec.each do |key, value|
       if base[key].is_a?(Hash) && value.is_a?(Hash)
-        merge_schema!(base[key], value) unless base[key].key?('$ref')
+        merge_schema!(base[key], value) unless base[key].key?(:$ref)
       elsif base[key].is_a?(Array) && value.is_a?(Array)
         # parameters need to be merged as if `name` and `in` were the Hash keys.
         merge_arrays(base, key, value)
       else
         # do not ADD `properties` or `required` fields if `additionalProperties` field is present
-        base[key] = value unless base.key?('additionalProperties') && %w[properties required].include?(key)
+        base[key] = value unless base.key?(:additionalProperties) && %i[properties required].include?(key)
       end
     end
     base
@@ -51,9 +52,9 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
 
   def merge_arrays(base, key, value)
     base[key] = case key
-                when 'parameters'
+                when :parameters
                   merge_parameters(base, key, value)
-                when 'required'
+                when :required
                   # Preserve properties that appears in all test cases
                   value & base[key]
                 else
@@ -65,13 +66,13 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   def merge_parameters(base, key, value)
     all_parameters = value | base[key]
 
-    unique_base_parameters = base[key].index_by { |parameter| [parameter['name'], parameter['in']] }
+    unique_base_parameters = base[key].index_by { |parameter| [parameter[:name], parameter[:in]] }
     all_parameters = all_parameters.map do |parameter|
-      base_parameter = unique_base_parameters[[parameter['name'], parameter['in']]] || {}
+      base_parameter = unique_base_parameters[[parameter[:name], parameter[:in]]] || {}
       base_parameter ? base_parameter.merge(parameter) : parameter
     end
 
-    all_parameters.uniq! { |param| param.slice('name', 'in') }
+    all_parameters.uniq! { |param| param.slice(:name, :in) }
     base[key] = all_parameters
   end
 
@@ -80,7 +81,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   def merge_closest_match!(options, spec)
     score, option = options.map { |option| [similarity(option, spec), option] }.max_by(&:first)
 
-    return if option&.key?('$ref')
+    return if option&.key?(:$ref)
 
     if score.to_f > SIMILARITY_THRESHOLD
       merge_schema!(option, spec)
@@ -97,7 +98,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
       when [Array, Array]
         (first & second).size / [first.size, second.size].max.to_f
       when [Hash, Hash]
-        return 1 if first.merge(second).key?('$ref')
+        return 1 if first.merge(second).key?(:$ref)
 
         intersection = first.keys & second.keys
         total_size = [first.size, second.size].max.to_f
