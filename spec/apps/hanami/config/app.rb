@@ -2,7 +2,9 @@
 
 require "hanami"
 
-module Hanami
-  class AppTest < Hanami::App
+module HanamiTest
+
+  class App < Hanami::App
+    config.middleware.use :body_parser, :json
   end
 end

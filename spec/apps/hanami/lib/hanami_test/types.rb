@@ -2,7 +2,7 @@
 
 require "dry/types"
 
-module Hanami
+module HanamiTest
   Types = Dry.Types
 
   module Types

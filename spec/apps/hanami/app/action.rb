@@ -3,7 +3,8 @@
 
 require "hanami/action"
 
-module Hanami
+module HanamiTest
   class Action < Hanami::Action
+    class RecordNotFound < StandardError; end
   end
 end
