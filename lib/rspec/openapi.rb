@@ -10,6 +10,7 @@ require 'rspec/openapi/schema_file'
 require 'rspec/openapi/schema_merger'
 require 'rspec/openapi/schema_cleaner'
 require 'rspec/openapi/schema_sorter'
+require 'rspec/openapi/key_transformer'
 
 require 'rspec/openapi/minitest_hooks' if Object.const_defined?('Minitest')
 require 'rspec/openapi/rspec_hooks' if ENV['OPENAPI'] && Object.const_defined?('RSpec')

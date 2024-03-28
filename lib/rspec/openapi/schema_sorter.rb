@@ -29,7 +29,7 @@ class << RSpec::OpenAPI::SchemaSorter = Object.new
   end
 
   def deep_sort_hash!(hash)
-    sorted = hash.entries.sort_by { |k, _| k }.to_h
+    sorted = hash.entries.sort_by { |k, _| k.to_s }.to_h.transform_keys(&:to_sym)
     hash.replace(sorted)
   end
 end

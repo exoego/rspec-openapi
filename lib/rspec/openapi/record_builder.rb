@@ -53,7 +53,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
 
   def extract_headers(request, response)
     request_headers = RSpec::OpenAPI.request_headers.each_with_object([]) do |header, headers_arr|
-      header_key = header.gsub('-', '_').upcase
+      header_key = header.gsub('-', '_').upcase.to_sym
       header_value = request.get_header(['HTTP', header_key].join('_')) || request.get_header(header_key)
       headers_arr << [header, header_value] if header_value
     end
