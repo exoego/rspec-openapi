@@ -64,7 +64,8 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   def merge_parameters(base, key, value)
     all_parameters = value | base[key]
 
-    unique_base_parameters = base[key].index_by { |parameter| [parameter['name'], parameter['in']] }
+    unique_base_parameters = build_unique_params(base, key)
+
     all_parameters = all_parameters.map do |parameter|
       base_parameter = unique_base_parameters[[parameter['name'], parameter['in']]] || {}
       base_parameter ? base_parameter.merge(parameter) : parameter
@@ -72,6 +73,12 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
 
     all_parameters.uniq! { |param| param.slice('name', 'in') }
     base[key] = all_parameters
+  end
+
+  def build_unique_params(base, key)
+    base[key].each_with_object({}) do |parameter, hash|
+      hash[[parameter['name'], parameter['in']]] = parameter
+    end
   end
 
   SIMILARITY_THRESHOLD = 0.5
