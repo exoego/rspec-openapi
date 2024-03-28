@@ -34,6 +34,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
             tags: record.tags,
             operationId: record.operation_id,
             security: record.security,
+            deprecated: record.deprecated ? true : nil,
             parameters: build_parameters(record),
             requestBody: http_method == 'get' ? nil : build_request_body(record),
             responses: {
