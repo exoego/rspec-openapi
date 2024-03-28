@@ -44,7 +44,6 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
   def build_fresh_schemas(references, base, fresh)
     references.inject({}) do |acc, paths|
       ref_link = dig_schema(base, paths)[:$ref]
-      puts "ref_link: #{ref_link}"
       schema_name = ref_link.to_s.gsub('#/components/schemas/', '')
       schema_body = dig_schema(fresh, paths.reject { |path| path.is_a?(Integer) })
 
