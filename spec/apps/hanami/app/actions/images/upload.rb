@@ -7,8 +7,8 @@ module HanamiTest
         # format :form
 
         def handle(_request, response)
-          png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjPQBoAAAAASUVORK5CYII='.
-            unpack('m').first
+          png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjPQBoAAAAASUVORK5CYII='
+                .unpack('m').first
 
           response.format = :png
           response.body = png

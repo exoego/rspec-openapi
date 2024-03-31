@@ -15,7 +15,7 @@ Rails.application.routes.draw do
         post 'upload_multiple_nested'
       end
     end
-    resources :users,  only: [:show, :create] do
+    resources :users, only: [:show, :create] do
       get 'active'
     end
 

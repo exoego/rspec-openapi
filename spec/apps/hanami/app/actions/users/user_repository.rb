@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module HanamiTest
   module Actions
     module Users
@@ -20,8 +21,7 @@ module HanamiTest
               },
             }
           when '2'
-            {
-            }
+            {}
           else
             raise RecordNotFound
           end
