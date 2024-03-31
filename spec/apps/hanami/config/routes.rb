@@ -28,5 +28,12 @@ module HanamiTest
       get '/test', to: ->(_env) { [200, { 'Content-Type' => 'text/plain' }, ['ANOTHER TEST']] }
       get "/eng/example", to: "eng.example"
     end
+
+    scope "admin" do
+      scope "masters" do
+        get "/extensions", to: "extensions.index"
+        post "/extensions", to: "extensions.create"
+      end
+    end
   end
 end
