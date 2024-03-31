@@ -15,7 +15,7 @@ module HanamiTest
           response.headers.merge!(
             {
               'Content-Type' => 'image/png',
-              'Content-Disposition' => 'inline'
+              'Content-Disposition' => 'inline',
             }
           )
         end

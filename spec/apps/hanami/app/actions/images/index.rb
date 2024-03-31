@@ -9,8 +9,8 @@ module HanamiTest
         def handle(_request, response)
           list = [
             {
-              'name': 'file.png',
-              'tags': [], # Keep this empty to check empty array is accepted
+              name: 'file.png',
+              tags: [], # Keep this empty to check empty array is accepted
             },
           ]
 

@@ -8,8 +8,8 @@ gemspec
 gem 'rails', ENV['RAILS_VERSION'] || '6.0.3.7'
 
 gem 'hanami', ENV['HANAMI_VERSION'] || '2.1.0'
-gem 'hanami-router', ENV['HANAMI_VERSION'] || '2.1.0'
 gem 'hanami-controller', ENV['HANAMI_VERSION'] || '2.1.0'
+gem 'hanami-router', ENV['HANAMI_VERSION'] || '2.1.0'
 
 gem 'roda'
 
