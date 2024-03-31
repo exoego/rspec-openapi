@@ -14,6 +14,34 @@ info:
 servers:
 - url: http://localhost:3000
 paths:
+  "/additional_properties":
+    get:
+      summary: index
+      tags:
+      - AdditionalProperty
+      responses:
+        '200':
+          description: returns some content
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  required_key:
+                    type: string
+                  variadic_key:
+                    type: object
+                    additionalProperties:
+                      type: integer
+                required:
+                - required_key
+                - variadic_key
+              example:
+                required_key: value
+                variadic_key:
+                  gold: 1
+                  silver: 2
+                  bronze: 3
   "/images":
     get:
       summary: index
@@ -527,8 +555,6 @@ paths:
               properties:
                 no_content:
                   type: string
-              required:
-              - no_content
             example:
               no_content: 'true'
     get:
@@ -709,6 +735,7 @@ paths:
               schema:
                 type: string
               example: A TEST
+      deprecated: true
 components:
   securitySchemes:
     SecretApiKeyAuth:

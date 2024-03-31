@@ -10,6 +10,7 @@ require 'rspec/openapi/schema_file'
 require 'rspec/openapi/schema_merger'
 require 'rspec/openapi/schema_cleaner'
 require 'rspec/openapi/schema_sorter'
+require 'rspec/openapi/key_transformer'
 
 require 'rspec/openapi/minitest_hooks' if Object.const_defined?('Minitest')
 require 'rspec/openapi/rspec_hooks' if ENV['OPENAPI'] && Object.const_defined?('RSpec')
@@ -31,6 +32,7 @@ module RSpec::OpenAPI
   @response_headers = []
   @path_records = Hash.new { |h, k| h[k] = [] }
   @ignored_path_params = %i[controller action format]
+  @ignored_paths = []
 
   # This is the configuraion override file name we look for within each path.
   @config_filename = 'rspec_openapi.rb'
@@ -51,6 +53,7 @@ module RSpec::OpenAPI
                   :example_types,
                   :response_headers,
                   :path_records,
+                  :ignored_paths,
                   :ignored_path_params
 
     attr_reader   :config_filename

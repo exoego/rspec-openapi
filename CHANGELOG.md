@@ -1,3 +1,7 @@
+# THIS CHANGELOG IS DEPRECATED!!
+
+Refer https://github.com/exoego/rspec-openapi/releases instead.
+
 ## v0.12.0
 
 - feat: Initial support of complex schema with manually-added `oneOf`

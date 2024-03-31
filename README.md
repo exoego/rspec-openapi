@@ -29,7 +29,7 @@ $ OPENAPI=1 bundle exec rspec
 
 ### Example
 
-Let's say you have [a request spec](./spec/requests/rails/tables_spec.rb) like this:
+Let's say you have [a request spec](https://github.com/exoego/rspec-openapi/blob/24e5c567c2e90945c7a41f19f71634ac028cc314/spec/requests/rails_spec.rb#L38) like this:
 
 ```rb
 RSpec.describe 'Tables', type: :request do
@@ -184,6 +184,12 @@ RSpec::OpenAPI.example_types = %i[request]
 # :controller and :action always exist. :format is added when routes is configured as such.
 RSpec::OpenAPI.ignored_path_params = %i[controller action format]
 
+# Configure which paths to ignore.
+# You can exclude some specs via `openapi: false`.
+# But, in a complex API usage scenario, you may need to include spec itself, but exclude some private paths.
+# In that case, you can specify the paths to ignore.
+# String or Regexp is acceptable.
+RSpec::OpenAPI.ignored_paths = ["/admin/full/path/", Regexp.new("^/_internal/")]
 ```
 
 ### Can I use rspec-openapi with `$ref` to minimize duplication of schema?

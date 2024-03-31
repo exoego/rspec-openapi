@@ -2,7 +2,8 @@ inherit_from: .rubocop_todo.yml
 
 AllCops:
   NewCops: enable
-  TargetRubyVersion: 2.5
+  SuggestExtensions: false
+  TargetRubyVersion: 2.7
   Exclude:
     - 'spec/rails/**/*'
     - 'vendor/**/*'

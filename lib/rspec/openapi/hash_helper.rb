@@ -5,7 +5,7 @@ class << RSpec::OpenAPI::HashHelper = Object.new
     case obj
     when Hash
       obj.each.flat_map do |k, v|
-        k = k.to_s
+        k = k.to_sym
         [[k]] + paths_to_all_fields(v).map { |x| [k, *x] }
       end
     when Array
@@ -18,10 +18,10 @@ class << RSpec::OpenAPI::HashHelper = Object.new
   end
 
   def matched_paths(obj, selector)
-    selector_parts = selector.split('.').map(&:to_s)
+    selector_parts = selector.split('.').map(&:to_sym)
     paths_to_all_fields(obj).select do |key_parts|
       key_parts.size == selector_parts.size && key_parts.zip(selector_parts).all? do |kp, sp|
-        kp == sp || (sp == '*' && !kp.nil?)
+        kp == sp || (sp == :* && !kp.nil?)
       end
     end
   end
@@ -29,7 +29,9 @@ class << RSpec::OpenAPI::HashHelper = Object.new
   def matched_paths_deeply_nested(obj, begin_selector, end_selector)
     path_depth_sizes = paths_to_all_fields(obj).map(&:size).uniq
     path_depth_sizes.map do |depth|
-      diff = depth - begin_selector.count('.') - end_selector.count('.')
+      begin_selector_count = begin_selector.is_a?(Symbol) ? 0 : begin_selector.count('.')
+      end_selector_count = end_selector.is_a?(Symbol) ? 0 : end_selector.count('.')
+      diff = depth - begin_selector_count - end_selector_count
       if diff >= 0
         selector = "#{begin_selector}.#{'*.' * diff}#{end_selector}"
         matched_paths(obj, selector)

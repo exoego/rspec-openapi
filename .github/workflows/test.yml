@@ -16,8 +16,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - ruby: ruby:2.5
-          - ruby: ruby:2.6
           - ruby: ruby:2.7
           - ruby: ruby:3.0
           - ruby: ruby:3.1
@@ -36,11 +34,6 @@ jobs:
       - uses: actions/checkout@v4
       - name: bundle install
         run: bundle install -j$(nproc) --retry 3
-      - name: install simplecov-fork only for minitest with coverage
-        run: |
-          gem install specific_install
-          gem specific_install https://github.com/exoego/simplecov.git branch-fix
-        if: matrix.coverage == 'coverage'
       - run: bundle exec rspec
         timeout-minutes: 1
       - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"

@@ -13,24 +13,30 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
     if record.response_body
       disposition = normalize_content_disposition(record.response_content_disposition)
-      response[:content] = {
-        normalize_content_type(record.response_content_type) => {
-          schema: build_property(record.response_body, disposition: disposition),
-          example: response_example(record, disposition: disposition),
-        }.compact,
-      }
+
+      has_content = !normalize_content_type(record.response_content_type).nil?
+      if has_content
+        response[:content] = {
+          normalize_content_type(record.response_content_type) => {
+            schema: build_property(record.response_body, disposition: disposition),
+            example: response_example(record, disposition: disposition),
+          }.compact,
+        }
+      end
     end
 
+    http_method = record.http_method.downcase
     {
       paths: {
         normalize_path(record.path) => {
-          record.http_method.downcase => {
+          http_method => {
             summary: record.summary,
             tags: record.tags,
             operationId: record.operation_id,
             security: record.security,
+            deprecated: record.deprecated ? true : nil,
             parameters: build_parameters(record),
-            requestBody: build_request_body(record),
+            requestBody: http_method == 'get' ? nil : build_request_body(record),
             responses: {
               record.status.to_s => response,
             },
@@ -43,7 +49,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   private
 
   def enrich_with_required_keys(obj)
-    obj[:required] = obj[:properties]&.keys
+    obj[:required] = obj[:properties]&.keys || []
     obj
   end
 
@@ -119,7 +125,6 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
   def build_request_body(record)
     return nil if record.request_content_type.nil?
-    return nil if record.request_params.empty?
     return nil if record.status >= 400
 
     {

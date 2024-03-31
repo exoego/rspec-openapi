@@ -11,8 +11,10 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
     request, response = extract_request_response(context)
     return if request.nil?
 
-    path, summary, tags, operation_id, required_request_params, raw_path_params, description, security =
+    path, summary, tags, operation_id, required_request_params, raw_path_params, description, security, deprecated =
       extract_request_attributes(request, example)
+
+    return if RSpec::OpenAPI.ignored_paths.any? { |ignored_path| path.match?(ignored_path) }
 
     request_headers, response_headers = extract_headers(request, response)
 
@@ -30,8 +32,9 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       operation_id: operation_id,
       description: description,
       security: security,
+      deprecated: deprecated,
       status: response.status,
-      response_body: safe_parse_body(response),
+      response_body: safe_parse_body(response, response.media_type),
       response_headers: response_headers,
       response_content_type: response.media_type,
       response_content_disposition: response.header['Content-Disposition'],
@@ -40,7 +43,10 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
 
   private
 
-  def safe_parse_body(response)
+  def safe_parse_body(response, media_type)
+    # Use raw body, because Nokogiri-parsed HTML are modified (new lines injection, meta injection, and so on) :(
+    return response.body if media_type == 'text/html'
+
     response.parsed_body
   rescue JSON::ParserError
     nil
@@ -48,7 +54,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
 
   def extract_headers(request, response)
     request_headers = RSpec::OpenAPI.request_headers.each_with_object([]) do |header, headers_arr|
-      header_key = header.gsub(/-/, '_').upcase
+      header_key = header.gsub('-', '_').upcase.to_sym
       header_value = request.get_header(['HTTP', header_key].join('_')) || request.get_header(header_key)
       headers_arr << [header, header_value] if header_value
     end
@@ -68,6 +74,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
     required_request_params = metadata[:required_request_params] || []
     security = metadata[:security]
     description = metadata[:description] || RSpec::OpenAPI.description_builder.call(example)
+    deprecated = metadata[:deprecated]
     raw_path_params = request.path_parameters
     path = request.path
     if rails?
@@ -86,7 +93,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       raw_path_params = raw_path_params.slice(*(raw_path_params.keys - RSpec::OpenAPI.ignored_path_params))
     end
     summary ||= "#{request.method} #{path}"
-    [path, summary, tags, operation_id, required_request_params, raw_path_params, description, security]
+    [path, summary, tags, operation_id, required_request_params, raw_path_params, description, security, deprecated]
   end
 
   def extract_request_response(context)
