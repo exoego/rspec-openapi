@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+return unless Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('3.0.0')
+
 ENV['TZ'] ||= 'UTC'
 ENV['HANAMI_ENV'] ||= 'test'
 ENV['OPENAPI_OUTPUT'] ||= 'yaml'
