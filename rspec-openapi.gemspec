@@ -29,6 +29,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'actionpack', '>= 5.2.0'
+  spec.add_dependency 'rails-dom-testing'
   spec.add_dependency 'rspec-core'
   spec.metadata['rubygems_mfa_required'] = 'true'
 end

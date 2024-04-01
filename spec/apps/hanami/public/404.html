@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The page you were looking for doesn’t exist (404)</title>
+  <style>
+    :root {
+      --foreground-rgb: 0, 0, 0;
+      --background-rgb: 255, 255, 255;
+      --font-sans: ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --foreground-rgb: 255, 255, 255;
+        --background-rgb: 0, 0, 0;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body,
+    html {
+      max-width: 100vw;
+      overflow-x: hidden;
+      font-size: 100%;
+    }
+
+    body {
+      color: rgb(var(--foreground-rgb));
+      background: rgb(var(--background-rgb));
+      font-family: var(--font-sans);
+      font-style: normal;
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 0 4vw;
+    }
+
+    .message {
+      display: flex;
+      gap: 1rem;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .message h1 {
+      font-size: 2rem;
+      font-weight: 500;
+    }
+
+    p {
+      line-height: 1.6;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      html {
+        color-scheme: dark;
+      }
+    }
+  </style>
+  </head>
+  <body>
+    <!-- This file lives in public/404.html -->
+    <main>
+      <div class="message">
+        <h1>404</h1>
+        <p>The page you were looking for doesn’t exist.</p>
+      </div>
+    </main>
+  </body>
+</html>

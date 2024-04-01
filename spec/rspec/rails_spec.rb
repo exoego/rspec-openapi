@@ -10,10 +10,10 @@ RSpec.describe 'rails request spec' do
 
   describe 'yaml output' do
     let(:openapi_path) do
-      File.expand_path('spec/rails/doc/openapi.yaml', repo_root)
+      File.expand_path('spec/apps/rails/doc/openapi.yaml', repo_root)
     end
 
-    it 'generates the same spec/rails/doc/openapi.yaml' do
+    it 'generates the same spec/apps/rails/doc/openapi.yaml' do
       org_yaml = YAML.safe_load(File.read(openapi_path))
       rspec 'spec/requests/rails_spec.rb', openapi: true, output: :yaml
       new_yaml = YAML.safe_load(File.read(openapi_path))
@@ -23,10 +23,10 @@ RSpec.describe 'rails request spec' do
 
   describe 'json' do
     let(:openapi_path) do
-      File.expand_path('spec/rails/doc/openapi.json', repo_root)
+      File.expand_path('spec/apps/rails/doc/openapi.json', repo_root)
     end
 
-    it 'generates the same spec/rails/doc/openapi.json' do
+    it 'generates the same spec/apps/rails/doc/openapi.json' do
       org_json = JSON.parse(File.read(openapi_path))
       rspec 'spec/requests/rails_spec.rb', openapi: true, output: :json
       new_json = JSON.parse(File.read(openapi_path))
@@ -36,14 +36,14 @@ RSpec.describe 'rails request spec' do
 
   describe 'smart merge' do
     let(:openapi_path) do
-      File.expand_path('spec/rails/doc/smart/openapi.yaml', repo_root)
+      File.expand_path('spec/apps/rails/doc/smart/openapi.yaml', repo_root)
     end
 
     let(:expected_path) do
-      File.expand_path('spec/rails/doc/smart/expected.yaml', repo_root)
+      File.expand_path('spec/apps/rails/doc/smart/expected.yaml', repo_root)
     end
 
-    it 'updates the spec/rails/doc/smart/openapi.yaml as same as in expected.yaml' do
+    it 'updates the spec/apps/rails/doc/smart/openapi.yaml as same as in expected.yaml' do
       original_source = File.read(openapi_path)
       begin
         rspec 'spec/requests/rails_smart_merge_spec.rb', openapi: true, output: :yaml

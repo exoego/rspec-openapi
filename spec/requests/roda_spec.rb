@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require_relative '../roda/roda_app'
+require_relative '../apps/roda/roda_app'
 require 'json'
 require 'rack/test'
 
 ENV['OPENAPI_OUTPUT'] ||= 'yaml'
 
 RSpec::OpenAPI.title = 'OpenAPI Documentation'
-RSpec::OpenAPI.path = File.expand_path("../roda/doc/openapi.#{ENV.fetch('OPENAPI_OUTPUT', nil)}", __dir__)
+RSpec::OpenAPI.path = File.expand_path("../apps/roda/doc/openapi.#{ENV.fetch('OPENAPI_OUTPUT', nil)}", __dir__)
 RSpec::OpenAPI.ignored_paths = ['/admin/masters/extensions']
 
 RSpec::OpenAPI.description_builder = lambda do |example|

@@ -37,8 +37,7 @@ class UsersController < ApplicationController
         },
       }
     when '2'
-      {
-      }
+      {}
     else
       raise NotFoundError
     end
