@@ -54,7 +54,6 @@ RSpec.describe 'Tables', type: :request do
     context 'returns a list of tables' do
       it 'with flat query parameters' do
         get '/tables', { page: '1', per: '10' }, { 'AUTHORIZATION' => 'k0kubun', 'X_AUTHORIZATION_TOKEN' => 'token' }
-        # binding.irb
         expect(last_response.status).to eq(200)
       end
 

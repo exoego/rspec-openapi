@@ -16,7 +16,9 @@ servers:
 paths:
   "/images":
     get:
-      summary: GET /images
+      summary: index
+      tags:
+      - Image
       responses:
         '200':
           description: can return an object with an attribute of empty array
@@ -38,20 +40,11 @@ paths:
               example:
               - name: file.png
                 tags: []
-  "/images/1":
-    get:
-      summary: GET /images/1
-      responses:
-        '200':
-          description: returns a image payload
-          content:
-            image/png:
-              schema:
-                type: string
-                format: binary
   "/images/upload":
     post:
-      summary: POST /images/upload
+      summary: create
+      tags:
+      - Upload
       requestBody:
         content:
           multipart/form-data:
@@ -75,7 +68,9 @@ paths:
                 format: binary
   "/images/upload_multiple":
     post:
-      summary: POST /images/upload_multiple
+      summary: create
+      tags:
+      - UploadMultiple
       requestBody:
         content:
           multipart/form-data:
@@ -103,7 +98,9 @@ paths:
                 format: binary
   "/images/upload_multiple_nested":
     post:
-      summary: POST /images/upload_multiple_nested
+      summary: create
+      tags:
+      - UploadMultipleNested
       requestBody:
         content:
           multipart/form-data:
@@ -136,7 +133,9 @@ paths:
                 format: binary
   "/images/upload_nested":
     post:
-      summary: POST /images/upload_nested
+      summary: create
+      tags:
+      - UploadNested
       requestBody:
         content:
           multipart/form-data:
@@ -168,9 +167,24 @@ paths:
               schema:
                 type: string
                 format: binary
+  "/images/{id}":
+    get:
+      summary: show
+      tags:
+      - Image
+      responses:
+        '200':
+          description: returns a image payload
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
   "/my_engine/eng/example":
     get:
-      summary: GET /my_engine/eng/example
+      summary: index
+      tags:
+      - Example
       responses:
         '200':
           description: returns the block content
@@ -181,7 +195,9 @@ paths:
               example: AN ENGINE TEST
   "/my_engine/test":
     get:
-      summary: GET /my_engine/test
+      summary: index
+      tags:
+      - Test
       responses:
         '200':
           description: returns some content from the engine
@@ -192,7 +208,9 @@ paths:
               example: ANOTHER TEST
   "/secret_items":
     get:
-      summary: GET /secret_items
+      summary: index
+      tags:
+      - SecretItem
       security:
       - SecretApiKeyAuth: []
       responses:
@@ -212,59 +230,11 @@ paths:
               example:
                 items:
                 - secrets
-        '401':
-          description: authorizes with secret key
-          content:
-            text/html:
-              schema:
-                type: string
-              example: ''
   "/tables":
     get:
-      summary: GET /tables
-      parameters:
-      - name: X-Authorization-Token
-        in: header
-        required: true
-        schema:
-          type: string
-        example: token
-      - name: filter[name]
-        in: query
-        required: false
-        schema:
-          type: object
-          properties:
-            name:
-              type: string
-          required:
-          - name
-        example:
-          name: Example Table
-      - name: filter[price]
-        in: query
-        required: false
-        schema:
-          type: object
-          properties:
-            price:
-              type: string
-          required:
-          - price
-        example:
-          price: '0'
-      - name: page
-        in: query
-        required: false
-        schema:
-          type: integer
-        example: 1
-      - name: per
-        in: query
-        required: false
-        schema:
-          type: integer
-        example: 10
+      summary: index
+      tags:
+      - Table
       responses:
         '200':
           description: with different deep query parameters
@@ -337,8 +307,73 @@ paths:
                 - message
               example:
                 message: Unauthorized
+      parameters:
+      - name: X-Authorization-Token
+        in: header
+        required: true
+        schema:
+          type: string
+        example: token
+      - name: filter[name]
+        in: query
+        required: false
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+          required:
+          - name
+        example:
+          name: Example Table
+      - name: filter[price]
+        in: query
+        required: false
+        schema:
+          type: object
+          properties:
+            price:
+              type: string
+          required:
+          - price
+        example:
+          price: '0'
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+        example: 1
+      - name: per
+        in: query
+        required: false
+        schema:
+          type: integer
+        example: 10
     post:
-      summary: POST /tables
+      summary: create
+      tags:
+      - Table
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                database_id:
+                  type: integer
+              required:
+              - name
+              - description
+              - database_id
+            example:
+              name: k0kubun
+              description: description
+              database_id: 2
       responses:
         '201':
           description: returns a table
@@ -405,29 +440,21 @@ paths:
                 - error
               example:
                 error: invalid name parameter
+  "/tables/{id}":
+    delete:
+      summary: destroy
+      tags:
+      - Table
       requestBody:
         content:
-          application/json:
+          application/x-www-form-urlencoded:
             schema:
               type: object
               properties:
-                name:
+                no_content:
                   type: string
-                description:
-                  type: string
-                database_id:
-                  type: integer
-              required:
-              - name
-              - description
-              - database_id
             example:
-              name: k0kubun
-              description: description
-              database_id: 2
-  "/tables/1":
-    delete:
-      summary: DELETE /tables/1
+              no_content: 'true'
       responses:
         '200':
           description: returns a table
@@ -483,18 +510,10 @@ paths:
                 updated_at: '2020-07-17T00:00:00+00:00'
         '202':
           description: returns no content if specified
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                no_content:
-                  type: string
-            example:
-              no_content: 'true'
     get:
-      summary: GET /tables/1
+      summary: show
+      tags:
+      - Table
       responses:
         '200':
           description: returns a table
@@ -561,8 +580,23 @@ paths:
                 - message
               example:
                 message: Unauthorized
+        '404':
+          description: does not return a table if not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                - message
+              example:
+                message: not found
     patch:
-      summary: PATCH /tables/1
+      summary: update
+      tags:
+      - Table
       requestBody:
         content:
           application/x-www-form-urlencoded:
@@ -628,26 +662,12 @@ paths:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
-  "/tables/2":
-    get:
-      summary: GET /tables/2
-      responses:
-        '404':
-          description: does not return a table if not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                required:
-                - message
-              example:
-                message: not found
   "/test_block":
     get:
-      summary: GET /test_block
+      summary: index
+      tags:
+      - TestBlock
+      deprecated: true
       responses:
         '200':
           description: returns the block content
@@ -656,7 +676,6 @@ paths:
               schema:
                 type: string
               example: A TEST
-      deprecated: true
 components:
   securitySchemes:
     SecretApiKeyAuth:
