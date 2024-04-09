@@ -42,9 +42,9 @@ paths:
                 tags: []
   "/images/upload":
     post:
-      summary: create
+      summary: upload
       tags:
-      - Upload
+      - Image
       requestBody:
         content:
           multipart/form-data:
@@ -68,9 +68,9 @@ paths:
                 format: binary
   "/images/upload_multiple":
     post:
-      summary: create
+      summary: upload_multiple
       tags:
-      - UploadMultiple
+      - Image
       requestBody:
         content:
           multipart/form-data:
@@ -98,9 +98,9 @@ paths:
                 format: binary
   "/images/upload_multiple_nested":
     post:
-      summary: create
+      summary: upload_multiple_nested
       tags:
-      - UploadMultipleNested
+      - Image
       requestBody:
         content:
           multipart/form-data:
@@ -133,9 +133,9 @@ paths:
                 format: binary
   "/images/upload_nested":
     post:
-      summary: create
+      summary: upload_nested
       tags:
-      - UploadNested
+      - Image
       requestBody:
         content:
           multipart/form-data:
@@ -182,9 +182,9 @@ paths:
                 format: binary
   "/my_engine/eng/example":
     get:
-      summary: index
+      summary: example
       tags:
-      - Example
+      - Eng
       responses:
         '200':
           description: returns the block content
@@ -195,9 +195,8 @@ paths:
               example: AN ENGINE TEST
   "/my_engine/test":
     get:
-      summary: index
-      tags:
-      - Test
+      summary: GET /my_engine/test
+      tags: []
       responses:
         '200':
           description: returns some content from the engine
@@ -235,6 +234,49 @@ paths:
       summary: index
       tags:
       - Table
+      parameters:
+      - name: X-Authorization-Token
+        in: header
+        required: true
+        schema:
+          type: string
+        example: token
+      - name: filter[name]
+        in: query
+        required: false
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+          required:
+          - name
+        example:
+          name: Example Table
+      - name: filter[price]
+        in: query
+        required: false
+        schema:
+          type: object
+          properties:
+            price:
+              type: string
+          required:
+          - price
+        example:
+          price: '0'
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+        example: 1
+      - name: per
+        in: query
+        required: false
+        schema:
+          type: integer
+        example: 10
       responses:
         '200':
           description: with different deep query parameters
@@ -290,7 +332,7 @@ paths:
                 database:
                   id: 2
                   name: production
-                null_sample: 
+                null_sample:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
@@ -307,73 +349,10 @@ paths:
                 - message
               example:
                 message: Unauthorized
-      parameters:
-      - name: X-Authorization-Token
-        in: header
-        required: true
-        schema:
-          type: string
-        example: token
-      - name: filter[name]
-        in: query
-        required: false
-        schema:
-          type: object
-          properties:
-            name:
-              type: string
-          required:
-          - name
-        example:
-          name: Example Table
-      - name: filter[price]
-        in: query
-        required: false
-        schema:
-          type: object
-          properties:
-            price:
-              type: string
-          required:
-          - price
-        example:
-          price: '0'
-      - name: page
-        in: query
-        required: false
-        schema:
-          type: integer
-        example: 1
-      - name: per
-        in: query
-        required: false
-        schema:
-          type: integer
-        example: 10
     post:
       summary: create
       tags:
       - Table
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                description:
-                  type: string
-                database_id:
-                  type: integer
-              required:
-              - name
-              - description
-              - database_id
-            example:
-              name: k0kubun
-              description: description
-              database_id: 2
       responses:
         '201':
           description: returns a table
@@ -423,7 +402,7 @@ paths:
                 database:
                   id: 2
                   name: production
-                null_sample: 
+                null_sample:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
@@ -440,21 +419,31 @@ paths:
                 - error
               example:
                 error: invalid name parameter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                database_id:
+                  type: integer
+              required:
+              - name
+              - description
+              - database_id
+            example:
+              name: k0kubun
+              description: description
+              database_id: 2
   "/tables/{id}":
     delete:
       summary: destroy
       tags:
       - Table
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                no_content:
-                  type: string
-            example:
-              no_content: 'true'
       responses:
         '200':
           description: returns a table
@@ -504,12 +493,22 @@ paths:
                 database:
                   id: 2
                   name: production
-                null_sample: 
+                null_sample:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
         '202':
           description: returns no content if specified
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                no_content:
+                  type: string
+            example:
+              no_content: 'true'
     get:
       summary: show
       tags:
@@ -563,7 +562,7 @@ paths:
                 database:
                   id: 2
                   name: production
-                null_sample: 
+                null_sample:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
@@ -658,16 +657,14 @@ paths:
                 database:
                   id: 2
                   name: production
-                null_sample: 
+                null_sample:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
   "/test_block":
     get:
-      summary: index
-      tags:
-      - TestBlock
-      deprecated: true
+      summary: GET /test_block
+      tags: []
       responses:
         '200':
           description: returns the block content
@@ -676,6 +673,7 @@ paths:
               schema:
                 type: string
               example: A TEST
+      deprecated: true
 components:
   securitySchemes:
     SecretApiKeyAuth:

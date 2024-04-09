@@ -1,5 +1,56 @@
 # frozen_string_literal: true
 require 'dry/inflector'
+require 'hanami'
+require 'hanami/router/inspector'
+
+# Hanami::Router::Inspector original code
+class Inspector
+  attr_accessor :routes, :inflector
+
+  def initialize(routes: [])
+    @routes = routes
+    @inflector = Dry::Inflector.new
+  end
+
+  def add_route(route)
+    routes.push(route)
+  end
+
+  def call(verb, path)
+    route = routes.find { |r| r.http_method == verb && r.path == path }
+
+    if route.to.is_a?(Proc)
+      {
+        tags: [],
+        summary: "#{verb} #{path}",
+      }
+    else
+      data = route.to.split('.')
+
+      {
+        tags: [inflector.classify(data[0])],
+        summary: data[1],
+      }
+    end
+  end
+end
+
+InspectorAnalyzer = Inspector.new
+
+# Monkey-patch hanami-router
+module Hanami
+  class Slice
+    module ClassMethods
+      def router(inspector: InspectorAnalyzer)
+        raise SliceLoadError, "#{self} must be prepared before loading the router" unless prepared?
+
+        @_mutex.synchronize do
+          @_router ||= load_router(inspector: inspector)
+        end
+      end
+    end
+  end
+end
 
 class << RSpec::OpenAPI::Extractors::Hanami = Object.new
 
@@ -17,12 +68,14 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
     deprecated = metadata[:deprecated]
     raw_path_params = request.path_parameters
     path = request.path
+
     route = Hanami.app.router.recognize(request.path, method: request.method)
 
-    path = add_id(path, route)
-    result = generate_summary_and_tag(path, request.method)
-    summary ||= result[0]
-    tags ||= result[1]
+    result = InspectorAnalyzer.call(request.method, add_id(path, route))
+
+    summary ||= result[:summary]
+    tags ||= result[:tags]
+    path = add_openapi_id(path, route)
 
     [path, summary, tags, operation_id, required_request_params, raw_path_params, description, security, deprecated]
   end
@@ -42,41 +95,22 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
     route.params.each_pair do |key, value|
       next unless number_or_nil(value)
 
-      path = path.sub("/#{value}", "/{#{key}}")
+      path = path.sub("/#{value}", "/:#{key}")
     end
 
     path
   end
 
-  def generate_summary_and_tag(path, method)
-    case path
-    when ->(path) { path.end_with?('{id}/edit') && method == 'GET' }
-      ['edit', extract_tag(path, '/{id}/edit')]
-    when ->(path) { path.end_with?('{id}') && method == 'GET' }
-      ['show', extract_tag(path, '/{id}')]
-    when ->(path) { path.end_with?('{id}') && %w[PATCH PUT POST].include?(method) }
-      ['update', extract_tag(path, '/{id}')]
-    when ->(path) { path.end_with?('{id}') && method == 'DELETE' }
-      ['destroy', extract_tag(path, '/{id}')]
-    when ->(path) { path.end_with?('/new') && method == 'GET' }
-      ['new', extract_tag(path, '/new')]
-    when ->(_path) { method == 'GET' }
-      ['index', extract_tag(path)]
-    when ->(_path) { method == 'POST' }
-      ['create', extract_tag(path)]
-    else
-      ["#{method} #{path}", []]
+  def add_openapi_id(path, route)
+    return path if route.params.empty?
+
+    route.params.each_pair do |key, value|
+      next unless number_or_nil(value)
+
+      path = path.sub("/#{value}", "/{#{key}}")
     end
-  end
 
-  def extract_tag(path, prefix = nil)
-    path = path.delete_suffix(prefix) if prefix
-
-    [inflector.classify(path.split(%r{/+}).last)]
-  end
-
-  def inflector
-    @inflector ||= Dry::Inflector.new
+    path
   end
 
   def number_or_nil(string)
