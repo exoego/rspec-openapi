@@ -37,6 +37,7 @@ end
 
 InspectorAnalyzer = Inspector.new
 
+# Add default parameter to load inspector before test cases run
 module InspectorAnalyzerPrepender
   def router(inspector: InspectorAnalyzer)
     super
