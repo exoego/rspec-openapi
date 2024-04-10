@@ -34,6 +34,9 @@ class RSpec::OpenAPI::ResultRecorder
         RSpec::OpenAPI::ComponentsUpdater.update!(spec, new_from_zero)
         RSpec::OpenAPI::SchemaCleaner.cleanup_empty_required_array!(spec)
         RSpec::OpenAPI::SchemaSorter.deep_sort!(spec)
+        if RSpec::OpenAPI.post_process_hook.is_a?(Proc)
+          RSpec::OpenAPI.post_process_hook.call(path, records, spec)
+        end
       end
     end
   end
