@@ -1,7 +1,7 @@
 # frozen_string_literal: true
+
 require 'dry/inflector'
 require 'hanami'
-require 'hanami/router/inspector'
 
 # Hanami::Router::Inspector original code
 class Inspector
@@ -38,22 +38,18 @@ end
 InspectorAnalyzer = Inspector.new
 
 # Monkey-patch hanami-router
-module Hanami
-  class Slice
-    module ClassMethods
-      def router(inspector: InspectorAnalyzer)
-        raise SliceLoadError, "#{self} must be prepared before loading the router" unless prepared?
+module Hanami::Slice::ClassMethods
+  def router(inspector: InspectorAnalyzer)
+    raise SliceLoadError, "#{self} must be prepared before loading the router" unless prepared?
 
-        @_mutex.synchronize do
-          @_router ||= load_router(inspector: inspector)
-        end
-      end
+    @_mutex.synchronize do
+      @_router ||= load_router(inspector: inspector)
     end
   end
 end
 
+# Extractor for hanami
 class << RSpec::OpenAPI::Extractors::Hanami = Object.new
-
   # @param [RSpec::ExampleGroups::*] context
   # @param [RSpec::Core::Example] example
   # @return Array
@@ -69,8 +65,8 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
     path = request.path
 
     route = Hanami.app.router.recognize(request.path, method: request.method)
-    # binding.irb unless route.params.empty?
-    raw_path_params = route.params.filter { |key, value| number_or_nil(value) }
+
+    raw_path_params = route.params.filter { |_key, value| number_or_nil(value) }
 
     result = InspectorAnalyzer.call(request.method, add_id(path, route))
 

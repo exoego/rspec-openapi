@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'bundler/setup'
 require 'rspec/openapi/version'
 require 'rspec/openapi/components_updater'
 require 'rspec/openapi/default_schema'
@@ -13,8 +14,9 @@ require 'rspec/openapi/schema_sorter'
 require 'rspec/openapi/key_transformer'
 require 'rspec/openapi/extractors'
 require 'rspec/openapi/extractors/rack'
-require 'rspec/openapi/extractors/rails'
-require 'rspec/openapi/extractors/hanami'
+
+require 'rspec/openapi/extractors/hanami' if Bundler.load.specs.map(&:name).include?('hanami')
+require 'rspec/openapi/extractors/rails' if Bundler.load.specs.map(&:name).include?('rails')
 
 require 'rspec/openapi/minitest_hooks' if Object.const_defined?('Minitest')
 require 'rspec/openapi/rspec_hooks' if ENV['OPENAPI'] && Object.const_defined?('RSpec')

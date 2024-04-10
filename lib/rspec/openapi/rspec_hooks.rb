@@ -21,9 +21,11 @@ RSpec.configuration.after(:suite) do
 end
 
 def find_extractor
-  if defined?(Rails) && Rails.respond_to?(:application) && Rails.application
+  if Bundler.load.specs.map(&:name).include?('rails') && defined?(Rails) &&
+     Rails.respond_to?(:application) && Rails.application
     RSpec::OpenAPI::Extractors::Rails
-  elsif defined?(Hanami)
+  elsif Bundler.load.specs.map(&:name).include?('hanami') && defined?(Hanami) &&
+        Hanami.respond_to?(:app) && Hanami.app?
     RSpec::OpenAPI::Extractors::Hanami
   # elsif defined?(Roda)
   #   some Roda extractor

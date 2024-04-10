@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Extractor for rails
 class << RSpec::OpenAPI::Extractors::Rails = Object.new
   # @param [RSpec::ExampleGroups::*] context
   # @param [RSpec::Core::Example] example
