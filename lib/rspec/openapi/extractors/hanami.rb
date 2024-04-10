@@ -37,16 +37,13 @@ end
 
 InspectorAnalyzer = Inspector.new
 
-# Monkey-patch hanami-router
-module Hanami::Slice::ClassMethods
+module InspectorAnalyzerPrepender
   def router(inspector: InspectorAnalyzer)
-    raise SliceLoadError, "#{self} must be prepared before loading the router" unless prepared?
-
-    @_mutex.synchronize do
-      @_router ||= load_router(inspector: inspector)
-    end
+    super
   end
 end
+
+Hanami::Slice::ClassMethods.prepend(InspectorAnalyzerPrepender)
 
 # Extractor for hanami
 class << RSpec::OpenAPI::Extractors::Hanami = Object.new
