@@ -66,16 +66,19 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
     security = metadata[:security]
     description = metadata[:description] || RSpec::OpenAPI.description_builder.call(example)
     deprecated = metadata[:deprecated]
-    raw_path_params = request.path_parameters
     path = request.path
 
     route = Hanami.app.router.recognize(request.path, method: request.method)
+    # binding.irb unless route.params.empty?
+    raw_path_params = route.params.filter { |key, value| number_or_nil(value) }
 
     result = InspectorAnalyzer.call(request.method, add_id(path, route))
 
     summary ||= result[:summary]
     tags ||= result[:tags]
     path = add_openapi_id(path, route)
+
+    raw_path_params = raw_path_params.slice(*(raw_path_params.keys - RSpec::OpenAPI.ignored_path_params))
 
     [path, summary, tags, operation_id, required_request_params, raw_path_params, description, security, deprecated]
   end
