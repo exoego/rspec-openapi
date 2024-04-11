@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'bundler/setup'
 require 'rspec/openapi/version'
 require 'rspec/openapi/components_updater'
 require 'rspec/openapi/default_schema'
@@ -16,8 +15,19 @@ require 'rspec/openapi/shared_hooks'
 require 'rspec/openapi/extractors'
 require 'rspec/openapi/extractors/rack'
 
-require 'rspec/openapi/extractors/hanami' if Bundler.load.specs.map(&:name).include?('hanami')
-require 'rspec/openapi/extractors/rails' if Bundler.load.specs.map(&:name).include?('rails')
+begin
+  require 'hanami'
+  require 'rspec/openapi/extractors/hanami'
+rescue LoadError
+  puts 'Hanami not detected'
+end
+
+begin
+  require 'rails'
+  require 'rspec/openapi/extractors/rails'
+rescue LoadError
+  puts 'Rails not detected'
+end
 
 require 'rspec/openapi/minitest_hooks' if Object.const_defined?('Minitest')
 require 'rspec/openapi/rspec_hooks' if ENV['OPENAPI'] && Object.const_defined?('RSpec')
