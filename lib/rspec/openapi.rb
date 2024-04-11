@@ -12,6 +12,7 @@ require 'rspec/openapi/schema_merger'
 require 'rspec/openapi/schema_cleaner'
 require 'rspec/openapi/schema_sorter'
 require 'rspec/openapi/key_transformer'
+require 'rspec/openapi/shared_hooks'
 require 'rspec/openapi/extractors'
 require 'rspec/openapi/extractors/rack'
 

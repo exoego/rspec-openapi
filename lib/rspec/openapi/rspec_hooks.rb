@@ -5,7 +5,7 @@ require 'rspec/core'
 RSpec.configuration.after(:each) do |example|
   if RSpec::OpenAPI.example_types.include?(example.metadata[:type]) && example.metadata[:openapi] != false
     path = RSpec::OpenAPI.path.then { |p| p.is_a?(Proc) ? p.call(example) : p }
-    record = RSpec::OpenAPI::RecordBuilder.build(self, example: example, extractor: find_extractor)
+    record = RSpec::OpenAPI::RecordBuilder.build(self, example: example, extractor: SharedHooks.find_extractor)
     RSpec::OpenAPI.path_records[path] << record if record
   end
 end
@@ -17,21 +17,5 @@ RSpec.configuration.after(:suite) do
     error_message = result_recorder.error_message
     colorizer = RSpec::Core::Formatters::ConsoleCodes
     RSpec.configuration.reporter.message colorizer.wrap(error_message, :failure)
-  end
-end
-
-def find_extractor
-  names = Bundler.load.specs.map(&:name)
-
-  if names.include?('rails') && defined?(Rails) &&
-     Rails.respond_to?(:application) && Rails.application
-    RSpec::OpenAPI::Extractors::Rails
-  elsif names.include?('hanami') && defined?(Hanami) &&
-        Hanami.respond_to?(:app) && Hanami.app?
-    RSpec::OpenAPI::Extractors::Hanami
-  # elsif defined?(Roda)
-  #   some Roda extractor
-  else
-    RSpec::OpenAPI::Extractors::Rack
   end
 end
