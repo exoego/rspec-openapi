@@ -380,6 +380,17 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "authorizes with secret key",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": ""
+              }
+            }
           }
         }
       }

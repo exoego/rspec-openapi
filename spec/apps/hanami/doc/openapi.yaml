@@ -236,6 +236,13 @@ paths:
               example:
                 items:
                 - secrets
+        '401':
+          description: authorizes with secret key
+          content:
+            text/html:
+              schema:
+                type: string
+              example: ''
   "/tables":
     get:
       summary: index
