@@ -97,7 +97,7 @@ paths:
 
 and the schema file can be used as an input of [Swagger UI](https://github.com/swagger-api/swagger-ui) or [Redoc](https://github.com/Redocly/redoc).
 
-![Redoc example](./spec/rails/doc/screenshot.png)
+![Redoc example](./spec/apps/rails/doc/screenshot.png)
 
 
 ### Configuration
