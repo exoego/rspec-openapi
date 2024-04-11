@@ -3,7 +3,7 @@
 require 'dry/inflector'
 require 'hanami'
 
-# Hanami::Router::Inspector original code
+# https://github.com/hanami/router/blob/97f75b8529574bd4ff23165460e82a6587bc323c/lib/hanami/router/inspector.rb#L13
 class Inspector
   attr_accessor :routes, :inflector
 
