@@ -1,4 +1,4 @@
-# rspec-openapi [![Gem Version](https://badge.fury.io/rb/rspec-openapi.svg)](https://badge.fury.io/rb/rspec-openapi) [![test](https://github.com/exoego/rspec-openapi/actions/workflows/test.yml/badge.svg)](https://github.com/exoego/rspec-openapi/actions/workflows/test.yml) [![codecov](https://codecov.io/gh/exoego/rspec-openapi/branch/master/graph/badge.svg?token=egYm6AlxkD)](https://codecov.io/gh/exoego/rspec-openapi)
+# rspec-openapi [![Gem Version](https://badge.fury.io/rb/rspec-openapi.svg)](https://rubygems.org/gems/rspec-openapi) [![test](https://github.com/exoego/rspec-openapi/actions/workflows/test.yml/badge.svg)](https://github.com/exoego/rspec-openapi/actions/workflows/test.yml) [![codecov](https://codecov.io/gh/exoego/rspec-openapi/branch/master/graph/badge.svg?token=egYm6AlxkD)](https://codecov.io/gh/exoego/rspec-openapi) [![Ruby-toolbox](https://img.shields.io/badge/ruby-toolbox-a61414?cacheSeconds=31536000)](https://www.ruby-toolbox.com/projects/rspec-openapi)
 
 Generate OpenAPI schema from RSpec request specs.
 
@@ -97,7 +97,7 @@ paths:
 
 and the schema file can be used as an input of [Swagger UI](https://github.com/swagger-api/swagger-ui) or [Redoc](https://github.com/Redocly/redoc).
 
-![Redoc example](./spec/rails/doc/screenshot.png)
+![Redoc example](./spec/apps/rails/doc/screenshot.png)
 
 
 ### Configuration
@@ -190,6 +190,13 @@ RSpec::OpenAPI.ignored_path_params = %i[controller action format]
 # In that case, you can specify the paths to ignore.
 # String or Regexp is acceptable.
 RSpec::OpenAPI.ignored_paths = ["/admin/full/path/", Regexp.new("^/_internal/")]
+
+# Your custom post-processing hook (like unrandomizing IDs)
+RSpec::OpenAPI.post_process_hook = -> (path, records, spec) do
+  RSpec::OpenAPI::HashHelper.matched_paths(spec, 'paths.*.*.responses.*.content.*.*.*.id').each do |paths|
+    spec.dig(*paths[0..-2]).merge!(id: '123')
+  end
+end
 ```
 
 ### Can I use rspec-openapi with `$ref` to minimize duplication of schema?

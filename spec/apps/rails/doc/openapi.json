@@ -1139,5 +1139,6 @@
         "name": "Secret-Key"
       }
     }
-  }
+  },
+  "custom_field": "custom_value"
 }

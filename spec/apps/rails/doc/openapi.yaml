@@ -742,3 +742,4 @@ components:
       type: apiKey
       in: header
       name: Secret-Key
+custom_field: custom_value

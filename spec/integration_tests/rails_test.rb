@@ -34,6 +34,8 @@ RSpec::OpenAPI.security_schemes = {
   },
 }
 
+RSpec::OpenAPI.post_process_hook = ->(_path, _records, spec) { spec['custom_field'] = 'custom_value' }
+
 class TablesIndexTest < ActionDispatch::IntegrationTest
   i_suck_and_my_tests_are_order_dependent!
   openapi!

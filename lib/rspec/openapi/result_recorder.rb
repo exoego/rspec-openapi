@@ -29,11 +29,8 @@ class RSpec::OpenAPI::ResultRecorder
         rescue StandardError, NotImplementedError => e # e.g. SchemaBuilder raises a NotImplementedError
           @error_records[e] = record # Avoid failing the build
         end
-        RSpec::OpenAPI::SchemaCleaner.cleanup_conflicting_security_parameters!(spec)
-        RSpec::OpenAPI::SchemaCleaner.cleanup!(spec, new_from_zero)
-        RSpec::OpenAPI::ComponentsUpdater.update!(spec, new_from_zero)
-        RSpec::OpenAPI::SchemaCleaner.cleanup_empty_required_array!(spec)
-        RSpec::OpenAPI::SchemaSorter.deep_sort!(spec)
+        cleanup_schema!(new_from_zero, spec)
+        execute_post_process_hook(path, records, spec)
       end
     end
   end
@@ -48,5 +45,19 @@ class RSpec::OpenAPI::ResultRecorder
 
       #{@error_records.map { |e, record| "#{e.inspect}: #{record.inspect}" }.join("\n")}
     ERR_MSG
+  end
+
+  private
+
+  def execute_post_process_hook(path, records, spec)
+    RSpec::OpenAPI.post_process_hook.call(path, records, spec) if RSpec::OpenAPI.post_process_hook.is_a?(Proc)
+  end
+
+  def cleanup_schema!(new_from_zero, spec)
+    RSpec::OpenAPI::SchemaCleaner.cleanup_conflicting_security_parameters!(spec)
+    RSpec::OpenAPI::SchemaCleaner.cleanup!(spec, new_from_zero)
+    RSpec::OpenAPI::ComponentsUpdater.update!(spec, new_from_zero)
+    RSpec::OpenAPI::SchemaCleaner.cleanup_empty_required_array!(spec)
+    RSpec::OpenAPI::SchemaSorter.deep_sort!(spec)
   end
 end
