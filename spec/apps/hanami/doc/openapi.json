@@ -17,7 +17,10 @@
   "paths": {
     "/images": {
       "get": {
-        "summary": "GET /images",
+        "summary": "index",
+        "tags": [
+          "Image"
+        ],
         "responses": {
           "200": {
             "description": "can return an object with an attribute of empty array",
@@ -57,27 +60,12 @@
         }
       }
     },
-    "/images/1": {
-      "get": {
-        "summary": "GET /images/1",
-        "responses": {
-          "200": {
-            "description": "returns a image payload",
-            "content": {
-              "image/png": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/images/upload": {
       "post": {
-        "summary": "POST /images/upload",
+        "summary": "upload",
+        "tags": [
+          "Image"
+        ],
         "requestBody": {
           "content": {
             "multipart/form-data": {
@@ -116,7 +104,10 @@
     },
     "/images/upload_multiple": {
       "post": {
-        "summary": "POST /images/upload_multiple",
+        "summary": "upload_multiple",
+        "tags": [
+          "Image"
+        ],
         "requestBody": {
           "content": {
             "multipart/form-data": {
@@ -161,7 +152,10 @@
     },
     "/images/upload_multiple_nested": {
       "post": {
-        "summary": "POST /images/upload_multiple_nested",
+        "summary": "upload_multiple_nested",
+        "tags": [
+          "Image"
+        ],
         "requestBody": {
           "content": {
             "multipart/form-data": {
@@ -218,7 +212,10 @@
     },
     "/images/upload_nested": {
       "post": {
-        "summary": "POST /images/upload_nested",
+        "summary": "upload_nested",
+        "tags": [
+          "Image"
+        ],
         "requestBody": {
           "content": {
             "multipart/form-data": {
@@ -270,9 +267,44 @@
         }
       }
     },
+    "/images/{id}": {
+      "get": {
+        "summary": "show",
+        "tags": [
+          "Image"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns a image payload",
+            "content": {
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/my_engine/eng/example": {
       "get": {
-        "summary": "GET /my_engine/eng/example",
+        "summary": "example",
+        "tags": [
+          "Eng"
+        ],
         "responses": {
           "200": {
             "description": "returns the block content",
@@ -291,6 +323,9 @@
     "/my_engine/test": {
       "get": {
         "summary": "GET /my_engine/test",
+        "tags": [
+
+        ],
         "responses": {
           "200": {
             "description": "returns some content from the engine",
@@ -308,7 +343,10 @@
     },
     "/secret_items": {
       "get": {
-        "summary": "GET /secret_items",
+        "summary": "index",
+        "tags": [
+          "SecretItem"
+        ],
         "security": [
           {
             "SecretApiKeyAuth": [
@@ -342,13 +380,94 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "authorizes with secret key",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": ""
+              }
+            }
           }
         }
       }
     },
     "/tables": {
       "get": {
-        "summary": "GET /tables",
+        "summary": "index",
+        "tags": [
+          "Table"
+        ],
+        "parameters": [
+          {
+            "name": "X-Authorization-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "token"
+          },
+          {
+            "name": "filter[name]",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name"
+              ]
+            },
+            "example": {
+              "name": "Example Table"
+            }
+          },
+          {
+            "name": "filter[price]",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "price": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "price"
+              ]
+            },
+            "example": {
+              "price": "0"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "name": "per",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 10
+          }
+        ],
         "responses": {
           "200": {
             "description": "with different deep query parameters",
@@ -455,107 +574,13 @@
               }
             }
           }
-        },
-        "parameters": [
-          {
-            "name": "X-Authorization-Token",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "token"
-          },
-          {
-            "name": "filter[name]",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "name"
-              ]
-            },
-            "example": {
-              "name": "Example Table"
-            }
-          },
-          {
-            "name": "filter[price]",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "price": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "price"
-              ]
-            },
-            "example": {
-              "price": "0"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer"
-            },
-            "example": 1
-          },
-          {
-            "name": "per",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer"
-            },
-            "example": 10
-          }
-        ]
+        }
       },
       "post": {
-        "summary": "POST /tables",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string"
-                  },
-                  "description": {
-                    "type": "string"
-                  },
-                  "database_id": {
-                    "type": "integer"
-                  }
-                },
-                "required": [
-                  "name",
-                  "description",
-                  "database_id"
-                ]
-              },
-              "example": {
-                "name": "k0kubun",
-                "description": "description",
-                "database_id": 2
-              }
-            }
-          }
-        },
+        "summary": "create",
+        "tags": [
+          "Table"
+        ],
         "responses": {
           "201": {
             "description": "returns a table",
@@ -650,12 +675,56 @@
               }
             }
           }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "database_id": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "name",
+                  "description",
+                  "database_id"
+                ]
+              },
+              "example": {
+                "name": "k0kubun",
+                "description": "description",
+                "database_id": 2
+              }
+            }
+          }
         }
       }
     },
-    "/tables/1": {
+    "/tables/{id}": {
       "delete": {
-        "summary": "DELETE /tables/1",
+        "summary": "destroy",
+        "tags": [
+          "Table"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
         "responses": {
           "200": {
             "description": "returns a table",
@@ -752,7 +821,21 @@
         }
       },
       "get": {
-        "summary": "GET /tables/1",
+        "summary": "show",
+        "tags": [
+          "Table"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 2
+          }
+        ],
         "responses": {
           "200": {
             "description": "returns a table",
@@ -846,11 +929,46 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "does not return a table if not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                },
+                "example": {
+                  "message": "not found"
+                }
+              }
+            }
           }
         }
       },
       "patch": {
-        "summary": "PATCH /tables/1",
+        "summary": "update",
+        "tags": [
+          "Table"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
         "requestBody": {
           "content": {
             "application/x-www-form-urlencoded": {
@@ -947,37 +1065,12 @@
         }
       }
     },
-    "/tables/2": {
-      "get": {
-        "summary": "GET /tables/2",
-        "responses": {
-          "404": {
-            "description": "does not return a table if not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                },
-                "example": {
-                  "message": "not found"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/test_block": {
       "get": {
         "summary": "GET /test_block",
+        "tags": [
+
+        ],
         "responses": {
           "200": {
             "description": "returns the block content",

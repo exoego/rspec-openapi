@@ -7,12 +7,12 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
   # @param [RSpec::ExampleGroups::*] context
   # @param [RSpec::Core::Example] example
   # @return [RSpec::OpenAPI::Record,nil]
-  def build(context, example:)
-    request, response = extract_request_response(context)
+  def build(context, example:, extractor:)
+    request, response = extractor.request_response(context)
     return if request.nil?
 
     path, summary, tags, operation_id, required_request_params, raw_path_params, description, security, deprecated =
-      extract_request_attributes(request, example)
+      extractor.request_attributes(request, example)
 
     return if RSpec::OpenAPI.ignored_paths.any? { |ignored_path| path.match?(ignored_path) }
 
@@ -67,71 +67,6 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       headers_arr << [header_key, header_value] if header_value
     end
     [request_headers, response_headers]
-  end
-
-  def extract_request_attributes(request, example)
-    metadata = example.metadata[:openapi] || {}
-    summary = metadata[:summary] || RSpec::OpenAPI.summary_builder.call(example)
-    tags = metadata[:tags] || RSpec::OpenAPI.tags_builder.call(example)
-    operation_id = metadata[:operation_id]
-    required_request_params = metadata[:required_request_params] || []
-    security = metadata[:security]
-    description = metadata[:description] || RSpec::OpenAPI.description_builder.call(example)
-    deprecated = metadata[:deprecated]
-    raw_path_params = request.path_parameters
-    path = request.path
-    if rails?
-      # Reverse the destructive modification by Rails https://github.com/rails/rails/blob/v6.0.3.4/actionpack/lib/action_dispatch/journey/router.rb#L33-L41
-      fixed_request = request.dup
-      fixed_request.path_info = File.join(request.script_name, request.path_info) if request.script_name.present?
-
-      route, path = find_rails_route(fixed_request)
-      raise "No route matched for #{fixed_request.request_method} #{fixed_request.path_info}" if route.nil?
-
-      path = path.delete_suffix('(.:format)')
-      summary ||= route.requirements[:action]
-      tags ||= [route.requirements[:controller]&.classify].compact
-      # :controller and :action always exist. :format is added when routes is configured as such.
-      # TODO: Use .except(:controller, :action, :format) when we drop support for Ruby 2.x
-      raw_path_params = raw_path_params.slice(*(raw_path_params.keys - RSpec::OpenAPI.ignored_path_params))
-    end
-    summary ||= "#{request.method} #{path}"
-    [path, summary, tags, operation_id, required_request_params, raw_path_params, description, security, deprecated]
-  end
-
-  def extract_request_response(context)
-    if rack_test?(context)
-      request = ActionDispatch::Request.new(context.last_request.env)
-      request.body.rewind if request.body.respond_to?(:rewind)
-      response = ActionDispatch::TestResponse.new(*context.last_response.to_a)
-    else
-      request = context.request
-      response = context.response
-    end
-    [request, response]
-  end
-
-  def rails?
-    defined?(Rails) && Rails.respond_to?(:application) && Rails.application
-  end
-
-  def rack_test?(context)
-    defined?(Rack::Test::Methods) && context.class < Rack::Test::Methods
-  end
-
-  # @param [ActionDispatch::Request] request
-  def find_rails_route(request, app: Rails.application, path_prefix: '')
-    app.routes.router.recognize(request) do |route|
-      path = route.path.spec.to_s
-      if route.app.matches?(request)
-        if route.app.engine?
-          route, path = find_rails_route(request, app: route.app.app, path_prefix: path)
-          next if route.nil?
-        end
-        return [route, path_prefix + path]
-      end
-    end
-    nil
   end
 
   # workaround to get real request parameters

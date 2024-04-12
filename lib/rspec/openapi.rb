@@ -11,6 +11,23 @@ require 'rspec/openapi/schema_merger'
 require 'rspec/openapi/schema_cleaner'
 require 'rspec/openapi/schema_sorter'
 require 'rspec/openapi/key_transformer'
+require 'rspec/openapi/shared_hooks'
+require 'rspec/openapi/extractors'
+require 'rspec/openapi/extractors/rack'
+
+begin
+  require 'hanami'
+  require 'rspec/openapi/extractors/hanami'
+rescue LoadError
+  puts 'Hanami not detected'
+end
+
+begin
+  require 'rails'
+  require 'rspec/openapi/extractors/rails'
+rescue LoadError
+  puts 'Rails not detected'
+end
 
 require 'rspec/openapi/minitest_hooks' if Object.const_defined?('Minitest')
 require 'rspec/openapi/rspec_hooks' if ENV['OPENAPI'] && Object.const_defined?('RSpec')

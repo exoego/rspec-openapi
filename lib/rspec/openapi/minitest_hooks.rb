@@ -13,7 +13,7 @@ module RSpec::OpenAPI::Minitest
         human_name = name.sub(/^test_/, '').gsub('_', ' ')
         example = Example.new(self, human_name, {}, file_path)
         path = RSpec::OpenAPI.path.then { |p| p.is_a?(Proc) ? p.call(example) : p }
-        record = RSpec::OpenAPI::RecordBuilder.build(self, example: example)
+        record = RSpec::OpenAPI::RecordBuilder.build(self, example: example, extractor: SharedHooks.find_extractor)
         RSpec::OpenAPI.path_records[path] << record if record
       end
       result
