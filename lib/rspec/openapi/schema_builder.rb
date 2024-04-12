@@ -15,14 +15,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       disposition = normalize_content_disposition(record.response_content_disposition)
 
       has_content = !normalize_content_type(record.response_content_type).nil?
-      if has_content
-        response[:content] = {
-          normalize_content_type(record.response_content_type) => {
-            schema: build_property(record.response_body, disposition: disposition),
-            example: response_example(record, disposition: disposition),
-          }.compact,
-        }
-      end
+
+      response[:content] = build_content(disposition, record) if has_content
     end
 
     http_method = record.http_method.downcase
@@ -47,6 +41,24 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   end
 
   private
+
+  def build_content(disposition, record)
+    if record.enable_examples
+      {
+        normalize_content_type(record.response_content_type) => {
+          schema: build_property(record.response_body, disposition: disposition),
+          examples: { record.example_description => response_example(record, disposition: disposition) },
+        }.compact,
+      }
+    else
+      {
+        normalize_content_type(record.response_content_type) => {
+          schema: build_property(record.response_body, disposition: disposition),
+          example: response_example(record, disposition: disposition),
+        }.compact,
+      }
+    end
+  end
 
   def enrich_with_required_keys(obj)
     obj[:required] = obj[:properties]&.keys || []
