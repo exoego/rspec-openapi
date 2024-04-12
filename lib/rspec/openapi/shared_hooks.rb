@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SharedHooks
   def self.find_extractor
     if defined?(Rails) && Rails.respond_to?(:application) && Rails.application
