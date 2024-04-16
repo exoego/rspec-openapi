@@ -2,7 +2,7 @@
 
 # Extractor for rack
 class << RSpec::OpenAPI::Extractors::Rack = Object.new
-  # @param [RSpec::ExampleGroups::*] context
+  # @param [ActionDispatch::Request] request
   # @param [RSpec::Core::Example] example
   # @return Array
   def request_attributes(request, example)
