@@ -52,6 +52,10 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
   # @param [RSpec::Core::Example] example
   # @return Array
   def request_attributes(request, example)
+    route = Hanami.app.router.recognize(request.path, method: request.method)
+
+    return RSpec::OpenAPI::Extractors::Rack.request_attributes(request, example) unless route.routable?
+
     metadata = example.metadata[:openapi] || {}
     summary = metadata[:summary] || RSpec::OpenAPI.summary_builder.call(example)
     tags = metadata[:tags] || RSpec::OpenAPI.tags_builder.call(example)
@@ -61,8 +65,6 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
     description = metadata[:description] || RSpec::OpenAPI.description_builder.call(example)
     deprecated = metadata[:deprecated]
     path = request.path
-
-    route = Hanami.app.router.recognize(request.path, method: request.method)
 
     raw_path_params = route.params.filter { |_key, value| number_or_nil(value) }
 

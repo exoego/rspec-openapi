@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   mount ::MyEngine::Engine => '/my_engine'
+  mount ::RackTest::App.new, at: '/rack'
 
   get '/my_engine/test' => ->(_env) { [200, { 'Content-Type' => 'text/plain' }, ['ANOTHER TEST']] }
 

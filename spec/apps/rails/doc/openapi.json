@@ -384,6 +384,42 @@
         }
       }
     },
+    "/rack/bar": {
+      "get": {
+        "summary": "GET /rack/bar",
+        "responses": {
+          "200": {
+            "description": "returns some content",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "A RACK BAR"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rack/foo": {
+      "get": {
+        "summary": "GET /rack/foo",
+        "responses": {
+          "200": {
+            "description": "returns some content",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "A RACK FOO"
+              }
+            }
+          }
+        }
+      }
+    },
     "/secret_items": {
       "get": {
         "summary": "index",
