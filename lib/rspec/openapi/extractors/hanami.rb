@@ -48,7 +48,7 @@ Hanami::Slice::ClassMethods.prepend(InspectorAnalyzerPrepender)
 
 # Extractor for hanami
 class << RSpec::OpenAPI::Extractors::Hanami = Object.new
-  # @param [RSpec::ExampleGroups::*] context
+  # @param [ActionDispatch::Request] request
   # @param [RSpec::Core::Example] example
   # @return Array
   def request_attributes(request, example)
