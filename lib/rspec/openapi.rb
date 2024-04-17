@@ -16,7 +16,7 @@ require 'rspec/openapi/extractors'
 require 'rspec/openapi/extractors/rack'
 
 if ENV['OPENAPI']
-  DEBUG_ENABLED = ["", "1", "true"].include?(ENV["DEBUG"]&.downcase)
+  DEBUG_ENABLED = ['', '1', 'true'].include?(ENV['DEBUG']&.downcase)
 
   begin
     require 'hanami'
