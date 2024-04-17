@@ -6,15 +6,8 @@ class << RSpec::OpenAPI::Extractors::Rails = Object.new
   # @param [RSpec::Core::Example] example
   # @return Array
   def request_attributes(request, example)
-    metadata = example.metadata[:openapi] || {}
-    summary = metadata[:summary] || RSpec::OpenAPI.summary_builder.call(example)
-    tags = metadata[:tags] || RSpec::OpenAPI.tags_builder.call(example)
-    operation_id = metadata[:operation_id]
-    required_request_params = metadata[:required_request_params] || []
-    security = metadata[:security]
-    description = metadata[:description] || RSpec::OpenAPI.description_builder.call(example)
-    deprecated = metadata[:deprecated]
-    raw_path_params = request.path_parameters
+    summary, tags, operation_id, required_request_params, security, description, deprecated, enable_examples,
+      example_description = SharedExtractor.attributes(example)
 
     # Reverse the destructive modification by Rails https://github.com/rails/rails/blob/v6.0.3.4/actionpack/lib/action_dispatch/journey/router.rb#L33-L41
     fixed_request = request.dup
@@ -32,7 +25,8 @@ class << RSpec::OpenAPI::Extractors::Rails = Object.new
 
     summary ||= "#{request.method} #{path}"
 
-    [path, summary, tags, operation_id, required_request_params, raw_path_params, description, security, deprecated]
+    [path, summary, tags, operation_id, required_request_params, raw_path_params, description, security, deprecated,
+     enable_examples, example_description,]
   end
 
   # @param [RSpec::ExampleGroups::*] context

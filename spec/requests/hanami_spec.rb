@@ -51,7 +51,7 @@ end
 
 RSpec.describe 'Tables', type: :request do
   describe '#index' do
-    context 'returns a list of tables' do
+    context 'returns a list of tables', openapi: { enable_examples: true } do
       it 'with flat query parameters' do
         get '/tables', { page: '1', per: '10' }, { 'AUTHORIZATION' => 'k0kubun', 'X_AUTHORIZATION_TOKEN' => 'token' }
         expect(last_response.status).to eq(200)
