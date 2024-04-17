@@ -5,7 +5,7 @@ source 'https://rubygems.org'
 # Specify your gem's dependencies in rspec-openapi.gemspec
 gemspec
 
-gem 'rails', ENV['RAILS_VERSION'] || '6.0.3.7'
+gem 'rails', ENV['RAILS_VERSION'] || '6.0.6.1'
 
 if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('3.0.0')
   gem 'hanami', ENV['HANAMI_VERSION'] || '2.1.0'
