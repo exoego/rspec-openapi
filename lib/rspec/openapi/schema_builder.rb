@@ -64,10 +64,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   end
 
   def build_parameters(record)
-    parameters = []
-
-    record.path_params.each do |key, value|
-      parameters << {
+    path_params = record.path_params.map do |key, value|
+      {
         name: build_parameter_name(key, value),
         in: 'path',
         required: true,
@@ -76,8 +74,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       }.compact
     end
 
-    record.query_params.each do |key, value|
-      parameters << {
+    query_params = record.query_params.map do |key, value|
+      {
         name: build_parameter_name(key, value),
         in: 'query',
         required: record.required_request_params.include?(key),
@@ -86,8 +84,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       }.compact
     end
 
-    record.request_headers.each do |key, value|
-      parameters << {
+    header_params = record.request_headers.map do |key, value|
+      {
         name: build_parameter_name(key, value),
         in: 'header',
         required: true,
@@ -95,6 +93,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         example: (try_cast(value) if example_enabled?),
       }.compact
     end
+
+    parameters = path_params + query_params + header_params
 
     return nil if parameters.empty?
 
