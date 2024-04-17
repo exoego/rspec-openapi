@@ -18,7 +18,7 @@ require 'rspec/openapi/extractors/rack'
 begin
   require 'hanami'
 rescue LoadError
-  puts 'Hanami not detected'
+  warn 'Hanami not detected'
 else
   require 'rspec/openapi/extractors/hanami'
 end
@@ -26,7 +26,7 @@ end
 begin
   require 'rails'
 rescue LoadError
-  puts 'Rails not detected'
+  warn 'Rails not detected'
 else
   require 'rspec/openapi/extractors/rails'
 end
