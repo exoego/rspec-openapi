@@ -15,20 +15,24 @@ require 'rspec/openapi/shared_hooks'
 require 'rspec/openapi/extractors'
 require 'rspec/openapi/extractors/rack'
 
-begin
-  require 'hanami'
-rescue LoadError
-  puts 'Hanami not detected'
-else
-  require 'rspec/openapi/extractors/hanami'
-end
+if ENV['OPENAPI']
+  DEBUG_ENABLED = ['', '1', 'true'].include?(ENV['DEBUG']&.downcase)
 
-begin
-  require 'rails'
-rescue LoadError
-  puts 'Rails not detected'
-else
-  require 'rspec/openapi/extractors/rails'
+  begin
+    require 'hanami'
+  rescue LoadError
+    warn 'Hanami not detected' if DEBUG_ENABLED
+  else
+    require 'rspec/openapi/extractors/hanami'
+  end
+
+  begin
+    require 'rails'
+  rescue LoadError
+    warn 'Rails not detected' if DEBUG_ENABLED
+  else
+    require 'rspec/openapi/extractors/rails'
+  end
 end
 
 require 'rspec/openapi/minitest_hooks' if Object.const_defined?('Minitest')
