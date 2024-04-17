@@ -389,7 +389,7 @@
         "summary": "GET /rack/bar",
         "responses": {
           "200": {
-            "description": "returns some content",
+            "description": "returns some content bar",
             "content": {
               "text/plain": {
                 "schema": {
@@ -407,7 +407,7 @@
         "summary": "GET /rack/foo",
         "responses": {
           "200": {
-            "description": "returns some content",
+            "description": "returns some content foo",
             "content": {
               "text/plain": {
                 "schema": {

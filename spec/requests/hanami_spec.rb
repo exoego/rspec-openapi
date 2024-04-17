@@ -284,14 +284,14 @@ end
 
 RSpec.describe 'Rack app test', type: :request do
   describe '/rack/foo' do
-    it 'returns some content' do
+    it 'returns some content foo' do
       get '/rack/foo'
       expect(last_response.status).to eq(200)
     end
   end
 
   describe '/rack/bar' do
-    it 'returns some content' do
+    it 'returns some content bar' do
       get '/rack/bar'
       expect(last_response.status).to eq(200)
     end

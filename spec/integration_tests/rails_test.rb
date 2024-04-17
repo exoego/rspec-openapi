@@ -273,3 +273,18 @@ class NamespaceTest < ActionDispatch::IntegrationTest
     assert_response 200
   end
 end
+
+class RackAppTest < ActionDispatch::IntegrationTest
+  i_suck_and_my_tests_are_order_dependent!
+  openapi!
+
+  test 'returns some content foo' do
+    get '/rack/foo/'
+    assert_response 200
+  end
+
+  test 'returns some content bar' do
+    get '/rack/bar'
+    assert_response 200
+  end
+end
