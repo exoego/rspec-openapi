@@ -270,3 +270,19 @@ RSpec.describe 'Namespace test', type: :request do
     end
   end
 end
+
+RSpec.describe 'Rack app test', type: :request do
+  describe '/rack/foo' do
+    it 'returns some content foo' do
+      get '/rack/foo'
+      expect(response.status).to eq(200)
+    end
+  end
+
+  describe '/rack/bar' do
+    it 'returns some content bar' do
+      get '/rack/bar'
+      expect(response.status).to eq(200)
+    end
+  end
+end

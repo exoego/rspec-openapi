@@ -6,6 +6,16 @@ class << RSpec::OpenAPI::Extractors::Rails = Object.new
   # @param [RSpec::Core::Example] example
   # @return Array
   def request_attributes(request, example)
+    # Reverse the destructive modification by Rails https://github.com/rails/rails/blob/v6.0.3.4/actionpack/lib/action_dispatch/journey/router.rb#L33-L41
+    fixed_request = request.dup
+    fixed_request.path_info = File.join(request.script_name, request.path_info) if request.script_name.present?
+
+    route, path = find_rails_route(fixed_request)
+
+    raise "No route matched for #{fixed_request.request_method} #{fixed_request.path_info}" if route.nil?
+
+    return RSpec::OpenAPI::Extractors::Rack.request_attributes(request, example) unless path
+
     metadata = example.metadata[:openapi] || {}
     summary = metadata[:summary] || RSpec::OpenAPI.summary_builder.call(example)
     tags = metadata[:tags] || RSpec::OpenAPI.tags_builder.call(example)
@@ -16,14 +26,6 @@ class << RSpec::OpenAPI::Extractors::Rails = Object.new
     deprecated = metadata[:deprecated]
     raw_path_params = request.path_parameters
 
-    # Reverse the destructive modification by Rails https://github.com/rails/rails/blob/v6.0.3.4/actionpack/lib/action_dispatch/journey/router.rb#L33-L41
-    fixed_request = request.dup
-    fixed_request.path_info = File.join(request.script_name, request.path_info) if request.script_name.present?
-
-    route, path = find_rails_route(fixed_request)
-    raise "No route matched for #{fixed_request.request_method} #{fixed_request.path_info}" if route.nil?
-
-    path = path.delete_suffix('(.:format)')
     summary ||= route.requirements[:action]
     tags ||= [route.requirements[:controller]&.classify].compact
     # :controller and :action always exist. :format is added when routes is configured as such.
@@ -42,17 +44,38 @@ class << RSpec::OpenAPI::Extractors::Rails = Object.new
 
   # @param [ActionDispatch::Request] request
   def find_rails_route(request, app: Rails.application, path_prefix: '')
-    app.routes.router.recognize(request) do |route|
-      path = route.path.spec.to_s
+    app.routes.router.recognize(request) do |route, parameters|
+      path = route.path.spec.to_s.delete_suffix('(.:format)')
+
       if route.app.matches?(request)
         if route.app.engine?
           route, path = find_rails_route(request, app: route.app.app, path_prefix: path)
           next if route.nil?
+        elsif path_prefix + path == add_id(request.path, parameters)
+          return [route, path_prefix + path]
+        else
+          return [route, nil]
         end
         return [route, path_prefix + path]
       end
     end
 
+    nil
+  end
+
+  def add_id(path, parameters)
+    parameters.each_pair do |key, value|
+      next unless number_or_nil(value)
+
+      path = path.sub("/#{value}", "/:#{key}")
+    end
+
+    path
+  end
+
+  def number_or_nil(string)
+    Integer(string || '')
+  rescue ArgumentError
     nil
   end
 end

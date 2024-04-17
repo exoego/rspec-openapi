@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'rack_test/app'
 
 module HanamiTest
   class Routes < Hanami::Routes
@@ -35,5 +36,7 @@ module HanamiTest
         post '/extensions', to: 'extensions.create'
       end
     end
+
+    use RackTest::App
   end
 end
