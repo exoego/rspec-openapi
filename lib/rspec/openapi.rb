@@ -36,7 +36,7 @@ if ENV['OPENAPI']
 end
 
 require 'rspec/openapi/minitest_hooks' if Object.const_defined?('Minitest')
-require 'rspec/openapi/rspec_hooks' if Object.const_defined?('RSpec')
+require 'rspec/openapi/rspec_hooks' if ENV['OPENAPI'] && Object.const_defined?('RSpec')
 
 module RSpec::OpenAPI
   @path = 'doc/openapi.yaml'
