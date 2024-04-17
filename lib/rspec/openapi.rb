@@ -17,16 +17,18 @@ require 'rspec/openapi/extractors/rack'
 
 begin
   require 'hanami'
-  require 'rspec/openapi/extractors/hanami'
 rescue LoadError
   puts 'Hanami not detected'
+else
+  require 'rspec/openapi/extractors/hanami'
 end
 
 begin
   require 'rails'
-  require 'rspec/openapi/extractors/rails'
 rescue LoadError
   puts 'Rails not detected'
+else
+  require 'rspec/openapi/extractors/rails'
 end
 
 require 'rspec/openapi/minitest_hooks' if Object.const_defined?('Minitest')
