@@ -15,24 +15,28 @@ require 'rspec/openapi/shared_hooks'
 require 'rspec/openapi/extractors'
 require 'rspec/openapi/extractors/rack'
 
-begin
-  require 'hanami'
-rescue LoadError
-  warn 'Hanami not detected'
-else
-  require 'rspec/openapi/extractors/hanami'
-end
+if ENV['OPENAPI']
+  DEBUG_ENABLED = ["", "1", "true"].include?(ENV["DEBUG"]&.downcase)
 
-begin
-  require 'rails'
-rescue LoadError
-  warn 'Rails not detected'
-else
-  require 'rspec/openapi/extractors/rails'
-end
+  begin
+    require 'hanami'
+  rescue LoadError
+    warn 'Hanami not detected' if DEBUG_ENABLED
+  else
+    require 'rspec/openapi/extractors/hanami'
+  end
 
-require 'rspec/openapi/minitest_hooks' if Object.const_defined?('Minitest')
-require 'rspec/openapi/rspec_hooks' if ENV['OPENAPI'] && Object.const_defined?('RSpec')
+  begin
+    require 'rails'
+  rescue LoadError
+    warn 'Rails not detected' if DEBUG_ENABLED
+  else
+    require 'rspec/openapi/extractors/rails'
+  end
+
+  require 'rspec/openapi/minitest_hooks' if Object.const_defined?('Minitest')
+  require 'rspec/openapi/rspec_hooks' if Object.const_defined?('RSpec')
+end
 
 module RSpec::OpenAPI
   @path = 'doc/openapi.yaml'
