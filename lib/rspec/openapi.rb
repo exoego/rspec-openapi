@@ -15,30 +15,17 @@ require 'rspec/openapi/shared_hooks'
 require 'rspec/openapi/extractors'
 require 'rspec/openapi/extractors/rack'
 
-if ENV['OPENAPI']
-  DEBUG_ENABLED = ['', '1', 'true'].include?(ENV['DEBUG']&.downcase)
-
-  begin
-    require 'hanami'
-  rescue LoadError
-    warn 'Hanami not detected' if DEBUG_ENABLED
-  else
-    require 'rspec/openapi/extractors/hanami'
-  end
-
-  begin
-    require 'rails'
-  rescue LoadError
-    warn 'Rails not detected' if DEBUG_ENABLED
-  else
-    require 'rspec/openapi/extractors/rails'
-  end
-end
-
-require 'rspec/openapi/minitest_hooks' if Object.const_defined?('Minitest')
-require 'rspec/openapi/rspec_hooks' if ENV['OPENAPI'] && Object.const_defined?('RSpec')
-
 module RSpec::OpenAPI
+  class Config
+    class << self
+      attr_accessor :debug_enabled
+
+      def load_environment_settings
+        @debug_enabled = ['', '1', 'true'].include?(ENV['DEBUG']&.downcase)
+      end
+    end
+  end
+
   @path = 'doc/openapi.yaml'
   @title = File.basename(Dir.pwd)
   @comment = nil
@@ -84,3 +71,26 @@ module RSpec::OpenAPI
     attr_reader   :config_filename
   end
 end
+
+if ENV['OPENAPI']
+  RSpec::OpenAPI::Config.load_environment_settings
+
+  begin
+    require 'hanami'
+  rescue LoadError
+    warn 'Hanami not detected' if RSpec::OpenAPI::Config.debug_enabled
+  else
+    require 'rspec/openapi/extractors/hanami'
+  end
+
+  begin
+    require 'rails'
+  rescue LoadError
+    warn 'Rails not detected' if RSpec::OpenAPI::Config.debug_enabled
+  else
+    require 'rspec/openapi/extractors/rails'
+  end
+end
+
+require 'rspec/openapi/minitest_hooks' if Object.const_defined?('Minitest')
+require 'rspec/openapi/rspec_hooks' if ENV['OPENAPI'] && Object.const_defined?('RSpec')
