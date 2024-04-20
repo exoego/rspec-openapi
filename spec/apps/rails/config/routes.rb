@@ -4,7 +4,9 @@ Rails.application.routes.draw do
 
   get '/my_engine/test' => ->(_env) { [200, { 'Content-Type' => 'text/plain' }, ['ANOTHER TEST']] }
 
-  get '/pages' => 'pages#get'
+  defaults format: :html do
+    get '/pages' => 'pages#get'
+  end
 
   defaults format: 'json' do
     resources :tables, only: [:index, :show, :create, :update, :destroy]
