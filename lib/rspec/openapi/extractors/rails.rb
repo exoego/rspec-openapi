@@ -65,19 +65,11 @@ class << RSpec::OpenAPI::Extractors::Rails = Object.new
 
   def add_id(path, parameters)
     parameters.each_pair do |key, value|
-      next unless number_or_nil(value)
+      next unless RSpec::OpenAPI::Extractors.number_or_nil(value)
 
       path = path.sub("/#{value}", "/:#{key}")
     end
 
     path
-  end
-
-  # @param [String, Symbol] path_parameter
-  # @return [Integer, nil]
-  def number_or_nil(path_parameter)
-    Integer(path_parameter.to_s || '')
-  rescue ArgumentError
-    nil
   end
 end

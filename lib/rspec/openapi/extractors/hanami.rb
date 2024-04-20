@@ -66,7 +66,7 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
     deprecated = metadata[:deprecated]
     path = request.path
 
-    raw_path_params = route.params.filter { |_key, value| number_or_nil(value) }
+    raw_path_params = route.params.filter { |_key, value| RSpec::OpenAPI::Extractors.number_or_nil(value) }
 
     result = InspectorAnalyzer.call(request.method, add_id(path, route))
 
@@ -92,7 +92,7 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
     return path if route.params.empty?
 
     route.params.each_pair do |key, value|
-      next unless number_or_nil(value)
+      next unless RSpec::OpenAPI::Extractors.number_or_nil(value)
 
       path = path.sub("/#{value}", "/:#{key}")
     end
@@ -104,17 +104,11 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
     return path if route.params.empty?
 
     route.params.each_pair do |key, value|
-      next unless number_or_nil(value)
+      next unless RSpec::OpenAPI::Extractors.number_or_nil(value)
 
       path = path.sub("/#{value}", "/{#{key}}")
     end
 
     path
-  end
-
-  def number_or_nil(string)
-    Integer(string || '')
-  rescue ArgumentError
-    nil
   end
 end
