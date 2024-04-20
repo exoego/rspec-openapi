@@ -73,8 +73,10 @@ class << RSpec::OpenAPI::Extractors::Rails = Object.new
     path
   end
 
-  def number_or_nil(string)
-    Integer(string || '')
+  # @param [String, Symbol] path_parameter
+  # @return [Integer, nil]
+  def number_or_nil(path_parameter)
+    Integer(path_parameter.to_s || '')
   rescue ArgumentError
     nil
   end
