@@ -48,13 +48,14 @@ class << RSpec::OpenAPI::Extractors::Rails = Object.new
       path = route.path.spec.to_s.delete_suffix('(.:format)')
 
       if route.app.matches?(request)
+        path_id = add_id(request.path, parameters)
         if route.app.engine?
           route, path = find_rails_route(request, app: route.app.app, path_prefix: path)
           next if route.nil?
-        elsif path_prefix + path == add_id(request.path, parameters)
+        elsif path_prefix + path == path_id
           return [route, path_prefix + path]
         else
-          return [route, nil]
+          return [route, path_id]
         end
         return [route, path_prefix + path]
       end
