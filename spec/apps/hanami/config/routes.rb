@@ -23,6 +23,8 @@ module HanamiTest
     get '/users/:id', to: 'users.show'
     get '/users/active', to: 'users.active'
 
+    get '/sites/:name', to: 'sites.show'
+
     get '/test_block', to: ->(_env) { [200, { 'Content-Type' => 'text/plain' }, ['A TEST']] }
 
     slice :my_engine, at: '/my_engine' do
