@@ -63,5 +63,4 @@ class << RSpec::OpenAPI::Extractors::Rails = Object.new
 
     nil
   end
-
 end
