@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   end
 
   defaults format: 'json' do
+    resources :sites, param: :name, only: [:show]
     resources :tables, only: [:index, :show, :create, :update, :destroy]
     resources :images, only: [:index, :show] do
       collection do

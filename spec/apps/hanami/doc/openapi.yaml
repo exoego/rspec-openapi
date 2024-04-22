@@ -265,6 +265,38 @@ paths:
               schema:
                 type: string
               example: ''
+  "/sites/abc123":
+    get:
+      responses:
+        '200':
+          description: finds a site
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                required:
+                - name
+              example:
+                name: abc123
+  "/sites/no-such":
+    get:
+      responses:
+        '404':
+          description: raises not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                - message
+              example:
+                message: not found
   "/tables":
     get:
       summary: index

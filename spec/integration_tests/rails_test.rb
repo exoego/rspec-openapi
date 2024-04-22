@@ -288,3 +288,18 @@ class RackAppTest < ActionDispatch::IntegrationTest
     assert_response 200
   end
 end
+
+class RackAppTest < ActionDispatch::IntegrationTest
+  i_suck_and_my_tests_are_order_dependent!
+  openapi!
+
+  test 'raises not found' do
+    get '/sites/no-such', as: :json
+    assert_response 404
+  end
+
+  test 'finds a site' do
+    get '/sites/abc123', as: :json
+    assert_response 200
+  end
+end

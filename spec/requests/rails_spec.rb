@@ -286,3 +286,15 @@ RSpec.describe 'Rack app test', type: :request do
     end
   end
 end
+
+RSpec.describe 'non-numeric path parameter', type: :request do
+  it 'finds a site' do
+    get '/sites/abc123', as: :json
+    expect(response.status).to eq(200)
+  end
+
+  it 'raises not found' do
+    get '/sites/no-such', as: :json
+    expect(response.status).to eq(404)
+  end
+end

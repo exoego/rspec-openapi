@@ -44,18 +44,19 @@ class << RSpec::OpenAPI::Extractors::Rails = Object.new
 
   # @param [ActionDispatch::Request] request
   def find_rails_route(request, app: Rails.application, path_prefix: '')
-    app.routes.router.recognize(request) do |route, parameters|
+    app.routes.router.recognize(request) do |route, _parameters|
       path = route.path.spec.to_s.delete_suffix('(.:format)')
 
       if route.app.matches?(request)
         if route.app.engine?
           route, path = find_rails_route(request, app: route.app.app, path_prefix: path)
           next if route.nil?
-        elsif path_prefix + path == add_id(request.path, parameters)
-          return [route, path_prefix + path]
-        else
-          return [route, nil]
         end
+
+        # Params are empty when it is Engine or Rack app.
+        # In that case, we can't handle parameters in path.
+        return [route, nil] if request.params.empty?
+
         return [route, path_prefix + path]
       end
     end
@@ -63,13 +64,4 @@ class << RSpec::OpenAPI::Extractors::Rails = Object.new
     nil
   end
 
-  def add_id(path, parameters)
-    parameters.each_pair do |key, value|
-      next unless RSpec::OpenAPI::Extractors.number_or_nil(value)
-
-      path = path.sub("/#{value}", "/:#{key}")
-    end
-
-    path
-  end
 end
