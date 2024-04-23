@@ -19,7 +19,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
     request_headers, response_headers = extract_headers(request, response)
 
     RSpec::OpenAPI::Record.new(
-      http_method: request.method,
+      http_method: request.request_method,
       path: path,
       path_params: raw_path_params,
       query_params: request.query_parameters,

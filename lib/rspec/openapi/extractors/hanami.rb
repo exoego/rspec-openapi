@@ -55,7 +55,7 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
   # @param [RSpec::Core::Example] example
   # @return Array
   def request_attributes(request, example)
-    route = Hanami.app.router.recognize(request.path, method: request.method)
+    route = Hanami.app.router.recognize(request.path, method: request.request_method)
 
     return RSpec::OpenAPI::Extractors::Rack.request_attributes(request, example) unless route.routable?
 
@@ -71,7 +71,7 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
 
     raw_path_params = route.params.filter { |_key, value| RSpec::OpenAPI::Extractors.number_or_nil(value) }
 
-    result = InspectorAnalyzer.call(request.method, add_id(path, route))
+    result = InspectorAnalyzer.call(request.request_method, add_id(path, route))
 
     summary ||= result[:summary]
     tags ||= result[:tags]

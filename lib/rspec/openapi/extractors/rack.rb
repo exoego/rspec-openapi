@@ -16,7 +16,7 @@ class << RSpec::OpenAPI::Extractors::Rack = Object.new
     deprecated = metadata[:deprecated]
     raw_path_params = request.path_parameters
     path = request.path
-    summary ||= "#{request.method} #{path}"
+    summary ||= "#{request.request_method} #{path}"
     [path, summary, tags, operation_id, required_request_params, raw_path_params, description, security, deprecated]
   end
 

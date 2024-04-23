@@ -32,7 +32,7 @@ class << RSpec::OpenAPI::Extractors::Rails = Object.new
     # TODO: Use .except(:controller, :action, :format) when we drop support for Ruby 2.x
     raw_path_params = raw_path_params.slice(*(raw_path_params.keys - RSpec::OpenAPI.ignored_path_params))
 
-    summary ||= "#{request.method} #{path}"
+    summary ||= "#{request.request_method} #{path}"
 
     [path, summary, tags, operation_id, required_request_params, raw_path_params, description, security, deprecated]
   end
