@@ -19,10 +19,7 @@ class Inspector
   def call(verb, path)
     route = routes.find { |r| r.http_method == verb && r.path == path }
 
-    if route.nil?
-      # FIXME: This is a hack to pass `/sites/***` in testing
-      {}
-    elsif route.to.is_a?(Proc)
+    if route.to.is_a?(Proc)
       {
         tags: [],
         summary: "#{verb} #{path}",
@@ -55,7 +52,7 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
   # @param [RSpec::Core::Example] example
   # @return Array
   def request_attributes(request, example)
-    route = Hanami.app.router.recognize(request.path, method: request.method)
+    route = Hanami.app.router.recognize(Rack::MockRequest.env_for(request.path, method: request.method))
 
     return RSpec::OpenAPI::Extractors::Rack.request_attributes(request, example) unless route.routable?
 
@@ -69,7 +66,7 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
     deprecated = metadata[:deprecated]
     path = request.path
 
-    raw_path_params = route.params.filter { |_key, value| RSpec::OpenAPI::Extractors.number_or_nil(value) }
+    raw_path_params = route.params
 
     result = InspectorAnalyzer.call(request.method, add_id(path, route))
 
@@ -95,8 +92,6 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
     return path if route.params.empty?
 
     route.params.each_pair do |key, value|
-      next unless RSpec::OpenAPI::Extractors.number_or_nil(value)
-
       path = path.sub("/#{value}", "/:#{key}")
     end
 
@@ -107,8 +102,6 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
     return path if route.params.empty?
 
     route.params.each_pair do |key, value|
-      next unless RSpec::OpenAPI::Extractors.number_or_nil(value)
-
       path = path.sub("/#{value}", "/{#{key}}")
     end
 

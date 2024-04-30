@@ -265,8 +265,18 @@ paths:
               schema:
                 type: string
               example: ''
-  "/sites/abc123":
+  "/sites/{name}":
     get:
+      summary: show
+      tags:
+      - Site
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+        example: no-such
       responses:
         '200':
           description: finds a site
@@ -281,9 +291,6 @@ paths:
                 - name
               example:
                 name: abc123
-  "/sites/no-such":
-    get:
-      responses:
         '404':
           description: raises not found
           content:
