@@ -431,8 +431,23 @@
         }
       }
     },
-    "/sites/abc123": {
+    "/sites/{name}": {
       "get": {
+        "summary": "show",
+        "tags": [
+          "Site"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "no-such"
+          }
+        ],
         "responses": {
           "200": {
             "description": "finds a site",
@@ -454,13 +469,7 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "/sites/no-such": {
-      "get": {
-        "responses": {
+          },
           "404": {
             "description": "raises not found",
             "content": {
@@ -815,6 +824,23 @@
             "example": 1
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "no_content": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "no_content": "true"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "returns a table",
@@ -890,23 +916,6 @@
           },
           "202": {
             "description": "returns no content if specified"
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "no_content": {
-                    "type": "string"
-                  }
-                }
-              },
-              "example": {
-                "no_content": "true"
-              }
-            }
           }
         }
       },
