@@ -88,7 +88,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       {
         name: build_parameter_name(key, value),
         in: 'header',
-        required: true,
+        required: record.optional_headers.exclude?(key),
         schema: build_property(try_cast(value)),
         example: (try_cast(value) if example_enabled?),
       }.compact
