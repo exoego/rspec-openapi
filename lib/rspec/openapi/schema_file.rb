@@ -24,7 +24,11 @@ class RSpec::OpenAPI::SchemaFile
   def read
     return {} unless File.exist?(@path)
 
-    RSpec::OpenAPI::KeyTransformer.symbolize(YAML.safe_load(File.read(@path))) # this can also parse JSON
+    content = YAML.safe_load(File.read(@path)) # This can also parse JSON
+
+    return {} if content.nil?
+
+    RSpec::OpenAPI::KeyTransformer.symbolize(content)
   end
 
   # @param [Hash] spec
