@@ -11,7 +11,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
     request, response = extractor.request_response(context)
     return if request.nil?
 
-    path, summary, tags, operation_id, required_request_params, optional_headers, raw_path_params, description, security, deprecated =
+    path, summary, tags, operation_id, required_request_params, optional_request_params, optional_headers, raw_path_params, description, security, deprecated =
       extractor.request_attributes(request, example)
 
     return if RSpec::OpenAPI.ignored_paths.any? { |ignored_path| path.match?(ignored_path) }
@@ -25,6 +25,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       query_params: request.query_parameters,
       request_params: raw_request_params(request),
       required_request_params: required_request_params,
+      optional_request_params: optional_request_params,
       optional_headers: optional_headers,
       request_content_type: request.media_type,
       request_headers: request_headers,

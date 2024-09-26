@@ -61,6 +61,7 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
     tags = metadata[:tags] || RSpec::OpenAPI.tags_builder.call(example)
     operation_id = metadata[:operation_id]
     required_request_params = metadata[:required_request_params] || []
+    optional_request_params = metadata[:optional_request_params] || []
     optional_headers = metadata[:optional_headers] || []
     security = metadata[:security]
     description = metadata[:description] || RSpec::OpenAPI.description_builder.call(example)
@@ -77,7 +78,7 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
 
     raw_path_params = raw_path_params.slice(*(raw_path_params.keys - RSpec::OpenAPI.ignored_path_params))
 
-    [path, summary, tags, operation_id, required_request_params, optional_headers, raw_path_params, description, security, deprecated]
+    [path, summary, tags, operation_id, required_request_params, optional_request_params, optional_headers, raw_path_params, description, security, deprecated]
   end
 
   # @param [RSpec::ExampleGroups::*] context

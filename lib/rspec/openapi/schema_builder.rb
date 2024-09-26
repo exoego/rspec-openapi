@@ -48,8 +48,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
   private
 
-  def enrich_with_required_keys(obj)
-    obj[:required] = obj[:properties]&.keys || []
+  def enrich_with_required_keys(obj, optional_request_params)
+    obj[:required] = (obj[:properties]&.keys - optional_request_params) || []
     obj
   end
 
@@ -130,14 +130,14 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     {
       content: {
         normalize_content_type(record.request_content_type) => {
-          schema: build_property(record.request_params),
+          schema: build_property(record.request_params, optional_request_params: record.optional_request_params),
           example: (build_example(record.request_params) if example_enabled?),
         }.compact,
       },
     }
   end
 
-  def build_property(value, disposition: nil)
+  def build_property(value, disposition: nil, optional_request_params: [])
     property = build_type(value, disposition)
 
     case value
@@ -145,15 +145,15 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       property[:items] = if value.empty?
                            {} # unknown
                          else
-                           build_property(value.first)
+                           build_property(value.first, optional_request_params: optional_request_params)
                          end
     when Hash
       property[:properties] = {}.tap do |properties|
         value.each do |key, v|
-          properties[key] = build_property(v)
+          properties[key] = build_property(v, optional_request_params: optional_request_params)
         end
       end
-      property = enrich_with_required_keys(property)
+      property = enrich_with_required_keys(property, optional_request_params)
     end
     property
   end
