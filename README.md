@@ -337,6 +337,8 @@ Some examples' attributes can be overwritten via RSpec metadata options. Example
     description: 'list all posts ordered by pub_date',
     tags: %w[v1 posts],
     required_request_params: %w[limit],
+    optional_request_params: %w[data optional_address], # request body parameters that will NOT be set as required
+    optional_headers: %w[Accept-Languages rowsPerPage], # request header params that can be optional
     security: [{"MyToken" => []}],
   } do
     # ...
