@@ -11,6 +11,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
     request, response = extractor.request_response(context)
     return if request.nil?
 
+    title = RSpec::OpenAPI.title.then { |t| t.is_a?(Proc) ? t.call(example) : t }
     path, summary, tags, operation_id, required_request_params, raw_path_params, description, security, deprecated =
       extractor.request_attributes(request, example)
 
@@ -19,6 +20,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
     request_headers, response_headers = extract_headers(request, response)
 
     RSpec::OpenAPI::Record.new(
+      title: title,
       http_method: request.method,
       path: path,
       path_params: raw_path_params,
