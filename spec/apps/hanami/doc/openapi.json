@@ -824,23 +824,6 @@
             "example": 1
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "no_content": {
-                    "type": "string"
-                  }
-                }
-              },
-              "example": {
-                "no_content": "true"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "returns a table",
