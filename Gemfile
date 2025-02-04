@@ -13,6 +13,8 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('3.0.0')
   gem 'hanami-router', ENV['HANAMI_VERSION'] || '2.1.0'
 end
 
+gem 'concurrent-ruby', '1.3.4'
+
 gem 'roda'
 
 gem 'rails-dom-testing', '~> 2.2'
