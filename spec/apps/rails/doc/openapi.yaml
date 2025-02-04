@@ -608,16 +608,6 @@ paths:
                 updated_at: '2020-07-17T00:00:00+00:00'
         '202':
           description: returns no content if specified
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                no_content:
-                  type: string
-            example:
-              no_content: 'true'
     get:
       summary: show
       tags:

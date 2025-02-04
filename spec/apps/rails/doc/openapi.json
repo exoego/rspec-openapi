@@ -943,23 +943,6 @@
           "202": {
             "description": "returns no content if specified"
           }
-        },
-        "requestBody": {
-          "content": {
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "no_content": {
-                    "type": "string"
-                  }
-                }
-              },
-              "example": {
-                "no_content": "true"
-              }
-            }
-          }
         }
       },
       "get": {
