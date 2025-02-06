@@ -36,7 +36,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
             security: record.security,
             deprecated: record.deprecated ? true : nil,
             parameters: build_parameters(record),
-            requestBody: http_method == 'get' ? nil : build_request_body(record),
+            requestBody: include_nil_request_body?(http_method) ? nil : build_request_body(record),
             responses: {
               record.status.to_s => response,
             },
@@ -47,6 +47,10 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   end
 
   private
+
+  def include_nil_request_body?(http_method)
+    %w[delete get].include?(http_method)
+  end
 
   def enrich_with_required_keys(obj)
     obj[:required] = obj[:properties]&.keys || []

@@ -16,7 +16,7 @@ class RSpec::OpenAPI::ResultRecorder
         puts "WARNING: Unable to load #{config_file}: #{e}"
       end
 
-      title = RSpec::OpenAPI.title
+      title = records.first.title
       RSpec::OpenAPI::SchemaFile.new(path).edit do |spec|
         schema = RSpec::OpenAPI::DefaultSchema.build(title)
         schema[:info].merge!(RSpec::OpenAPI.info)

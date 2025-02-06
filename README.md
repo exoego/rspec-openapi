@@ -122,7 +122,17 @@ RSpec::OpenAPI.path = -> (example) {
   end
 }
 
+# Change the default title of the generated schema
 RSpec::OpenAPI.title = 'OpenAPI Documentation'
+
+# Or generate individual titles for your partial schema files, given an RSpec example
+RSpec::OpenAPI.title = -> (example) {
+  case example.file_path
+  when %r[spec/requests/api/v1/] then 'API v1 Documentation'
+  when %r[spec/requests/api/v2/] then 'API v2 Documentation'
+  else 'OpenAPI Documentation'
+  end
+}
 
 # Disable generating `example`
 RSpec::OpenAPI.enable_example = false
