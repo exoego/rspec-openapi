@@ -592,6 +592,20 @@
             }
           },
           {
+            "name": "names[]",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": [
+              "Example Table"
+            ]
+          },
+          {
             "name": "page",
             "in": "query",
             "required": false,

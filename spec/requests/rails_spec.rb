@@ -53,6 +53,11 @@ RSpec.describe 'Tables', type: :request do
         get '/tables', params: { filter: { 'price' => 0 } }, headers: { authorization: 'k0kubun' }
         expect(response.status).to eq(200)
       end
+
+      it 'with array query parameters' do
+        get '/tables', params: { names: ['Example Table'] }, headers: { authorization: 'k0kubun' }
+        expect(response.status).to eq(200)
+      end
     end
 
     it 'has a request spec which does not make any request' do
