@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 RSpec::OpenAPI::Record = Struct.new(
+  :title,                 # @param [String]  - "API Documentation - Statuses"
   :http_method,           # @param [String]  - "GET"
   :path,                  # @param [String]  - "/v1/status/:id"
   :path_params,           # @param [Hash]    - {:controller=>"v1/statuses", :action=>"create", :id=>"1"}
