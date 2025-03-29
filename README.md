@@ -52,7 +52,7 @@ end
 If you run the spec with `OPENAPI=1`,
 
 ```
-OPENAPI=1 rspec spec/requests/tables_spec.rb
+OPENAPI=1 bundle exec rspec spec/requests/tables_spec.rb
 ```
 
 It will generate [`doc/openapi.yaml` file](./spec/rails/doc/openapi.yaml) like:
