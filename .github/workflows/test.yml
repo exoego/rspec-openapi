@@ -25,6 +25,8 @@ jobs:
             rails: 7.0.8
           - ruby: ruby:3.3
             rails: 7.1.3.2
+          - ruby: ruby:3.4
+            rails: 8.0.2
             coverage: coverage
     env:
       RAILS_VERSION: ${{ matrix.rails == '' && '6.1.6' || matrix.rails }}
