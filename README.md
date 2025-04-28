@@ -1,4 +1,5 @@
-# rspec-openapi [![Gem Version](https://badge.fury.io/rb/rspec-openapi.svg)](https://rubygems.org/gems/rspec-openapi) [![test](https://github.com/exoego/rspec-openapi/actions/workflows/test.yml/badge.svg)](https://github.com/exoego/rspec-openapi/actions/workflows/test.yml) [![codecov](https://codecov.io/gh/exoego/rspec-openapi/branch/master/graph/badge.svg?token=egYm6AlxkD)](https://codecov.io/gh/exoego/rspec-openapi) [![Ruby-toolbox](https://img.shields.io/badge/ruby-toolbox-a61414?cacheSeconds=31536000)](https://www.ruby-toolbox.com/projects/rspec-openapi)
+# rspec-openapi [![Gem Version](https://badge.fury.io/rb/rspec-openapi.svg)](https://rubygems.org/gems/rspec-openapi) [![test](https://github.com/exoego/rspec-openapi/actions/workflows/test.yml/badge.svg)](https://github.com/exoego/rspec-openapi/actions/workflows/test.yml) [![codecov](https://codecov.io/gh/exoego/rspec-openapi/branch/master/graph/badge.svg?token=egYm6AlxkD)](https://codecov.io/gh/exoego/rspec-openapi) [![Ruby-toolbox](https://img.shields.io/badge/ruby-toolbox-a61414?cacheSeconds=31536000)](https://www.ruby-toolbox.com/projects/rspec-openapi) [![DeepWiki](https://img.shields.io/badge/See_on-DeepWiki-blue)](https://deepwiki.com/exoego/rspec-openapi)
+
 
 Generate OpenAPI schema from RSpec request specs.
 
