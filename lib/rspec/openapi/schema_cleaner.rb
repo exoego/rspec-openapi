@@ -50,7 +50,7 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
       parent_path_definition = base.dig(*path.take(path.length - 1))
 
       security_schemes.each do |security_scheme_name, security_scheme|
-        remove_parameters_conflicting_with_security_sceheme!(
+        remove_parameters_conflicting_with_security_scheme!(
           parent_path_definition, security_scheme, security_scheme_name,
         )
       end
@@ -71,7 +71,7 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
 
   private
 
-  def remove_parameters_conflicting_with_security_sceheme!(path_definition, security_scheme, security_scheme_name)
+  def remove_parameters_conflicting_with_security_scheme!(path_definition, security_scheme, security_scheme_name)
     return unless path_definition[:security]
     return unless path_definition[:parameters]
     return unless path_definition.dig(:security, 0).keys.include?(security_scheme_name)
