@@ -27,6 +27,8 @@ RSpec::OpenAPI.info = {
   },
 }
 
+RSpec::OpenAPI.formats_builder = ->(_example, key) { key.end_with?('_at') ? 'date-time' : nil }
+
 RSpec::OpenAPI.security_schemes = {
   SecretApiKeyAuth: {
     type: 'apiKey',
