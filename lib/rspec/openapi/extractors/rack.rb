@@ -9,6 +9,7 @@ class << RSpec::OpenAPI::Extractors::Rack = Object.new
     metadata = example.metadata[:openapi] || {}
     summary = metadata[:summary] || RSpec::OpenAPI.summary_builder.call(example)
     tags = metadata[:tags] || RSpec::OpenAPI.tags_builder.call(example)
+    formats = metadata[:formats] || RSpec::OpenAPI.formats_builder.curry.call(example)
     operation_id = metadata[:operation_id]
     required_request_params = metadata[:required_request_params] || []
     security = metadata[:security]
@@ -17,7 +18,18 @@ class << RSpec::OpenAPI::Extractors::Rack = Object.new
     raw_path_params = request.path_parameters
     path = request.path
     summary ||= "#{request.method} #{path}"
-    [path, summary, tags, operation_id, required_request_params, raw_path_params, description, security, deprecated]
+    [
+      path,
+      summary,
+      tags,
+      operation_id,
+      required_request_params,
+      raw_path_params,
+      description,
+      security,
+      deprecated,
+      formats,
+    ]
   end
 
   # @param [RSpec::ExampleGroups::*] context
