@@ -18,7 +18,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       if has_content
         response[:content] = {
           normalize_content_type(record.response_content_type) => {
-            schema: build_property(record.response_body, disposition: disposition),
+            schema: build_property(record.response_body, disposition: disposition, record: record),
             example: response_example(record, disposition: disposition),
           }.compact,
         }
@@ -73,7 +73,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         name: build_parameter_name(key, value),
         in: 'path',
         required: true,
-        schema: build_property(try_cast(value)),
+        schema: build_property(try_cast(value), key: key, record: record),
         example: (try_cast(value) if example_enabled?),
       }.compact
     end
@@ -83,7 +83,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         name: build_parameter_name(key, value),
         in: 'query',
         required: record.required_request_params.include?(key),
-        schema: build_property(try_cast(value)),
+        schema: build_property(try_cast(value), key: key, record: record),
         example: (try_cast(value) if example_enabled?),
       }.compact
     end
@@ -93,7 +93,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         name: build_parameter_name(key, value),
         in: 'header',
         required: true,
-        schema: build_property(try_cast(value)),
+        schema: build_property(try_cast(value), key: key, record: record),
         example: (try_cast(value) if example_enabled?),
       }.compact
     end
@@ -110,7 +110,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
     record.response_headers.each do |key, value|
       headers[key] = {
-        schema: build_property(try_cast(value)),
+        schema: build_property(try_cast(value), key: key, record: record),
       }.compact
     end
 
@@ -134,27 +134,29 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     {
       content: {
         normalize_content_type(record.request_content_type) => {
-          schema: build_property(record.request_params),
+          schema: build_property(record.request_params, record: record),
           example: (build_example(record.request_params) if example_enabled?),
         }.compact,
       },
     }
   end
 
-  def build_property(value, disposition: nil)
-    property = build_type(value, disposition)
+  def build_property(value, disposition: nil, key: nil, record: nil)
+    format = disposition ? 'binary' : infer_format(key, record)
+
+    property = build_type(value, format: format)
 
     case value
     when Array
       property[:items] = if value.empty?
                            {} # unknown
                          else
-                           build_property(value.first)
+                           build_property(value.first, record: record)
                          end
     when Hash
       property[:properties] = {}.tap do |properties|
         value.each do |key, v|
-          properties[key] = build_property(v)
+          properties[key] = build_property(v, record: record, key: key)
         end
       end
       property = enrich_with_required_keys(property)
@@ -162,8 +164,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     property
   end
 
-  def build_type(value, disposition)
-    return { type: 'string', format: 'binary' } if disposition
+  def build_type(value, format: nil)
+    return { type: 'string', format: format } if format
 
     case value
     when String
@@ -185,6 +187,12 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     else
       raise NotImplementedError, "type detection is not implemented for: #{value.inspect}"
     end
+  end
+
+  def infer_format(key, record)
+    return nil if !key || !record || !record.formats
+
+    record.formats[key]
   end
 
   # Convert an always-String param to an appropriate type

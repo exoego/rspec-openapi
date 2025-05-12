@@ -34,6 +34,8 @@ RSpec::OpenAPI.info = {
   },
 }
 
+RSpec::OpenAPI.formats_builder = ->(_example, key) { key.end_with?('_at') ? 'date-time' : nil }
+
 # Small subset of `rails_spec.rb` with slight changes
 RSpec.describe 'Tables', type: :request do
   describe '#index', openapi: { required_request_params: 'show_columns', operation_id: 'table-index' } do

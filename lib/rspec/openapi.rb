@@ -33,6 +33,7 @@ module RSpec::OpenAPI
   @description_builder = ->(example) { example.description }
   @summary_builder = ->(example) { example.metadata[:summary] }
   @tags_builder = ->(example) { example.metadata[:tags] }
+  @formats_builder = ->(example) { example.metadata[:formats] }
   @info = {}
   @application_version = '1.0.0'
   @request_headers = []
@@ -56,6 +57,7 @@ module RSpec::OpenAPI
                   :description_builder,
                   :summary_builder,
                   :tags_builder,
+                  :formats_builder,
                   :info,
                   :application_version,
                   :request_headers,
