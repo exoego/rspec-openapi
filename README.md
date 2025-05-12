@@ -188,6 +188,10 @@ RSpec::OpenAPI.summary_builder = ->(example) { example.metadata.dig(:example_gro
 # This example uses the tags from the parent_example_group
 RSpec::OpenAPI.tags_builder = -> (example) { example.metadata.dig(:example_group, :parent_example_group, :openapi, :tags) }
 
+# Configure custom format for specific properties
+# This example assigns 'date-time' format to properties with names ending in '_at'
+RSpec::OpenAPI.formats_builder = ->(_example, key) { key.end_with?('_at') ? 'date-time' : nil }
+
 # Change the example type(s) that will generate schema
 RSpec::OpenAPI.example_types = %i[request]
 
