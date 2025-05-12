@@ -367,6 +367,15 @@ paths:
           - price
         example:
           price: '0'
+      - name: names[]
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        example:
+        - Example Table
       - name: page
         in: query
         required: false
@@ -381,7 +390,7 @@ paths:
         example: 10
       responses:
         '200':
-          description: with different deep query parameters
+          description: with array query parameters
           headers:
             X-Cursor:
               schema:

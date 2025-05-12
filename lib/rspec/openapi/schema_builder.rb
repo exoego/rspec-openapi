@@ -122,6 +122,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     if value.is_a?(Hash) && (value_keys = value.keys).size == 1
       value_key = value_keys.first
       build_parameter_name("#{key}[#{value_key}]", value[value_key])
+    elsif value.is_a?(Array)
+      "#{key}[]"
     else
       key
     end
