@@ -10,10 +10,10 @@ RSpec.describe 'rails integration minitest' do
 
   describe 'yaml output' do
     let(:openapi_path) do
-      File.expand_path('spec/apps/rails/doc/openapi.yaml', repo_root)
+      File.expand_path('spec/apps/rails/doc/minitest_openapi.yaml', repo_root)
     end
 
-    it 'generates the same spec/apps/rails/doc/openapi.yaml' do
+    it 'generates the same spec/apps/rails/doc/minitest_openapi.yaml' do
       org_yaml = YAML.safe_load(File.read(openapi_path))
       minitest 'spec/integration_tests/rails_test.rb', openapi: true, output: :yaml
       new_yaml = YAML.safe_load(File.read(openapi_path))
@@ -23,10 +23,10 @@ RSpec.describe 'rails integration minitest' do
 
   describe 'json' do
     let(:openapi_path) do
-      File.expand_path('spec/apps/rails/doc/openapi.json', repo_root)
+      File.expand_path('spec/apps/rails/doc/minitest_openapi.json', repo_root)
     end
 
-    it 'generates the same spec/apps/rails/doc/openapi.json' do
+    it 'generates the same spec/apps/rails/doc/minitest_openapi.json' do
       org_yaml = JSON.parse(File.read(openapi_path))
       minitest 'spec/integration_tests/rails_test.rb', openapi: true, output: :json
       new_yaml = JSON.parse(File.read(openapi_path))

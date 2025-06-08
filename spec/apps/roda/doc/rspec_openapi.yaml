@@ -1,0 +1,40 @@
+---
+openapi: 3.0.3
+info:
+  title: OpenAPI Documentation
+  version: 7.7.7
+servers: []
+paths:
+  "/roda":
+    post:
+      summary: Create roda resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+              required:
+              - id
+            example:
+              id: 1
+      responses:
+        '200':
+          description: when id is given it returns 200
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                required:
+                - id
+                - name
+              example:
+                id: 1
+                name: hello

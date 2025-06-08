@@ -7,7 +7,7 @@ require 'rack/test'
 ENV['OPENAPI_OUTPUT'] ||= 'yaml'
 
 RSpec::OpenAPI.title = 'OpenAPI Documentation'
-RSpec::OpenAPI.path = File.expand_path("../apps/roda/doc/openapi.#{ENV.fetch('OPENAPI_OUTPUT', nil)}", __dir__)
+RSpec::OpenAPI.path = File.expand_path("../apps/roda/doc/rspec_openapi.#{ENV.fetch('OPENAPI_OUTPUT', nil)}", __dir__)
 RSpec::OpenAPI.ignored_paths = ['/admin/masters/extensions']
 
 RSpec::OpenAPI.description_builder = lambda do |example|
@@ -22,7 +22,7 @@ RSpec.describe 'Roda', type: :request do
     RodaApp
   end
 
-  describe '/roda' do
+  describe '/roda', openapi: { summary: 'Create roda resource' } do
     context 'when id is given' do
       it 'returns 200' do
         post '/roda', { id: 1 }.to_json, 'CONTENT_TYPE' => 'application/json'
