@@ -9,10 +9,10 @@ RSpec.describe 'rack-test minitest' do
 
   describe 'yaml output' do
     let(:openapi_path) do
-      File.expand_path('spec/apps/roda/doc/openapi.yaml', repo_root)
+      File.expand_path('spec/apps/roda/doc/minitest_openapi.yaml', repo_root)
     end
 
-    it 'generates the same spec/apps/roda/doc/openapi.yaml' do
+    it 'generates the same spec/apps/roda/doc/minitest_openapi.yaml' do
       org_yaml = YAML.safe_load(File.read(openapi_path))
       minitest 'spec/integration_tests/roda_test.rb', openapi: true
       new_yaml = YAML.safe_load(File.read(openapi_path))
@@ -22,10 +22,10 @@ RSpec.describe 'rack-test minitest' do
 
   describe 'json output' do
     let(:openapi_path) do
-      File.expand_path('spec/apps/roda/doc/openapi.json', repo_root)
+      File.expand_path('spec/apps/roda/doc/minitest_openapi.json', repo_root)
     end
 
-    it 'generates the same spec/apps/roda/doc/openapi.json' do
+    it 'generates the same spec/apps/roda/doc/minitest_openapi.json' do
       org_yaml = YAML.safe_load(File.read(openapi_path))
       minitest 'spec/integration_tests/roda_test.rb', openapi: true, output: :json
       new_yaml = YAML.safe_load(File.read(openapi_path))

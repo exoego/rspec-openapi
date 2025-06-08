@@ -50,7 +50,7 @@ RSpec.configure do |config|
 end
 
 RSpec.describe 'Tables', type: :request do
-  describe '#index' do
+  describe '#index', openapi: { summary: 'Get a list of tables' } do
     context 'returns a list of tables' do
       it 'with flat query parameters' do
         get '/tables', { page: '1', per: '10' }, { 'AUTHORIZATION' => 'k0kubun', 'X_AUTHORIZATION_TOKEN' => 'token' }
