@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'date'
 
 RSpec.describe RSpec::OpenAPI::SchemaFile do
   describe '#read' do
@@ -20,7 +19,8 @@ RSpec.describe RSpec::OpenAPI::SchemaFile do
                   in: query
                   schema:
                     type: string
-                    example: 2020-01-02 # Unquoted date
+                    date: 2020-01-02 # Unquoted date
+                    time: 2025-06-10 01:47:28Z
       YAML
     end
 
@@ -34,7 +34,8 @@ RSpec.describe RSpec::OpenAPI::SchemaFile do
       expect do
         data = schema_file.send(:read)
       end.not_to raise_error(Psych::DisallowedClass)
-      expect(data.dig(:paths, :/, :get, :parameters, 0, :schema, :example).to_s).to eq('2020-01-02')
+      expect(data.dig(:paths, :/, :get, :parameters, 0, :schema, :date).to_s).to eq('2020-01-02')
+      expect(data.dig(:paths, :/, :get, :parameters, 0, :schema, :time).to_s).to eq("2025-06-10 01:47:28 UTC")
     end
   end
 end

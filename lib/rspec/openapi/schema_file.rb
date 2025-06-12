@@ -4,6 +4,7 @@ require 'fileutils'
 require 'yaml'
 require 'json'
 require 'date'
+require 'time'
 
 # TODO: Support JSON
 class RSpec::OpenAPI::SchemaFile
@@ -28,7 +29,7 @@ class RSpec::OpenAPI::SchemaFile
     RSpec::OpenAPI::KeyTransformer.symbolize(
       YAML.safe_load(
         File.read(@path),
-        permitted_classes: [Date],
+        permitted_classes: [Date, Time],
       ),
     ) # this can also parse JSON
   end
