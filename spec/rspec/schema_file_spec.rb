@@ -35,7 +35,7 @@ RSpec.describe RSpec::OpenAPI::SchemaFile do
         data = schema_file.send(:read)
       end.not_to raise_error(Psych::DisallowedClass)
       expect(data.dig(:paths, :/, :get, :parameters, 0, :schema, :date).to_s).to eq('2020-01-02')
-      expect(data.dig(:paths, :/, :get, :parameters, 0, :schema, :time).to_s).to eq("2025-06-10 01:47:28 UTC")
+      expect(data.dig(:paths, :/, :get, :parameters, 0, :schema, :time).to_s).to eq('2025-06-10 01:47:28 UTC')
     end
   end
 end
