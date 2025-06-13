@@ -10,3 +10,5 @@
 
 # rspec failure tracking
 .rspec_status
+
+spec/apps/rails/log/

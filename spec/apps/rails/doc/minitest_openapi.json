@@ -79,8 +79,7 @@
                       },
                       "tags": {
                         "type": "array",
-                        "items": {
-                        }
+                        "items": {}
                       }
                     },
                     "required": [
@@ -92,9 +91,7 @@
                 "example": [
                   {
                     "name": "file.png",
-                    "tags": [
-
-                    ]
+                    "tags": []
                   }
                 ]
               }
@@ -345,9 +342,7 @@
     "/my_engine/eng_route": {
       "get": {
         "summary": "GET /my_engine/eng_route",
-        "tags": [
-
-        ],
+        "tags": [],
         "responses": {
           "200": {
             "description": "returns some content from the engine",
@@ -366,9 +361,7 @@
     "/my_engine/test": {
       "get": {
         "summary": "GET /my_engine/test",
-        "tags": [
-
-        ],
+        "tags": [],
         "responses": {
           "200": {
             "description": "returns the block content",
@@ -428,9 +421,7 @@
         ],
         "security": [
           {
-            "SecretApiKeyAuth": [
-
-            ]
+            "SecretApiKeyAuth": []
           }
         ],
         "responses": {
@@ -1203,9 +1194,7 @@
     "/test_block": {
       "get": {
         "summary": "GET /test_block",
-        "tags": [
-
-        ],
+        "tags": [],
         "responses": {
           "200": {
             "description": "returns the block content",
