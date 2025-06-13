@@ -4,9 +4,7 @@
     "title": "OpenAPI Documentation",
     "version": "7.7.7"
   },
-  "servers": [
-
-  ],
+  "servers": [],
   "paths": {
     "/roda": {
       "post": {
