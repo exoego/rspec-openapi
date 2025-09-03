@@ -3,8 +3,6 @@
 require 'fileutils'
 require 'yaml'
 require 'json'
-require 'date'
-require 'time'
 
 # TODO: Support JSON
 class RSpec::OpenAPI::SchemaFile
