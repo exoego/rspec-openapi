@@ -23,7 +23,7 @@ gem 'rails-dom-testing', '~> 2.2'
 gem 'rspec-rails'
 
 group :test do
-  gem 'simplecov',
+  gem 'simplecov'
   gem 'simplecov-cobertura'
   gem 'super_diff'
 end
