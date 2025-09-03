@@ -33,6 +33,12 @@ paths:
                     type: object
                     additionalProperties:
                       type: integer
+                  date:
+                    type: string
+                    format: date
+                  datetime:
+                    type: string
+                    format: date-time
                 required:
                 - required_key
                 - variadic_key
@@ -42,6 +48,8 @@ paths:
                   gold: 1
                   silver: 2
                   bronze: 3
+                date: 1993-02-24
+                datetime: 2025-06-10 01:47:28Z
   "/images":
     get:
       summary: index
