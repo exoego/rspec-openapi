@@ -4,6 +4,9 @@ require 'fileutils'
 require 'yaml'
 require 'json'
 
+# For Ruby 2.7
+require 'date'
+
 # TODO: Support JSON
 class RSpec::OpenAPI::SchemaFile
   # @param [String] path
