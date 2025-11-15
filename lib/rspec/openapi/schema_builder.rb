@@ -151,7 +151,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       property[:items] = if value.empty?
                            {} # unknown
                          else
-                           build_property(value.first, record: record)
+                           build_array_items_schema(value, record: record)
                          end
     when Hash
       property[:properties] = {}.tap do |properties|
@@ -242,5 +242,63 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
   def normalize_content_disposition(content_disposition)
     content_disposition&.sub(/;.+\z/, '')
+  end
+
+  def build_array_items_schema(array, record: nil)
+    return {} if array.empty?
+
+    merged_schema = build_property(array.first, record: record)
+
+    # Future improvement - cover other types than just hashes
+    if array.size > 1 && array.all? { |item| item.is_a?(Hash) }
+      array[1..-1].each do |item|
+        item_schema = build_property(item, record: record)
+        merged_schema = merge_object_schemas(merged_schema, item_schema)
+      end
+    end
+
+    merged_schema
+  end
+
+  def merge_object_schemas(schema1, schema2)
+    return schema1 unless schema2.is_a?(Hash) && schema1.is_a?(Hash)
+    return schema1 unless schema1[:type] == 'object' && schema2[:type] == 'object'
+
+    merged = schema1.dup
+
+    if schema1[:properties] && schema2[:properties]
+      merged[:properties] = schema1[:properties].dup
+
+      schema2[:properties].each do |key, prop2|
+        if merged[:properties][key]
+          prop1 = merged[:properties][key]
+          merged[:properties][key] = merge_property_schemas(prop1, prop2)
+        else
+          merged[:properties][key] = prop2
+        end
+      end
+
+      required1 = Set.new(schema1[:required] || [])
+      required2 = Set.new(schema2[:required] || [])
+      merged[:required] = (required1 & required2).to_a.sort
+    end
+
+    merged
+  end
+
+  def merge_property_schemas(prop1, prop2)
+    return prop1 unless prop2.is_a?(Hash) && prop1.is_a?(Hash)
+
+    merged = prop1.dup
+
+    if prop2[:nullable] && !prop1[:nullable]
+      merged[:nullable] = true
+    end
+
+    if prop1[:type] == 'object' && prop2[:type] == 'object'
+      merged = merge_object_schemas(prop1, prop2)
+    end
+
+    merged
   end
 end
