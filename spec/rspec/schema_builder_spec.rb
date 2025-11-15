@@ -34,7 +34,8 @@ RSpec.describe RSpec::OpenAPI::SchemaBuilder do
              },
              {
                "label" => nil,
-               "value" => "unknown"
+               "value" => "unknown",
+               "invited" => true
              }
            ],
          },
@@ -72,6 +73,10 @@ RSpec.describe RSpec::OpenAPI::SchemaBuilder do
                                                       },
                                                       "value" => {
                                                         type: "string"
+                                                      },
+                                                      "invited" => {
+                                                        type: "boolean",
+                                                        nullable: true
                                                       }
                                                     },
                                                     required: ["label", "value"]
@@ -88,7 +93,8 @@ RSpec.describe RSpec::OpenAPI::SchemaBuilder do
                                                 },
                                                 {
                                                   "label" => nil,
-                                                  "value" => "unknown"
+                                                  "value" => "unknown",
+                                                  "invited" => true
                                                 }
                                               ]
                                             }
