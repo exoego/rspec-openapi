@@ -42,6 +42,44 @@ paths:
                   gold: 1
                   silver: 2
                   bronze: 3
+  "/array_hashes":
+    get:
+      summary: index
+      tags:
+      - ArrayHash
+      responses:
+        '200':
+          description: returns some content
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        label:
+                          type: string
+                          nullable: true
+                        value:
+                          type: string
+                        invited:
+                          type: boolean
+                          nullable: true
+                      required:
+                      - label
+                      - value
+                required:
+                - users
+              example:
+                users:
+                - label: Jane Doe
+                  value: jane_doe
+                - label:
+                  value: unknown
+                  invited: true
   "/images":
     get:
       summary: index
@@ -436,7 +474,7 @@ paths:
                 database:
                   id: 2
                   name: production
-                null_sample: 
+                null_sample:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
@@ -508,7 +546,7 @@ paths:
                 database:
                   id: 2
                   name: production
-                null_sample: 
+                null_sample:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
@@ -608,7 +646,7 @@ paths:
                 database:
                   id: 2
                   name: production
-                null_sample: 
+                null_sample:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
@@ -676,7 +714,7 @@ paths:
                 database:
                   id: 2
                   name: production
-                null_sample: 
+                null_sample:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
@@ -780,7 +818,7 @@ paths:
                 database:
                   id: 2
                   name: production
-                null_sample: 
+                null_sample:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'

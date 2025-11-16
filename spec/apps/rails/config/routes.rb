@@ -28,6 +28,7 @@ Rails.application.routes.draw do
     get '/secret_items' => 'secret_items#index'
 
     get '/additional_properties' => 'additional_properties#index'
+    get '/array_hashes' => 'array_hashes#index'
 
     scope :admin do
       namespace :masters do

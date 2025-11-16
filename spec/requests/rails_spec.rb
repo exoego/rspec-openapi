@@ -300,3 +300,12 @@ RSpec.describe 'non-numeric path parameter', type: :request do
     expect(response.status).to eq(404)
   end
 end
+
+RSpec.describe 'Array of hashes with nullable keys', type: :request do
+  describe '#test' do
+    it 'returns some content' do
+      get '/array_hashes'
+      expect(response.status).to eq(200)
+    end
+  end
+end

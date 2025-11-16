@@ -24,6 +24,7 @@ module HanamiTest
     get '/users/active', to: 'users.active'
 
     get '/sites/:name', to: 'sites.show'
+    get '/array_hashes', to: 'array_hashes.index'
 
     get '/test_block', to: ->(_env) { [200, { 'Content-Type' => 'text/plain' }, ['A TEST']] }
 

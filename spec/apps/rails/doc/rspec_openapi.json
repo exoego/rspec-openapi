@@ -58,6 +58,67 @@
         }
       }
     },
+    "/array_hashes": {
+      "get": {
+        "summary": "index",
+        "tags": [
+          "ArrayHash"
+        ],
+        "responses": {
+          "200": {
+            "description": "returns some content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "users": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "value": {
+                            "type": "string"
+                          },
+                          "invited": {
+                            "type": "boolean",
+                            "nullable": true
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "users"
+                  ]
+                },
+                "example": {
+                  "users": [
+                    {
+                      "label": "Jane Doe",
+                      "value": "jane_doe"
+                    },
+                    {
+                      "label": null,
+                      "value": "unknown",
+                      "invited": true
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/images": {
       "get": {
         "summary": "index",

@@ -286,7 +286,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
       required1 = Set.new(schema1[:required] || [])
       required2 = Set.new(schema2[:required] || [])
-      merged[:required] = (required1 & required2).to_a.sort
+      merged[:required] = (required1 & required2).to_a
     end
 
     merged
