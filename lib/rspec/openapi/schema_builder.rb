@@ -279,9 +279,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       end
 
       schema1[:properties].each do |key, prop1|
-        unless schema2[:properties][key]
-          merged[:properties][key] = make_property_nullable(prop1)
-        end
+        merged[:properties][key] = make_property_nullable(prop1) unless schema2[:properties][key]
       end
 
       required1 = Set.new(schema1[:required] || [])
@@ -298,14 +296,10 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     merged = prop1.dup
 
     # If either property is nullable, the merged property should be nullable
-    if prop2[:nullable] && !prop1[:nullable]
-      merged[:nullable] = true
-    end
+    merged[:nullable] = true if prop2[:nullable] && !prop1[:nullable]
 
     # If both are objects, recursively merge their properties
-    if prop1[:type] == 'object' && prop2[:type] == 'object'
-      merged = merge_object_schemas(prop1, prop2)
-    end
+    merged = merge_object_schemas(prop1, prop2) if prop1[:type] == 'object' && prop2[:type] == 'object'
 
     merged
   end
