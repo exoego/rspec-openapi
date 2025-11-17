@@ -3,7 +3,7 @@
 module HanamiTest
   module Actions
     module ArrayHashes
-      class Index < HanamiTest::Action
+      class NonNullable < HanamiTest::Action
         def handle(request, response)
           response.format = :json
 
@@ -13,9 +13,8 @@ module HanamiTest
               "value" => "jane_doe"
             },
             {
-              "label" => nil,
-              "value" => "unknown",
-              "invited" => true
+              "label" => "John Doe",
+              "value" => "john_doe",
             }
           ]}.to_json
         end

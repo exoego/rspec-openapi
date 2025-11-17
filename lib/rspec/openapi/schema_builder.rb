@@ -251,7 +251,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
     # Future improvement - cover other types than just hashes
     if array.size > 1 && array.all? { |item| item.is_a?(Hash) }
-      array[1..-1].each do |item|
+      array[1..].each do |item|
         item_schema = build_property(item, record: record)
         merged_schema = merge_object_schemas(merged_schema, item_schema)
       end

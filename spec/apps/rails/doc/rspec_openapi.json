@@ -58,9 +58,64 @@
         }
       }
     },
-    "/array_hashes": {
+    "/array_hashes/non_nullable": {
       "get": {
-        "summary": "index",
+        "summary": "non_nullable",
+        "tags": [
+          "ArrayHash"
+        ],
+        "responses": {
+          "200": {
+            "description": "returns some content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "users": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "users"
+                  ]
+                },
+                "example": {
+                  "users": [
+                    {
+                      "label": "Jane Doe",
+                      "value": "jane_doe"
+                    },
+                    {
+                      "label": "John Doe",
+                      "value": "john_doe"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/array_hashes/nullable": {
+      "get": {
+        "summary": "nullable",
         "tags": [
           "ArrayHash"
         ],
@@ -84,6 +139,10 @@
                           "value": {
                             "type": "string"
                           },
+                          "admin": {
+                            "type": "boolean",
+                            "nullable": true
+                          },
                           "invited": {
                             "type": "boolean",
                             "nullable": true
@@ -103,12 +162,17 @@
                 "example": {
                   "users": [
                     {
+                      "label": "John Doe",
+                      "value": "john_doe",
+                      "admin": true
+                    },
+                    {
                       "label": "Jane Doe",
                       "value": "jane_doe"
                     },
                     {
                       "label": null,
-                      "value": "unknown",
+                      "value": "invited",
                       "invited": true
                     }
                   ]

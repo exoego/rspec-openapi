@@ -305,12 +305,17 @@ class RackAppTest < ActionDispatch::IntegrationTest
   end
 end
 
-class ArrayOfHashesWithNullableKeysTest < ActionDispatch::IntegrationTest
+class ArrayOfHashesTest < ActionDispatch::IntegrationTest
   i_suck_and_my_tests_are_order_dependent!
   openapi!
 
-  test 'returns some content' do
-    get '/array_hashes'
+  test 'with nullable keys' do
+    get '/array_hashes/nullable'
+    assert_response 200
+  end
+
+  test 'with non-nullable keys' do
+    get '/array_hashes/non_nullable'
     assert_response 200
   end
 end
