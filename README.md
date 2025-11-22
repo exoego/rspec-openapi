@@ -408,6 +408,12 @@ Existing RSpec plugins which have OpenAPI integration:
 * Orignally created by [k0kubun](https://github.com/k0kubun) and the ownership was transferred to [exoego](https://github.com/exoego) in 2022-11-29.
 
 
+## Releasing
+
+1. Bump version in `lib/rspec/openapi/version.rb`
+2. Run `bundle exec rake release`
+3. Push tag
+
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
