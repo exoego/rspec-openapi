@@ -331,4 +331,11 @@ RSpec.describe 'Array of hashes', type: :request do
       expect(last_response.status).to eq(200)
     end
   end
+
+  describe 'with nested keys with type conflicts' do
+    it 'returns some content' do
+      get '/array_hashes/nested'
+      expect(last_response.status).to eq(200)
+    end
+  end
 end

@@ -318,4 +318,9 @@ class ArrayOfHashesTest < ActionDispatch::IntegrationTest
     get '/array_hashes/non_nullable'
     assert_response 200
   end
+
+  test 'with nested keys' do
+    get '/array_hashes/nested'
+    assert_response 200
+  end
 end

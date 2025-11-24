@@ -77,6 +77,8 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
 
     return if option&.key?(:$ref)
 
+    return if spec[:oneOf]
+
     if score.to_f > SIMILARITY_THRESHOLD
       merge_schema!(option, spec)
     else

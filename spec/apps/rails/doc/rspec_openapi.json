@@ -58,6 +58,101 @@
         }
       }
     },
+    "/array_hashes/nested": {
+      "get": {
+        "summary": "nested",
+        "tags": [
+          "ArrayHash"
+        ],
+        "responses": {
+          "200": {
+            "description": "returns some content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "fields": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "options": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "oneOf": [
+                                    {
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "integer"
+                                    }
+                                  ]
+                                },
+                                "label": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "label"
+                              ]
+                            }
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "options"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "fields"
+                  ]
+                },
+                "example": {
+                  "fields": [
+                    {
+                      "id": "country_code",
+                      "options": [
+                        {
+                          "id": "us",
+                          "label": "United States"
+                        },
+                        {
+                          "id": "ca",
+                          "label": "Canada"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "region_id",
+                      "options": [
+                        {
+                          "id": 1,
+                          "label": "New York"
+                        },
+                        {
+                          "id": 2,
+                          "label": "California"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/array_hashes/non_nullable": {
       "get": {
         "summary": "non_nullable",

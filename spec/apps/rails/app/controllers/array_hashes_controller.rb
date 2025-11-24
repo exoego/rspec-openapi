@@ -36,4 +36,38 @@ class ArrayHashesController < ApplicationController
     }
     render json: response
   end
+
+  def nested
+    response = {
+      "fields" => [
+        {
+          "id" => "country_code",
+          "options" => [
+            {
+              "id" => "us",
+              "label" => "United States"
+            },
+            {
+              "id" => "ca",
+              "label" => "Canada"
+            }
+          ]
+        },
+        {
+          "id" => "region_id",
+          "options" => [
+            {
+              "id" => 1,
+              "label" => "New York"
+            },
+            {
+              "id" => 2,
+              "label" => "California"
+            }
+          ]
+        }
+      ]
+    }
+    render json: response
+  end
 end
