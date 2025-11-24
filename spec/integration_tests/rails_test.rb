@@ -323,4 +323,34 @@ class ArrayOfHashesTest < ActionDispatch::IntegrationTest
     get '/array_hashes/nested'
     assert_response 200
   end
+
+  test 'with empty array' do
+    get '/array_hashes/empty_array'
+    assert_response 200
+  end
+
+  test 'with single item' do
+    get '/array_hashes/single_item'
+    assert_response 200
+  end
+
+  test 'with non-hash items' do
+    get '/array_hashes/non_hash_items'
+    assert_response 200
+  end
+
+  test 'with nested arrays' do
+    get '/array_hashes/nested_arrays'
+    assert_response 200
+  end
+
+  test 'with nested objects' do
+    get '/array_hashes/nested_objects'
+    assert_response 200
+  end
+
+  test 'with mixed types in nested objects' do
+    get '/array_hashes/mixed_types_nested'
+    assert_response 200
+  end
 end

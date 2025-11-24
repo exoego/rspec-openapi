@@ -322,4 +322,46 @@ RSpec.describe 'Array of hashes', type: :request do
       expect(response.status).to eq(200)
     end
   end
+
+  describe 'with empty array' do
+    it 'returns empty items' do
+      get '/array_hashes/empty_array'
+      expect(response.status).to eq(200)
+    end
+  end
+
+  describe 'with single item' do
+    it 'returns single item' do
+      get '/array_hashes/single_item'
+      expect(response.status).to eq(200)
+    end
+  end
+
+  describe 'with non-hash items' do
+    it 'returns array of strings' do
+      get '/array_hashes/non_hash_items'
+      expect(response.status).to eq(200)
+    end
+  end
+
+  describe 'with nested arrays' do
+    it 'returns items with array properties' do
+      get '/array_hashes/nested_arrays'
+      expect(response.status).to eq(200)
+    end
+  end
+
+  describe 'with nested objects' do
+    it 'returns items with object properties' do
+      get '/array_hashes/nested_objects'
+      expect(response.status).to eq(200)
+    end
+  end
+
+  describe 'with mixed types in nested objects' do
+    it 'returns items with type conflicts in nested properties' do
+      get '/array_hashes/mixed_types_nested'
+      expect(response.status).to eq(200)
+    end
+  end
 end
