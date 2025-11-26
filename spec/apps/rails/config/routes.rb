@@ -31,6 +31,13 @@ Rails.application.routes.draw do
     resources :array_hashes, only: [] do
       get :nullable, on: :collection
       get :non_nullable, on: :collection
+      get :nested, on: :collection
+      get :empty_array, on: :collection
+      get :single_item, on: :collection
+      get :non_hash_items, on: :collection
+      get :nested_arrays, on: :collection
+      get :nested_objects, on: :collection
+      get :mixed_types_nested, on: :collection
     end
 
     scope :admin do

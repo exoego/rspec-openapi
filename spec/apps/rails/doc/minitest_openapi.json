@@ -58,6 +58,410 @@
         }
       }
     },
+    "/array_hashes/empty_array": {
+      "get": {
+        "summary": "empty_array",
+        "tags": [
+          "ArrayHash"
+        ],
+        "responses": {
+          "200": {
+            "description": "with empty array",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {}
+                    }
+                  },
+                  "required": [
+                    "items"
+                  ]
+                },
+                "example": {
+                  "items": []
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/array_hashes/mixed_types_nested": {
+      "get": {
+        "summary": "mixed_types_nested",
+        "tags": [
+          "ArrayHash"
+        ],
+        "responses": {
+          "200": {
+            "description": "with mixed types in nested objects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "config": {
+                            "type": "object",
+                            "properties": {
+                              "port": {
+                                "oneOf": [
+                                  {
+                                    "type": "integer"
+                                  },
+                                  {
+                                    "type": "string"
+                                  }
+                                ]
+                              },
+                              "host": {
+                                "type": "string"
+                              },
+                              "ssl": {
+                                "type": "boolean",
+                                "nullable": true
+                              }
+                            },
+                            "required": [
+                              "port",
+                              "host"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "config"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "items"
+                  ]
+                },
+                "example": {
+                  "items": [
+                    {
+                      "id": 1,
+                      "config": {
+                        "port": 8080,
+                        "host": "localhost"
+                      }
+                    },
+                    {
+                      "id": 2,
+                      "config": {
+                        "port": "3000",
+                        "host": "example.com",
+                        "ssl": true
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/array_hashes/nested": {
+      "get": {
+        "summary": "nested",
+        "tags": [
+          "ArrayHash"
+        ],
+        "responses": {
+          "200": {
+            "description": "with nested keys",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "fields": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "options": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "oneOf": [
+                                    {
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "integer"
+                                    }
+                                  ]
+                                },
+                                "label": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "label"
+                              ]
+                            }
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "options"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "fields"
+                  ]
+                },
+                "example": {
+                  "fields": [
+                    {
+                      "id": "country_code",
+                      "options": [
+                        {
+                          "id": "us",
+                          "label": "United States"
+                        },
+                        {
+                          "id": "ca",
+                          "label": "Canada"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "region_id",
+                      "options": [
+                        {
+                          "id": 1,
+                          "label": "New York"
+                        },
+                        {
+                          "id": 2,
+                          "label": "California"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/array_hashes/nested_arrays": {
+      "get": {
+        "summary": "nested_arrays",
+        "tags": [
+          "ArrayHash"
+        ],
+        "responses": {
+          "200": {
+            "description": "with nested arrays",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "tags": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "tags"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "items"
+                  ]
+                },
+                "example": {
+                  "items": [
+                    {
+                      "id": 1,
+                      "tags": [
+                        "ruby",
+                        "rails"
+                      ]
+                    },
+                    {
+                      "id": 2,
+                      "tags": [
+                        "python",
+                        "django"
+                      ]
+                    },
+                    {
+                      "id": 3,
+                      "tags": [
+                        "javascript"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/array_hashes/nested_objects": {
+      "get": {
+        "summary": "nested_objects",
+        "tags": [
+          "ArrayHash"
+        ],
+        "responses": {
+          "200": {
+            "description": "with nested objects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "metadata": {
+                            "type": "object",
+                            "properties": {
+                              "author": {
+                                "type": "string"
+                              },
+                              "version": {
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "reviewed": {
+                                "type": "boolean",
+                                "nullable": true
+                              }
+                            },
+                            "required": [
+                              "author"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "metadata"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "items"
+                  ]
+                },
+                "example": {
+                  "items": [
+                    {
+                      "id": 1,
+                      "metadata": {
+                        "author": "Alice",
+                        "version": "1.0"
+                      }
+                    },
+                    {
+                      "id": 2,
+                      "metadata": {
+                        "author": "Bob",
+                        "version": "2.0",
+                        "reviewed": true
+                      }
+                    },
+                    {
+                      "id": 3,
+                      "metadata": {
+                        "author": "Charlie"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/array_hashes/non_hash_items": {
+      "get": {
+        "summary": "non_hash_items",
+        "tags": [
+          "ArrayHash"
+        ],
+        "responses": {
+          "200": {
+            "description": "with non-hash items",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "items"
+                  ]
+                },
+                "example": {
+                  "items": [
+                    "string1",
+                    "string2",
+                    "string3"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/array_hashes/non_nullable": {
       "get": {
         "summary": "non_nullable",
@@ -174,6 +578,57 @@
                       "label": null,
                       "value": "invited",
                       "invited": true
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/array_hashes/single_item": {
+      "get": {
+        "summary": "single_item",
+        "tags": [
+          "ArrayHash"
+        ],
+        "responses": {
+          "200": {
+            "description": "with single item",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "items"
+                  ]
+                },
+                "example": {
+                  "items": [
+                    {
+                      "id": 1,
+                      "name": "Item 1"
                     }
                   ]
                 }

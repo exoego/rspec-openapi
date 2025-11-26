@@ -246,18 +246,82 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
   def build_array_items_schema(array, record: nil)
     return {} if array.empty?
+    return build_property(array.first, record: record) if array.size == 1
+    return build_property(array.first, record: record) unless array.all? { |item| item.is_a?(Hash) }
 
-    merged_schema = build_property(array.first, record: record)
+    all_schemas = array.map { |item| build_property(item, record: record) }
+    merged_schema = all_schemas.first.dup
+    merged_schema[:properties] = {}
 
-    # Future improvement - cover other types than just hashes
-    if array.size > 1 && array.all? { |item| item.is_a?(Hash) }
-      array[1..].each do |item|
-        item_schema = build_property(item, record: record)
-        merged_schema = merge_object_schemas(merged_schema, item_schema)
+    all_keys = all_schemas.flat_map { |s| s[:properties]&.keys || [] }.uniq
+
+    all_keys.each do |key|
+      property_variations = all_schemas.map { |s| s[:properties]&.[](key) }.compact
+
+      next if property_variations.empty?
+
+      if property_variations.size == 1
+        merged_schema[:properties][key] = make_property_nullable(property_variations.first)
+      else
+        unique_types = property_variations.map { |p| p[:type] }.compact.uniq
+
+        case unique_types.first
+        when 'array'
+          merged_schema[:properties][key] = { type: 'array' }
+          items_variations = property_variations.map { |p| p[:items] }.compact
+          merged_schema[:properties][key][:items] = build_merged_schema_from_variations(items_variations)
+        when 'object'
+          merged_schema[:properties][key] = build_merged_schema_from_variations(property_variations)
+        else
+          merged_schema[:properties][key] = property_variations.first.dup
+        end
+
+        merged_schema[:properties][key][:nullable] = true if property_variations.size < all_schemas.size
       end
     end
 
+    all_required_sets = all_schemas.map { |s| s[:required] || [] }
+    merged_schema[:required] = all_required_sets.reduce(:&) || []
+
     merged_schema
+  end
+
+  def build_merged_schema_from_variations(variations)
+    return {} if variations.empty?
+    return variations.first if variations.size == 1
+
+    types = variations.map { |v| v[:type] }.compact.uniq
+
+    if types.size == 1 && types.first == 'object'
+      merged = { type: 'object', properties: {} }
+      all_keys = variations.flat_map { |v| v[:properties]&.keys || [] }.uniq
+
+      all_keys.each do |key|
+        prop_variations = variations.map { |v| v[:properties]&.[](key) }.compact
+
+        if prop_variations.size == 1
+          merged[:properties][key] = make_property_nullable(prop_variations.first)
+        elsif prop_variations.size > 1
+          prop_types = prop_variations.map { |p| p[:type] }.compact.uniq
+
+          if prop_types.size == 1
+            merged[:properties][key] = prop_variations.first.dup
+          else
+            unique_props = prop_variations.map { |p| p.reject { |k, _| k == :nullable } }.uniq
+            merged[:properties][key] = { oneOf: unique_props }
+          end
+
+          merged[:properties][key][:nullable] = true if prop_variations.size < variations.size
+        end
+      end
+
+      all_required = variations.map { |v| v[:required] || [] }
+      merged[:required] = all_required.reduce(:&) || []
+
+      merged
+    else
+      variations.first
+    end
   end
 
   def merge_object_schemas(schema1, schema2)

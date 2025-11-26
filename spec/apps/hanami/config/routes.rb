@@ -26,6 +26,13 @@ module HanamiTest
     get '/sites/:name', to: 'sites.show'
     get '/array_hashes/nullable', to: 'array_hashes.nullable'
     get '/array_hashes/non_nullable', to: 'array_hashes.non_nullable'
+    get '/array_hashes/nested', to: 'array_hashes.nested'
+    get '/array_hashes/empty_array', to: 'array_hashes.empty_array'
+    get '/array_hashes/single_item', to: 'array_hashes.single_item'
+    get '/array_hashes/non_hash_items', to: 'array_hashes.non_hash_items'
+    get '/array_hashes/nested_arrays', to: 'array_hashes.nested_arrays'
+    get '/array_hashes/nested_objects', to: 'array_hashes.nested_objects'
+    get '/array_hashes/mixed_types_nested', to: 'array_hashes.mixed_types_nested'
 
     get '/test_block', to: ->(_env) { [200, { 'Content-Type' => 'text/plain' }, ['A TEST']] }
 
