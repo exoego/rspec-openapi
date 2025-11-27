@@ -20,7 +20,10 @@ module HanamiTest
                     "id" => "ca",
                     "label" => "Canada"
                   }
-                ]
+                ],
+                "validations" => {
+                  "presence" => true
+                }
               },
               {
                 "id" => "region_id",
@@ -33,7 +36,8 @@ module HanamiTest
                     "id" => 2,
                     "label" => "California"
                   }
-                ]
+                ],
+                "validations" => nil
               }
             ]
           }.to_json

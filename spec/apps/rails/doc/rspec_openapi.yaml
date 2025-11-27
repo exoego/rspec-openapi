@@ -147,6 +147,14 @@ paths:
                             required:
                             - id
                             - label
+                        validations:
+                          type: object
+                          properties:
+                            presence:
+                              type: boolean
+                          required:
+                          - presence
+                          nullable: true
                       required:
                       - id
                       - options
@@ -160,12 +168,15 @@ paths:
                     label: United States
                   - id: ca
                     label: Canada
+                  validations:
+                    presence: true
                 - id: region_id
                   options:
                   - id: 1
                     label: New York
                   - id: 2
                     label: California
+                  validations:
   "/array_hashes/nested_arrays":
     get:
       summary: nested_arrays

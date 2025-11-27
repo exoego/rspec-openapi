@@ -221,6 +221,18 @@
                                 "label"
                               ]
                             }
+                          },
+                          "validations": {
+                            "type": "object",
+                            "properties": {
+                              "presence": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "presence"
+                            ],
+                            "nullable": true
                           }
                         },
                         "required": [
@@ -247,7 +259,10 @@
                           "id": "ca",
                           "label": "Canada"
                         }
-                      ]
+                      ],
+                      "validations": {
+                        "presence": true
+                      }
                     },
                     {
                       "id": "region_id",
@@ -260,7 +275,8 @@
                           "id": 2,
                           "label": "California"
                         }
-                      ]
+                      ],
+                      "validations": null
                     }
                   ]
                 }

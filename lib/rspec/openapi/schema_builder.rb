@@ -256,12 +256,18 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     all_keys = all_schemas.flat_map { |s| s[:properties]&.keys || [] }.uniq
 
     all_keys.each do |key|
-      property_variations = all_schemas.map { |s| s[:properties]&.[](key) }.compact
+      all_property_schemas = all_schemas.map { |s| s[:properties]&.[](key) }
 
-      next if property_variations.empty?
+      nullable_only_schemas = all_property_schemas.select { |p| p && p.keys == [:nullable] }
+      property_variations = all_property_schemas.select { |p| p && p.keys != [:nullable] }
+
+      has_nullable = all_property_schemas.any?(&:nil?) || nullable_only_schemas.any?
+
+      next if property_variations.empty? && !has_nullable
 
       if property_variations.size == 1
-        merged_schema[:properties][key] = make_property_nullable(property_variations.first)
+        merged_schema[:properties][key] = property_variations.first.dup
+        merged_schema[:properties][key][:nullable] = true if has_nullable
       else
         unique_types = property_variations.map { |p| p[:type] }.compact.uniq
 
@@ -276,7 +282,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
           merged_schema[:properties][key] = property_variations.first.dup
         end
 
-        merged_schema[:properties][key][:nullable] = true if property_variations.size < all_schemas.size
+        merged_schema[:properties][key][:nullable] = true if has_nullable
       end
     end
 

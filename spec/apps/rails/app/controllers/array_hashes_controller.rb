@@ -51,7 +51,10 @@ class ArrayHashesController < ApplicationController
               "id" => "ca",
               "label" => "Canada"
             }
-          ]
+          ],
+          "validations" => {
+            "presence" => true
+          }
         },
         {
           "id" => "region_id",
@@ -64,7 +67,8 @@ class ArrayHashesController < ApplicationController
               "id" => 2,
               "label" => "California"
             }
-          ]
+          ],
+          "validations" => nil
         }
       ]
     }
