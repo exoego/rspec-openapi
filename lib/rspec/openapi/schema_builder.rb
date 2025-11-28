@@ -311,9 +311,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
         has_nullable = all_prop_variations.any?(&:nil?) || nullable_only.any?
 
-        if prop_variations.empty? && has_nullable
-          merged[:properties][key] = { nullable: true }
-        elsif prop_variations.size == 1
+        if prop_variations.size == 1
           merged[:properties][key] = prop_variations.first.dup
           merged[:properties][key][:nullable] = true if has_nullable
         elsif prop_variations.size > 1
