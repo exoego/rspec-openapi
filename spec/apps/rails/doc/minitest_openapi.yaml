@@ -169,7 +169,6 @@ paths:
                   - id: ca
                     label: Canada
                   validations:
-                    presence: true
                 - id: region_id
                   options:
                   - id: 1
@@ -177,6 +176,7 @@ paths:
                   - id: 2
                     label: California
                   validations:
+                    presence: true
   "/array_hashes/nested_arrays":
     get:
       summary: nested_arrays

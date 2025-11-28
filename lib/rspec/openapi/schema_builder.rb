@@ -280,9 +280,11 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         else
           merged_schema[:properties][key] = property_variations.first.dup
         end
-
       end
-      merged_schema[:properties][key][:nullable] = true if has_nullable
+
+      if has_nullable && merged_schema[:properties][key].is_a?(Hash)
+        merged_schema[:properties][key][:nullable] = true
+      end
     end
 
     all_required_sets = all_schemas.map { |s| s[:required] || [] }

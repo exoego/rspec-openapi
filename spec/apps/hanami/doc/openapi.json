@@ -217,9 +217,7 @@
                           "label": "Canada"
                         }
                       ],
-                      "validations": {
-                        "presence": true
-                      }
+                      "validations": null
                     },
                     {
                       "id": "region_id",
@@ -233,7 +231,9 @@
                           "label": "California"
                         }
                       ],
-                      "validations": null
+                      "validations": {
+                        "presence": true
+                      }
                     }
                   ]
                 }
