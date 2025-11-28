@@ -14,7 +14,28 @@ module HanamiTest
                 "metadata" => {
                   "author" => "Alice",
                   "version" => "1.0"
-                }
+                },
+                "actions" => [
+                  {
+                    "label" => "Duplicate",
+                    "modal" => {
+                      "confirm_action" => {
+                        "label" => "Duplicate"
+                      }
+                    }
+                  },
+                  {
+                    "label" => "Edit",
+                  },
+                  {
+                    "label" => "Something Else Again",
+                    "modal" => {
+                      "confirm_action" => {
+                        "label" => nil
+                      }
+                    }
+                  }
+                ]
               },
               {
                 "id" => 2,
@@ -22,7 +43,28 @@ module HanamiTest
                   "author" => "Bob",
                   "version" => "2.0",
                   "reviewed" => true
-                }
+                },
+                "actions" => [
+                  {
+                    "label" => "Duplicate",
+                    "modal" => {
+                      "confirm_action" => {
+                        "label" => "Duplicate"
+                      }
+                    }
+                  },
+                  {
+                    "label" => "Edit",
+                  },
+                  {
+                    "label" => "Something Else Again",
+                    "modal" => {
+                      "confirm_action" => {
+                        "label" => nil
+                      }
+                    }
+                  }
+                ]
               },
               {
                 "id" => 3,

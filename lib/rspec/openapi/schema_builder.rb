@@ -304,21 +304,34 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       all_keys = variations.flat_map { |v| v[:properties]&.keys || [] }.uniq
 
       all_keys.each do |key|
-        prop_variations = variations.map { |v| v[:properties]&.[](key) }.compact
+        all_prop_variations = variations.map { |v| v[:properties]&.[](key) }
 
-        if prop_variations.size == 1
-          merged[:properties][key] = make_property_nullable(prop_variations.first)
+        nullable_only = all_prop_variations.select { |p| p && p.keys == [:nullable] }
+        prop_variations = all_prop_variations.select { |p| p && p.keys != [:nullable] }.compact
+
+        has_nullable = all_prop_variations.any?(&:nil?) || nullable_only.any?
+
+        if prop_variations.empty? && has_nullable
+          merged[:properties][key] = { nullable: true }
+        elsif prop_variations.size == 1
+          merged[:properties][key] = prop_variations.first.dup
+          merged[:properties][key][:nullable] = true if has_nullable
         elsif prop_variations.size > 1
           prop_types = prop_variations.map { |p| p[:type] }.compact.uniq
 
           if prop_types.size == 1
-            merged[:properties][key] = prop_variations.first.dup
+            # Only recursively merge if it's an object type
+            if prop_types.first == 'object'
+              merged[:properties][key] = build_merged_schema_from_variations(prop_variations)
+            else
+              merged[:properties][key] = prop_variations.first.dup
+            end
           else
             unique_props = prop_variations.map { |p| p.reject { |k, _| k == :nullable } }.uniq
             merged[:properties][key] = { oneOf: unique_props }
           end
 
-          merged[:properties][key][:nullable] = true if prop_variations.size < variations.size
+          merged[:properties][key][:nullable] = true if has_nullable || prop_variations.size < variations.size
         end
       end
 
