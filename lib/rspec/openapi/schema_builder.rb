@@ -282,9 +282,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         end
       end
 
-      if has_nullable && merged_schema[:properties][key].is_a?(Hash)
-        merged_schema[:properties][key][:nullable] = true
-      end
+      merged_schema[:properties][key][:nullable] = true if has_nullable && merged_schema[:properties][key].is_a?(Hash)
     end
 
     all_required_sets = all_schemas.map { |s| s[:required] || [] }
