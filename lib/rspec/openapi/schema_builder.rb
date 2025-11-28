@@ -321,11 +321,11 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
           if prop_types.size == 1
             # Only recursively merge if it's an object type
-            if prop_types.first == 'object'
-              merged[:properties][key] = build_merged_schema_from_variations(prop_variations)
-            else
-              merged[:properties][key] = prop_variations.first.dup
-            end
+            merged[:properties][key] = if prop_types.first == 'object'
+                                         build_merged_schema_from_variations(prop_variations)
+                                       else
+                                         prop_variations.first.dup
+                                       end
           else
             unique_props = prop_variations.map { |p| p.reject { |k, _| k == :nullable } }.uniq
             merged[:properties][key] = { oneOf: unique_props }
