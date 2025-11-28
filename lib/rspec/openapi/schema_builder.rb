@@ -265,7 +265,9 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
       next if property_variations.empty? && !has_nullable
 
-      if property_variations.size == 1
+      if property_variations.empty? && has_nullable
+        merged_schema[:properties][key] = { nullable: true }
+      elsif property_variations.size == 1
         merged_schema[:properties][key] = property_variations.first.dup
       else
         unique_types = property_variations.map { |p| p[:type] }.compact.uniq

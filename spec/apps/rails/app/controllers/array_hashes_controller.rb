@@ -52,7 +52,8 @@ class ArrayHashesController < ApplicationController
               "label" => "Canada"
             }
           ],
-          "validations" => nil
+          "validations" => nil,
+          "always_nil" => nil
 
         },
         {
@@ -69,7 +70,8 @@ class ArrayHashesController < ApplicationController
           ],
           "validations" => {
             "presence" => true
-          }
+          },
+          "always_nil" => nil
         }
       ]
     }

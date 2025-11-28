@@ -233,6 +233,9 @@
                               "presence"
                             ],
                             "nullable": true
+                          },
+                          "always_nil": {
+                            "nullable": true
                           }
                         },
                         "required": [
@@ -260,7 +263,8 @@
                           "label": "Canada"
                         }
                       ],
-                      "validations": null
+                      "validations": null,
+                      "always_nil": null
                     },
                     {
                       "id": "region_id",
@@ -276,7 +280,8 @@
                       ],
                       "validations": {
                         "presence": true
-                      }
+                      },
+                      "always_nil": null
                     }
                   ]
                 }

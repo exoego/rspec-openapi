@@ -127,6 +127,8 @@ paths:
                           required:
                           - presence
                           nullable: true
+                        always_nil:
+                          nullable: true
                       required:
                       - id
                       - options
@@ -141,6 +143,7 @@ paths:
                   - id: ca
                     label: Canada
                   validations:
+                  always_nil:
                 - id: region_id
                   options:
                   - id: 1
@@ -149,6 +152,7 @@ paths:
                     label: California
                   validations:
                     presence: true
+                  always_nil:
   "/array_hashes/nested_arrays":
     get:
       summary: nested_arrays
