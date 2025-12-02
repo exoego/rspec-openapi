@@ -352,16 +352,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       merged[:properties] = schema1[:properties].dup
 
       schema2[:properties].each do |key, prop2|
-        if merged[:properties][key]
-          prop1 = merged[:properties][key]
-          merged[:properties][key] = merge_property_schemas(prop1, prop2)
-        else
-          merged[:properties][key] = make_property_nullable(prop2)
-        end
-      end
-
-      schema1[:properties].each do |key, prop1|
-        merged[:properties][key] = make_property_nullable(prop1) unless schema2[:properties][key]
+        prop1 = merged[:properties][key]
+        merged[:properties][key] = merge_property_schemas(prop1, prop2)
       end
 
       required1 = Set.new(schema1[:required] || [])
@@ -386,11 +378,4 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     merged
   end
 
-  def make_property_nullable(property)
-    return property unless property.is_a?(Hash)
-
-    nullable_prop = property.dup
-    nullable_prop[:nullable] = true unless nullable_prop[:nullable]
-    nullable_prop
-  end
 end
