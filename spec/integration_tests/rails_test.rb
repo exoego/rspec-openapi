@@ -4,6 +4,9 @@ ENV['TZ'] ||= 'UTC'
 ENV['RAILS_ENV'] ||= 'test'
 ENV['OPENAPI_OUTPUT'] ||= 'yaml'
 
+require 'bundler'
+require 'fileutils'
+require 'open3'
 require 'minitest/autorun'
 require File.expand_path('../apps/rails/config/environment', __dir__)
 
@@ -352,5 +355,30 @@ class ArrayOfHashesTest < ActionDispatch::IntegrationTest
   test 'with mixed types in nested objects' do
     get '/array_hashes/mixed_types_nested'
     assert_response 200
+  end
+end
+
+class RSpecHooksAfterSuiteTest < Minitest::Test
+  RSPEC_HOOK_PATH = File.expand_path('../apps/rails/tmp/rspec_hook_error.yaml', __dir__)
+
+  def test_reports_schema_builder_errors
+    env = {
+      'TZ' => ENV['TZ'],
+      'RAILS_ENV' => ENV['RAILS_ENV'],
+      'OPENAPI' => '1',
+      'OPENAPI_OUTPUT' => 'yaml',
+      'RSPEC_HOOK_OPENAPI_PATH' => RSPEC_HOOK_PATH,
+    }.compact
+
+    stdout, stderr, status = Bundler.with_unbundled_env do
+      Open3.capture3(env, 'bundle', 'exec', 'scripts/rspec_with_simplecov', 'spec/requests/rspec_hook_error_spec.rb')
+    end
+
+    combined_output = stdout + stderr
+    cleaned_output = combined_output.gsub(/\e\[\d+(?:;\d+)*m/, '')
+    assert(status.success?, "RSpec failed: #{combined_output}")
+    assert_includes(cleaned_output, 'RSpec::OpenAPI got errors building 1 requests')
+  ensure
+    FileUtils.rm_f(RSPEC_HOOK_PATH)
   end
 end

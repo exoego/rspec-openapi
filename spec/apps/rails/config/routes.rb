@@ -28,6 +28,7 @@ Rails.application.routes.draw do
     get '/secret_items' => 'secret_items#index'
 
     get '/additional_properties' => 'additional_properties#index'
+    get '/invalid_responses' => 'invalid_responses#show'
     resources :array_hashes, only: [] do
       get :nullable, on: :collection
       get :non_nullable, on: :collection
