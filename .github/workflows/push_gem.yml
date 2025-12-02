@@ -35,10 +35,22 @@ jobs:
           echo "VERSION_NO_V=$version" >> "$GITHUB_ENV"
           echo "VERSION_TAG=v$version" >> "$GITHUB_ENV"
 
-          if ! [[ "$version" =~ ^[0-9]+(\.[0-9]+)*$ ]]; then
-            echo "Invalid version format: $version" >&2
-            exit 1
-          fi
+          current_version=$(ruby -e "require_relative './lib/rspec/openapi/version'; puts RSpec::OpenAPI::VERSION")
+          VERSION_NO_V="$version" CURRENT_VERSION="$current_version" ruby - <<'RUBY'
+            version = ENV.fetch('VERSION_NO_V')
+            unless version.match?(/\A\d+(?:\.\d+)*\z/)
+              warn "Invalid version format: #{version}"
+              exit 1
+            end
+
+            require 'rubygems'
+            new_version = Gem::Version.new(version)
+            current_version = Gem::Version.new(ENV.fetch('CURRENT_VERSION'))
+            unless new_version < current_version
+              warn "Given version (#{new_version}) must be lower than current version (#{current_version})"
+              exit 1
+            end
+          RUBY
 
           ruby -pi -e "sub(/VERSION = .*/, \"VERSION = '$version'\")" lib/rspec/openapi/version.rb
           git status --short
