@@ -341,41 +341,4 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       variations.first
     end
   end
-
-  def merge_object_schemas(schema1, schema2)
-    return schema1 unless schema2.is_a?(Hash) && schema1.is_a?(Hash)
-    return schema1 unless schema1[:type] == 'object' && schema2[:type] == 'object'
-
-    merged = schema1.dup
-
-    if schema1[:properties] && schema2[:properties]
-      merged[:properties] = schema1[:properties].dup
-
-      schema2[:properties].each do |key, prop2|
-        prop1 = merged[:properties][key]
-        merged[:properties][key] = merge_property_schemas(prop1, prop2)
-      end
-
-      required1 = Set.new(schema1[:required] || [])
-      required2 = Set.new(schema2[:required] || [])
-      merged[:required] = (required1 & required2).to_a
-    end
-
-    merged
-  end
-
-  def merge_property_schemas(prop1, prop2)
-    return prop1 unless prop2.is_a?(Hash) && prop1.is_a?(Hash)
-
-    merged = prop1.dup
-
-    # If either property is nullable, the merged property should be nullable
-    merged[:nullable] = true if prop2[:nullable] && !prop1[:nullable]
-
-    # If both are objects, recursively merge their properties
-    merged = merge_object_schemas(prop1, prop2) if prop1[:type] == 'object' && prop2[:type] == 'object'
-
-    merged
-  end
-
 end
