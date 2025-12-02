@@ -1,0 +1,63 @@
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g. 0.21.3 or v0.21.3)'
+        required: true
+
+jobs:
+  push:
+    name: Push gem to RubyGems.org
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write # IMPORTANT: this permission is mandatory for trusted publishing
+      contents: write # IMPORTANT: this permission is required for `rake release` to push the release tag
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          ruby-version: ruby
+
+      - name: Bump version.rb
+        run: |
+          set -euo pipefail
+          version="${{ github.event.inputs.version }}"
+          version="${version#v}"
+
+          echo "VERSION_NO_V=$version" >> "$GITHUB_ENV"
+          echo "VERSION_TAG=v$version" >> "$GITHUB_ENV"
+
+          if ! [[ "$version" =~ ^[0-9]+(\.[0-9]+)*$ ]]; then
+            echo "Invalid version format: $version" >&2
+            exit 1
+          fi
+
+          ruby -pi -e "sub(/VERSION = .*/, \"VERSION = '$version'\")" lib/rspec/openapi/version.rb
+          git status --short
+
+      - name: Commit version bump
+        run: |
+          set -euo pipefail
+          version="$VERSION_NO_V"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -am "Bump version to ${version}"
+          git push origin "HEAD:${{ github.event.repository.default_branch }}"
+
+      - uses: rubygems/release-gem@v1
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.VERSION_TAG }}
+          name: ${{ env.VERSION_TAG }}
+          generate_release_notes: true
