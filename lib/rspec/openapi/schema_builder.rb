@@ -256,12 +256,19 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     all_keys = all_schemas.flat_map { |s| s[:properties]&.keys || [] }.uniq
 
     all_keys.each do |key|
-      property_variations = all_schemas.map { |s| s[:properties]&.[](key) }.compact
+      all_property_schemas = all_schemas.map { |s| s[:properties]&.[](key) }
 
-      next if property_variations.empty?
+      nullable_only_schemas = all_property_schemas.select { |p| p && p.keys == [:nullable] }
+      property_variations = all_property_schemas.select { |p| p && p.keys != [:nullable] }
 
-      if property_variations.size == 1
-        merged_schema[:properties][key] = make_property_nullable(property_variations.first)
+      has_nullable = all_property_schemas.any?(&:nil?) || nullable_only_schemas.any?
+
+      next if property_variations.empty? && !has_nullable
+
+      if property_variations.empty? && has_nullable
+        merged_schema[:properties][key] = { nullable: true }
+      elsif property_variations.size == 1
+        merged_schema[:properties][key] = property_variations.first.dup
       else
         unique_types = property_variations.map { |p| p[:type] }.compact.uniq
 
@@ -275,9 +282,9 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         else
           merged_schema[:properties][key] = property_variations.first.dup
         end
-
-        merged_schema[:properties][key][:nullable] = true if property_variations.size < all_schemas.size
       end
+
+      merged_schema[:properties][key][:nullable] = true if has_nullable && merged_schema[:properties][key].is_a?(Hash)
     end
 
     all_required_sets = all_schemas.map { |s| s[:required] || [] }
@@ -297,21 +304,32 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       all_keys = variations.flat_map { |v| v[:properties]&.keys || [] }.uniq
 
       all_keys.each do |key|
-        prop_variations = variations.map { |v| v[:properties]&.[](key) }.compact
+        all_prop_variations = variations.map { |v| v[:properties]&.[](key) }
+
+        nullable_only = all_prop_variations.select { |p| p && p.keys == [:nullable] }
+        prop_variations = all_prop_variations.select { |p| p && p.keys != [:nullable] }.compact
+
+        has_nullable = all_prop_variations.any?(&:nil?) || nullable_only.any?
 
         if prop_variations.size == 1
-          merged[:properties][key] = make_property_nullable(prop_variations.first)
+          merged[:properties][key] = prop_variations.first.dup
+          merged[:properties][key][:nullable] = true if has_nullable
         elsif prop_variations.size > 1
           prop_types = prop_variations.map { |p| p[:type] }.compact.uniq
 
           if prop_types.size == 1
-            merged[:properties][key] = prop_variations.first.dup
+            # Only recursively merge if it's an object type
+            merged[:properties][key] = if prop_types.first == 'object'
+                                         build_merged_schema_from_variations(prop_variations)
+                                       else
+                                         prop_variations.first.dup
+                                       end
           else
             unique_props = prop_variations.map { |p| p.reject { |k, _| k == :nullable } }.uniq
             merged[:properties][key] = { oneOf: unique_props }
           end
 
-          merged[:properties][key][:nullable] = true if prop_variations.size < variations.size
+          merged[:properties][key][:nullable] = true if has_nullable || prop_variations.size < variations.size
         end
       end
 
@@ -322,57 +340,5 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     else
       variations.first
     end
-  end
-
-  def merge_object_schemas(schema1, schema2)
-    return schema1 unless schema2.is_a?(Hash) && schema1.is_a?(Hash)
-    return schema1 unless schema1[:type] == 'object' && schema2[:type] == 'object'
-
-    merged = schema1.dup
-
-    if schema1[:properties] && schema2[:properties]
-      merged[:properties] = schema1[:properties].dup
-
-      schema2[:properties].each do |key, prop2|
-        if merged[:properties][key]
-          prop1 = merged[:properties][key]
-          merged[:properties][key] = merge_property_schemas(prop1, prop2)
-        else
-          merged[:properties][key] = make_property_nullable(prop2)
-        end
-      end
-
-      schema1[:properties].each do |key, prop1|
-        merged[:properties][key] = make_property_nullable(prop1) unless schema2[:properties][key]
-      end
-
-      required1 = Set.new(schema1[:required] || [])
-      required2 = Set.new(schema2[:required] || [])
-      merged[:required] = (required1 & required2).to_a
-    end
-
-    merged
-  end
-
-  def merge_property_schemas(prop1, prop2)
-    return prop1 unless prop2.is_a?(Hash) && prop1.is_a?(Hash)
-
-    merged = prop1.dup
-
-    # If either property is nullable, the merged property should be nullable
-    merged[:nullable] = true if prop2[:nullable] && !prop1[:nullable]
-
-    # If both are objects, recursively merge their properties
-    merged = merge_object_schemas(prop1, prop2) if prop1[:type] == 'object' && prop2[:type] == 'object'
-
-    merged
-  end
-
-  def make_property_nullable(property)
-    return property unless property.is_a?(Hash)
-
-    nullable_prop = property.dup
-    nullable_prop[:nullable] = true unless nullable_prop[:nullable]
-    nullable_prop
   end
 end

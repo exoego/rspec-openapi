@@ -178,6 +178,21 @@
                                 "label"
                               ]
                             }
+                          },
+                          "validations": {
+                            "type": "object",
+                            "properties": {
+                              "presence": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "presence"
+                            ],
+                            "nullable": true
+                          },
+                          "always_nil": {
+                            "nullable": true
                           }
                         },
                         "required": [
@@ -204,7 +219,9 @@
                           "id": "ca",
                           "label": "Canada"
                         }
-                      ]
+                      ],
+                      "validations": null,
+                      "always_nil": null
                     },
                     {
                       "id": "region_id",
@@ -217,7 +234,11 @@
                           "id": 2,
                           "label": "California"
                         }
-                      ]
+                      ],
+                      "validations": {
+                        "presence": true
+                      },
+                      "always_nil": null
                     }
                   ]
                 }
@@ -337,6 +358,41 @@
                             "required": [
                               "author"
                             ]
+                          },
+                          "actions": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "label": {
+                                  "type": "string"
+                                },
+                                "modal": {
+                                  "type": "object",
+                                  "properties": {
+                                    "confirm_action": {
+                                      "type": "object",
+                                      "properties": {
+                                        "label": {
+                                          "type": "string",
+                                          "nullable": true
+                                        }
+                                      },
+                                      "required": [
+                                        "label"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "confirm_action"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "label"
+                              ]
+                            },
+                            "nullable": true
                           }
                         },
                         "required": [
@@ -357,7 +413,28 @@
                       "metadata": {
                         "author": "Alice",
                         "version": "1.0"
-                      }
+                      },
+                      "actions": [
+                        {
+                          "label": "Duplicate",
+                          "modal": {
+                            "confirm_action": {
+                              "label": "Duplicate"
+                            }
+                          }
+                        },
+                        {
+                          "label": "Edit"
+                        },
+                        {
+                          "label": "Something Else Again",
+                          "modal": {
+                            "confirm_action": {
+                              "label": null
+                            }
+                          }
+                        }
+                      ]
                     },
                     {
                       "id": 2,
@@ -365,7 +442,28 @@
                         "author": "Bob",
                         "version": "2.0",
                         "reviewed": true
-                      }
+                      },
+                      "actions": [
+                        {
+                          "label": "Duplicate",
+                          "modal": {
+                            "confirm_action": {
+                              "label": "Duplicate"
+                            }
+                          }
+                        },
+                        {
+                          "label": "Edit"
+                        },
+                        {
+                          "label": "Something Else Again",
+                          "modal": {
+                            "confirm_action": {
+                              "label": null
+                            }
+                          }
+                        }
+                      ]
                     },
                     {
                       "id": 3,

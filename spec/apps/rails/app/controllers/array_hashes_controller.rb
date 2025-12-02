@@ -51,7 +51,10 @@ class ArrayHashesController < ApplicationController
               "id" => "ca",
               "label" => "Canada"
             }
-          ]
+          ],
+          "validations" => nil,
+          "always_nil" => nil
+
         },
         {
           "id" => "region_id",
@@ -64,7 +67,11 @@ class ArrayHashesController < ApplicationController
               "id" => 2,
               "label" => "California"
             }
-          ]
+          ],
+          "validations" => {
+            "presence" => true
+          },
+          "always_nil" => nil
         }
       ]
     }
@@ -125,7 +132,28 @@ class ArrayHashesController < ApplicationController
           "metadata" => {
             "author" => "Alice",
             "version" => "1.0"
-          }
+          },
+          "actions" => [
+            {
+              "label" => "Duplicate",
+              "modal" => {
+                "confirm_action" => {
+                  "label" => "Duplicate"
+                }
+              }
+            },
+            {
+              "label" => "Edit",
+            },
+            {
+              "label" => "Something Else Again",
+              "modal" => {
+                "confirm_action" => {
+                  "label" => nil
+                }
+              }
+            }
+          ]
         },
         {
           "id" => 2,
@@ -133,7 +161,28 @@ class ArrayHashesController < ApplicationController
             "author" => "Bob",
             "version" => "2.0",
             "reviewed" => true
-          }
+          },
+          "actions" => [
+            {
+              "label" => "Duplicate",
+              "modal" => {
+                "confirm_action" => {
+                  "label" => "Duplicate"
+                }
+              }
+            },
+            {
+              "label" => "Edit",
+            },
+            {
+              "label" => "Something Else Again",
+              "modal" => {
+                "confirm_action" => {
+                  "label" => nil
+                }
+              }
+            }
+          ]
         },
         {
           "id" => 3,
