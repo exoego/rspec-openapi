@@ -1,0 +1,75 @@
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g. 0.21.3 or v0.21.3)'
+        required: true
+
+jobs:
+  push:
+    name: Push gem to RubyGems.org
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write # IMPORTANT: this permission is mandatory for trusted publishing
+      contents: write # IMPORTANT: this permission is required for `rake release` to push the release tag
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          ruby-version: ruby
+
+      - name: Bump version.rb
+        run: |
+          set -euo pipefail
+          version="${{ github.event.inputs.version }}"
+          version="${version#v}"
+
+          echo "VERSION_NO_V=$version" >> "$GITHUB_ENV"
+          echo "VERSION_TAG=v$version" >> "$GITHUB_ENV"
+
+          current_version=$(ruby -e "require_relative './lib/rspec/openapi/version'; puts RSpec::OpenAPI::VERSION")
+          VERSION_NO_V="$version" CURRENT_VERSION="$current_version" ruby - <<'RUBY'
+            version = ENV.fetch('VERSION_NO_V')
+            unless version.match?(/\A\d+(?:\.\d+)*\z/)
+              warn "Invalid version format: #{version}"
+              exit 1
+            end
+
+            require 'rubygems'
+            new_version = Gem::Version.new(version)
+            current_version = Gem::Version.new(ENV.fetch('CURRENT_VERSION'))
+            unless new_version < current_version
+              warn "Given version (#{new_version}) must be lower than current version (#{current_version})"
+              exit 1
+            end
+          RUBY
+
+          ruby -pi -e "sub(/VERSION = .*/, \"VERSION = '$version'\")" lib/rspec/openapi/version.rb
+          git status --short
+
+      - name: Commit version bump
+        run: |
+          set -euo pipefail
+          version="$VERSION_NO_V"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -am "Bump version to ${version}"
+          git push origin "HEAD:${{ github.event.repository.default_branch }}"
+
+      - uses: rubygems/release-gem@v1
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.VERSION_TAG }}
+          name: ${{ env.VERSION_TAG }}
+          generate_release_notes: true
