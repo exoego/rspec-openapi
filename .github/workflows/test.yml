@@ -32,7 +32,7 @@ jobs:
       RAILS_VERSION: ${{ matrix.rails == '' && '6.1.6' || matrix.rails }}
       COVERAGE: ${{ matrix.coverage || '' }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: bundle install
         run: bundle install -j$(nproc) --retry 3
       - run: bundle exec rspec
