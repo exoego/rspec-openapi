@@ -138,7 +138,8 @@ class ArrayHashesController < ApplicationController
               "label" => "Duplicate",
               "modal" => {
                 "confirm_action" => {
-                  "label" => "Duplicate"
+                  "label" => "Duplicate",
+                  "endpoint" => nil
                 }
               }
             },
@@ -149,7 +150,8 @@ class ArrayHashesController < ApplicationController
               "label" => "Something Else Again",
               "modal" => {
                 "confirm_action" => {
-                  "label" => nil
+                  "label" => nil,
+                  "endpoint" => nil
                 }
               }
             }
@@ -167,7 +169,8 @@ class ArrayHashesController < ApplicationController
               "label" => "Duplicate",
               "modal" => {
                 "confirm_action" => {
-                  "label" => "Duplicate"
+                  "label" => "Duplicate",
+                  "endpoint" => nil
                 }
               }
             },
@@ -178,7 +181,8 @@ class ArrayHashesController < ApplicationController
               "label" => "Something Else Again",
               "modal" => {
                 "confirm_action" => {
-                  "label" => nil
+                  "label" => nil,
+                  "endpoint" => nil
                 }
               }
             }

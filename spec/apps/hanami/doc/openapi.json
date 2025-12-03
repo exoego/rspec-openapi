@@ -376,6 +376,9 @@
                                         "label": {
                                           "type": "string",
                                           "nullable": true
+                                        },
+                                        "endpoint": {
+                                          "nullable": true
                                         }
                                       },
                                       "required": [
@@ -419,7 +422,8 @@
                           "label": "Duplicate",
                           "modal": {
                             "confirm_action": {
-                              "label": "Duplicate"
+                              "label": "Duplicate",
+                              "endpoint": null
                             }
                           }
                         },
@@ -430,7 +434,8 @@
                           "label": "Something Else Again",
                           "modal": {
                             "confirm_action": {
-                              "label": null
+                              "label": null,
+                              "endpoint": null
                             }
                           }
                         }
@@ -448,7 +453,8 @@
                           "label": "Duplicate",
                           "modal": {
                             "confirm_action": {
-                              "label": "Duplicate"
+                              "label": "Duplicate",
+                              "endpoint": null
                             }
                           }
                         },
@@ -459,7 +465,8 @@
                           "label": "Something Else Again",
                           "modal": {
                             "confirm_action": {
-                              "label": null
+                              "label": null,
+                              "endpoint": null
                             }
                           }
                         }
