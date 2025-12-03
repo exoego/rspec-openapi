@@ -244,6 +244,8 @@ paths:
                                       label:
                                         type: string
                                         nullable: true
+                                      endpoint:
+                                        nullable: true
                                     required:
                                     - label
                                 required:
@@ -267,11 +269,13 @@ paths:
                     modal:
                       confirm_action:
                         label: Duplicate
+                        endpoint:
                   - label: Edit
                   - label: Something Else Again
                     modal:
                       confirm_action:
                         label:
+                        endpoint:
                 - id: 2
                   metadata:
                     author: Bob
@@ -282,11 +286,13 @@ paths:
                     modal:
                       confirm_action:
                         label: Duplicate
+                        endpoint:
                   - label: Edit
                   - label: Something Else Again
                     modal:
                       confirm_action:
                         label:
+                        endpoint:
                 - id: 3
                   metadata:
                     author: Charlie

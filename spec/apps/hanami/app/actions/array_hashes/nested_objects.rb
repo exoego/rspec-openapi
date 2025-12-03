@@ -20,7 +20,8 @@ module HanamiTest
                     "label" => "Duplicate",
                     "modal" => {
                       "confirm_action" => {
-                        "label" => "Duplicate"
+                        "label" => "Duplicate",
+                        "endpoint" => nil
                       }
                     }
                   },
@@ -31,7 +32,8 @@ module HanamiTest
                     "label" => "Something Else Again",
                     "modal" => {
                       "confirm_action" => {
-                        "label" => nil
+                        "label" => nil,
+                        "endpoint" => nil
                       }
                     }
                   }
@@ -49,7 +51,8 @@ module HanamiTest
                     "label" => "Duplicate",
                     "modal" => {
                       "confirm_action" => {
-                        "label" => "Duplicate"
+                        "label" => "Duplicate",
+                        "endpoint" => nil
                       }
                     }
                   },
@@ -60,7 +63,8 @@ module HanamiTest
                     "label" => "Something Else Again",
                     "modal" => {
                       "confirm_action" => {
-                        "label" => nil
+                        "label" => nil,
+                        "endpoint" => nil
                       }
                     }
                   }
