@@ -46,8 +46,8 @@ jobs:
             require 'rubygems'
             new_version = Gem::Version.new(version)
             current_version = Gem::Version.new(ENV.fetch('CURRENT_VERSION'))
-            unless new_version < current_version
-              warn "Given version (#{new_version}) must be lower than current version (#{current_version})"
+            if new_version <= current_version
+              warn "Given version (#{new_version}) must be newer than current version (#{current_version})"
               exit 1
             end
           RUBY
