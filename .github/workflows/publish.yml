@@ -1,0 +1,46 @@
+name: Publish to RubyGems
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    name: Publish gem and GitHub release
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write   # for RubyGems trusted publishing
+      contents: write   # to create GitHub release
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          ruby-version: ruby
+
+      - name: Verify tag matches version.rb
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF_NAME}"
+          version="${tag#v}"
+          file_version=$(ruby -e "require_relative './lib/rspec/openapi/version'; puts RSpec::OpenAPI::VERSION")
+          if [ "$version" != "$file_version" ]; then
+            echo "Tag version ($version) does not match lib/rspec/openapi/version.rb ($file_version)" >&2
+            exit 1
+          fi
+
+      - uses: rubygems/release-gem@v1
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          generate_release_notes: true
