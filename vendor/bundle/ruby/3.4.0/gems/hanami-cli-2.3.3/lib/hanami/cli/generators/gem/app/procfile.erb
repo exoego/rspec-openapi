@@ -1,0 +1,4 @@
+web: bundle exec hanami server
+<%- if generate_assets? -%>
+assets: bundle exec hanami assets watch
+<%- end -%>

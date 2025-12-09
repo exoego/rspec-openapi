@@ -1,0 +1,6 @@
+require 'support/env'
+require 'support/coverage'
+require 'support/escape_matcher'
+require 'support/parse_matcher'
+require 'support/render_matcher'
+require 'hansi'

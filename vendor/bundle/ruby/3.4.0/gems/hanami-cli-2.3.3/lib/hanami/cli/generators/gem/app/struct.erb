@@ -1,0 +1,10 @@
+# frozen_string_literal: true
+
+require "hanami/db/struct"
+
+module <%= camelized_app_name %>
+  module DB
+    class Struct < Hanami::DB::Struct
+    end
+  end
+end

@@ -1,0 +1,11 @@
+.env*.local
+log/*
+<%- if generate_assets? -%>
+public/*
+!public/404.html
+!public/500.html
+node_modules/
+<%- end -%>
+<%- if generate_sqlite? -%>
+db/*.sqlite
+<%- end -%>

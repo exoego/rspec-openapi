@@ -1,0 +1,76 @@
+name: ci
+
+on:
+  push:
+    paths:
+      - ".github/workflows/ci.yml"
+      - "lib/**"
+      - "*.gemspec"
+      - "spec/**"
+      - "Rakefile"
+      - "Gemfile"
+      - ".rubocop.yml"
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: "30 4 * * *"
+  create:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby:
+          - "3.4"
+          - "3.3"
+          - "3.2"
+        rack:
+          - "~> 2.0"
+          - "~> 3.0"
+    name: tests (Ruby ${{ matrix.ruby }}, Rack ${{ matrix.rack }})
+    env:
+      POSTGRES_BASE_URL: postgres://postgres:password@localhost:5432/hanami_cli_test
+    steps:
+      - uses: actions/checkout@v1
+      - name: Install package dependencies
+        run: "[ -e $APT_DEPS ] || sudo apt-get install -y --no-install-recommends $APT_DEPS"
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{matrix.ruby}}
+          bundler-cache: true
+        env:
+          RACK_VERSION_CONSTRAINT: ${{matrix.rack}}
+      - name: Run all tests
+        run: script/ci
+        env:
+          RACK_VERSION_CONSTRAINT: ${{matrix.rack}}
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_ROOT_PASSWORD: password
+        ports:
+          - 3307:3306
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 3
+      postgres:
+        # Use postgres:14 for CLI compatibility with ubuntu-latest, currently ubuntu-22.04
+        # See https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2204-Readme.md
+        image: postgres:14
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5

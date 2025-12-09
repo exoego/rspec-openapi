@@ -1,0 +1,20 @@
+=== 1.2.0 / 2021-02-27
+
+* Updated dependency to Optimist, which was renamed
+* Add license to gemspec
+
+=== 1.1.0 / 2012-08-12
+
+* Introduced HTML output
+* Fixed some major bugs in the diffing algorithm
+
+=== 1.0.1 / 2012-06-19
+
+* Renamed gem from 'ruby_patience_diff' to just 'patience_diff'
+* Fixed basically everything
+* Added command-line options
+* A little bit of documentation
+
+=== 1.0.0 / 2012-06-16
+
+* First release

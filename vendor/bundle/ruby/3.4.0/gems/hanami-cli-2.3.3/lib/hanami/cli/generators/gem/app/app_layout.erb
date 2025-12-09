@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= humanized_app_name %></title>
+    <%- if generate_assets? -%>
+    <%%= favicon_tag %>
+    <%%= stylesheet_tag "app" %>
+    <%- end -%>
+  </head>
+  <body>
+    <%%= yield %>
+    <%- if generate_assets? -%>
+    <%%= javascript_tag "app" %>
+    <%- end -%>
+  </body>
+</html>

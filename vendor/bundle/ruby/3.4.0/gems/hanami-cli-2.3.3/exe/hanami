@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "bundler/setup"
+require "hanami/cli"
+
+cli = Dry::CLI.new(Hanami::CLI)
+Hanami::CLI::Bundler.require(:cli)
+
+begin
+  cli.call
+rescue Hanami::CLI::Error => exception
+  $stderr.puts(exception.message) # rubocop:disable Style/StderrPuts
+  exit(1)
+end

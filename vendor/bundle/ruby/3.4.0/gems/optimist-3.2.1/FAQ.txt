@@ -1,0 +1,92 @@
+Optimist FAQ
+-----------
+
+Q: Why should I use Optimist?
+A: Because it will take you fewer lines of code to parse commandline arguments
+   than anything else out there.
+
+   Like this:
+     opts = Optimist::options do
+       opt :monkey, "Use monkey mode"
+       opt :goat, "Use goat mode", :default => true
+       opt :num_limbs, "Set number of limbs", :default => 4
+     end
+
+   That's it. 'opts' will be a hash and you can do whatever you want with it.
+   You don't have to mix processing code with the declarations. You don't have
+   to make a class for every option (what is this, Java?). You don't have to
+   write more than 1 line of code per option.
+
+   Plus, you get a beautiful help screen that detects your terminal width and
+   wraps appropriately.
+
+Q: What is the philosophy behind Optimist?
+A: Optimist does the parsing and gives you a hash table of options. You then
+   write whatever fancy constraint logic you need as regular Ruby code operating
+   on that hash table.
+
+   (Optimist does support limited constraints (see #conflicts and #depends), but
+   any non-trivial program will probably need to get fancier.)
+
+   Then if you need to abort and tell the user to fix their command line at any
+   point, you can call #die and Optimist will do that for you in a pretty way.
+
+Q: What happens to the other stuff on the commandline?
+A: Anything Optimist doesn't recognize as an option or as an option parameter is
+   left in ARGV for you to process.
+
+Q: Does Optimist support multiple-value arguments?
+A: Yes. If you set the :type of an option to something plural, like ":ints",
+   ":strings", ":doubles", ":floats", ":ios", it will accept multiple arguments
+   on the commandline, and the value will be an array of the parameters.
+
+Q: Does Optimist support arguments that can be given multiple times?
+A: Yes. If you set :multi to true, then the argument can appear multiple times
+   on the commandline, and the value will be an array of the parameters.
+
+Q: Does Optimist support subcommands?
+A: Yes: you can direct Optimist to stop processing when it encounters certain
+   tokens. Then you can re-call Optimist with the subcommand-specific
+   configuration to process the rest of the commandline.
+
+   See the third example on the webpage.
+
+   (And if you don't know the subcommands ahead of time, you can call
+   #stop_on_unknown, which will cause Optimist to stop when it encounters any
+   unknown token. This might be more trouble than its worth if you're also
+   passing filenames on the commandline.)
+
+Q: Why does Optimist disallow numeric short argument names, like '-1' and '-9'?
+A: Because it's ambiguous whether these are arguments or negative integer or
+   floating-point parameters to arguments. E.g., is "-f -3" a negative floating
+   point parameter to -f, or two separate arguments?
+
+Q: What was the big change in version 2.0?
+A: The big change was boolean parameter (aka flag) handling. In pre-2.0,
+   not specifying a flag on the commandline would result in the option being set
+   to its default value; specifying it on the commandline would result in the
+   option being set to the opposite of its default value. This was weird for
+   options with a default of true:
+     opt :magic, "Use magic", default: true
+   Using --magic with the above configuration would result in a :magic => false
+   value in the options hash.
+
+   In 2.0, we introduce the GNU-style notion of a --no-x parameter. Now,
+   specifying --x will always set the option :x to true, regardless of its
+   default value, and specifying --no-x will always set the option :x to false,
+   regardless of its default value. The default value only comes into play when
+   neither form is given on the commandline.
+
+   E.g.:
+     opt :magic, "Use magic", :default => true
+
+   Using --magic will result in :magic => true, and --no-magic will result in
+   :magic => false, and neither will result in :magic => true.
+
+   There is one exception: if the option itself starts with a "no_", then you'll
+   get the opposite behavior:
+
+     opt :no_magic, "Don't use magic", :default => true
+
+   Using --magic will result in :no_magic => false, and --no-magic will result in
+   :no_magic => true, and neither will result in :no_magic => true.

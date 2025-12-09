@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+
+# This script is a way to set up and keep your development environment updated
+# automatically. It is meant to be idempotent so that you can run it at any
+# time to get the same result. Add any new necessary setup steps to this file
+# as your application evolves.
+
+announce() {
+  local bold='\033[1m'
+  local reset='\033[0m'
+  printf "${bold}${1}${reset}\n"
+}
+
+announce "Running bundle install..."
+bundle check || bundle install
+
+announce "\nRunning npm install..."
+npm install
+
+<%- if generate_db? -%>
+announce "\nPreparing the database..."
+hanami db prepare
+
+<%- end -%>
+announce "\n🌸 Setup complete!"

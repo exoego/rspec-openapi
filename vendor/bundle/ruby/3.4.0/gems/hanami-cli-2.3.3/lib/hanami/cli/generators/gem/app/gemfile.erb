@@ -1,0 +1,49 @@
+# frozen_string_literal: true
+
+source "<%= gem_source %>"
+
+<%= hanami_gem("hanami") %>
+<%- if hanami_head? -%>
+<%= hanami_gem("cli") %>
+<%= hanami_gem("utils") %>
+<%- end -%>
+<%- if generate_assets? -%>
+<%= hanami_gem("assets") %>
+<%- end -%>
+<%= hanami_gem("controller") %>
+<%- if generate_db? -%>
+<%= hanami_gem("db") %>
+<%- end -%>
+<%= hanami_gem("router") %>
+<%= hanami_gem("validations") %>
+<%- if generate_view? -%>
+<%= hanami_gem("view") %>
+<%- end -%>
+
+gem "dry-types", "~> 1.7"
+gem "dry-operation", ">= 1.0.1"
+gem "puma"
+gem "rake"
+<%- if generate_sqlite? -%>
+gem "sqlite3"
+<%- elsif generate_postgres? -%>
+gem "pg"
+<%- elsif generate_mysql? -%>
+gem "mysql2"
+<%- end -%>
+
+group :development do
+  <%= hanami_gem("webconsole") %>
+end
+
+group :development, :test do
+  gem "dotenv"
+end
+
+group :cli, :development do
+  <%= hanami_gem("reloader") %>
+end
+
+group :cli, :development, :test do
+  <%= hanami_gem("rspec") %>
+end

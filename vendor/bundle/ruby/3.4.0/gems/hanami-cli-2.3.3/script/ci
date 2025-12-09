@@ -1,0 +1,31 @@
+#!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
+
+prepare_build() {
+  if [ -d coverage ]; then
+    rm -rf coverage
+  fi
+}
+
+print_ruby_version() {
+  echo "Using $(ruby -v)"
+  echo
+}
+
+run_code_quality_checks() {
+  bundle exec rubocop .
+}
+
+run_unit_tests() {
+  bundle exec rake spec
+}
+
+main() {
+  prepare_build
+  print_ruby_version
+  run_code_quality_checks
+  run_unit_tests
+}
+
+main

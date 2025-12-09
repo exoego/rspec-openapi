@@ -1,0 +1,4 @@
+-r bundler/setup
+-r support
+--color
+--tty
