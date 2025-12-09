@@ -21,11 +21,6 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-          ruby-version: ruby
 
       - name: Bump version.rb
         run: |
@@ -73,6 +68,8 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          add-paths: |
+            lib/rspec/openapi/version.rb
           branch: ${{ env.RELEASE_BRANCH }}
           title: Release v${{ env.VERSION_NO_V }}
           commit-message: Bump version to ${{ env.VERSION_NO_V }}
