@@ -1,4 +1,4 @@
-name: release
+name: prepare release
 
 on:
   workflow_dispatch:
@@ -9,12 +9,12 @@ on:
 
 jobs:
   push:
-    name: Push gem to RubyGems.org
+    name: Prepare release PR
     runs-on: ubuntu-latest
 
     permissions:
       id-token: write # IMPORTANT: this permission is mandatory for trusted publishing
-      contents: write # IMPORTANT: this permission is required for `rake release` to push the release tag
+      contents: write # required to push release branch and open PR
 
     steps:
       - uses: actions/checkout@v5
@@ -60,16 +60,22 @@ jobs:
           set -euo pipefail
           version="$VERSION_NO_V"
 
+          release_branch="release/v${version}"
+          echo "RELEASE_BRANCH=${release_branch}" >> "$GITHUB_ENV"
+
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git commit -am "Bump version to ${version}"
-          git push origin "HEAD:${{ github.event.repository.default_branch }}"
+          git push origin "HEAD:${release_branch}"
 
-      - uses: rubygems/release-gem@v1
-
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v2
+      - name: Open release PR
+        uses: peter-evans/create-pull-request@v6
         with:
-          tag_name: ${{ env.VERSION_TAG }}
-          name: ${{ env.VERSION_TAG }}
-          generate_release_notes: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ env.RELEASE_BRANCH }}
+          title: Release v${{ env.VERSION_NO_V }}
+          commit-message: Bump version to ${{ env.VERSION_NO_V }}
+          body: |
+            Automated release PR created by workflow_dispatch.
+            - Version: v${{ env.VERSION_NO_V }}
+            - Triggered by: ${{ github.actor }}
