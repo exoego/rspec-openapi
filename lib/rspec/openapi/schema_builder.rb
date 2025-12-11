@@ -270,22 +270,38 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       elsif property_variations.size == 1
         merged_schema[:properties][key] = property_variations.first.dup
       else
-        unique_types = property_variations.map { |p| p[:type] }.compact.uniq
+        has_one_of = property_variations.any? { |p| p.key?(:oneOf) }
 
-        if unique_types.size > 1
-          # Different types detected - create oneOf
-          unique_props = property_variations.map { |p| p.reject { |k, _| k == :nullable } }.uniq
-          merged_schema[:properties][key] = { oneOf: unique_props }
+        if has_one_of
+          all_options = []
+          property_variations.each do |prop|
+            clean_prop = prop.reject { |k, _| k == :nullable }
+            if clean_prop.key?(:oneOf)
+              all_options.concat(clean_prop[:oneOf])
+            else
+              all_options << clean_prop unless clean_prop.empty?
+            end
+          end
+
+          all_options.uniq!
+          merged_schema[:properties][key] = { oneOf: all_options }
         else
-          case unique_types.first
-          when 'array'
-            merged_schema[:properties][key] = { type: 'array' }
-            items_variations = property_variations.map { |p| p[:items] }.compact
-            merged_schema[:properties][key][:items] = build_merged_schema_from_variations(items_variations)
-          when 'object'
-            merged_schema[:properties][key] = build_merged_schema_from_variations(property_variations)
+          unique_types = property_variations.map { |p| p[:type] }.compact.uniq
+
+          if unique_types.size > 1
+            unique_props = property_variations.map { |p| p.reject { |k, _| k == :nullable } }.uniq
+            merged_schema[:properties][key] = { oneOf: unique_props }
           else
-            merged_schema[:properties][key] = property_variations.first.dup
+            case unique_types.first
+            when 'array'
+              merged_schema[:properties][key] = { type: 'array' }
+              items_variations = property_variations.map { |p| p[:items] }.compact
+              merged_schema[:properties][key][:items] = build_merged_schema_from_variations(items_variations)
+            when 'object'
+              merged_schema[:properties][key] = build_merged_schema_from_variations(property_variations)
+            else
+              merged_schema[:properties][key] = property_variations.first.dup
+            end
           end
         end
       end
@@ -324,8 +340,21 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
           merged[:properties][key][:nullable] = true if has_nullable
         elsif prop_variations.size > 1
           prop_types = prop_variations.map { |p| p[:type] }.compact.uniq
+          has_one_of = prop_variations.any? { |p| p.key?(:oneOf) }
 
-          if prop_types.size == 1
+          if has_one_of
+            all_options = []
+            prop_variations.each do |prop|
+              clean_prop = prop.reject { |k, _| k == :nullable }
+              if clean_prop.key?(:oneOf)
+                all_options.concat(clean_prop[:oneOf])
+              else
+                all_options << clean_prop unless clean_prop.empty?
+              end
+            end
+            all_options.uniq!
+            merged[:properties][key] = { oneOf: all_options }
+          elsif prop_types.size == 1
             # Only recursively merge if it's an object type
             merged[:properties][key] = if prop_types.first == 'object'
                                          build_merged_schema_from_variations(prop_variations)
