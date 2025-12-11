@@ -33,6 +33,7 @@ module HanamiTest
     get '/array_hashes/nested_arrays', to: 'array_hashes.nested_arrays'
     get '/array_hashes/nested_objects', to: 'array_hashes.nested_objects'
     get '/array_hashes/mixed_types_nested', to: 'array_hashes.mixed_types_nested'
+    get '/array_hashes/multiple_one_of_test', to: 'array_hashes.multiple_one_of_test'
 
     get '/test_block', to: ->(_env) { [200, { 'Content-Type' => 'text/plain' }, ['A TEST']] }
 

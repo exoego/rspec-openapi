@@ -39,6 +39,7 @@ Rails.application.routes.draw do
       get :nested_arrays, on: :collection
       get :nested_objects, on: :collection
       get :mixed_types_nested, on: :collection
+      get :multiple_one_of_test, on: :collection
     end
 
     scope :admin do
