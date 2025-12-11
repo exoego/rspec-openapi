@@ -108,9 +108,20 @@
                                     {
                                       "type": "array",
                                       "items": {}
+                                    },
+                                    {
+                                      "type": "boolean"
+                                    },
+                                    {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    {
+                                      "type": "integer"
                                     }
-                                  ],
-                                  "nullable": true
+                                  ]
                                 },
                                 "options": {
                                   "oneOf": [
@@ -148,8 +159,7 @@
                                 }
                               },
                               "required": [
-                                "value",
-                                "options"
+                                "value"
                               ]
                             },
                             "nullable": true
@@ -208,6 +218,28 @@
                         "ssl": true
                       },
                       "form": null
+                    },
+                    {
+                      "id": 3,
+                      "config": {
+                        "port": "9010",
+                        "host": "foo.example.com",
+                        "ssl": true
+                      },
+                      "form": [
+                        {
+                          "value": false
+                        },
+                        {
+                          "value": [
+                            "First",
+                            "Second"
+                          ]
+                        },
+                        {
+                          "value": 3
+                        }
+                      ]
                     }
                   ]
                 }

@@ -236,7 +236,26 @@ class ArrayHashesController < ApplicationController
             "ssl" => true
           },
           "form" => nil
-        }
+        },
+        {
+          "id" => 3,
+          "config" => {
+            "port" => "9010",
+            "host" => "foo.example.com",
+            "ssl" => true
+          },
+          "form" => [
+            {
+              "value" => false,
+            },
+            {
+              "value" => ['First', 'Second'],
+            },
+            {
+              "value" => 3,
+            },
+          ]
+        },
       ]
     }
     render json: response

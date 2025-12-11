@@ -79,7 +79,11 @@ paths:
                                 - type: string
                                 - type: array
                                   items: {}
-                                nullable: true
+                                - type: boolean
+                                - type: array
+                                  items:
+                                    type: string
+                                - type: integer
                               options:
                                 oneOf:
                                 - type: array
@@ -102,7 +106,6 @@ paths:
                                 nullable: true
                             required:
                             - value
-                            - options
                           nullable: true
                       required:
                       - id
@@ -133,6 +136,17 @@ paths:
                     host: example.com
                     ssl: true
                   form:
+                - id: 3
+                  config:
+                    port: '9010'
+                    host: foo.example.com
+                    ssl: true
+                  form:
+                  - value: false
+                  - value:
+                    - First
+                    - Second
+                  - value: 3
   "/array_hashes/nested":
     get:
       summary: nested
