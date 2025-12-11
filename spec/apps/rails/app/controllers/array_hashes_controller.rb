@@ -207,7 +207,26 @@ class ArrayHashesController < ApplicationController
           "config" => {
             "port" => 8080,
             "host" => "localhost"
-          }
+          },
+          "form" => [
+            {
+              "value" => "John Doe",
+              "options" => [
+                {"label" => "John Doe", "value" => "john_doe"},
+                {"label" => "Jane Doe", "value" => "jane_doe"}
+              ]
+            },
+            {
+              "value" => [],
+              "options" => {
+                "endpoint" => "some/endpoint"
+              }
+            },
+            {
+              "value" => nil,
+              "options" => nil
+            },
+          ]
         },
         {
           "id" => 2,
@@ -215,7 +234,8 @@ class ArrayHashesController < ApplicationController
             "port" => "3000",
             "host" => "example.com",
             "ssl" => true
-          }
+          },
+          "form" => nil
         }
       ]
     }

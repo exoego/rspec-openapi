@@ -272,15 +272,21 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       else
         unique_types = property_variations.map { |p| p[:type] }.compact.uniq
 
-        case unique_types.first
-        when 'array'
-          merged_schema[:properties][key] = { type: 'array' }
-          items_variations = property_variations.map { |p| p[:items] }.compact
-          merged_schema[:properties][key][:items] = build_merged_schema_from_variations(items_variations)
-        when 'object'
-          merged_schema[:properties][key] = build_merged_schema_from_variations(property_variations)
+        if unique_types.size > 1
+          # Different types detected - create oneOf
+          unique_props = property_variations.map { |p| p.reject { |k, _| k == :nullable } }.uniq
+          merged_schema[:properties][key] = { oneOf: unique_props }
         else
-          merged_schema[:properties][key] = property_variations.first.dup
+          case unique_types.first
+          when 'array'
+            merged_schema[:properties][key] = { type: 'array' }
+            items_variations = property_variations.map { |p| p[:items] }.compact
+            merged_schema[:properties][key][:items] = build_merged_schema_from_variations(items_variations)
+          when 'object'
+            merged_schema[:properties][key] = build_merged_schema_from_variations(property_variations)
+          else
+            merged_schema[:properties][key] = property_variations.first.dup
+          end
         end
       end
 

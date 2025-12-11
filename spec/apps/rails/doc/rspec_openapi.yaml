@@ -97,6 +97,41 @@ paths:
                           required:
                           - port
                           - host
+                        form:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              value:
+                                oneOf:
+                                - type: string
+                                - type: array
+                                  items: {}
+                                nullable: true
+                              options:
+                                oneOf:
+                                - type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      label:
+                                        type: string
+                                      value:
+                                        type: string
+                                    required:
+                                    - label
+                                    - value
+                                - type: object
+                                  properties:
+                                    endpoint:
+                                      type: string
+                                  required:
+                                  - endpoint
+                                nullable: true
+                            required:
+                            - value
+                            - options
+                          nullable: true
                       required:
                       - id
                       - config
@@ -108,11 +143,24 @@ paths:
                   config:
                     port: 8080
                     host: localhost
+                  form:
+                  - value: John Doe
+                    options:
+                    - label: John Doe
+                      value: john_doe
+                    - label: Jane Doe
+                      value: jane_doe
+                  - value: []
+                    options:
+                      endpoint: some/endpoint
+                  - value:
+                    options:
                 - id: 2
                   config:
                     port: '3000'
                     host: example.com
                     ssl: true
+                  form:
   "/array_hashes/nested":
     get:
       summary: nested
