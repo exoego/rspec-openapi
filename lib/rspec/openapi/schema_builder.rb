@@ -314,7 +314,9 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         nullable_only = all_prop_variations.select { |p| p && p.keys == [:nullable] }
         prop_variations = all_prop_variations.select { |p| p && p.keys != [:nullable] }.compact
 
-        has_nullable = all_prop_variations.any? { |v| v.nil? || (v.is_a?(Hash) && v[:nullable] == true) } || nullable_only.any?
+        has_nullable = all_prop_variations.any? do |v|
+          v.nil? || (v.is_a?(Hash) && v[:nullable] == true)
+        end || nullable_only.any?
 
         if prop_variations.empty? && has_nullable
           merged[:properties][key] = { nullable: true }
