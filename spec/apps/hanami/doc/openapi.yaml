@@ -84,6 +84,7 @@ paths:
                                   items:
                                     type: string
                                 - type: integer
+                                nullable: true
                               options:
                                 oneOf:
                                 - type: array
@@ -385,6 +386,7 @@ paths:
                                     - label
                                 required:
                                 - confirm_action
+                                nullable: true
                             required:
                             - label
                           nullable: true

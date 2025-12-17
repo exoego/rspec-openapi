@@ -403,6 +403,7 @@ paths:
                                     - label
                                 required:
                                 - confirm_action
+                                nullable: true
                             required:
                             - label
                           nullable: true

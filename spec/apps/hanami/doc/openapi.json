@@ -121,7 +121,8 @@
                                     {
                                       "type": "integer"
                                     }
-                                  ]
+                                  ],
+                                  "nullable": true
                                 },
                                 "options": {
                                   "oneOf": [
@@ -667,7 +668,8 @@
                                   },
                                   "required": [
                                     "confirm_action"
-                                  ]
+                                  ],
+                                  "nullable": true
                                 }
                               },
                               "required": [

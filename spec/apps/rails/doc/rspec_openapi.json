@@ -685,7 +685,8 @@
                                   },
                                   "required": [
                                     "confirm_action"
-                                  ]
+                                  ],
+                                  "nullable": true
                                 }
                               },
                               "required": [
