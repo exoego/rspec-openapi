@@ -364,4 +364,11 @@ RSpec.describe 'Array of hashes', type: :request do
       expect(response.status).to eq(200)
     end
   end
+
+  describe 'with mixed types in nested objects in nested array' do
+    it 'returns items that would produce different oneOf types' do
+      get '/array_hashes/multiple_one_of_test'
+      expect(response.status).to eq(200)
+    end
+  end
 end
