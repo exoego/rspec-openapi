@@ -191,8 +191,7 @@
                                 }
                               },
                               "required": [
-                                "value",
-                                "options"
+                                "value"
                               ]
                             },
                             "nullable": true
@@ -251,8 +250,178 @@
                         "ssl": true
                       },
                       "form": null
+                    },
+                    {
+                      "id": 3,
+                      "config": {
+                        "port": "9010",
+                        "host": "foo.example.com",
+                        "ssl": true
+                      }
                     }
                   ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/array_hashes/multiple_one_of_test": {
+      "get": {
+        "summary": "multiple_one_of_test",
+        "tags": [
+          "ArrayHash"
+        ],
+        "responses": {
+          "200": {
+            "description": "with mixed types in nested objects in nested array",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "form": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "inputs": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "value": {
+                                      "oneOf": [
+                                        {
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "boolean"
+                                        },
+                                        {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      ],
+                                      "nullable": true
+                                    }
+                                  },
+                                  "required": [
+                                    "value"
+                                  ]
+                                }
+                              }
+                            },
+                            "required": [
+                              "inputs"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "form"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "form": [
+                      {
+                        "inputs": [
+                          {
+                            "value": "John Doe"
+                          },
+                          {
+                            "value": "some_email_123@someone.com"
+                          },
+                          {
+                            "value": "In progress"
+                          },
+                          {
+                            "value": "2025-12-11T06:25:20.770+00:00"
+                          }
+                        ]
+                      },
+                      {
+                        "inputs": [
+                          {
+                            "value": null
+                          },
+                          {
+                            "value": "user_1"
+                          },
+                          {
+                            "value": "user_2"
+                          }
+                        ]
+                      },
+                      {
+                        "inputs": [
+                          {
+                            "value": false
+                          },
+                          {
+                            "value": "Some organisation"
+                          },
+                          {
+                            "value": "organisation_1"
+                          },
+                          {
+                            "value": [
+                              "organisation_1",
+                              "organisation_2",
+                              "organisation_3"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "inputs": [
+                          {
+                            "value": "Initialized"
+                          },
+                          {
+                            "value": "Initialized"
+                          },
+                          {
+                            "value": "Initialized"
+                          },
+                          {
+                            "value": "Initialized"
+                          },
+                          {
+                            "value": null
+                          }
+                        ]
+                      },
+                      {
+                        "inputs": [
+                          {
+                            "value": null
+                          },
+                          {
+                            "value": null
+                          },
+                          {
+                            "value": null
+                          },
+                          {
+                            "value": null
+                          }
+                        ]
+                      }
+                    ]
+                  }
                 }
               }
             }
@@ -516,7 +685,8 @@
                                   },
                                   "required": [
                                     "confirm_action"
-                                  ]
+                                  ],
+                                  "nullable": true
                                 }
                               },
                               "required": [

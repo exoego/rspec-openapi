@@ -356,6 +356,11 @@ class ArrayOfHashesTest < ActionDispatch::IntegrationTest
     get '/array_hashes/mixed_types_nested'
     assert_response 200
   end
+
+  test 'with mixed types in nested objects in nested array' do
+    get '/array_hashes/multiple_one_of_test'
+    assert_response 200
+  end
 end
 
 class RSpecHooksAfterSuiteTest < Minitest::Test

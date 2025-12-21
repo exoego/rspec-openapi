@@ -273,7 +273,6 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         unique_types = property_variations.map { |p| p[:type] }.compact.uniq
 
         if unique_types.size > 1
-          # Different types detected - create oneOf
           unique_props = property_variations.map { |p| p.reject { |k, _| k == :nullable } }.uniq
           merged_schema[:properties][key] = { oneOf: unique_props }
         else
@@ -315,7 +314,9 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         nullable_only = all_prop_variations.select { |p| p && p.keys == [:nullable] }
         prop_variations = all_prop_variations.select { |p| p && p.keys != [:nullable] }.compact
 
-        has_nullable = all_prop_variations.any?(&:nil?) || nullable_only.any?
+        has_nullable = all_prop_variations.any? do |v|
+          v.nil? || (v.is_a?(Hash) && v[:nullable] == true)
+        end || nullable_only.any?
 
         if prop_variations.empty? && has_nullable
           merged[:properties][key] = { nullable: true }
@@ -324,8 +325,21 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
           merged[:properties][key][:nullable] = true if has_nullable
         elsif prop_variations.size > 1
           prop_types = prop_variations.map { |p| p[:type] }.compact.uniq
+          has_one_of = prop_variations.any? { |p| p.key?(:oneOf) }
 
-          if prop_types.size == 1
+          if has_one_of
+            all_options = []
+            prop_variations.each do |prop|
+              clean_prop = prop.reject { |k, _| k == :nullable }
+              if clean_prop.key?(:oneOf)
+                all_options.concat(clean_prop[:oneOf])
+              else
+                all_options << clean_prop unless clean_prop.empty?
+              end
+            end
+            all_options.uniq!
+            merged[:properties][key] = { oneOf: all_options }
+          elsif prop_types.size == 1
             # Only recursively merge if it's an object type
             merged[:properties][key] = if prop_types.first == 'object'
                                          build_merged_schema_from_variations(prop_variations)

@@ -236,8 +236,111 @@ class ArrayHashesController < ApplicationController
             "ssl" => true
           },
           "form" => nil
-        }
+        },
+        {
+          "id" => 3,
+          "config" => {
+            "port" => "9010",
+            "host" => "foo.example.com",
+            "ssl" => true
+          }
+        },
       ]
+    }
+    render json: response
+  end
+
+  def multiple_one_of_test
+    response = {
+      "data" => {
+        "form" => [
+          {
+            "inputs" => [
+              {
+                "value" => 'John Doe',
+              },
+              {
+                "value" =>
+                  'some_email_123@someone.com',
+              },
+              {
+                "value" => 'In progress',
+              },
+              {
+                "value" => '2025-12-11T06:25:20.770+00:00',
+              },
+            ],
+          },
+          {
+            "inputs" => [
+              {
+                "value" => nil,
+              },
+              {
+                "value" => 'user_1',
+              },
+              {
+                "value" => 'user_2',
+              },
+            ],
+          },
+          {
+            "inputs" => [
+              {
+                "value" => false,
+              },
+              {
+                "value" => 'Some organisation',
+              },
+              {
+                "value" => 'organisation_1',
+              },
+              {
+                "value" => [
+                  'organisation_1',
+                  'organisation_2',
+                  'organisation_3',
+                ],
+              },
+            ],
+          },
+          {
+            "inputs" => [
+              {
+                "value" => 'Initialized',
+              },
+              {
+                "value" => 'Initialized',
+              },
+              {
+                "value" => 'Initialized',
+              },
+              {
+                "value" => 'Initialized',
+              },
+              {
+                "value" => nil,
+              },
+            ],
+          },
+          {
+            "inputs" => [
+              {
+                "value" => nil,
+              },
+              {
+                "value" => nil,
+              },
+              {
+                "value" => nil,
+              },
+              {
+                "value" => nil,
+              },
+            ],
+          },
+        ],
+      },
     }
     render json: response
   end
