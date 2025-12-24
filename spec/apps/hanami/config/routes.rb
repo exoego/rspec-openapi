@@ -59,6 +59,12 @@ module HanamiTest
     get '/example_summary_disabled', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"data":"no_summary"}']] }
     get '/empty_example_name', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"data":"empty_name"}']] }
 
+    # Test route for nested arrays (key_transformer coverage)
+    get '/nested_arrays_test', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"items":[{"name":"first","tags":["a","b","c"]},{"name":"second","tags":["x","y","z"]}],"matrix":[[1,2],[3,4]]}']] }
+
+    # Test route for invalid example_mode error handling
+    get '/invalid_example_mode', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }
+
     slice :my_engine, at: '/my_engine' do
       get '/test', to: ->(_env) { [200, { 'Content-Type' => 'text/plain' }, ['ANOTHER TEST']] }
       get '/eng/example', to: 'eng.example'

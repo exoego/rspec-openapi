@@ -224,3 +224,13 @@ RSpec.describe 'Empty example_name', type: :request do
     end
   end
 end
+
+# Test nested arrays response (key_transformer coverage)
+RSpec.describe 'Nested arrays', type: :request do
+  describe 'GET /nested_arrays_test' do
+    it 'returns nested arrays' do
+      get '/nested_arrays_test'
+      expect(last_response.status).to eq(200)
+    end
+  end
+end

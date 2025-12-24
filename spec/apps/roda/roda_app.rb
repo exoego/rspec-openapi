@@ -79,5 +79,21 @@ class RodaApp < Roda
     r.get 'empty_example_name' do
       { data: 'empty_name' }
     end
+
+    # Test route for nested arrays (key_transformer coverage)
+    r.get 'nested_arrays_test' do
+      {
+        items: [
+          { name: 'first', tags: %w[a b c] },
+          { name: 'second', tags: %w[x y z] }
+        ],
+        matrix: [[1, 2], [3, 4]]
+      }
+    end
+
+    # Test route for invalid example_mode error handling
+    r.get 'invalid_example_mode' do
+      { status: 'ok' }
+    end
   end
 end

@@ -65,5 +65,11 @@ Rails.application.routes.draw do
     get '/custom_example_name' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"data":"custom_name"}']] }
     get '/example_summary_disabled' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"data":"no_summary"}']] }
     get '/empty_example_name' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"data":"empty_name"}']] }
+
+    # Test route for nested arrays (key_transformer coverage)
+    get '/nested_arrays_test' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"items":[{"name":"first","tags":["a","b","c"]},{"name":"second","tags":["x","y","z"]}],"matrix":[[1,2],[3,4]]}']] }
+
+    # Test route for invalid example_mode error handling
+    get '/invalid_example_mode' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }
   end
 end

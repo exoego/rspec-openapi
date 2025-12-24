@@ -1771,6 +1771,90 @@
         }
       }
     },
+    "/nested_arrays_test": {
+      "get": {
+        "summary": "GET /nested_arrays_test",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "returns nested arrays",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "tags": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "required": [
+                          "name",
+                          "tags"
+                        ]
+                      }
+                    },
+                    "matrix": {
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "matrix"
+                  ]
+                },
+                "example": {
+                  "items": [
+                    {
+                      "name": "first",
+                      "tags": [
+                        "a",
+                        "b",
+                        "c"
+                      ]
+                    },
+                    {
+                      "name": "second",
+                      "tags": [
+                        "x",
+                        "y",
+                        "z"
+                      ]
+                    }
+                  ],
+                  "matrix": [
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      3,
+                      4
+                    ]
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/rack/bar": {
       "get": {
         "summary": "GET /rack/bar",
