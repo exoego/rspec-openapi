@@ -2481,6 +2481,67 @@
         }
       }
     },
+    "/tags": {
+      "post": {
+        "summary": "POST /tags",
+        "tags": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "names": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "priority": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "names",
+                  "priority"
+                ]
+              },
+              "example": {
+                "names": [
+                  "ruby",
+                  "rails",
+                  "rspec"
+                ],
+                "priority": 1
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "creates tags with array of strings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "created": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "created"
+                  ]
+                },
+                "example": {
+                  "created": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/test_block": {
       "get": {
         "summary": "GET /test_block",

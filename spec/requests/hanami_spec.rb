@@ -440,6 +440,17 @@ RSpec.describe 'example_mode disabled globally', type: :request do
   end
 end
 
+# Test request body with array of primitive values (for adjust_params coverage)
+RSpec.describe 'Tags with array params', type: :request do
+  describe '#create' do
+    it 'creates tags with array of strings' do
+      post '/tags', { names: %w[ruby rails rspec], priority: 1 }.to_json,
+           { 'CONTENT_TYPE' => 'application/json' }
+      expect(last_response.status).to eq(201)
+    end
+  end
+end
+
 RSpec.describe 'Array of hashes', type: :request do
   describe 'with nullable keys' do
     it 'returns some content' do

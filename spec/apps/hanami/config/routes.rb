@@ -50,6 +50,9 @@ module HanamiTest
     get '/example_mode_disabled_multiple', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"disabled_multiple"}']] }
     get '/example_mode_disabled_none', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"disabled_none"}']] }
 
+    # Test route for array with primitive values in request params
+    post '/tags', to: ->(_env) { [201, { 'Content-Type' => 'application/json' }, ['{"created":true}']] }
+
     slice :my_engine, at: '/my_engine' do
       get '/test', to: ->(_env) { [200, { 'Content-Type' => 'text/plain' }, ['ANOTHER TEST']] }
       get '/eng/example', to: 'eng.example'
