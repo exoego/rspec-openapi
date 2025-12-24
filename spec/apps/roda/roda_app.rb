@@ -14,19 +14,70 @@ class RodaApp < Roda
       end
     end
 
-    r.on 'example_mode_roda' do
-      # GET /example_mode_roda
-      r.get do
-        { status: 'roda_example' }
-      end
+    # Test routes for example_mode feature testing
+    r.get 'example_mode_none' do
+      { status: 'ok' }
     end
 
-    r.on 'tags_roda' do
-      # POST /tags_roda
-      r.post do
-        params = JSON.parse(request.body.read, symbolize_names: true)
-        { created: true, tags: params[:names] }
-      end
+    r.get 'example_mode_single' do
+      { status: 'single' }
+    end
+
+    r.get 'example_mode_multiple' do
+      { status: 'multiple' }
+    end
+
+    r.get 'example_mode_mixed' do
+      { status: 'mixed' }
+    end
+
+    r.get 'example_mode_inherit' do
+      { status: 'inherit' }
+    end
+
+    r.get 'example_mode_override_single' do
+      { status: 'override_single' }
+    end
+
+    r.get 'example_mode_override_none' do
+      { status: 'override_none' }
+    end
+
+    r.get 'example_mode_disabled' do
+      { status: 'disabled' }
+    end
+
+    r.get 'example_mode_disabled_single' do
+      { status: 'disabled_single' }
+    end
+
+    r.get 'example_mode_disabled_multiple' do
+      { status: 'disabled_multiple' }
+    end
+
+    r.get 'example_mode_disabled_none' do
+      { status: 'disabled_none' }
+    end
+
+    r.post 'tags' do
+      response.status = 201
+      { created: true }
+    end
+
+    r.get 'custom_example_key' do
+      { data: 'custom_key' }
+    end
+
+    r.get 'custom_example_name' do
+      { data: 'custom_name' }
+    end
+
+    r.get 'example_summary_disabled' do
+      { data: 'no_summary' }
+    end
+
+    r.get 'empty_example_name' do
+      { data: 'empty_name' }
     end
   end
 end

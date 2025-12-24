@@ -48,8 +48,22 @@ Rails.application.routes.draw do
       end
     end
 
-    # Test routes for example_mode feature
+    # Test routes for example_mode feature testing
+    get '/example_mode_none' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }
+    get '/example_mode_single' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"single"}']] }
     get '/example_mode_multiple' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"multiple"}']] }
+    get '/example_mode_mixed' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"mixed"}']] }
+    get '/example_mode_inherit' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"inherit"}']] }
+    get '/example_mode_override_single' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"override_single"}']] }
+    get '/example_mode_override_none' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"override_none"}']] }
+    get '/example_mode_disabled' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"disabled"}']] }
+    get '/example_mode_disabled_single' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"disabled_single"}']] }
+    get '/example_mode_disabled_multiple' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"disabled_multiple"}']] }
+    get '/example_mode_disabled_none' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"disabled_none"}']] }
     post '/tags' => ->(_env) { [201, { 'Content-Type' => 'application/json' }, ['{"created":true}']] }
+    get '/custom_example_key' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"data":"custom_key"}']] }
+    get '/custom_example_name' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"data":"custom_name"}']] }
+    get '/example_summary_disabled' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"data":"no_summary"}']] }
+    get '/empty_example_name' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"data":"empty_name"}']] }
   end
 end

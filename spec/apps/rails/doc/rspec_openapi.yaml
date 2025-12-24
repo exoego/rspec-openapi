@@ -582,6 +582,182 @@ paths:
                 items:
                 - id: 1
                   name: Item 1
+  "/custom_example_key":
+    get:
+      summary: GET /custom_example_key
+      tags: []
+      responses:
+        '200':
+          description: uses custom example key instead of description
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                required:
+                - data
+              examples:
+                my_custom_key:
+                  summary: uses custom example key instead of description
+                  value:
+                    data: custom_key
+  "/custom_example_name":
+    get:
+      summary: GET /custom_example_name
+      tags: []
+      responses:
+        '200':
+          description: uses custom example name for summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                required:
+                - data
+              examples:
+                my_custom_name:
+                  summary: My Custom Name
+                  value:
+                    data: custom_name
+  "/empty_example_name":
+    get:
+      summary: GET /empty_example_name
+      tags: []
+      responses:
+        '200':
+          description: handles empty example_name
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                required:
+                - data
+              examples:
+                default:
+                  value:
+                    data: empty_name
+  "/example_mode_disabled":
+    get:
+      summary: GET /example_mode_disabled
+      tags: []
+      responses:
+        '200':
+          description: does not generate examples for default mode
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+  "/example_mode_disabled_multiple":
+    get:
+      summary: GET /example_mode_disabled_multiple
+      tags: []
+      responses:
+        '200':
+          description: does not generate examples for multiple mode
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+  "/example_mode_disabled_none":
+    get:
+      summary: GET /example_mode_disabled_none
+      tags: []
+      responses:
+        '200':
+          description: does not generate examples for none mode
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+  "/example_mode_disabled_single":
+    get:
+      summary: GET /example_mode_disabled_single
+      tags: []
+      responses:
+        '200':
+          description: does not generate examples for single mode
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+  "/example_mode_inherit":
+    get:
+      summary: GET /example_mode_inherit
+      tags: []
+      responses:
+        '200':
+          description: also inherits multiple from parent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+              examples:
+                inherits_multiple_from_parent:
+                  summary: inherits multiple from parent
+                  value:
+                    status: inherit
+                also_inherits_multiple_from_parent:
+                  summary: also inherits multiple from parent
+                  value:
+                    status: inherit
+  "/example_mode_mixed":
+    get:
+      summary: GET /example_mode_mixed
+      tags: []
+      responses:
+        '200':
+          description: second with multiple mode
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+              examples:
+                first_with_single_mode:
+                  summary: first with single mode
+                  value:
+                    status: mixed
+                second_with_multiple_mode:
+                  summary: second with multiple mode
+                  value:
+                    status: mixed
   "/example_mode_multiple":
     get:
       summary: GET /example_mode_multiple
@@ -607,6 +783,95 @@ paths:
                   summary: second example
                   value:
                     status: multiple
+  "/example_mode_none":
+    get:
+      summary: GET /example_mode_none
+      tags: []
+      responses:
+        '200':
+          description: generates schema without example
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+  "/example_mode_override_none":
+    get:
+      summary: GET /example_mode_override_none
+      tags: []
+      responses:
+        '200':
+          description: overrides to none
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+  "/example_mode_override_single":
+    get:
+      summary: GET /example_mode_override_single
+      tags: []
+      responses:
+        '200':
+          description: overrides to single
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+              example:
+                status: override_single
+  "/example_mode_single":
+    get:
+      summary: GET /example_mode_single
+      tags: []
+      responses:
+        '200':
+          description: generates schema with single example
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+              example:
+                status: single
+  "/example_summary_disabled":
+    get:
+      summary: GET /example_summary_disabled
+      tags: []
+      responses:
+        '200':
+          description: generates examples without summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                required:
+                - data
+              examples:
+                generates_examples_without_summary:
+                  summary: generates examples without summary
+                  value:
+                    data: no_summary
   "/images":
     get:
       summary: index
