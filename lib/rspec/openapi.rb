@@ -13,6 +13,7 @@ require 'rspec/openapi/schema_sorter'
 require 'rspec/openapi/key_transformer'
 require 'rspec/openapi/shared_hooks'
 require 'rspec/openapi/extractors'
+require 'rspec/openapi/extractors/shared_extractor'
 require 'rspec/openapi/extractors/rack'
 
 module RSpec::OpenAPI
@@ -30,7 +31,9 @@ module RSpec::OpenAPI
   @title = File.basename(Dir.pwd)
   @comment = nil
   @enable_example = true
+  @enable_examples = false
   @description_builder = ->(example) { example.description }
+  @examples_description_builder = ->(example) { example.description }
   @summary_builder = ->(example) { example.metadata[:summary] }
   @tags_builder = ->(example) { example.metadata[:tags] }
   @formats_builder = ->(example) { example.metadata[:formats] }
@@ -54,7 +57,9 @@ module RSpec::OpenAPI
                   :title,
                   :comment,
                   :enable_example,
+                  :enable_examples,
                   :description_builder,
+                  :examples_description_builder,
                   :summary_builder,
                   :tags_builder,
                   :formats_builder,

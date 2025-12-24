@@ -951,17 +951,40 @@ paths:
                   - storage_size
                   - created_at
                   - updated_at
-              example:
-              - id: 1
-                name: access
-                description: logs
-                database:
-                  id: 2
-                  name: production
-                null_sample:
-                storage_size: 12.3
-                created_at: '2020-07-17T00:00:00+00:00'
-                updated_at: '2020-07-17T00:00:00+00:00'
+              examples:
+                with_flat_query_parameters:
+                - id: 1
+                  name: access
+                  description: logs
+                  database:
+                    id: 2
+                    name: production
+                  null_sample:
+                  storage_size: 12.3
+                  created_at: '2020-07-17T00:00:00+00:00'
+                  updated_at: '2020-07-17T00:00:00+00:00'
+                with_deep_query_parameters:
+                - id: 1
+                  name: access
+                  description: logs
+                  database:
+                    id: 2
+                    name: production
+                  null_sample:
+                  storage_size: 12.3
+                  created_at: '2020-07-17T00:00:00+00:00'
+                  updated_at: '2020-07-17T00:00:00+00:00'
+                with_different_deep_query_parameters:
+                - id: 1
+                  name: access
+                  description: logs
+                  database:
+                    id: 2
+                    name: production
+                  null_sample:
+                  storage_size: 12.3
+                  created_at: '2020-07-17T00:00:00+00:00'
+                  updated_at: '2020-07-17T00:00:00+00:00'
         '401':
           description: does not return tables if unauthorized
           content:

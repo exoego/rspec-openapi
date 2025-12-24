@@ -15,8 +15,10 @@ RSpec::OpenAPI::Record = Struct.new(
   :formats,               # @param [Proc]    - ->(key) { key.end_with?('_at') ? 'date-time' : nil }
   :operation_id,          # @param [String]   - "request-1234"
   :description,           # @param [String]  - "returns a status"
+  :example_description,   # @param [String]  - "returns a status"
   :security,              # @param [Array]  - [{securityScheme1: []}]
   :deprecated,            # @param [Boolean] - true
+  :enable_examples,       # @param [Boolean] - true
   :status,                # @param [Integer] - 200
   :response_body,         # @param [Object]  - {"status" => "ok"}
   :response_headers,      # @param [Array]  - [["header_key1", "header_value1"], ["header_key2", "header_value2"]]
