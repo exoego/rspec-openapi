@@ -7,6 +7,7 @@ require 'rspec/openapi/record_builder'
 require 'rspec/openapi/result_recorder'
 require 'rspec/openapi/schema_builder'
 require 'rspec/openapi/schema_file'
+require 'rspec/openapi/example_key'
 require 'rspec/openapi/schema_merger'
 require 'rspec/openapi/schema_cleaner'
 require 'rspec/openapi/schema_sorter'
@@ -31,9 +32,9 @@ module RSpec::OpenAPI
   @title = File.basename(Dir.pwd)
   @comment = nil
   @enable_example = true
-  @enable_examples = false
+  @enable_example_summary = true
   @description_builder = ->(example) { example.description }
-  @examples_description_builder = ->(example) { example.description }
+  @example_name_builder = ->(example) { example.description }
   @summary_builder = ->(example) { example.metadata[:summary] }
   @tags_builder = ->(example) { example.metadata[:tags] }
   @formats_builder = ->(example) { example.metadata[:formats] }
@@ -57,9 +58,9 @@ module RSpec::OpenAPI
                   :title,
                   :comment,
                   :enable_example,
-                  :enable_examples,
+                  :enable_example_summary,
                   :description_builder,
-                  :examples_description_builder,
+                  :example_name_builder,
                   :summary_builder,
                   :tags_builder,
                   :formats_builder,

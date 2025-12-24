@@ -6,8 +6,8 @@ class << RSpec::OpenAPI::Extractors::Rack = Object.new
   # @param [RSpec::Core::Example] example
   # @return Array
   def request_attributes(request, example)
-    summary, tags, formats, operation_id, required_request_params, security, description, deprecated, enable_examples,
-      example_description = SharedExtractor.attributes(example)
+    summary, tags, formats, operation_id, required_request_params, security, description, deprecated, example_mode,
+      example_key, example_name = SharedExtractor.attributes(example)
 
     raw_path_params = request.path_parameters
     path = request.path
@@ -24,8 +24,9 @@ class << RSpec::OpenAPI::Extractors::Rack = Object.new
       security,
       deprecated,
       formats,
-      enable_examples,
-      example_description,
+      example_mode,
+      example_key,
+      example_name,
     ]
   end
 

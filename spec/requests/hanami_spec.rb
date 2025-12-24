@@ -51,7 +51,7 @@ end
 
 RSpec.describe 'Tables', type: :request do
   describe '#index', openapi: { summary: 'Get a list of tables' } do
-    context 'returns a list of tables', openapi: { enable_examples: true } do
+    context 'returns a list of tables', openapi: { example_mode: :multiple } do
       it 'with flat query parameters' do
         get '/tables', { page: '1', per: '10' }, { 'AUTHORIZATION' => 'k0kubun', 'X_AUTHORIZATION_TOKEN' => 'token' }
         expect(last_response.status).to eq(200)
@@ -307,6 +307,136 @@ RSpec.describe 'non-numeric path parameter', type: :request do
   it 'raises not found' do
     get '/sites/no-such'
     expect(last_response.status).to eq(404)
+  end
+end
+
+# Tests for example_mode feature (using dedicated test endpoints)
+
+# Test :none mode - should generate only schema, no examples
+RSpec.describe 'example_mode :none', type: :request do
+  describe 'GET /example_mode_none', openapi: { example_mode: :none } do
+    it 'generates schema without example' do
+      get '/example_mode_none'
+      expect(last_response.status).to eq(200)
+    end
+  end
+end
+
+# Test :single mode (default) - should generate single example
+RSpec.describe 'example_mode :single', type: :request do
+  describe 'GET /example_mode_single' do
+    it 'generates schema with single example' do
+      get '/example_mode_single'
+      expect(last_response.status).to eq(200)
+    end
+  end
+end
+
+# Test :multiple mode - should generate named examples
+RSpec.describe 'example_mode :multiple', type: :request do
+  describe 'GET /example_mode_multiple', openapi: { example_mode: :multiple } do
+    it 'first example' do
+      get '/example_mode_multiple'
+      expect(last_response.status).to eq(200)
+    end
+
+    it 'second example' do
+      get '/example_mode_multiple'
+      expect(last_response.status).to eq(200)
+    end
+  end
+end
+
+# Test inheritance - parent sets :multiple, children inherit
+RSpec.describe 'example_mode inheritance', type: :request, openapi: { example_mode: :multiple } do
+  describe 'GET /example_mode_inherit' do
+    # This test inherits :multiple from parent RSpec.describe
+    it 'inherits multiple from parent' do
+      get '/example_mode_inherit'
+      expect(last_response.status).to eq(200)
+    end
+
+    it 'also inherits multiple from parent' do
+      get '/example_mode_inherit'
+      expect(last_response.status).to eq(200)
+    end
+  end
+
+  # Test override to :single within :multiple context
+  describe 'GET /example_mode_override_single', openapi: { example_mode: :single } do
+    it 'overrides to single' do
+      get '/example_mode_override_single'
+      expect(last_response.status).to eq(200)
+    end
+  end
+
+  # Test override to :none within :multiple context
+  describe 'GET /example_mode_override_none', openapi: { example_mode: :none } do
+    it 'overrides to none' do
+      get '/example_mode_override_none'
+      expect(last_response.status).to eq(200)
+    end
+  end
+end
+
+# Test mixed example modes on same endpoint (merger conversion test)
+# First test with :single (example), second test with :multiple (examples)
+# Merger should convert :single to examples when mixed
+RSpec.describe 'example_mode mixed', type: :request do
+  describe 'GET /example_mode_mixed' do
+    # First test with :single (default) - will be converted to examples by merger
+    it 'first with single mode' do
+      get '/example_mode_mixed'
+      expect(last_response.status).to eq(200)
+    end
+
+    # Second test with :multiple - merger should convert the first to examples
+    context 'with multiple', openapi: { example_mode: :multiple } do
+      it 'second with multiple mode' do
+        get '/example_mode_mixed'
+        expect(last_response.status).to eq(200)
+      end
+    end
+  end
+end
+
+# Test global enable_example = false overrides example_mode
+RSpec.describe 'example_mode disabled globally', type: :request do
+  before(:context) do
+    @original_enable_example = RSpec::OpenAPI.enable_example
+    RSpec::OpenAPI.enable_example = false
+  end
+
+  after(:context) do
+    RSpec::OpenAPI.enable_example = @original_enable_example
+  end
+
+  describe 'GET /example_mode_disabled' do
+    it 'does not generate examples for default mode' do
+      get '/example_mode_disabled'
+      expect(last_response.status).to eq(200)
+    end
+  end
+
+  describe 'GET /example_mode_disabled_single', openapi: { example_mode: :single } do
+    it 'does not generate examples for single mode' do
+      get '/example_mode_disabled_single'
+      expect(last_response.status).to eq(200)
+    end
+  end
+
+  describe 'GET /example_mode_disabled_multiple', openapi: { example_mode: :multiple } do
+    it 'does not generate examples for multiple mode' do
+      get '/example_mode_disabled_multiple'
+      expect(last_response.status).to eq(200)
+    end
+  end
+
+  describe 'GET /example_mode_disabled_none', openapi: { example_mode: :none } do
+    it 'does not generate examples for none mode' do
+      get '/example_mode_disabled_none'
+      expect(last_response.status).to eq(200)
+    end
   end
 end
 

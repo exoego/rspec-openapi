@@ -135,8 +135,14 @@ RSpec::OpenAPI.title = -> (example) {
   end
 }
 
-# Disable generating `example`
+# Disable generating `example` globally
 RSpec::OpenAPI.enable_example = false
+
+# Customize example name generation (used for multiple examples)
+RSpec::OpenAPI.example_name_builder = -> (example) { example.description }
+
+# Disable generating example summaries for `examples`
+RSpec::OpenAPI.enable_example_summary = false
 
 # Change `info.version`
 RSpec::OpenAPI.application_version = '1.0.0'
@@ -359,6 +365,93 @@ Some examples' attributes can be overwritten via RSpec metadata options. Example
 ```
 
 **NOTE**: `description` key will override also the one provided by `RSpec::OpenAPI.description_builder` method.
+
+### Multiple Examples Mode
+
+You can generate multiple named examples for the same endpoint using `example_mode`:
+
+```rb
+describe '#index', openapi: { example_mode: :multiple } do
+  it 'with pagination' do
+    get '/tables', params: { page: 1, per: 10 }
+    expect(response.status).to eq(200)
+  end
+
+  it 'with filter' do
+    get '/tables', params: { filter: { name: 'test' } }
+    expect(response.status).to eq(200)
+  end
+end
+```
+
+This generates OpenAPI with multiple named examples:
+
+```yaml
+responses:
+  '200':
+    content:
+      application/json:
+        schema: { ... }
+        examples:
+          with_pagination:
+            value: { ... }
+          with_filter:
+            value: { ... }
+```
+
+Available `example_mode` values:
+- `:single` (default) - generates single `example` field
+- `:multiple` - generates named `examples` with test descriptions as keys
+- `:none` - generates only schema, no examples
+
+The mode is inherited by nested contexts and can be overridden at any level.
+
+**Note:** If multiple examples resolve to the same example key for a single endpoint, the last one wins (overwrites).
+
+#### Merge Behavior with Mixed Modes
+
+When multiple tests target the same endpoint with different `example_mode` settings (even from different spec files), the merger automatically converts to `examples` format:
+
+```rb
+# spec/requests/api_spec.rb
+describe 'GET /users' do
+  it 'returns users' do  # default :single mode
+    get '/users'
+    expect(response.status).to eq(200)
+  end
+end
+
+# spec/requests/admin_spec.rb
+describe 'GET /users', openapi: { example_mode: :multiple } do
+  it 'with admin privileges' do
+    get '/users', headers: { 'X-Admin': 'true' }
+    expect(response.status).to eq(200)
+  end
+end
+```
+
+Result - both examples merged into `examples`:
+```yaml
+responses:
+  '200':
+    content:
+      application/json:
+        examples:
+          returns_users:
+            value: { ... }
+          with_admin_privileges:
+            value: { ... }
+```
+
+To exclude specific tests from example generation, use `example_mode: :none`:
+
+```rb
+describe 'GET /users', openapi: { example_mode: :none } do
+  it 'edge case test' do
+    # This won't add examples to OpenAPI spec
+  end
+end
+```
 
 ## Experimental minitest support
 
