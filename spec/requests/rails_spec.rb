@@ -137,18 +137,31 @@ RSpec.describe 'Tables', type: :request do
   end
 end
 
-# Test let(:request)/let(:response) overrides do not affect OpenAPI capture
-RSpec.describe 'Request/response overrides', type: :request do
+RSpec.describe 'Rails extractor request_response', type: :request do
+  it 'uses integration_session when available', openapi: false do
+    get '/override_probe', headers: { authorization: 'k0kubun' }
+
+    session = send(:integration_session)
+    request, response = RSpec::OpenAPI::Extractors::Rails.request_response(self)
+
+    expect(request).to equal(session.request)
+    expect(response).to equal(session.response)
+  end
+end
+
+RSpec.describe 'Rails extractor request_response with overrides', type: :request do
   let(:request) { :stubbed_request }
   let(:response) { :stubbed_response }
 
-  it 'records the real response', openapi: false do |example|
+  it 'falls back to real request/response when integration_session is unavailable', openapi: false do
     get '/override_probe', headers: { authorization: 'k0kubun' }
 
-    record = RSpec::OpenAPI::RecordBuilder.build(self, example: example, extractor: RSpec::OpenAPI::Extractors::Rails)
-    raise 'OpenAPI record was not generated' unless record
+    singleton_class = class << self; self; end
+    singleton_class.send(:define_method, :integration_session) { nil }
 
-    expect(record.status).to eq(200)
+    request, response = RSpec::OpenAPI::Extractors::Rails.request_response(self)
+    expect(request).to be_a(ActionDispatch::Request)
+    expect(response).to be_a(ActionDispatch::TestResponse)
   end
 end
 
