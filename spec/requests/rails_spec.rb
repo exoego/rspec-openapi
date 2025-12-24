@@ -372,3 +372,32 @@ RSpec.describe 'Array of hashes', type: :request do
     end
   end
 end
+
+# Test let(:request)/let(:response) overrides do not affect OpenAPI capture
+RSpec.describe 'Request/response overrides', type: :request do
+  let(:request) { :stubbed_request }
+  let(:response) { :stubbed_response }
+
+  before(:context) do
+    @record_counts = RSpec::OpenAPI.path_records.each_with_object({}) do |(path, records), acc|
+      acc[path] = records.size
+    end
+  end
+
+  after(:context) do
+    added_paths = []
+    RSpec::OpenAPI.path_records.each do |path, records|
+      previous = @record_counts[path] || 0
+      added_paths << path if records.size == previous + 1
+    end
+
+    raise 'OpenAPI record was not generated' unless added_paths.size == 1
+
+    record = RSpec::OpenAPI.path_records[added_paths.first].last
+    raise "Unexpected response status: #{record.status.inspect}" unless record.status == 200
+  end
+
+  it 'records the real response' do
+    get '/tables', headers: { authorization: 'k0kubun' }
+  end
+end
