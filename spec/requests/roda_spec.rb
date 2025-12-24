@@ -30,4 +30,26 @@ RSpec.describe 'Roda', type: :request do
       end
     end
   end
+
+  # Test example_mode :multiple in Roda
+  describe '/example_mode_roda', openapi: { example_mode: :multiple } do
+    it 'first roda example' do
+      get '/example_mode_roda'
+      expect(last_response.status).to eq(200)
+    end
+
+    it 'second roda example' do
+      get '/example_mode_roda'
+      expect(last_response.status).to eq(200)
+    end
+  end
+
+  # Test array primitives in request body for Roda
+  describe '/tags_roda' do
+    it 'creates tags with array of strings' do
+      post '/tags_roda', { names: %w[roda ruby rack], priority: 2 }.to_json,
+           'CONTENT_TYPE' => 'application/json'
+      expect(last_response.status).to eq(200)
+    end
+  end
 end

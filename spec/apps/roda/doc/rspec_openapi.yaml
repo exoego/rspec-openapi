@@ -5,6 +5,30 @@ info:
   version: 7.7.7
 servers: []
 paths:
+  "/example_mode_roda":
+    get:
+      summary: GET /example_mode_roda
+      responses:
+        '200':
+          description: it second roda example
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+              examples:
+                first_roda_example:
+                  summary: first roda example
+                  value:
+                    status: roda_example
+                second_roda_example:
+                  summary: second roda example
+                  value:
+                    status: roda_example
   "/roda":
     post:
       summary: Create roda resource
@@ -38,3 +62,50 @@ paths:
               example:
                 id: 1
                 name: hello
+  "/tags_roda":
+    post:
+      summary: POST /tags_roda
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                names:
+                  type: array
+                  items:
+                    type: string
+                priority:
+                  type: integer
+              required:
+              - names
+              - priority
+            example:
+              names:
+              - roda
+              - ruby
+              - rack
+              priority: 2
+      responses:
+        '200':
+          description: it creates tags with array of strings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  created:
+                    type: boolean
+                  tags:
+                    type: array
+                    items:
+                      type: string
+                required:
+                - created
+                - tags
+              example:
+                created: true
+                tags:
+                - roda
+                - ruby
+                - rack

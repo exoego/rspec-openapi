@@ -372,3 +372,29 @@ RSpec.describe 'Array of hashes', type: :request do
     end
   end
 end
+
+# Tests for example_mode feature in Rails
+RSpec.describe 'example_mode :multiple in Rails', type: :request do
+  describe 'GET /example_mode_multiple', openapi: { example_mode: :multiple } do
+    it 'first example' do
+      get '/example_mode_multiple'
+      expect(response.status).to eq(200)
+    end
+
+    it 'second example' do
+      get '/example_mode_multiple'
+      expect(response.status).to eq(200)
+    end
+  end
+end
+
+# Test request body with array of primitive values in Rails
+RSpec.describe 'Tags with array params in Rails', type: :request do
+  describe '#create' do
+    it 'creates tags with array of strings' do
+      post '/tags', params: { names: %w[ruby rails rspec], priority: 1 }.to_json,
+                    headers: { 'CONTENT_TYPE' => 'application/json' }
+      expect(response.status).to eq(201)
+    end
+  end
+end

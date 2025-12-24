@@ -582,6 +582,31 @@ paths:
                 items:
                 - id: 1
                   name: Item 1
+  "/example_mode_multiple":
+    get:
+      summary: GET /example_mode_multiple
+      tags: []
+      responses:
+        '200':
+          description: second example
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+              examples:
+                first_example:
+                  summary: first example
+                  value:
+                    status: multiple
+                second_example:
+                  summary: second example
+                  value:
+                    status: multiple
   "/images":
     get:
       summary: index
@@ -1324,6 +1349,45 @@ paths:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
+  "/tags":
+    post:
+      summary: POST /tags
+      tags: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                names:
+                  type: array
+                  items:
+                    type: string
+                priority:
+                  type: integer
+              required:
+              - names
+              - priority
+            example:
+              names:
+              - ruby
+              - rails
+              - rspec
+              priority: 1
+      responses:
+        '201':
+          description: creates tags with array of strings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  created:
+                    type: boolean
+                required:
+                - created
+              example:
+                created: true
   "/test_block":
     get:
       summary: GET /test_block

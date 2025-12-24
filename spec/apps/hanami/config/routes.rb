@@ -53,6 +53,12 @@ module HanamiTest
     # Test route for array with primitive values in request params
     post '/tags', to: ->(_env) { [201, { 'Content-Type' => 'application/json' }, ['{"created":true}']] }
 
+    # Test routes for custom example_key and example_name
+    get '/custom_example_key', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"data":"custom_key"}']] }
+    get '/custom_example_name', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"data":"custom_name"}']] }
+    get '/example_summary_disabled', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"data":"no_summary"}']] }
+    get '/empty_example_name', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"data":"empty_name"}']] }
+
     slice :my_engine, at: '/my_engine' do
       get '/test', to: ->(_env) { [200, { 'Content-Type' => 'text/plain' }, ['ANOTHER TEST']] }
       get '/eng/example', to: 'eng.example'

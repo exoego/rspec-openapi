@@ -47,5 +47,9 @@ Rails.application.routes.draw do
         resources :extensions, only: [:index, :create]
       end
     end
+
+    # Test routes for example_mode feature
+    get '/example_mode_multiple' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"multiple"}']] }
+    post '/tags' => ->(_env) { [201, { 'Content-Type' => 'application/json' }, ['{"created":true}']] }
   end
 end

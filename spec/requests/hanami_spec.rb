@@ -451,6 +451,55 @@ RSpec.describe 'Tags with array params', type: :request do
   end
 end
 
+# Test custom example_key override
+RSpec.describe 'Custom example_key', type: :request do
+  describe 'GET /custom_example_key', openapi: { example_mode: :multiple, example_key: 'my_custom_key' } do
+    it 'uses custom example key instead of description' do
+      get '/custom_example_key'
+      expect(last_response.status).to eq(200)
+    end
+  end
+end
+
+# Test custom example_name override
+RSpec.describe 'Custom example_name', type: :request do
+  describe 'GET /custom_example_name', openapi: { example_mode: :multiple, example_name: 'My Custom Name' } do
+    it 'uses custom example name for summary' do
+      get '/custom_example_name'
+      expect(last_response.status).to eq(200)
+    end
+  end
+end
+
+# Test enable_example_summary = false
+RSpec.describe 'Example summary disabled', type: :request do
+  before(:context) do
+    @original_enable_example_summary = RSpec::OpenAPI.enable_example_summary
+    RSpec::OpenAPI.enable_example_summary = false
+  end
+
+  after(:context) do
+    RSpec::OpenAPI.enable_example_summary = @original_enable_example_summary
+  end
+
+  describe 'GET /example_summary_disabled', openapi: { example_mode: :multiple } do
+    it 'generates examples without summary' do
+      get '/example_summary_disabled'
+      expect(last_response.status).to eq(200)
+    end
+  end
+end
+
+# Test empty example_name (triggers nil summary path)
+RSpec.describe 'Empty example_name', type: :request do
+  describe 'GET /empty_example_name', openapi: { example_mode: :multiple, example_name: '' } do
+    it 'handles empty example_name' do
+      get '/empty_example_name'
+      expect(last_response.status).to eq(200)
+    end
+  end
+end
+
 RSpec.describe 'Array of hashes', type: :request do
   describe 'with nullable keys' do
     it 'returns some content' do
