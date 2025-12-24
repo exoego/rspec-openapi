@@ -12,6 +12,10 @@ class TablesController < ApplicationController
     end
   end
 
+  def override_probe
+    render json: { ok: true }
+  end
+
   def show
     render json: find_table(params[:id])
   end

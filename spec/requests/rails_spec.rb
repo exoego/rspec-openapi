@@ -137,6 +137,21 @@ RSpec.describe 'Tables', type: :request do
   end
 end
 
+# Test let(:request)/let(:response) overrides do not affect OpenAPI capture
+RSpec.describe 'Request/response overrides', type: :request do
+  let(:request) { :stubbed_request }
+  let(:response) { :stubbed_response }
+
+  it 'records the real response', openapi: false do |example|
+    get '/override_probe', headers: { authorization: 'k0kubun' }
+
+    record = RSpec::OpenAPI::RecordBuilder.build(self, example: example, extractor: RSpec::OpenAPI::Extractors::Rails)
+    raise 'OpenAPI record was not generated' unless record
+
+    expect(record.status).to eq(200)
+  end
+end
+
 RSpec.describe 'Images', type: :request do
   describe '#payload' do
     it 'returns a image payload' do
@@ -370,34 +385,5 @@ RSpec.describe 'Array of hashes', type: :request do
       get '/array_hashes/multiple_one_of_test'
       expect(response.status).to eq(200)
     end
-  end
-end
-
-# Test let(:request)/let(:response) overrides do not affect OpenAPI capture
-RSpec.describe 'Request/response overrides', type: :request do
-  let(:request) { :stubbed_request }
-  let(:response) { :stubbed_response }
-
-  before(:context) do
-    @record_counts = RSpec::OpenAPI.path_records.each_with_object({}) do |(path, records), acc|
-      acc[path] = records.size
-    end
-  end
-
-  after(:context) do
-    added_paths = []
-    RSpec::OpenAPI.path_records.each do |path, records|
-      previous = @record_counts[path] || 0
-      added_paths << path if records.size == previous + 1
-    end
-
-    raise 'OpenAPI record was not generated' unless added_paths.size == 1
-
-    record = RSpec::OpenAPI.path_records[added_paths.first].last
-    raise "Unexpected response status: #{record.status.inspect}" unless record.status == 200
-  end
-
-  it 'records the real response' do
-    get '/tables', headers: { authorization: 'k0kubun' }
   end
 end
