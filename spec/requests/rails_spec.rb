@@ -137,6 +137,79 @@ RSpec.describe 'Tables', type: :request do
   end
 end
 
+RSpec.describe 'Rails extractor request_response', type: :request do
+  it 'uses integration_session when available', openapi: false do
+    get '/override_probe', headers: { authorization: 'k0kubun' }
+
+    session = send(:integration_session)
+    request, response = RSpec::OpenAPI::Extractors::Rails.request_response(self)
+
+    expect(request).to equal(session.request)
+    expect(response).to equal(session.response)
+  end
+end
+
+RSpec.describe 'Rails extractor request_response with overrides', type: :request do
+  let(:request) { :stubbed_request }
+  let(:response) { :stubbed_response }
+
+  it 'falls back to real request/response when integration_session is unavailable', openapi: false do
+    get '/override_probe', headers: { authorization: 'k0kubun' }
+
+    singleton_class = class << self; self; end
+    singleton_class.send(:define_method, :integration_session) { nil }
+
+    request, response = RSpec::OpenAPI::Extractors::Rails.request_response(self)
+    expect(request).to be_a(ActionDispatch::Request)
+    expect(response).to be_a(ActionDispatch::TestResponse)
+  end
+end
+
+RSpec.describe 'Rails extractor edge cases', type: :request do
+  describe '.safe_context_method' do
+    it 'returns nil when method does not exist', openapi: false do
+      context = Object.new
+      result = RSpec::OpenAPI::Extractors::Rails.send(:safe_context_method, context, :nonexistent)
+      expect(result).to be_nil
+    end
+
+    it 'calls regular methods directly', openapi: false do
+      context = Object.new
+      def context.custom_method; :value; end
+      result = RSpec::OpenAPI::Extractors::Rails.send(:safe_context_method, context, :custom_method)
+      expect(result).to eq(:value)
+    end
+  end
+
+  describe '.integration_session' do
+    it 'returns nil for plain object', openapi: false do
+      result = RSpec::OpenAPI::Extractors::Rails.send(:integration_session, Object.new)
+      expect(result).to be_nil
+    end
+  end
+
+  it 'rescues NameError and returns nil', openapi: false do
+    # Create method that raises NameError when called
+    context = Object.new
+    def context.broken_method
+      raise NameError, 'test error'
+    end
+
+    result = RSpec::OpenAPI::Extractors::Rails.send(:safe_context_method, context, :broken_method)
+    expect(result).to be_nil
+  end
+end
+
+RSpec.describe 'Rails extractor with let override', type: :request do
+  let(:request) { :fake_request }
+
+  it 'returns let value when owner is not RSpec memoized helper', openapi: false do
+    result = RSpec::OpenAPI::Extractors::Rails.send(:safe_context_method, self, :request)
+    # Covers the method.call branch (line 82) when owner is not RSpec class
+    expect(result).to eq(:fake_request)
+  end
+end
+
 RSpec.describe 'Images', type: :request do
   describe '#payload' do
     it 'returns a image payload' do
