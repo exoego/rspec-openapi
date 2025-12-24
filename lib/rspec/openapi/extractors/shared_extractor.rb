@@ -45,9 +45,7 @@ class SharedExtractor
   def self.normalize_example_mode(value, example = nil)
     return :single if value.nil?
 
-    unless value.is_a?(String) || value.is_a?(Symbol)
-      raise ArgumentError, example_mode_error(value, example)
-    end
+    raise ArgumentError, example_mode_error(value, example) unless value.is_a?(String) || value.is_a?(Symbol)
 
     mode = value.to_s.strip.downcase.to_sym
     return mode if VALID_EXAMPLE_MODES.include?(mode)

@@ -74,8 +74,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         content_type => {
           schema: schema,
           example: response_example(record, disposition: disposition),
-          :_example_key => record.example_key,
-          :_example_summary => example_summary(record),
+          _example_key: record.example_key,
+          _example_summary: example_summary(record),
         }.compact,
       }
     end
