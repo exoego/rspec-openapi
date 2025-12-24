@@ -165,6 +165,51 @@ RSpec.describe 'Rails extractor request_response with overrides', type: :request
   end
 end
 
+RSpec.describe 'Rails extractor edge cases', type: :request do
+  describe '.safe_context_method' do
+    it 'returns nil when method does not exist', openapi: false do
+      context = Object.new
+      result = RSpec::OpenAPI::Extractors::Rails.send(:safe_context_method, context, :nonexistent)
+      expect(result).to be_nil
+    end
+
+    it 'calls regular methods directly', openapi: false do
+      context = Object.new
+      def context.custom_method; :value; end
+      result = RSpec::OpenAPI::Extractors::Rails.send(:safe_context_method, context, :custom_method)
+      expect(result).to eq(:value)
+    end
+  end
+
+  describe '.integration_session' do
+    it 'returns nil for plain object', openapi: false do
+      result = RSpec::OpenAPI::Extractors::Rails.send(:integration_session, Object.new)
+      expect(result).to be_nil
+    end
+  end
+
+  it 'rescues NameError and returns nil', openapi: false do
+    # Create method that raises NameError when called
+    context = Object.new
+    def context.broken_method
+      raise NameError, 'test error'
+    end
+
+    result = RSpec::OpenAPI::Extractors::Rails.send(:safe_context_method, context, :broken_method)
+    expect(result).to be_nil
+  end
+end
+
+RSpec.describe 'Rails extractor with let override', type: :request do
+  let(:request) { :fake_request }
+
+  it 'returns let value when owner is not RSpec memoized helper', openapi: false do
+    result = RSpec::OpenAPI::Extractors::Rails.send(:safe_context_method, self, :request)
+    # Covers the method.call branch (line 82) when owner is not RSpec class
+    expect(result).to eq(:fake_request)
+  end
+end
+
 RSpec.describe 'Images', type: :request do
   describe '#payload' do
     it 'returns a image payload' do
