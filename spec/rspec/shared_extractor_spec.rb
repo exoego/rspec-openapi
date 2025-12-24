@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require 'rspec/openapi'
 
 RSpec.describe SharedExtractor do
   describe '.normalize_example_mode' do

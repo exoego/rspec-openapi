@@ -1,4 +1,5 @@
 --exclude-pattern spec/requests/**/*_spec.rb
 --format documentation
+--require ./.simplecov_bootstrap
 --require rspec/openapi
 --color
