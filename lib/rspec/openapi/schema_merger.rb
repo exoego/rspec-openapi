@@ -25,6 +25,9 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
 
     spec.each do |key, value|
       if base[key].is_a?(Hash) && value.is_a?(Hash)
+        # Handle example/examples conflict - convert to examples when mixed
+        normalize_example_fields!(base[key], value)
+
         # If the new value has oneOf, replace the entire value instead of merging
         if value.key?(:oneOf)
           base[key] = value
@@ -76,6 +79,26 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   end
 
   SIMILARITY_THRESHOLD = 0.5
+
+  # Normalize example/examples fields when there's a conflict
+  # OpenAPI spec doesn't allow both example and examples in the same object
+  def normalize_example_fields!(base, spec)
+    if base.key?(:example) && spec.key?(:examples)
+      convert_example_to_examples!(base)
+    elsif base.key?(:examples) && spec.key?(:example)
+      convert_example_to_examples!(spec)
+    end
+  end
+
+  def convert_example_to_examples!(hash)
+    name = RSpec::OpenAPI::ExampleKey.normalize(hash.delete(:_example_key)) || 'default'
+    summary = hash.delete(:_example_summary)
+    value = hash.delete(:example)
+    example = {}
+    example[:summary] = summary if summary
+    example[:value] = value
+    hash[:examples] = { name => example }
+  end
 
   def merge_closest_match!(options, spec)
     score, option = options.map { |option| [similarity(option, spec), option] }.max_by(&:first)

@@ -12,8 +12,8 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
     return if request.nil?
 
     title = RSpec::OpenAPI.title.then { |t| t.is_a?(Proc) ? t.call(example) : t }
-    path, summary, tags, operation_id, required_request_params, raw_path_params, description, security, deprecated, formats =
-      extractor.request_attributes(request, example)
+    path, summary, tags, operation_id, required_request_params, raw_path_params, description, security, deprecated,
+      formats, example_mode, example_key, example_name = extractor.request_attributes(request, example)
 
     return if RSpec::OpenAPI.ignored_paths.any? { |ignored_path| path.match?(ignored_path) }
 
@@ -41,6 +41,10 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       response_headers: response_headers,
       response_content_type: response.media_type,
       response_content_disposition: response.header['Content-Disposition'],
+      example_enabled: RSpec::OpenAPI.enable_example,
+      example_mode: example_mode,
+      example_key: example_key,
+      example_name: example_name,
     ).freeze
   end
 

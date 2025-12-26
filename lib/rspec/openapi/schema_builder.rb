@@ -15,14 +15,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       disposition = normalize_content_disposition(record.response_content_disposition)
 
       has_content = !normalize_content_type(record.response_content_type).nil?
-      if has_content
-        response[:content] = {
-          normalize_content_type(record.response_content_type) => {
-            schema: build_property(record.response_body, disposition: disposition, record: record),
-            example: response_example(record, disposition: disposition),
-          }.compact,
-        }
-      end
+      response[:content] = build_content(disposition, record) if has_content
     end
 
     http_method = record.http_method.downcase
@@ -52,19 +45,74 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     %w[delete get].include?(http_method)
   end
 
+  def build_content(disposition, record)
+    content_type = normalize_content_type(record.response_content_type)
+    schema = build_property(record.response_body, disposition: disposition, record: record)
+
+    # If examples are globally disabled, always return schema-only content.
+    return { content_type => { schema: schema }.compact } unless example_enabled?(record)
+
+    case record.example_mode
+    when :none
+      # Only schema, no examples
+      {
+        content_type => {
+          schema: schema,
+        }.compact,
+      }
+    when :multiple
+      # Multiple named examples
+      {
+        content_type => {
+          schema: schema,
+          examples: { record.example_key => build_example_object(record, disposition: disposition) },
+        }.compact,
+      }
+    else # :single (default)
+      # Single example + store name for possible merger conversion
+      {
+        content_type => {
+          schema: schema,
+          example: response_example(record, disposition: disposition),
+          _example_key: record.example_key,
+          _example_summary: example_summary(record),
+        }.compact,
+      }
+    end
+  end
+
   def enrich_with_required_keys(obj)
     obj[:required] = obj[:properties]&.keys || []
     obj
   end
 
   def response_example(record, disposition:)
-    return nil if !example_enabled? || disposition
+    return nil if !example_enabled?(record) || disposition
 
     record.response_body
   end
 
-  def example_enabled?
-    RSpec::OpenAPI.enable_example
+  def build_example_object(record, disposition:)
+    summary = example_summary(record)
+    example = {}
+    example[:summary] = summary if summary
+    example[:value] = response_example(record, disposition: disposition)
+    example
+  end
+
+  def example_summary(record)
+    return nil unless example_summary_enabled?
+    return nil if record.example_name.nil? || record.example_name.empty?
+
+    record.example_name
+  end
+
+  def example_enabled?(record)
+    record.example_enabled
+  end
+
+  def example_summary_enabled?
+    RSpec::OpenAPI.enable_example_summary
   end
 
   def build_parameters(record)
@@ -74,7 +122,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         in: 'path',
         required: true,
         schema: build_property(try_cast(value), key: key, record: record),
-        example: (try_cast(value) if example_enabled?),
+        example: (try_cast(value) if example_enabled?(record)),
       }.compact
     end
 
@@ -84,7 +132,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         in: 'query',
         required: record.required_request_params.include?(key),
         schema: build_property(try_cast(value), key: key, record: record),
-        example: (try_cast(value) if example_enabled?),
+        example: (try_cast(value) if example_enabled?(record)),
       }.compact
     end
 
@@ -94,7 +142,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         in: 'header',
         required: true,
         schema: build_property(try_cast(value), key: key, record: record),
-        example: (try_cast(value) if example_enabled?),
+        example: (try_cast(value) if example_enabled?(record)),
       }.compact
     end
 
@@ -135,7 +183,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       content: {
         normalize_content_type(record.request_content_type) => {
           schema: build_property(record.request_params, record: record),
-          example: (build_example(record.request_params) if example_enabled?),
+          example: (build_example(record.request_params) if example_enabled?(record)),
         }.compact,
       },
     }

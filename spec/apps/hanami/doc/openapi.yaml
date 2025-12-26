@@ -565,6 +565,296 @@ paths:
                 items:
                 - id: 1
                   name: Item 1
+  "/custom_example_key":
+    get:
+      summary: GET /custom_example_key
+      tags: []
+      responses:
+        '200':
+          description: uses custom example key instead of description
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                required:
+                - data
+              examples:
+                my_custom_key:
+                  summary: uses custom example key instead of description
+                  value:
+                    data: custom_key
+  "/custom_example_name":
+    get:
+      summary: GET /custom_example_name
+      tags: []
+      responses:
+        '200':
+          description: uses custom example name for summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                required:
+                - data
+              examples:
+                my_custom_name:
+                  summary: My Custom Name
+                  value:
+                    data: custom_name
+  "/empty_example_name":
+    get:
+      summary: GET /empty_example_name
+      tags: []
+      responses:
+        '200':
+          description: handles empty example_name
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                required:
+                - data
+              examples:
+                default:
+                  value:
+                    data: empty_name
+  "/example_mode_disabled":
+    get:
+      summary: GET /example_mode_disabled
+      tags: []
+      responses:
+        '200':
+          description: does not generate examples for default mode
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+  "/example_mode_disabled_multiple":
+    get:
+      summary: GET /example_mode_disabled_multiple
+      tags: []
+      responses:
+        '200':
+          description: does not generate examples for multiple mode
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+  "/example_mode_disabled_none":
+    get:
+      summary: GET /example_mode_disabled_none
+      tags: []
+      responses:
+        '200':
+          description: does not generate examples for none mode
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+  "/example_mode_disabled_single":
+    get:
+      summary: GET /example_mode_disabled_single
+      tags: []
+      responses:
+        '200':
+          description: does not generate examples for single mode
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+  "/example_mode_inherit":
+    get:
+      summary: GET /example_mode_inherit
+      tags: []
+      responses:
+        '200':
+          description: also inherits multiple from parent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+              examples:
+                inherits_multiple_from_parent:
+                  summary: inherits multiple from parent
+                  value:
+                    status: inherit
+                also_inherits_multiple_from_parent:
+                  summary: also inherits multiple from parent
+                  value:
+                    status: inherit
+  "/example_mode_mixed":
+    get:
+      summary: GET /example_mode_mixed
+      tags: []
+      responses:
+        '200':
+          description: second with multiple mode
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+              examples:
+                first_with_single_mode:
+                  summary: first with single mode
+                  value:
+                    status: mixed
+                second_with_multiple_mode:
+                  summary: second with multiple mode
+                  value:
+                    status: mixed
+  "/example_mode_multiple":
+    get:
+      summary: GET /example_mode_multiple
+      tags: []
+      responses:
+        '200':
+          description: second example
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+              examples:
+                first_example:
+                  summary: first example
+                  value:
+                    status: multiple
+                second_example:
+                  summary: second example
+                  value:
+                    status: multiple
+  "/example_mode_none":
+    get:
+      summary: GET /example_mode_none
+      tags: []
+      responses:
+        '200':
+          description: generates schema without example
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+  "/example_mode_override_none":
+    get:
+      summary: GET /example_mode_override_none
+      tags: []
+      responses:
+        '200':
+          description: overrides to none
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+  "/example_mode_override_single":
+    get:
+      summary: GET /example_mode_override_single
+      tags: []
+      responses:
+        '200':
+          description: overrides to single
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+              example:
+                status: override_single
+  "/example_mode_single":
+    get:
+      summary: GET /example_mode_single
+      tags: []
+      responses:
+        '200':
+          description: generates schema with single example
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+              example:
+                status: single
+  "/example_summary_disabled":
+    get:
+      summary: GET /example_summary_disabled
+      tags: []
+      responses:
+        '200':
+          description: generates examples without summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                required:
+                - data
+              examples:
+                generates_examples_without_summary:
+                  summary: generates examples without summary
+                  value:
+                    data: no_summary
   "/images":
     get:
       summary: index
@@ -762,7 +1052,66 @@ paths:
             text/plain:
               schema:
                 type: string
-              example: ANOTHER TEST
+              examples:
+                returns_some_content_from_the_engine:
+                  summary: returns some content from the engine
+                  value: ANOTHER TEST
+                inherits_multiple_example_mode:
+                  value: ANOTHER TEST
+                also_inherits_multiple_example_mode:
+                  value: ANOTHER TEST
+  "/nested_arrays_test":
+    get:
+      summary: GET /nested_arrays_test
+      tags: []
+      responses:
+        '200':
+          description: returns nested arrays
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        tags:
+                          type: array
+                          items:
+                            type: string
+                      required:
+                      - name
+                      - tags
+                  matrix:
+                    type: array
+                    items:
+                      type: array
+                      items:
+                        type: integer
+                required:
+                - items
+                - matrix
+              example:
+                items:
+                - name: first
+                  tags:
+                  - a
+                  - b
+                  - c
+                - name: second
+                  tags:
+                  - x
+                  - "y"
+                  - z
+                matrix:
+                - - 1
+                  - 2
+                - - 3
+                  - 4
   "/rack/bar":
     get:
       summary: GET /rack/bar
@@ -773,7 +1122,14 @@ paths:
             text/plain:
               schema:
                 type: string
-              example: A RACK BAR
+              examples:
+                returns_content_with_default_single_example:
+                  value: A RACK BAR
+                returns_content_with_multiple_examples:
+                  value: A RACK BAR
+                returns_some_content_bar:
+                  summary: returns some content bar
+                  value: A RACK BAR
   "/rack/foo":
     get:
       summary: GET /rack/foo
@@ -857,7 +1213,7 @@ paths:
                 message: not found
   "/tables":
     get:
-      summary: Get a list of tables
+      summary: index
       tags:
       - Table
       parameters:
@@ -951,17 +1307,46 @@ paths:
                   - storage_size
                   - created_at
                   - updated_at
-              example:
-              - id: 1
-                name: access
-                description: logs
-                database:
-                  id: 2
-                  name: production
-                null_sample:
-                storage_size: 12.3
-                created_at: '2020-07-17T00:00:00+00:00'
-                updated_at: '2020-07-17T00:00:00+00:00'
+              examples:
+                with_flat_query_parameters:
+                  summary: with flat query parameters
+                  value:
+                  - id: 1
+                    name: access
+                    description: logs
+                    database:
+                      id: 2
+                      name: production
+                    null_sample:
+                    storage_size: 12.3
+                    created_at: '2020-07-17T00:00:00+00:00'
+                    updated_at: '2020-07-17T00:00:00+00:00'
+                with_deep_query_parameters:
+                  summary: with deep query parameters
+                  value:
+                  - id: 1
+                    name: access
+                    description: logs
+                    database:
+                      id: 2
+                      name: production
+                    null_sample:
+                    storage_size: 12.3
+                    created_at: '2020-07-17T00:00:00+00:00'
+                    updated_at: '2020-07-17T00:00:00+00:00'
+                with_different_deep_query_parameters:
+                  summary: with different deep query parameters
+                  value:
+                  - id: 1
+                    name: access
+                    description: logs
+                    database:
+                      id: 2
+                      name: production
+                    null_sample:
+                    storage_size: 12.3
+                    created_at: '2020-07-17T00:00:00+00:00'
+                    updated_at: '2020-07-17T00:00:00+00:00'
         '401':
           description: does not return tables if unauthorized
           content:
@@ -1298,6 +1683,45 @@ paths:
                 storage_size: 12.3
                 created_at: '2020-07-17T00:00:00+00:00'
                 updated_at: '2020-07-17T00:00:00+00:00'
+  "/tags":
+    post:
+      summary: POST /tags
+      tags: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                names:
+                  type: array
+                  items:
+                    type: string
+                priority:
+                  type: integer
+              required:
+              - names
+              - priority
+            example:
+              names:
+              - ruby
+              - rails
+              - rspec
+              priority: 1
+      responses:
+        '201':
+          description: creates tags with array of strings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  created:
+                    type: boolean
+                required:
+                - created
+              example:
+                created: true
   "/test_block":
     get:
       summary: GET /test_block

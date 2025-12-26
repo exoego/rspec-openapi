@@ -37,6 +37,34 @@ module HanamiTest
 
     get '/test_block', to: ->(_env) { [200, { 'Content-Type' => 'text/plain' }, ['A TEST']] }
 
+    # Test routes for example_mode feature testing
+    get '/example_mode_none', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }
+    get '/example_mode_single', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"single"}']] }
+    get '/example_mode_multiple', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"multiple"}']] }
+    get '/example_mode_mixed', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"mixed"}']] }
+    get '/example_mode_inherit', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"inherit"}']] }
+    get '/example_mode_override_single', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"override_single"}']] }
+    get '/example_mode_override_none', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"override_none"}']] }
+    get '/example_mode_disabled', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"disabled"}']] }
+    get '/example_mode_disabled_single', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"disabled_single"}']] }
+    get '/example_mode_disabled_multiple', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"disabled_multiple"}']] }
+    get '/example_mode_disabled_none', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"disabled_none"}']] }
+
+    # Test route for array with primitive values in request params
+    post '/tags', to: ->(_env) { [201, { 'Content-Type' => 'application/json' }, ['{"created":true}']] }
+
+    # Test routes for custom example_key and example_name
+    get '/custom_example_key', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"data":"custom_key"}']] }
+    get '/custom_example_name', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"data":"custom_name"}']] }
+    get '/example_summary_disabled', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"data":"no_summary"}']] }
+    get '/empty_example_name', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"data":"empty_name"}']] }
+
+    # Test route for nested arrays (key_transformer coverage)
+    get '/nested_arrays_test', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"items":[{"name":"first","tags":["a","b","c"]},{"name":"second","tags":["x","y","z"]}],"matrix":[[1,2],[3,4]]}']] }
+
+    # Test route for invalid example_mode error handling
+    get '/invalid_example_mode', to: ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }
+
     slice :my_engine, at: '/my_engine' do
       get '/test', to: ->(_env) { [200, { 'Content-Type' => 'text/plain' }, ['ANOTHER TEST']] }
       get '/eng/example', to: 'eng.example'

@@ -16,16 +16,9 @@ class << RSpec::OpenAPI::Extractors::Rails = Object.new
 
     raise "No route matched for #{fixed_request.request_method} #{fixed_request.path_info}" if route.nil?
 
-    metadata = merge_openapi_metadata(example.metadata)
-    summary = metadata[:summary] || RSpec::OpenAPI.summary_builder.call(example)
-    tags = metadata[:tags] || RSpec::OpenAPI.tags_builder.call(example)
-    formats = metadata[:formats] || RSpec::OpenAPI.formats_builder.curry.call(example)
+    summary, tags, formats, operation_id, required_request_params, security, description, deprecated, example_mode,
+      example_key, example_name = SharedExtractor.attributes(example)
 
-    operation_id = metadata[:operation_id]
-    required_request_params = metadata[:required_request_params] || []
-    security = metadata[:security]
-    description = metadata[:description] || RSpec::OpenAPI.description_builder.call(example)
-    deprecated = metadata[:deprecated]
     raw_path_params = request.path_parameters
 
     summary ||= route.requirements[:action]
@@ -47,6 +40,9 @@ class << RSpec::OpenAPI::Extractors::Rails = Object.new
       security,
       deprecated,
       formats,
+      example_mode,
+      example_key,
+      example_name,
     ]
   end
 
@@ -56,24 +52,6 @@ class << RSpec::OpenAPI::Extractors::Rails = Object.new
   end
 
   private
-
-  def merge_openapi_metadata(metadata)
-    collect_openapi_metadata(metadata).reduce({}, &:merge)
-  end
-
-  def collect_openapi_metadata(metadata)
-    [].tap do |result|
-      current = metadata
-
-      while current
-        [current[:example_group], current].each do |meta|
-          result.unshift(meta[:openapi]) if meta&.dig(:openapi)
-        end
-
-        current = current[:parent_example_group]
-      end
-    end
-  end
 
   # @param [ActionDispatch::Request] request
   def find_rails_route(request, app: Rails.application, path_prefix: '')

@@ -56,15 +56,9 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
 
     return RSpec::OpenAPI::Extractors::Rack.request_attributes(request, example) unless route.routable?
 
-    metadata = merge_openapi_metadata(example.metadata)
-    summary = metadata[:summary] || RSpec::OpenAPI.summary_builder.call(example)
-    tags = metadata[:tags] || RSpec::OpenAPI.tags_builder.call(example)
-    formats = metadata[:formats] || RSpec::OpenAPI.formats_builder.curry.call(example)
-    operation_id = metadata[:operation_id]
-    required_request_params = metadata[:required_request_params] || []
-    security = metadata[:security]
-    description = metadata[:description] || RSpec::OpenAPI.description_builder.call(example)
-    deprecated = metadata[:deprecated]
+    summary, tags, formats, operation_id, required_request_params, security, description, deprecated, example_mode,
+      example_key, example_name = SharedExtractor.attributes(example)
+
     path = request.path
 
     raw_path_params = route.params
@@ -88,6 +82,9 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
       security,
       deprecated,
       formats,
+      example_mode,
+      example_key,
+      example_name,
     ]
   end
 
@@ -101,24 +98,6 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
   end
 
   private
-
-  def merge_openapi_metadata(metadata)
-    collect_openapi_metadata(metadata).reduce({}, &:merge)
-  end
-
-  def collect_openapi_metadata(metadata)
-    [].tap do |result|
-      current = metadata
-
-      while current
-        [current[:example_group], current].each do |meta|
-          result.unshift(meta[:openapi]) if meta&.dig(:openapi)
-        end
-
-        current = current[:parent_example_group]
-      end
-    end
-  end
 
   def add_id(path, route)
     return path if route.params.empty?
