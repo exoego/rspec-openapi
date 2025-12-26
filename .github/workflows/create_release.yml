@@ -16,6 +16,7 @@ jobs:
       id-token: write # IMPORTANT: this permission is mandatory for trusted publishing
       contents: write # required to push release branch and open PR
       pull-requests: write # required to create the release PR with GITHUB_TOKEN
+      workflows: write # required to update workflow file with new version
 
     steps:
       - uses: actions/checkout@v5
