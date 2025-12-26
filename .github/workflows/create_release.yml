@@ -16,6 +16,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          token: ${{ secrets.PREPARE_RELEASE_PAT }}
 
       - name: Bump version.rb
         run: |
