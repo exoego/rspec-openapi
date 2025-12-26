@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to release (e.g. 0.21.3 or v0.21.3)'
+        description: 'Version to release (e.g. 0.21.6 or 0.22.0)'
         required: true
 
 jobs:
@@ -47,8 +47,27 @@ jobs:
               exit 1
             end
           RUBY
-
           ruby -pi -e "sub(/VERSION = .*/, \"VERSION = '$version'\")" lib/rspec/openapi/version.rb
+
+          VERSION_NO_V="$version" ruby - <<'RUBY'
+            version = ENV.fetch('VERSION_NO_V')
+            segments = version.split('.').map(&:to_i)
+            unless segments.size >= 3
+              warn "Version must have at least major.minor.patch: #{version}"
+              exit 1
+            end
+
+            major, minor, patch = segments
+            patch_bump = [major, minor, patch + 1].join('.')
+            minor_bump = [major, minor + 1, 0].join('.')
+            example = "Version to release (e.g. #{patch_bump} or #{minor_bump})"
+
+            path = ".github/workflows/create_release.yml"
+            content = File.read(path)
+            content.sub!(/description:\s*'Version to release \(e\.g\. [^']+\)'/,
+                         "description: '#{example}'")
+            File.write(path, content)
+          RUBY
           git status --short
 
       - name: Commit version bump
@@ -70,6 +89,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           add-paths: |
             lib/rspec/openapi/version.rb
+            .github/workflows/create_release.yml
           branch: ${{ env.RELEASE_BRANCH }}
           title: Release v${{ env.VERSION_NO_V }}
           commit-message: Bump version to ${{ env.VERSION_NO_V }}
