@@ -15,7 +15,7 @@ jobs:
       contents: write   # to create GitHub release
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
