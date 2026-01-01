@@ -80,7 +80,7 @@ jobs:
           git push origin "HEAD:${release_branch}"
 
       - name: Open release PR
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.PREPARE_RELEASE_PAT }}
           add-paths: |
