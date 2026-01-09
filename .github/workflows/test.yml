@@ -30,10 +30,8 @@ jobs:
           - ruby: ruby:4.0
             rails: 8.1.2
             coverage: coverage
-            hanami: 2.3.2
     env:
       RAILS_VERSION: ${{ matrix.rails == '' && '6.1.6' || matrix.rails }}
-      HANAMI_VERSION: ${{ matrix.hanami == '' && '2.1.0' || matrix.hanami }}
       COVERAGE: ${{ matrix.coverage || '' }}
     steps:
       - uses: actions/checkout@v6
