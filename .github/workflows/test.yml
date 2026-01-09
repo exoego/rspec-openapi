@@ -28,7 +28,7 @@ jobs:
           - ruby: ruby:3.4
             rails: 8.0.2
           - ruby: ruby:4.0
-            rails: 8.1.6
+            rails: 8.1.2
             coverage: coverage
             hanami: 2.3.2
     env:
