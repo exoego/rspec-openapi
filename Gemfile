@@ -16,7 +16,7 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('3.0.0')
   gem 'hanami-controller'
   gem 'hanami-router'
 
-  gem 'dry-logger', '1.0.3'
+  gem 'dry-logger'
 end
 
 gem 'concurrent-ruby', '1.3.4'
