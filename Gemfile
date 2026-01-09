@@ -9,11 +9,11 @@ gem 'rails', ENV['RAILS_VERSION'] || '6.0.6.1'
 
 if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('3.0.0')
   if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('4.0.0')
-    gem 'hanami', ENV['HANAMI_VERSION'] || '2.3.2'
     gem 'dry-logger', '1.2.1'
+    gem 'hanami', ENV['HANAMI_VERSION'] || '2.3.2'
   else
-    gem 'hanami', ENV['HANAMI_VERSION'] || '2.1.0'
     gem 'dry-logger', '1.0.3'
+    gem 'hanami', ENV['HANAMI_VERSION'] || '2.1.0'
   end
   gem 'hanami-controller'
   gem 'hanami-router'
