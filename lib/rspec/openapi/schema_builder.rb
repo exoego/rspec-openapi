@@ -78,9 +78,9 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       }.compact
     end
 
-    query_params = record.query_params.map do |key, value|
+    query_params = flatten_query_params(record.query_params).map do |key, value|
       {
-        name: build_parameter_name(key, value),
+        name: key,
         in: 'query',
         required: record.required_request_params.include?(key),
         schema: build_property(try_cast(value), key: key, record: record),
@@ -125,6 +125,20 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     else
       key
     end
+  end
+
+  def flatten_query_params(params, parent_key = nil)
+    result = {}
+    params.each do |key, value|
+      full_key = parent_key ? "#{parent_key}[#{key}]" : key.to_s
+
+      if value.is_a?(Hash)
+        result.merge!(flatten_query_params(value, full_key))
+      else
+        result[full_key] = value
+      end
+    end
+    result
   end
 
   def build_request_body(record)

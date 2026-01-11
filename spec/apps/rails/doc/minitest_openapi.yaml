@@ -809,26 +809,14 @@ paths:
         in: query
         required: false
         schema:
-          type: object
-          properties:
-            name:
-              type: string
-          required:
-          - name
-        example:
-          name: Example Table
+          type: string
+        example: Example Table
       - name: filter[price]
         in: query
         required: false
         schema:
-          type: object
-          properties:
-            price:
-              type: string
-          required:
-          - price
-        example:
-          price: '0'
+          type: integer
+        example: 0
       - name: page
         in: query
         required: false

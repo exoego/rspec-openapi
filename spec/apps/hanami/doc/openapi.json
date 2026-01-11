@@ -1278,38 +1278,18 @@
             "in": "query",
             "required": false,
             "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "name"
-              ]
+              "type": "string"
             },
-            "example": {
-              "name": "Example Table"
-            }
+            "example": "Example Table"
           },
           {
             "name": "filter[price]",
             "in": "query",
             "required": false,
             "schema": {
-              "type": "object",
-              "properties": {
-                "price": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "price"
-              ]
+              "type": "integer"
             },
-            "example": {
-              "price": "0"
-            }
+            "example": 0
           },
           {
             "name": "page",
