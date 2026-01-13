@@ -47,7 +47,7 @@ class TablesController < ApplicationController
   def find_table(id = nil)
     time = Time.parse('2020-07-17 00:00:00')
     case id
-    when '1', nil
+    when 'abc-123', '1', nil
       {
         id: 1,
         name: 'access',

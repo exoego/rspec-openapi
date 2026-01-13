@@ -2561,9 +2561,16 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "integer"
+              "oneOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ]
             },
-            "example": 1
+            "example": "abc-123"
           }
         ],
         "requestBody": {
@@ -2588,7 +2595,7 @@
         },
         "responses": {
           "200": {
-            "description": "returns a table",
+            "description": "returns a table via a UUID",
             "content": {
               "application/json": {
                 "schema": {
@@ -2645,18 +2652,39 @@
                     "updated_at"
                   ]
                 },
-                "example": {
-                  "id": 1,
-                  "name": "access",
-                  "description": "logs",
-                  "database": {
-                    "id": 2,
-                    "name": "production"
+                "examples": {
+                  "returns_a_table": {
+                    "summary": "returns a table",
+                    "value": {
+                      "id": 1,
+                      "name": "access",
+                      "description": "logs",
+                      "database": {
+                        "id": 2,
+                        "name": "production"
+                      },
+                      "null_sample": null,
+                      "storage_size": 12.3,
+                      "created_at": "2020-07-17T00:00:00+00:00",
+                      "updated_at": "2020-07-17T00:00:00+00:00"
+                    }
                   },
-                  "null_sample": null,
-                  "storage_size": 12.3,
-                  "created_at": "2020-07-17T00:00:00+00:00",
-                  "updated_at": "2020-07-17T00:00:00+00:00"
+                  "returns_a_table_via_a_uuid": {
+                    "summary": "returns a table via a UUID",
+                    "value": {
+                      "id": 1,
+                      "name": "access",
+                      "description": "logs",
+                      "database": {
+                        "id": 2,
+                        "name": "production"
+                      },
+                      "null_sample": null,
+                      "storage_size": 12.3,
+                      "created_at": "2020-07-17T00:00:00+00:00",
+                      "updated_at": "2020-07-17T00:00:00+00:00"
+                    }
+                  }
                 }
               }
             }

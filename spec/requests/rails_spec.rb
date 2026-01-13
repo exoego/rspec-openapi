@@ -117,9 +117,14 @@ RSpec.describe 'Tables', type: :request do
     end
   end
 
-  describe '#update' do
+  describe '#update', openapi: { example_mode: :multiple } do
     it 'returns a table' do
       patch '/tables/1', headers: { authorization: 'k0kubun' }, params: { name: 'test' }
+      expect(response.status).to eq(200)
+    end
+
+    it 'returns a table via a UUID' do
+      patch '/tables/abc-123', headers: { authorization: 'k0kubun' }, params: { name: 'test' }
       expect(response.status).to eq(200)
     end
   end

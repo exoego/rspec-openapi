@@ -65,11 +65,59 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
 
     all_parameters = all_parameters.map do |parameter|
       base_parameter = unique_base_parameters[[parameter[:name], parameter[:in]]] || {}
-      base_parameter ? base_parameter.merge(parameter) : parameter
+      if base_parameter.empty?
+        parameter
+      else
+        merge_parameter_with_schema(base_parameter, parameter)
+      end
     end
 
     all_parameters.uniq! { |param| param.slice(:name, :in) }
     base[key] = all_parameters
+  end
+
+  def merge_parameter_with_schema(base_param, new_param)
+    base_schema = base_param[:schema]
+    new_schema = new_param[:schema]
+
+    # If schemas have different types, create a oneOf
+    if base_schema && new_schema && schemas_have_different_types?(base_schema, new_schema)
+      merged_schema = merge_schemas_into_one_of(base_schema, new_schema)
+      base_param.merge(new_param).merge(schema: merged_schema)
+    else
+      base_param.merge(new_param)
+    end
+  end
+
+  def schemas_have_different_types?(schema1, schema2)
+    # If either already has oneOf, we need to merge into it
+    return true if schema1[:oneOf] || schema2[:oneOf]
+
+    type1 = schema1[:type]
+    type2 = schema2[:type]
+
+    type1 && type2 && type1 != type2
+  end
+
+  def merge_schemas_into_one_of(base_schema, new_schema)
+    existing_types = extract_schema_types(base_schema)
+    new_types = extract_schema_types(new_schema)
+
+    all_types = existing_types + new_types
+    all_types.uniq!
+
+    # If only one type remains, return it directly
+    return all_types.first if all_types.size == 1
+
+    { oneOf: all_types }
+  end
+
+  def extract_schema_types(schema)
+    if schema[:oneOf]
+      schema[:oneOf].map { |s| s.reject { |k, _| k == :example } }
+    else
+      [schema.reject { |k, _| k == :example }]
+    end
   end
 
   def build_unique_params(base, key)
