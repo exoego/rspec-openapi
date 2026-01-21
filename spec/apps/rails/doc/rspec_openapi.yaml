@@ -1585,8 +1585,10 @@ paths:
         in: path
         required: true
         schema:
-          type: integer
-        example: 1
+          oneOf:
+          - type: integer
+          - type: string
+        example: abc-123
       requestBody:
         content:
           application/x-www-form-urlencoded:
@@ -1601,7 +1603,7 @@ paths:
               name: test
       responses:
         '200':
-          description: returns a table
+          description: returns a table via a UUID
           content:
             application/json:
               schema:
@@ -1643,17 +1645,33 @@ paths:
                 - storage_size
                 - created_at
                 - updated_at
-              example:
-                id: 1
-                name: access
-                description: logs
-                database:
-                  id: 2
-                  name: production
-                null_sample:
-                storage_size: 12.3
-                created_at: '2020-07-17T00:00:00+00:00'
-                updated_at: '2020-07-17T00:00:00+00:00'
+              examples:
+                returns_a_table:
+                  summary: returns a table
+                  value:
+                    id: 1
+                    name: access
+                    description: logs
+                    database:
+                      id: 2
+                      name: production
+                    null_sample:
+                    storage_size: 12.3
+                    created_at: '2020-07-17T00:00:00+00:00'
+                    updated_at: '2020-07-17T00:00:00+00:00'
+                returns_a_table_via_a_uuid:
+                  summary: returns a table via a UUID
+                  value:
+                    id: 1
+                    name: access
+                    description: logs
+                    database:
+                      id: 2
+                      name: production
+                    null_sample:
+                    storage_size: 12.3
+                    created_at: '2020-07-17T00:00:00+00:00'
+                    updated_at: '2020-07-17T00:00:00+00:00'
   "/tags":
     post:
       summary: POST /tags
