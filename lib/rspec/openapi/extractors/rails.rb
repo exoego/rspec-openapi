@@ -17,7 +17,7 @@ class << RSpec::OpenAPI::Extractors::Rails = Object.new
     raise "No route matched for #{fixed_request.request_method} #{fixed_request.path_info}" if route.nil?
 
     summary, tags, formats, operation_id, required_request_params, security, description, deprecated, example_mode,
-      example_key, example_name = SharedExtractor.attributes(example)
+      example_key, example_name, response_enum, request_enum = SharedExtractor.attributes(example)
 
     raw_path_params = request.path_parameters
 
@@ -43,6 +43,8 @@ class << RSpec::OpenAPI::Extractors::Rails = Object.new
       example_mode,
       example_key,
       example_name,
+      response_enum,
+      request_enum,
     ]
   end
 

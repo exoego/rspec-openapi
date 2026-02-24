@@ -20,8 +20,20 @@ class SharedExtractor
     example_key = RSpec::OpenAPI::ExampleKey.normalize(raw_example_key)
     example_key = 'default' if example_key.nil? || example_key.empty?
 
+    # Enum support: response_enum and request_enum can override the general enum
+    base_enum = normalize_enum(metadata[:enum])
+    response_enum = normalize_enum(metadata[:response_enum]) || base_enum
+    request_enum = normalize_enum(metadata[:request_enum]) || base_enum
+
     [summary, tags, formats, operation_id, required_request_params, security, description, deprecated, example_mode,
-     example_key, example_name,]
+     example_key, example_name, response_enum, request_enum,]
+  end
+
+  def self.normalize_enum(enum_hash)
+    return nil if enum_hash.nil? || enum_hash.empty?
+
+    # Convert all keys to strings for consistent lookup
+    enum_hash.transform_keys(&:to_s)
   end
 
   def self.merge_openapi_metadata(metadata)

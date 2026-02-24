@@ -69,6 +69,13 @@ Rails.application.routes.draw do
     # Test route for nested arrays (key_transformer coverage)
     get '/nested_arrays_test' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"items":[{"name":"first","tags":["a","b","c"]},{"name":"second","tags":["x","y","z"]}],"matrix":[[1,2],[3,4]]}']] }
 
+    # Enum test routes
+    get '/enum_test/status' => 'enum_test#status'
+    get '/enum_test/nested' => 'enum_test#nested'
+    get '/enum_test/array_items' => 'enum_test#array_items'
+    post '/enum_test' => 'enum_test#create'
+    get '/enum_test/deeply_nested' => 'enum_test#deeply_nested'
+
     # Test route for invalid example_mode error handling
     get '/invalid_example_mode' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }
   end
