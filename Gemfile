@@ -20,7 +20,7 @@ gem 'concurrent-ruby', '1.3.4'
 gem 'roda'
 
 gem 'rails-dom-testing', '~> 2.2'
-gem 'rspec-rails'
+gem 'rspec-rails', '>= 6.0'
 
 group :test do
   gem 'simplecov', git: 'https://github.com/exoego/simplecov.git', branch: 'branch-fix'
