@@ -366,6 +366,87 @@ Some examples' attributes can be overwritten via RSpec metadata options. Example
 
 **NOTE**: `description` key will override also the one provided by `RSpec::OpenAPI.description_builder` method.
 
+### Enum Support
+
+You can specify enum values for string properties that should have a fixed set of allowed values. Since enums cannot be reliably inferred from test data, you can define them via the `enum` metadata option:
+
+```rb
+it 'returns user status', openapi: {
+  enum: {
+    'status' => %w[active inactive suspended],
+  },
+} do
+  get '/users/1'
+  expect(response.status).to eq(200)
+end
+```
+
+This generates:
+
+```yaml
+schema:
+  type: object
+  properties:
+    status:
+      type: string
+      enum:
+        - active
+        - inactive
+        - suspended
+```
+
+#### Nested Paths
+
+For nested objects, use dot notation to specify the path:
+
+```rb
+it 'returns user with role', openapi: {
+  enum: {
+    'status' => %w[active inactive],
+    'user.role' => %w[admin user guest],
+  },
+} do
+  get '/teams/1'
+  # Response: { "status": "active", "user": { "name": "John", "role": "admin" } }
+  expect(response.status).to eq(200)
+end
+```
+
+#### Array Items
+
+For properties inside array items, use the array property name followed by the item property:
+
+```rb
+it 'returns items with status', openapi: {
+  enum: {
+    'items.status' => %w[pending completed failed],
+    'items.priority' => %w[high medium low],
+  },
+} do
+  get '/tasks'
+  # Response: { "items": [{ "id": 1, "status": "pending", "priority": "high" }] }
+  expect(response.status).to eq(200)
+end
+```
+
+#### Request vs Response Enums
+
+By default, `enum` applies to both request and response bodies. If you need different enum values for request and response, use `request_enum` and `response_enum`:
+
+```rb
+it 'creates a task', openapi: {
+  request_enum: {
+    'action' => %w[create update delete],
+  },
+  response_enum: {
+    'status' => %w[pending processing completed],
+  },
+} do
+  post '/tasks', params: { action: 'create', name: 'New Task' }
+  expect(response.status).to eq(201)
+end
+```
+
 ### Multiple Examples Mode
 
 You can generate multiple named examples for the same endpoint using `example_mode`:

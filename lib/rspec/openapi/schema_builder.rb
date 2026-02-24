@@ -47,7 +47,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
   def build_content(disposition, record)
     content_type = normalize_content_type(record.response_content_type)
-    schema = build_property(record.response_body, disposition: disposition, record: record)
+    schema = build_property(record.response_body, disposition: disposition, record: record, context: :response)
 
     # If examples are globally disabled, always return schema-only content.
     return { content_type => { schema: schema }.compact } unless example_enabled?(record)
@@ -121,7 +121,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         name: build_parameter_name(key, value),
         in: 'path',
         required: true,
-        schema: build_property(try_cast(value), key: key, record: record),
+        schema: build_property(try_cast(value), key: key, record: record, path: key.to_s, context: :request),
         example: (try_cast(value) if example_enabled?(record)),
       }.compact
     end
@@ -131,7 +131,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         name: key,
         in: 'query',
         required: record.required_request_params.include?(key),
-        schema: build_property(try_cast(value), key: key, record: record),
+        schema: build_property(try_cast(value), key: key, record: record, path: key.to_s, context: :request),
         example: (try_cast(value) if example_enabled?(record)),
       }.compact
     end
@@ -141,7 +141,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         name: build_parameter_name(key, value),
         in: 'header',
         required: true,
-        schema: build_property(try_cast(value), key: key, record: record),
+        schema: build_property(try_cast(value), key: key, record: record, path: key.to_s, context: :request),
         example: (try_cast(value) if example_enabled?(record)),
       }.compact
     end
@@ -158,7 +158,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
     record.response_headers.each do |key, value|
       headers[key] = {
-        schema: build_property(try_cast(value), key: key, record: record),
+        schema: build_property(try_cast(value), key: key, record: record, path: key.to_s, context: :response),
       }.compact
     end
 
@@ -196,29 +196,31 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     {
       content: {
         normalize_content_type(record.request_content_type) => {
-          schema: build_property(record.request_params, record: record),
+          schema: build_property(record.request_params, record: record, context: :request),
           example: (build_example(record.request_params) if example_enabled?(record)),
         }.compact,
       },
     }
   end
 
-  def build_property(value, disposition: nil, key: nil, record: nil)
+  def build_property(value, disposition: nil, key: nil, record: nil, path: nil, context: nil)
     format = disposition ? 'binary' : infer_format(key, record)
+    enum = infer_enum(path, record, context)
 
-    property = build_type(value, format: format)
+    property = build_type(value, format: format, enum: enum)
 
     case value
     when Array
       property[:items] = if value.empty?
                            {} # unknown
                          else
-                           build_array_items_schema(value, record: record)
+                           build_array_items_schema(value, record: record, path: path, context: context)
                          end
     when Hash
       property[:properties] = {}.tap do |properties|
-        value.each do |key, v|
-          properties[key] = build_property(v, record: record, key: key)
+        value.each do |k, v|
+          child_path = path ? "#{path}.#{k}" : k.to_s
+          properties[k] = build_property(v, record: record, key: k, path: child_path, context: context)
         end
       end
       property = enrich_with_required_keys(property)
@@ -226,35 +228,50 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     property
   end
 
-  def build_type(value, format: nil)
-    return { type: 'string', format: format } if format
+  def build_type(value, format: nil, enum: nil)
+    result = if format
+               { type: 'string', format: format }
+             else
+               case value
+               when String
+                 { type: 'string' }
+               when Integer
+                 { type: 'integer' }
+               when Float
+                 { type: 'number', format: 'float' }
+               when TrueClass, FalseClass
+                 { type: 'boolean' }
+               when Array
+                 { type: 'array' }
+               when Hash
+                 { type: 'object' }
+               when ActionDispatch::Http::UploadedFile
+                 { type: 'string', format: 'binary' }
+               when NilClass
+                 { nullable: true }
+               else
+                 raise NotImplementedError, "type detection is not implemented for: #{value.inspect}"
+               end
+             end
 
-    case value
-    when String
-      { type: 'string' }
-    when Integer
-      { type: 'integer' }
-    when Float
-      { type: 'number', format: 'float' }
-    when TrueClass, FalseClass
-      { type: 'boolean' }
-    when Array
-      { type: 'array' }
-    when Hash
-      { type: 'object' }
-    when ActionDispatch::Http::UploadedFile
-      { type: 'string', format: 'binary' }
-    when NilClass
-      { nullable: true }
-    else
-      raise NotImplementedError, "type detection is not implemented for: #{value.inspect}"
-    end
+    result[:enum] = enum if enum
+    result
   end
 
   def infer_format(key, record)
     return nil if !key || !record || !record.formats
 
     record.formats[key]
+  end
+
+  def infer_enum(path, record, context)
+    return nil if !path || !record
+
+    enum_hash = context == :request ? record.request_enum : record.response_enum
+    return nil unless enum_hash
+
+    # Try both string and symbol keys
+    enum_hash[path.to_s] || enum_hash[path.to_sym]
   end
 
   # Convert an always-String param to an appropriate type
@@ -306,12 +323,12 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     content_disposition&.sub(/;.+\z/, '')
   end
 
-  def build_array_items_schema(array, record: nil)
+  def build_array_items_schema(array, record: nil, path: nil, context: nil)
     return {} if array.empty?
-    return build_property(array.first, record: record) if array.size == 1
-    return build_property(array.first, record: record) unless array.all? { |item| item.is_a?(Hash) }
+    return build_property(array.first, record: record, path: path, context: context) if array.size == 1
+    return build_property(array.first, record: record, path: path, context: context) unless array.all? { |item| item.is_a?(Hash) }
 
-    all_schemas = array.map { |item| build_property(item, record: record) }
+    all_schemas = array.map { |item| build_property(item, record: record, path: path, context: context) }
     merged_schema = all_schemas.first.dup
     merged_schema[:properties] = {}
 

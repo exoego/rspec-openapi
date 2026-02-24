@@ -572,3 +572,70 @@ RSpec.describe 'Nested arrays', type: :request do
     end
   end
 end
+
+# Enum support tests
+RSpec.describe 'Enum support', type: :request do
+  describe 'simple enum' do
+    it 'generates enum for status field', openapi: { enum: { 'status' => %w[active inactive suspended] } } do
+      get '/enum_test/status'
+      expect(response.status).to eq(200)
+    end
+  end
+
+  describe 'nested enum' do
+    it 'generates enum for nested paths', openapi: {
+      enum: {
+        'status' => %w[active inactive],
+        'user.role' => %w[admin user guest],
+      },
+    } do
+      get '/enum_test/nested'
+      expect(response.status).to eq(200)
+    end
+  end
+
+  describe 'array items enum' do
+    it 'generates enum for array item properties', openapi: {
+      enum: {
+        'items.status' => %w[active inactive],
+        'items.priority' => %w[high medium low],
+      },
+    } do
+      get '/enum_test/array_items'
+      expect(response.status).to eq(200)
+    end
+  end
+
+  describe 'request enum' do
+    it 'generates enum for request body', openapi: {
+      request_enum: { 'action_type' => %w[create update delete] },
+      response_enum: { 'status' => %w[pending completed failed] },
+    } do
+      post '/enum_test', params: { action_type: 'create' }
+      expect(response.status).to eq(201)
+    end
+  end
+
+  describe 'deeply nested enum' do
+    it 'generates enum for deeply nested paths', openapi: {
+      enum: {
+        'organization.settings.visibility' => %w[public private internal],
+        'organization.settings.access_level' => %w[standard premium enterprise],
+      },
+    } do
+      get '/enum_test/deeply_nested'
+      expect(response.status).to eq(200)
+    end
+  end
+
+  describe 'enum with symbol keys' do
+    it 'supports symbol keys in enum hash', openapi: {
+      enum: {
+        status: %w[active inactive],
+      },
+    } do
+      get '/enum_test/status'
+      expect(response.status).to eq(200)
+    end
+  end
+end
