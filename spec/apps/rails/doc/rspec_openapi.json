@@ -1099,6 +1099,329 @@
         }
       }
     },
+    "/enum_test": {
+      "post": {
+        "summary": "create",
+        "tags": [
+          "EnumTest"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "action_type": {
+                    "type": "string",
+                    "enum": [
+                      "create",
+                      "update",
+                      "delete"
+                    ]
+                  }
+                },
+                "required": [
+                  "action_type"
+                ]
+              },
+              "example": {
+                "action_type": "create"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "generates enum for request body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "action_type": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "pending",
+                        "completed",
+                        "failed"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "action_type",
+                    "status"
+                  ]
+                },
+                "example": {
+                  "id": 1,
+                  "action_type": "create",
+                  "status": "pending"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/enum_test/array_items": {
+      "get": {
+        "summary": "array_items",
+        "tags": [
+          "EnumTest"
+        ],
+        "responses": {
+          "200": {
+            "description": "generates enum for array item properties",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "active",
+                              "inactive"
+                            ]
+                          },
+                          "priority": {
+                            "type": "string",
+                            "enum": [
+                              "high",
+                              "medium",
+                              "low"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "status",
+                          "priority"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "items"
+                  ]
+                },
+                "example": {
+                  "items": [
+                    {
+                      "id": 1,
+                      "name": "Item 1",
+                      "status": "active",
+                      "priority": "high"
+                    },
+                    {
+                      "id": 2,
+                      "name": "Item 2",
+                      "status": "inactive",
+                      "priority": "low"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/enum_test/deeply_nested": {
+      "get": {
+        "summary": "deeply_nested",
+        "tags": [
+          "EnumTest"
+        ],
+        "responses": {
+          "200": {
+            "description": "generates enum for deeply nested paths",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "organization": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "settings": {
+                          "type": "object",
+                          "properties": {
+                            "visibility": {
+                              "type": "string",
+                              "enum": [
+                                "public",
+                                "private",
+                                "internal"
+                              ]
+                            },
+                            "access_level": {
+                              "type": "string",
+                              "enum": [
+                                "standard",
+                                "premium",
+                                "enterprise"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "visibility",
+                            "access_level"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "settings"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "organization"
+                  ]
+                },
+                "example": {
+                  "organization": {
+                    "name": "Acme Corp",
+                    "settings": {
+                      "visibility": "public",
+                      "access_level": "standard"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/enum_test/nested": {
+      "get": {
+        "summary": "nested",
+        "tags": [
+          "EnumTest"
+        ],
+        "responses": {
+          "200": {
+            "description": "generates enum for nested paths",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "group_name": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "active",
+                        "inactive"
+                      ]
+                    },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "role": {
+                          "type": "string",
+                          "enum": [
+                            "admin",
+                            "user",
+                            "guest"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "role"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "group_name",
+                    "status",
+                    "user"
+                  ]
+                },
+                "example": {
+                  "group_name": "Marketing",
+                  "status": "active",
+                  "user": {
+                    "name": "John Doe",
+                    "role": "admin"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/enum_test/status": {
+      "get": {
+        "summary": "status",
+        "tags": [
+          "EnumTest"
+        ],
+        "responses": {
+          "200": {
+            "description": "supports symbol keys in enum hash",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "active",
+                        "inactive"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message"
+                  ]
+                },
+                "example": {
+                  "status": "active",
+                  "message": "User status retrieved"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/example_mode_disabled": {
       "get": {
         "summary": "GET /example_mode_disabled",

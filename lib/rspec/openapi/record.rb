@@ -26,5 +26,7 @@ RSpec::OpenAPI::Record = Struct.new(
   :response_headers,      # @param [Array]  - [["header_key1", "header_value1"], ["header_key2", "header_value2"]]
   :response_content_type, # @param [String]  - "application/json"
   :response_content_disposition, # @param [String]  - "inline"
+  :response_enum,         # @param [Hash]    - {"status" => ["active", "inactive"], "user.role" => ["admin", "user"]}
+  :request_enum,          # @param [Hash]    - {"type" => ["create", "update"]}
   keyword_init: true,
 )
