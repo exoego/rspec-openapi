@@ -86,6 +86,7 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
     hash.delete(:_example_key)
     hash.delete(:_example_summary)
     hash.delete(:_example_name)
+    hash.delete(:_description_skip_overwrite)
 
     hash.each_value do |value|
       case value

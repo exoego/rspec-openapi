@@ -8,6 +8,10 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       description: record.description,
     }
 
+    # Mark description as low-priority when example_mode is :none, so the merger
+    # won't overwrite a description already set by a documented test.
+    response[:_description_skip_overwrite] = true if record.example_mode == :none
+
     response_headers = build_response_headers(record)
     response[:headers] = response_headers unless response_headers.empty?
 
