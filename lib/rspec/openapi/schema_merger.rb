@@ -39,7 +39,12 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
         merge_arrays(base, key, value)
       else
         # do not ADD `properties` or `required` fields if `additionalProperties` field is present
-        base[key] = value unless base.key?(:additionalProperties) && %i[properties required].include?(key)
+        next if base.key?(:additionalProperties) && %i[properties required].include?(key)
+
+        # Do not overwrite an existing description with one from an example_mode: :none test
+        next if key == :description && base.key?(:description) && spec[:_description_skip_overwrite]
+
+        base[key] = value
       end
     end
     base
