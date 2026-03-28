@@ -270,8 +270,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     enum_hash = context == :request ? record.request_enum : record.response_enum
     return nil unless enum_hash
 
-    # Try both string and symbol keys
-    enum_hash[path.to_s] || enum_hash[path.to_sym]
+    # Keys are already normalized to strings by SharedExtractor.normalize_enum
+    enum_hash[path.to_s]
   end
 
   # Convert an always-String param to an appropriate type
@@ -319,9 +319,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     content_type&.sub(/;.+\z/, '')
   end
 
-  def normalize_content_disposition(content_disposition)
-    content_disposition&.sub(/;.+\z/, '')
-  end
+  # Same logic as normalize_content_type – strips header parameters after ';'
+  alias normalize_content_disposition normalize_content_type
 
   def build_array_items_schema(array, record: nil, path: nil, context: nil)
     return {} if array.empty?

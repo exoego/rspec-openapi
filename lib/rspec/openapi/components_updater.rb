@@ -3,6 +3,8 @@
 require_relative 'hash_helper'
 
 class << RSpec::OpenAPI::ComponentsUpdater = Object.new
+  SCHEMA_REF_PREFIX = '#/components/schemas/'
+
   # @param [Hash] base
   # @param [Hash] fresh
   def update!(base, fresh)
@@ -30,7 +32,7 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
       # Skip if the property using $ref is not found in the parent schema. The property may be removed.
       next if nested_schema.nil?
 
-      schema_name = base.dig(*paths)&.gsub('#/components/schemas/', '')&.to_sym
+      schema_name = extract_schema_name(base.dig(*paths))&.to_sym
       fresh_schemas[schema_name] ||= {}
       RSpec::OpenAPI::SchemaMerger.merge!(fresh_schemas[schema_name], nested_schema)
     end
@@ -44,7 +46,7 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
   def build_fresh_schemas(references, base, fresh)
     references.inject({}) do |acc, paths|
       ref_link = dig_schema(base, paths)[:$ref]
-      schema_name = ref_link.to_s.gsub('#/components/schemas/', '')
+      schema_name = extract_schema_name(ref_link)
       schema_body = dig_schema(fresh, paths.grep_v(Integer))
 
       RSpec::OpenAPI::SchemaMerger.merge!(acc, { schema_name => schema_body })
@@ -81,7 +83,7 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
     # Reject already-generated schemas to reduce unnecessary loop
     nested_refs.reject do |paths|
       ref_link = base.dig(*paths)
-      schema_name = ref_link.gsub('#/components/schemas/', '')
+      schema_name = extract_schema_name(ref_link)
       generated_names.include?(schema_name)
     end
   end
@@ -91,11 +93,19 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
     return unless one_of
 
     one_of.each_with_index.filter_map do |schema, index|
-      paths + [index] if schema&.dig(:$ref)&.start_with?('#/components/schemas/')
+      paths + [index] if schema_ref?(schema&.dig(:$ref))
     end
   end
 
   def find_object_refs(base, paths)
-    [paths] if dig_schema(base, paths)&.dig(:$ref)&.start_with?('#/components/schemas/')
+    [paths] if schema_ref?(dig_schema(base, paths)&.dig(:$ref))
+  end
+
+  def extract_schema_name(ref_link)
+    ref_link&.delete_prefix(SCHEMA_REF_PREFIX)
+  end
+
+  def schema_ref?(ref_link)
+    ref_link&.start_with?(SCHEMA_REF_PREFIX)
   end
 end
