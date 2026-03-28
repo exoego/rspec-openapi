@@ -26,7 +26,7 @@ RSpec.describe 'RSpec hooks error handling', type: :request do
     record = RSpec::OpenAPI.path_records[path].last
     raise 'OpenAPI record was not generated' unless record
 
-    invalid_record = RSpec::OpenAPI::Record.new(**record.to_h.merge(response_body: Object.new))
+    invalid_record = RSpec::OpenAPI::Record.new(**record.to_h, response_body: Object.new)
     RSpec::OpenAPI.path_records[path] << invalid_record
   end
 
