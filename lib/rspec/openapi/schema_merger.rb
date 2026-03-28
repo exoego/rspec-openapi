@@ -123,8 +123,8 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   end
 
   def build_unique_params(base, key)
-    base[key].each_with_object({}) do |parameter, hash|
-      hash[[parameter[:name], parameter[:in]]] = parameter
+    base[key].to_h do |parameter|
+      [[parameter[:name], parameter[:in]], parameter]
     end
   end
 

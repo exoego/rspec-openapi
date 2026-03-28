@@ -326,7 +326,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   def build_array_items_schema(array, record: nil, path: nil, context: nil)
     return {} if array.empty?
     return build_property(array.first, record: record, path: path, context: context) if array.size == 1
-    return build_property(array.first, record: record, path: path, context: context) unless array.all? { |item| item.is_a?(Hash) }
+    return build_property(array.first, record: record, path: path, context: context) unless array.all?(Hash)
 
     all_schemas = array.map { |item| build_property(item, record: record, path: path, context: context) }
     merged_schema = all_schemas.first.dup
