@@ -87,9 +87,12 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
   end
 
   def find_one_of_refs(base, paths)
-    dig_schema(base, paths)&.dig(:oneOf)&.map&.with_index do |schema, index|
+    one_of = dig_schema(base, paths)&.dig(:oneOf)
+    return unless one_of
+
+    one_of.each_with_index.filter_map do |schema, index|
       paths + [index] if schema&.dig(:$ref)&.start_with?('#/components/schemas/')
-    end&.compact
+    end
   end
 
   def find_object_refs(base, paths)

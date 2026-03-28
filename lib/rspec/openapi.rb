@@ -33,7 +33,7 @@ module RSpec::OpenAPI
   @comment = nil
   @enable_example = true
   @enable_example_summary = true
-  @description_builder = ->(example) { example.description }
+  @description_builder = :description.to_proc
   @example_name_builder = :description.to_proc
   @summary_builder = ->(example) { example.metadata[:summary] }
   @tags_builder = ->(example) { example.metadata[:tags] }
