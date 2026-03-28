@@ -38,13 +38,11 @@ end
 InspectorAnalyzer = Inspector.new
 
 # Add default parameter to load inspector before test cases run
-module InspectorAnalyzerPrepender
+Hanami::Slice::ClassMethods.prepend(Module.new do
   def router(inspector: InspectorAnalyzer)
     super
   end
-end
-
-Hanami::Slice::ClassMethods.prepend(InspectorAnalyzerPrepender)
+end)
 
 # Extractor for hanami
 class << RSpec::OpenAPI::Extractors::Hanami = Object.new

@@ -9,6 +9,8 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
     merge_schema!(base, spec)
   end
 
+  SIMILARITY_THRESHOLD = 0.5
+
   private
 
   # Not doing `base.replace(deep_merge(base, spec))` to preserve key orders.
@@ -125,8 +127,6 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
       hash[[parameter[:name], parameter[:in]]] = parameter
     end
   end
-
-  SIMILARITY_THRESHOLD = 0.5
 
   # Normalize example/examples fields when there's a conflict
   # OpenAPI spec doesn't allow both example and examples in the same object
