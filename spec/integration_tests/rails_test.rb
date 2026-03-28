@@ -40,350 +40,352 @@ RSpec::OpenAPI.security_schemes = {
 
 RSpec::OpenAPI.post_process_hook = ->(_path, _records, spec) { spec['custom_field'] = 'custom_value' }
 
-class TablesIndexTest < ActionDispatch::IntegrationTest
-  i_suck_and_my_tests_are_order_dependent!
-  openapi!
+module RailsIntegrationTests
+  class TablesIndexTest < ActionDispatch::IntegrationTest
+    i_suck_and_my_tests_are_order_dependent!
+    openapi!
 
-  # Patch minitest's ordering of examples to match RSpec's
-  # in order to get comparable results
-  def self.runnable_methods
-    %w[test_with_flat_query_parameters test_with_deep_query_parameters test_with_different_deep_query_parameters
-       test_has_a_request_spec_which_does_not_make_any_request test_does_not_return_tables_if_unauthorized]
-  end
-
-  def test_with_flat_query_parameters
-    get '/tables', params: { page: '1', per: '10' },
-                   headers: { authorization: 'k0kubun', 'X-Authorization-Token': 'token' }
-    assert_response 200
-  end
-
-  def test_with_deep_query_parameters
-    get '/tables', params: { filter: { 'name' => 'Example Table' } }, headers: { authorization: 'k0kubun' }
-    assert_response 200
-  end
-
-  def test_with_different_deep_query_parameters
-    get '/tables', params: { filter: { 'price' => 0 } }, headers: { authorization: 'k0kubun' }
-    assert_response 200
-  end
-
-  def test_has_a_request_spec_which_does_not_make_any_request
-    assert true
-  end
-
-  def test_does_not_return_tables_if_unauthorized
-    get '/tables'
-    assert_response 401
-  end
-end
-
-class TablesShowTest < ActionDispatch::IntegrationTest
-  i_suck_and_my_tests_are_order_dependent!
-  openapi!
-
-  # Patch minitest's ordering of examples to match RSpec's
-  # in order to get comparable results
-  def self.runnable_methods
-    %w[test_returns_a_table test_does_not_return_a_table_if_unauthorized test_does_not_return_a_table_if_not_found]
-  end
-
-  def test_does_not_return_a_table_if_unauthorized
-    get '/tables/1'
-    assert_response 401
-  end
-
-  def test_does_not_return_a_table_if_not_found
-    get '/tables/2', headers: { authorization: 'k0kubun' }
-    assert_response 404
-  end
-
-  def test_returns_a_table
-    get '/tables/1', headers: { authorization: 'k0kubun' }
-    assert_response 200
-  end
-end
-
-class TablesCreateTest < ActionDispatch::IntegrationTest
-  i_suck_and_my_tests_are_order_dependent!
-  openapi!
-
-  test 'returns a table' do
-    post '/tables', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {
-      name: 'k0kubun',
-      description: 'description',
-      database_id: 2,
-    }.to_json
-    assert_response 201
-  end
-
-  test 'fails to create a table' do
-    post '/tables', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {
-      name: 'some_invalid_name',
-      description: 'description',
-      database_id: 2,
-    }.to_json
-    assert_response 422
-  end
-
-  test 'fails to create a table (2)' do
-    post '/tables', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {
-      description: 'description',
-      database_id: 2,
-    }.to_json
-    assert_response 422
-  end
-end
-
-class TablesUpdateTest < ActionDispatch::IntegrationTest
-  i_suck_and_my_tests_are_order_dependent!
-  openapi!
-
-  test 'returns a table' do
-    patch '/tables/1', headers: { authorization: 'k0kubun' }, params: { name: 'test' }
-    assert_response 200
-  end
-end
-
-class TablesDestroyTest < ActionDispatch::IntegrationTest
-  i_suck_and_my_tests_are_order_dependent!
-  openapi!
-
-  test 'returns a table' do
-    delete '/tables/1', headers: { authorization: 'k0kubun' }
-    assert_response 200
-  end
-
-  test 'returns no content if specified' do
-    delete '/tables/1', headers: { authorization: 'k0kubun' }, params: { no_content: true }
-    assert_response 202
-  end
-end
-
-class ImageTest < ActionDispatch::IntegrationTest
-  i_suck_and_my_tests_are_order_dependent!
-  openapi!
-
-  test 'returns a image payload' do
-    get '/images/1'
-    assert_response 200
-  end
-
-  test 'can return an object with an attribute of empty array' do
-    get '/images'
-    assert_response 200
-  end
-
-  test 'returns a image payload with upload' do
-    png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
-    QBoAAAAASUVORK5CYII='.unpack1('m')
-    File.binwrite('test.png', png)
-    image = Rack::Test::UploadedFile.new('test.png', 'image/png')
-    post '/images/upload', params: { image: image }
-    assert_response 200
-  end
-
-  test 'returns a image payload with upload nested' do
-    png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
-    QBoAAAAASUVORK5CYII='.unpack1('m')
-    File.binwrite('test.png', png)
-    image = Rack::Test::UploadedFile.new('test.png', 'image/png')
-    post '/images/upload_nested', params: { nested_image: { image: image, caption: 'Some caption' } }
-    assert_response 200
-  end
-
-  test 'returns a image payload with upload multiple' do
-    png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
-    QBoAAAAASUVORK5CYII='.unpack1('m')
-    File.binwrite('test.png', png)
-    image = Rack::Test::UploadedFile.new('test.png', 'image/png')
-    post '/images/upload_multiple', params: { images: [image, image] }
-    assert_response 200
-  end
-
-  test 'returns a image payload with upload multiple nested' do
-    png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
-    QBoAAAAASUVORK5CYII='.unpack1('m')
-    File.binwrite('test.png', png)
-    image = Rack::Test::UploadedFile.new('test.png', 'image/png')
-    post '/images/upload_multiple_nested', params: { images: [{ image: image }, { image: image }] }
-    assert_response 200
-  end
-end
-
-class SecretKeyTest < ActionDispatch::IntegrationTest
-  i_suck_and_my_tests_are_order_dependent!
-  openapi!
-
-  test 'authorizes with secret key' do
-    get '/secret_items',
-        headers: {
-          'Secret-Key' => '42',
-        }
-    assert_response 200
-  end
-end
-
-class ExtraRoutesTest < ActionDispatch::IntegrationTest
-  i_suck_and_my_tests_are_order_dependent!
-  openapi!
-
-  test 'returns the block content' do
-    get '/test_block'
-    assert_response 200
-  end
-end
-
-class EngineTest < ActionDispatch::IntegrationTest
-  i_suck_and_my_tests_are_order_dependent!
-  openapi!
-
-  test 'returns some content from the engine' do
-    get '/my_engine/eng_route'
-    assert_response 200
-  end
-end
-
-class EngineExtraRoutesTest < ActionDispatch::IntegrationTest
-  i_suck_and_my_tests_are_order_dependent!
-  openapi!
-
-  test 'returns the block content' do
-    get '/my_engine/test'
-    assert_response 200
-  end
-end
-
-class AdditionalPropertiesTest < ActionDispatch::IntegrationTest
-  i_suck_and_my_tests_are_order_dependent!
-  openapi!
-
-  test 'returns some content' do
-    get '/additional_properties'
-    assert_response 200
-  end
-end
-
-class NamespaceTest < ActionDispatch::IntegrationTest
-  i_suck_and_my_tests_are_order_dependent!
-  openapi!
-
-  test 'returns some content' do
-    get '/admin/masters/extensions'
-    assert_response 200
-  end
-
-  test 'creates a content' do
-    post '/admin/masters/extensions'
-    assert_response 200
-  end
-end
-
-class RackAppTest < ActionDispatch::IntegrationTest
-  i_suck_and_my_tests_are_order_dependent!
-  openapi!
-
-  test 'returns some content foo' do
-    get '/rack/foo/'
-    assert_response 200
-  end
-
-  test 'returns some content bar' do
-    get '/rack/bar'
-    assert_response 200
-  end
-end
-
-class RackAppTest < ActionDispatch::IntegrationTest
-  i_suck_and_my_tests_are_order_dependent!
-  openapi!
-
-  test 'raises not found' do
-    get '/sites/no-such', as: :json
-    assert_response 404
-  end
-
-  test 'finds a site' do
-    get '/sites/abc123', as: :json
-    assert_response 200
-  end
-end
-
-class ArrayOfHashesTest < ActionDispatch::IntegrationTest
-  i_suck_and_my_tests_are_order_dependent!
-  openapi!
-
-  test 'with nullable keys' do
-    get '/array_hashes/nullable'
-    assert_response 200
-  end
-
-  test 'with non-nullable keys' do
-    get '/array_hashes/non_nullable'
-    assert_response 200
-  end
-
-  test 'with nested keys' do
-    get '/array_hashes/nested'
-    assert_response 200
-  end
-
-  test 'with empty array' do
-    get '/array_hashes/empty_array'
-    assert_response 200
-  end
-
-  test 'with single item' do
-    get '/array_hashes/single_item'
-    assert_response 200
-  end
-
-  test 'with non-hash items' do
-    get '/array_hashes/non_hash_items'
-    assert_response 200
-  end
-
-  test 'with nested arrays' do
-    get '/array_hashes/nested_arrays'
-    assert_response 200
-  end
-
-  test 'with nested objects' do
-    get '/array_hashes/nested_objects'
-    assert_response 200
-  end
-
-  test 'with mixed types in nested objects' do
-    get '/array_hashes/mixed_types_nested'
-    assert_response 200
-  end
-
-  test 'with mixed types in nested objects in nested array' do
-    get '/array_hashes/multiple_one_of_test'
-    assert_response 200
-  end
-end
-
-class RSpecHooksAfterSuiteTest < Minitest::Test
-  RSPEC_HOOK_PATH = File.expand_path('../apps/rails/tmp/rspec_hook_error.yaml', __dir__)
-
-  def test_reports_schema_builder_errors
-    env = {
-      'TZ' => ENV['TZ'],
-      'RAILS_ENV' => ENV['RAILS_ENV'],
-      'OPENAPI' => '1',
-      'OPENAPI_OUTPUT' => 'yaml',
-      'RSPEC_HOOK_OPENAPI_PATH' => RSPEC_HOOK_PATH,
-    }.compact
-
-    stdout, stderr, status = Bundler.with_unbundled_env do
-      Open3.capture3(env, 'bundle', 'exec', 'scripts/rspec_with_simplecov', 'spec/requests/rspec_hook_error_spec.rb')
+    # Patch minitest's ordering of examples to match RSpec's
+    # in order to get comparable results
+    def self.runnable_methods
+      %w[test_with_flat_query_parameters test_with_deep_query_parameters test_with_different_deep_query_parameters
+         test_has_a_request_spec_which_does_not_make_any_request test_does_not_return_tables_if_unauthorized]
     end
 
-    combined_output = stdout + stderr
-    cleaned_output = combined_output.gsub(/\e\[\d+(?:;\d+)*m/, '')
-    assert(status.success?, "RSpec failed: #{combined_output}")
-    assert_includes(cleaned_output, 'RSpec::OpenAPI got errors building 1 requests')
-  ensure
-    FileUtils.rm_f(RSPEC_HOOK_PATH)
+    def test_with_flat_query_parameters
+      get '/tables', params: { page: '1', per: '10' },
+                     headers: { authorization: 'k0kubun', 'X-Authorization-Token': 'token' }
+      assert_response 200
+    end
+
+    def test_with_deep_query_parameters
+      get '/tables', params: { filter: { 'name' => 'Example Table' } }, headers: { authorization: 'k0kubun' }
+      assert_response 200
+    end
+
+    def test_with_different_deep_query_parameters
+      get '/tables', params: { filter: { 'price' => 0 } }, headers: { authorization: 'k0kubun' }
+      assert_response 200
+    end
+
+    def test_has_a_request_spec_which_does_not_make_any_request
+      assert true
+    end
+
+    def test_does_not_return_tables_if_unauthorized
+      get '/tables'
+      assert_response 401
+    end
+  end
+
+  class TablesShowTest < ActionDispatch::IntegrationTest
+    i_suck_and_my_tests_are_order_dependent!
+    openapi!
+
+    # Patch minitest's ordering of examples to match RSpec's
+    # in order to get comparable results
+    def self.runnable_methods
+      %w[test_returns_a_table test_does_not_return_a_table_if_unauthorized test_does_not_return_a_table_if_not_found]
+    end
+
+    def test_does_not_return_a_table_if_unauthorized
+      get '/tables/1'
+      assert_response 401
+    end
+
+    def test_does_not_return_a_table_if_not_found
+      get '/tables/2', headers: { authorization: 'k0kubun' }
+      assert_response 404
+    end
+
+    def test_returns_a_table
+      get '/tables/1', headers: { authorization: 'k0kubun' }
+      assert_response 200
+    end
+  end
+
+  class TablesCreateTest < ActionDispatch::IntegrationTest
+    i_suck_and_my_tests_are_order_dependent!
+    openapi!
+
+    test 'returns a table' do
+      post '/tables', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {
+        name: 'k0kubun',
+        description: 'description',
+        database_id: 2,
+      }.to_json
+      assert_response 201
+    end
+
+    test 'fails to create a table' do
+      post '/tables', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {
+        name: 'some_invalid_name',
+        description: 'description',
+        database_id: 2,
+      }.to_json
+      assert_response 422
+    end
+
+    test 'fails to create a table (2)' do
+      post '/tables', headers: { authorization: 'k0kubun', 'Content-Type': 'application/json' }, params: {
+        description: 'description',
+        database_id: 2,
+      }.to_json
+      assert_response 422
+    end
+  end
+
+  class TablesUpdateTest < ActionDispatch::IntegrationTest
+    i_suck_and_my_tests_are_order_dependent!
+    openapi!
+
+    test 'returns a table' do
+      patch '/tables/1', headers: { authorization: 'k0kubun' }, params: { name: 'test' }
+      assert_response 200
+    end
+  end
+
+  class TablesDestroyTest < ActionDispatch::IntegrationTest
+    i_suck_and_my_tests_are_order_dependent!
+    openapi!
+
+    test 'returns a table' do
+      delete '/tables/1', headers: { authorization: 'k0kubun' }
+      assert_response 200
+    end
+
+    test 'returns no content if specified' do
+      delete '/tables/1', headers: { authorization: 'k0kubun' }, params: { no_content: true }
+      assert_response 202
+    end
+  end
+
+  class ImageTest < ActionDispatch::IntegrationTest
+    i_suck_and_my_tests_are_order_dependent!
+    openapi!
+
+    test 'returns a image payload' do
+      get '/images/1'
+      assert_response 200
+    end
+
+    test 'can return an object with an attribute of empty array' do
+      get '/images'
+      assert_response 200
+    end
+
+    test 'returns a image payload with upload' do
+      png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
+    QBoAAAAASUVORK5CYII='.unpack1('m')
+      File.binwrite('test.png', png)
+      image = Rack::Test::UploadedFile.new('test.png', 'image/png')
+      post '/images/upload', params: { image: image }
+      assert_response 200
+    end
+
+    test 'returns a image payload with upload nested' do
+      png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
+    QBoAAAAASUVORK5CYII='.unpack1('m')
+      File.binwrite('test.png', png)
+      image = Rack::Test::UploadedFile.new('test.png', 'image/png')
+      post '/images/upload_nested', params: { nested_image: { image: image, caption: 'Some caption' } }
+      assert_response 200
+    end
+
+    test 'returns a image payload with upload multiple' do
+      png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
+    QBoAAAAASUVORK5CYII='.unpack1('m')
+      File.binwrite('test.png', png)
+      image = Rack::Test::UploadedFile.new('test.png', 'image/png')
+      post '/images/upload_multiple', params: { images: [image, image] }
+      assert_response 200
+    end
+
+    test 'returns a image payload with upload multiple nested' do
+      png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
+    QBoAAAAASUVORK5CYII='.unpack1('m')
+      File.binwrite('test.png', png)
+      image = Rack::Test::UploadedFile.new('test.png', 'image/png')
+      post '/images/upload_multiple_nested', params: { images: [{ image: image }, { image: image }] }
+      assert_response 200
+    end
+  end
+
+  class SecretKeyTest < ActionDispatch::IntegrationTest
+    i_suck_and_my_tests_are_order_dependent!
+    openapi!
+
+    test 'authorizes with secret key' do
+      get '/secret_items',
+          headers: {
+            'Secret-Key' => '42',
+          }
+      assert_response 200
+    end
+  end
+
+  class ExtraRoutesTest < ActionDispatch::IntegrationTest
+    i_suck_and_my_tests_are_order_dependent!
+    openapi!
+
+    test 'returns the block content' do
+      get '/test_block'
+      assert_response 200
+    end
+  end
+
+  class EngineTest < ActionDispatch::IntegrationTest
+    i_suck_and_my_tests_are_order_dependent!
+    openapi!
+
+    test 'returns some content from the engine' do
+      get '/my_engine/eng_route'
+      assert_response 200
+    end
+  end
+
+  class EngineExtraRoutesTest < ActionDispatch::IntegrationTest
+    i_suck_and_my_tests_are_order_dependent!
+    openapi!
+
+    test 'returns the block content' do
+      get '/my_engine/test'
+      assert_response 200
+    end
+  end
+
+  class AdditionalPropertiesTest < ActionDispatch::IntegrationTest
+    i_suck_and_my_tests_are_order_dependent!
+    openapi!
+
+    test 'returns some content' do
+      get '/additional_properties'
+      assert_response 200
+    end
+  end
+
+  class NamespaceTest < ActionDispatch::IntegrationTest
+    i_suck_and_my_tests_are_order_dependent!
+    openapi!
+
+    test 'returns some content' do
+      get '/admin/masters/extensions'
+      assert_response 200
+    end
+
+    test 'creates a content' do
+      post '/admin/masters/extensions'
+      assert_response 200
+    end
+  end
+
+  class RackAppTest < ActionDispatch::IntegrationTest
+    i_suck_and_my_tests_are_order_dependent!
+    openapi!
+
+    test 'returns some content foo' do
+      get '/rack/foo/'
+      assert_response 200
+    end
+
+    test 'returns some content bar' do
+      get '/rack/bar'
+      assert_response 200
+    end
+  end
+
+  class SitesTest < ActionDispatch::IntegrationTest
+    i_suck_and_my_tests_are_order_dependent!
+    openapi!
+
+    test 'raises not found' do
+      get '/sites/no-such', as: :json
+      assert_response 404
+    end
+
+    test 'finds a site' do
+      get '/sites/abc123', as: :json
+      assert_response 200
+    end
+  end
+
+  class ArrayOfHashesTest < ActionDispatch::IntegrationTest
+    i_suck_and_my_tests_are_order_dependent!
+    openapi!
+
+    test 'with nullable keys' do
+      get '/array_hashes/nullable'
+      assert_response 200
+    end
+
+    test 'with non-nullable keys' do
+      get '/array_hashes/non_nullable'
+      assert_response 200
+    end
+
+    test 'with nested keys' do
+      get '/array_hashes/nested'
+      assert_response 200
+    end
+
+    test 'with empty array' do
+      get '/array_hashes/empty_array'
+      assert_response 200
+    end
+
+    test 'with single item' do
+      get '/array_hashes/single_item'
+      assert_response 200
+    end
+
+    test 'with non-hash items' do
+      get '/array_hashes/non_hash_items'
+      assert_response 200
+    end
+
+    test 'with nested arrays' do
+      get '/array_hashes/nested_arrays'
+      assert_response 200
+    end
+
+    test 'with nested objects' do
+      get '/array_hashes/nested_objects'
+      assert_response 200
+    end
+
+    test 'with mixed types in nested objects' do
+      get '/array_hashes/mixed_types_nested'
+      assert_response 200
+    end
+
+    test 'with mixed types in nested objects in nested array' do
+      get '/array_hashes/multiple_one_of_test'
+      assert_response 200
+    end
+  end
+
+  class RSpecHooksAfterSuiteTest < Minitest::Test
+    RSPEC_HOOK_PATH = File.expand_path('../apps/rails/tmp/rspec_hook_error.yaml', __dir__)
+
+    def test_reports_schema_builder_errors
+      env = {
+        'TZ' => ENV.fetch('TZ', nil),
+        'RAILS_ENV' => ENV.fetch('RAILS_ENV', nil),
+        'OPENAPI' => '1',
+        'OPENAPI_OUTPUT' => 'yaml',
+        'RSPEC_HOOK_OPENAPI_PATH' => RSPEC_HOOK_PATH,
+      }.compact
+
+      stdout, stderr, status = Bundler.with_unbundled_env do
+        Open3.capture3(env, 'bundle', 'exec', 'scripts/rspec_with_simplecov', 'spec/requests/rspec_hook_error_spec.rb')
+      end
+
+      combined_output = stdout + stderr
+      cleaned_output = combined_output.gsub(/\e\[\d+(?:;\d+)*m/, '')
+      assert(status.success?, "RSpec failed: #{combined_output}")
+      assert_includes(cleaned_output, 'RSpec::OpenAPI got errors building 1 requests')
+    ensure
+      FileUtils.rm_f(RSPEC_HOOK_PATH)
+    end
   end
 end
