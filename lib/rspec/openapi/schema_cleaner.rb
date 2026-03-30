@@ -70,6 +70,8 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
     ]
     paths_to_objects.each do |path|
       parent = base.dig(*path.take(path.length - 1))
+      next unless parent
+
       # "required" array  must not be present if empty
       parent.delete(:required) if parent[:required] && parent[:required].empty?
     end
