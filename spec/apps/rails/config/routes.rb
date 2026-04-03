@@ -76,16 +76,9 @@ Rails.application.routes.draw do
     post '/enum_test' => 'enum_test#create'
     get '/enum_test/deeply_nested' => 'enum_test#deeply_nested'
 
-    # Dynamic-key (additionalProperties) test routes
-    get '/dynamic_keys_test/wrapped' => 'dynamic_keys_test#wrapped'
-    get '/dynamic_keys_test/root' => 'dynamic_keys_test#root'
-    get '/dynamic_keys_test/complex_values' => 'dynamic_keys_test#complex_values'
-    post '/dynamic_keys_test' => 'dynamic_keys_test#create'
-    get '/dynamic_keys_test/closed' => 'dynamic_keys_test#closed'
-    get '/dynamic_keys_test/hybrid' => 'dynamic_keys_test#hybrid'
-    post '/dynamic_keys_test/respond_with_dynamic' => 'dynamic_keys_test#respond_with_dynamic'
-    get '/dynamic_keys_test/deeply_nested' => 'dynamic_keys_test#deeply_nested'
-    get '/dynamic_keys_test/with_enum' => 'dynamic_keys_test#with_enum'
+    # Test routes for description preservation with example_mode :none
+    get '/description_preserve_test' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }
+    get '/description_overwrite_test' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }
 
     # Test route for invalid example_mode error handling
     get '/invalid_example_mode' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }
