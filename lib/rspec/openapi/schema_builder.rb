@@ -217,9 +217,11 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
                            build_array_items_schema(value, record: record, path: path, context: context)
                          end
     when Hash
-      additional_properties_schema = infer_additional_properties(path, record, context)
-      if additional_properties_schema
-        property[:additionalProperties] = additional_properties_schema
+      override = infer_additional_properties(path, record, context)
+      if override.is_a?(Hash) && !override.empty?
+        # Schema override: the object's keys are dynamic — replace captured
+        # `properties` / `required` with the supplied dictionary value schema.
+        property[:additionalProperties] = override
       else
         property[:properties] = {}.tap do |properties|
           value.each do |k, v|
@@ -228,6 +230,10 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
           end
         end
         property = enrich_with_required_keys(property)
+        # Boolean override: keep the observed `properties` / `required` and
+        # attach `additionalProperties: false` (forbid extras) or `: true`
+        # (explicitly allow extras).
+        property[:additionalProperties] = override if override == true || override == false
       end
     end
     property
@@ -289,7 +295,10 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
                 end
     return nil unless overrides
 
-    # path is nil at the body root; nil.to_s == '' lets users target it via { '' => ... }
+    # path is nil at the body root; nil.to_s == '' lets users target it via { '' => ... }.
+    # Use `key?` so a literal `false` override is distinguishable from "no override".
+    return nil unless overrides.key?(path.to_s)
+
     overrides[path.to_s]
   end
 

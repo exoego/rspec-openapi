@@ -540,6 +540,48 @@ it 'records arbitrary metrics', openapi: {
 end
 ```
 
+#### Forbidding extras with `false` (or `true`)
+
+Pass a boolean as the value to keep the captured `properties` / `required`
+and attach `additionalProperties: false` (forbid extras) or `: true`
+(explicitly allow extras) — the OpenAPI default is `true`, so this is
+useful mostly for the `false` case:
+
+```rb
+it 'returns a closed object', openapi: {
+  additional_properties: { '' => false },
+} do
+  get '/api/v1/profile'
+  # Response: { "id": 1, "name": "alice" }
+  expect(response.status).to eq(200)
+end
+```
+
+```yaml
+schema:
+  type: object
+  properties:
+    id: { type: integer }
+    name: { type: string }
+  required: [id, name]
+  additionalProperties: false
+```
+
+#### Notes on behavior
+
+- A hash schema in `additional_properties` fully replaces the captured
+  `properties` / `required` at the matched node — pass a boolean instead
+  to keep them.
+- Recursion stops once `additional_properties` matches a path with a hash
+  schema: nested overrides underneath (e.g. setting both `'data'` and
+  `'data.meta'`) won't be applied, because the supplied dictionary value
+  schema describes every child uniformly and isn't traversed further.
+- When migrating an existing schema (one previously generated with concrete
+  `properties` / `required`) by adding this metadata, the next regeneration
+  prunes the stale `properties` / `required` automatically. If you had
+  manually added `additionalProperties` to an object that also has
+  `properties`, that hybrid shape is preserved.
+
 ### Multiple Examples Mode
 
 You can generate multiple named examples for the same endpoint using `example_mode`:

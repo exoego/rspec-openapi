@@ -33,4 +33,9 @@ class DynamicKeysTestController < ApplicationController
   def create
     render json: { ok: true }, status: 201
   end
+
+  # Closed object: a fixed shape that should disallow extras via additionalProperties: false.
+  def closed
+    render json: { id: 1, name: 'sample' }
+  end
 end

@@ -677,4 +677,13 @@ RSpec.describe 'Dynamic key (additionalProperties) support', type: :request do
       expect(response.status).to eq(201)
     end
   end
+
+  describe 'forbidding extra keys with `false`' do
+    it 'keeps observed properties and sets additionalProperties: false', openapi: {
+      additional_properties: { '' => false },
+    } do
+      get '/dynamic_keys_test/closed'
+      expect(response.status).to eq(200)
+    end
+  end
 end

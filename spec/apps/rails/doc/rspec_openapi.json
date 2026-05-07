@@ -1117,6 +1117,43 @@
         }
       }
     },
+    "/dynamic_keys_test/closed": {
+      "get": {
+        "summary": "closed",
+        "tags": [
+          "DynamicKeysTest"
+        ],
+        "responses": {
+          "200": {
+            "description": "keeps observed properties and sets additionalProperties: false",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "id": 1,
+                  "name": "sample"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/dynamic_keys_test/complex_values": {
       "get": {
         "summary": "complex_values",
