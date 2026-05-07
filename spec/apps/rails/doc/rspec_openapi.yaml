@@ -732,6 +732,40 @@ paths:
                 id: 1
                 attr_color: red
                 attr_size: large
+  "/dynamic_keys_test/respond_with_dynamic":
+    post:
+      summary: respond_with_dynamic
+      tags:
+      - DynamicKeysTest
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                value:
+                  type: string
+              required:
+              - name
+              - value
+            example:
+              name: foo
+              value: '42'
+      responses:
+        '200':
+          description: applies additionalProperties only to the response body, leaving
+            the request schema intact
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+              example:
+                metric_alpha: 1
+                metric_beta: 2
   "/dynamic_keys_test/root":
     get:
       summary: root

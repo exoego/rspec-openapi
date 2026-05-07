@@ -695,4 +695,13 @@ RSpec.describe 'Dynamic key (additionalProperties) support', type: :request do
       expect(response.status).to eq(200)
     end
   end
+
+  describe 'response-side override' do
+    it 'applies additionalProperties only to the response body, leaving the request schema intact', openapi: {
+      response_additional_properties: { '' => { type: 'integer' } },
+    } do
+      post '/dynamic_keys_test/respond_with_dynamic', params: { name: 'foo', value: '42' }
+      expect(response.status).to eq(200)
+    end
+  end
 end

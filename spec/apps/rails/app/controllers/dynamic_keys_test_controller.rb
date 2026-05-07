@@ -47,4 +47,12 @@ class DynamicKeysTestController < ApplicationController
       'attr_size' => 'large',
     }
   end
+
+  # Fixed-shape request body; response has dynamic keys.
+  def respond_with_dynamic
+    render json: {
+      'metric_alpha' => 1,
+      'metric_beta' => 2,
+    }
+  end
 end
