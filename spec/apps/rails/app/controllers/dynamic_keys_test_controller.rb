@@ -38,4 +38,13 @@ class DynamicKeysTestController < ApplicationController
   def closed
     render json: { id: 1, name: 'sample' }
   end
+
+  # Hybrid: known keys (id) plus dynamic string-valued extras.
+  def hybrid
+    render json: {
+      id: 1,
+      'attr_color' => 'red',
+      'attr_size' => 'large',
+    }
+  end
 end

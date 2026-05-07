@@ -8,7 +8,8 @@ class << RSpec::OpenAPI::Extractors::Rack = Object.new
   def request_attributes(request, example)
     summary, tags, formats, operation_id, required_request_params, security, description, deprecated, example_mode,
       example_key, example_name, response_enum, request_enum, response_additional_properties,
-      request_additional_properties = SharedExtractor.attributes(example)
+      request_additional_properties, response_hybrid_additional_properties,
+      request_hybrid_additional_properties = SharedExtractor.attributes(example)
 
     raw_path_params = request.path_parameters
     path = request.path
@@ -32,6 +33,8 @@ class << RSpec::OpenAPI::Extractors::Rack = Object.new
       request_enum,
       response_additional_properties,
       request_additional_properties,
+      response_hybrid_additional_properties,
+      request_hybrid_additional_properties,
     ]
   end
 

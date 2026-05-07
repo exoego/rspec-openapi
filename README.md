@@ -567,15 +567,47 @@ schema:
   additionalProperties: false
 ```
 
+#### Hybrid objects (known keys + dynamic extras)
+
+When an object has both a fixed shape and dynamic extras (different types),
+use `hybrid_additional_properties` (`request_hybrid_additional_properties`
+and `response_hybrid_additional_properties` to scope to one side). Captured
+properties stay; the supplied schema is attached as `additionalProperties`:
+
+```rb
+it 'returns an item with custom attributes', openapi: {
+  hybrid_additional_properties: { '' => { type: 'string' } },
+} do
+  get '/api/v1/items/42'
+  # Response: { "id": 42, "attr_color": "red", "attr_size": "large" }
+  expect(response.status).to eq(200)
+end
+```
+
+```yaml
+schema:
+  type: object
+  properties:
+    id: { type: integer }
+    attr_color: { type: string }
+    attr_size: { type: string }
+  required: [id, attr_color, attr_size]
+  additionalProperties:
+    type: string
+```
+
 #### Notes on behavior
 
 - A hash schema in `additional_properties` fully replaces the captured
-  `properties` / `required` at the matched node — pass a boolean instead
-  to keep them.
+  `properties` / `required` at the matched node. To keep observed properties
+  alongside `additionalProperties`, use `hybrid_additional_properties` or pass
+  a boolean.
 - Recursion stops once `additional_properties` matches a path with a hash
   schema: nested overrides underneath (e.g. setting both `'data'` and
   `'data.meta'`) won't be applied, because the supplied dictionary value
   schema describes every child uniformly and isn't traversed further.
+  `hybrid_additional_properties` keeps observed properties so children are
+  still walked normally.
 - When migrating an existing schema (one previously generated with concrete
   `properties` / `required`) by adding this metadata, the next regeneration
   prunes the stale `properties` / `required` automatically. If you had

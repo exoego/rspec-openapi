@@ -686,4 +686,13 @@ RSpec.describe 'Dynamic key (additionalProperties) support', type: :request do
       expect(response.status).to eq(200)
     end
   end
+
+  describe 'hybrid mode (known keys + dynamic extras)' do
+    it 'keeps observed properties and adds additionalProperties from a schema', openapi: {
+      hybrid_additional_properties: { '' => { type: 'string' } },
+    } do
+      get '/dynamic_keys_test/hybrid'
+      expect(response.status).to eq(200)
+    end
+  end
 end

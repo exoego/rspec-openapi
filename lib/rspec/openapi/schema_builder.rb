@@ -218,6 +218,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
                          end
     when Hash
       override = infer_additional_properties(path, record, context)
+      hybrid_override = infer_hybrid_additional_properties(path, record, context)
       if override.is_a?(Hash) && !override.empty?
         # Schema override: the object's keys are dynamic — replace captured
         # `properties` / `required` with the supplied dictionary value schema.
@@ -230,10 +231,17 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
           end
         end
         property = enrich_with_required_keys(property)
-        # Boolean override: keep the observed `properties` / `required` and
-        # attach `additionalProperties: false` (forbid extras) or `: true`
-        # (explicitly allow extras).
-        property[:additionalProperties] = override if override == true || override == false
+        # Hybrid: keep the observed `properties` / `required` and attach
+        # `additionalProperties` alongside.
+        # - Boolean values are constraints (`false` forbids extras, `true`
+        #   explicitly allows them).
+        # - Hash schema values come from the dedicated `hybrid_additional_properties`
+        #   metadata, expressing "known keys + extras of this type".
+        if override == true || override == false
+          property[:additionalProperties] = override
+        elsif hybrid_override.is_a?(Hash) && !hybrid_override.empty?
+          property[:additionalProperties] = hybrid_override
+        end
       end
     end
     property
@@ -298,6 +306,19 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     # path is nil at the body root; nil.to_s == '' lets users target it via { '' => ... }.
     # Use `key?` so a literal `false` override is distinguishable from "no override".
     return nil unless overrides.key?(path.to_s)
+
+    overrides[path.to_s]
+  end
+
+  def infer_hybrid_additional_properties(path, record, context)
+    return nil unless record
+
+    overrides = if context == :request
+                  record.request_hybrid_additional_properties
+                else
+                  record.response_hybrid_additional_properties
+                end
+    return nil unless overrides
 
     overrides[path.to_s]
   end
