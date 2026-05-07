@@ -1066,6 +1066,152 @@
         }
       }
     },
+    "/dynamic_keys_test": {
+      "post": {
+        "summary": "create",
+        "tags": [
+          "DynamicKeysTest"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "integer"
+                }
+              },
+              "example": {
+                "metric_a": "1",
+                "metric_b": "2"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "applies additionalProperties only to the request body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "ok"
+                  ]
+                },
+                "example": {
+                  "ok": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dynamic_keys_test/complex_values": {
+      "get": {
+        "summary": "complex_values",
+        "tags": [
+          "DynamicKeysTest"
+        ],
+        "responses": {
+          "200": {
+            "description": "supports $ref schemas as the additionalProperties value",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/Tag"
+                  }
+                },
+                "example": {
+                  "tag-1": {
+                    "id": 1,
+                    "label": "urgent"
+                  },
+                  "tag-2": {
+                    "id": 2,
+                    "label": "normal"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dynamic_keys_test/root": {
+      "get": {
+        "summary": "root",
+        "tags": [
+          "DynamicKeysTest"
+        ],
+        "responses": {
+          "200": {
+            "description": "applies additionalProperties at the body root using empty string path",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "boolean"
+                  }
+                },
+                "example": {
+                  "org-one": true,
+                  "org-two": false,
+                  "org-three": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dynamic_keys_test/wrapped": {
+      "get": {
+        "summary": "wrapped",
+        "tags": [
+          "DynamicKeysTest"
+        ],
+        "responses": {
+          "200": {
+            "description": "replaces the data field properties with additionalProperties",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "boolean"
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "can_do_thing": true,
+                    "can_do_other_thing": false,
+                    "can_do_third_thing": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/empty_example_name": {
       "get": {
         "summary": "GET /empty_example_name",

@@ -447,6 +447,99 @@ it 'creates a task', openapi: {
 end
 ```
 
+### Dynamic-key Object Support (`additionalProperties`)
+
+When an endpoint returns (or accepts) an object whose keys are not part of its
+schema — for example a permissions map `{ "can_edit": true, "can_delete": false }`
+where new permissions can appear without an API change — rspec-openapi would
+otherwise capture the test response literally and emit each observed key as a
+fixed property. You can override this with the `additional_properties` metadata,
+which replaces the captured `properties` / `required` of the matched object with
+[`additionalProperties`](https://swagger.io/docs/specification/data-models/dictionaries/).
+
+Keys are dot-notation paths (the same scheme as `enum`); the empty string `""`
+targets the body root.
+
+```rb
+it 'returns a permission map', openapi: {
+  additional_properties: { 'data' => { type: 'boolean' } },
+} do
+  get '/api/v1/permissions'
+  # Response: { "data": { "can_edit": true, "can_delete": false } }
+  expect(response.status).to eq(200)
+end
+```
+
+This generates:
+
+```yaml
+schema:
+  type: object
+  properties:
+    data:
+      type: object
+      additionalProperties:
+        type: boolean
+  required:
+    - data
+```
+
+#### Root-level dynamic keys
+
+When the entire body is a dynamic dict, use `''` as the path:
+
+```rb
+it 'lists organisation memberships', openapi: {
+  additional_properties: { '' => { type: 'boolean' } },
+} do
+  get '/api/v1/organisations/acme/check_memberships'
+  # Response: { "user-hash-a": true, "user-hash-b": false }
+  expect(response.status).to eq(200)
+end
+```
+
+```yaml
+schema:
+  type: object
+  additionalProperties:
+    type: boolean
+```
+
+#### Schemas referenced via `$ref`
+
+The value of `additionalProperties` can be any schema, including a `$ref`:
+
+```rb
+it 'returns tags by id', openapi: {
+  additional_properties: { '' => { '$ref' => '#/components/schemas/Tag' } },
+} do
+  get '/tags'
+  expect(response.status).to eq(200)
+end
+```
+
+```yaml
+schema:
+  type: object
+  additionalProperties:
+    $ref: '#/components/schemas/Tag'
+```
+
+#### Request vs Response
+
+`additional_properties` applies to both request and response by default. Use
+`request_additional_properties` / `response_additional_properties` to scope to
+one side:
+
+```rb
+it 'records arbitrary metrics', openapi: {
+  request_additional_properties: { '' => { type: 'integer' } },
+} do
+  post '/metrics', params: { 'page_views' => 100, 'signups' => 5 }
+  expect(response.status).to eq(201)
+end
+```
+
 ### Multiple Examples Mode
 
 You can generate multiple named examples for the same endpoint using `example_mode`:
