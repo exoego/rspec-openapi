@@ -669,9 +669,9 @@ RSpec.describe 'Dynamic key (additionalProperties) support', type: :request do
     end
   end
 
-  describe 'request-side override' do
-    it 'applies additionalProperties only to the request body', openapi: {
-      request_additional_properties: { '' => { type: 'integer' } },
+  describe 'request-side override with enum array value' do
+    it 'applies additionalProperties only to the request body and supports array values in the schema', openapi: {
+      request_additional_properties: { '' => { type: 'string', enum: %w[1 2] } },
     } do
       post '/dynamic_keys_test', params: { 'metric_a' => 1, 'metric_b' => 2 }
       expect(response.status).to eq(201)

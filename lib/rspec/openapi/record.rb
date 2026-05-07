@@ -28,10 +28,7 @@ RSpec::OpenAPI::Record = Struct.new(
   :response_content_disposition, # @param [String]  - "inline"
   :response_enum,         # @param [Hash]    - {"status" => ["active", "inactive"], "user.role" => ["admin", "user"]}
   :request_enum,          # @param [Hash]    - {"type" => ["create", "update"]}
-  # Hash of dot-notation path => value-schema for `additionalProperties`.
-  # Empty-string path targets the body root.
-  # Example: { "data" => { type: "boolean" }, "" => { "$ref": "#/components/schemas/Tag" } }
-  :response_additional_properties,
-  :request_additional_properties,
+  :response_additional_properties, # @param [Hash] - {"data" => { type: "boolean" }}
+  :request_additional_properties,  # @param [Hash] - {"meta" => { type: "string" }}
   keyword_init: true,
 )

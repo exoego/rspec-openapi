@@ -32,8 +32,6 @@ class SharedExtractor
      request_additional_properties,]
   end
 
-  # additionalProperties support: response/request-specific overrides fall back to
-  # the general `additional_properties` metadata when not provided.
   def self.resolve_additional_properties(metadata)
     base = normalize_additional_properties(metadata[:additional_properties])
     response = normalize_additional_properties(metadata[:response_additional_properties]) || base
@@ -48,13 +46,6 @@ class SharedExtractor
     enum_hash.transform_keys(&:to_s)
   end
 
-  # Normalize additional_properties metadata.
-  # Outer keys identify object paths in the schema using dot notation
-  # (matching the path scheme used by `enum`).
-  # Values are user-supplied schemas describing the value type for the
-  # dynamic keys: e.g. { type: 'boolean' }, { '$ref' => '#/components/schemas/Foo' },
-  # or even fully-formed nested schemas. Inner hash keys are symbolized so the
-  # value is consumable by SchemaBuilder without further transformation.
   def self.normalize_additional_properties(hash)
     return nil if hash.nil? || hash.empty?
 

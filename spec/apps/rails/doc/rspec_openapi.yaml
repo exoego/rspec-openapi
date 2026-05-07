@@ -635,13 +635,17 @@ paths:
             schema:
               type: object
               additionalProperties:
-                type: integer
+                type: string
+                enum:
+                - '1'
+                - '2'
             example:
               metric_a: '1'
               metric_b: '2'
       responses:
         '201':
-          description: applies additionalProperties only to the request body
+          description: applies additionalProperties only to the request body and supports
+            array values in the schema
           content:
             application/json:
               schema:

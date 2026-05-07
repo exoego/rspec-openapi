@@ -1078,7 +1078,11 @@
               "schema": {
                 "type": "object",
                 "additionalProperties": {
-                  "type": "integer"
+                  "type": "string",
+                  "enum": [
+                    "1",
+                    "2"
+                  ]
                 }
               },
               "example": {
@@ -1090,7 +1094,7 @@
         },
         "responses": {
           "201": {
-            "description": "applies additionalProperties only to the request body",
+            "description": "applies additionalProperties only to the request body and supports array values in the schema",
             "content": {
               "application/json": {
                 "schema": {

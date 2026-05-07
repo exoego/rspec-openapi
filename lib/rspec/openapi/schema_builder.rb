@@ -289,9 +289,6 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
                 end
     return nil unless overrides
 
-    # Keys are already normalized to strings by SharedExtractor.normalize_additional_properties.
-    # `path` is nil at the root of a body schema; nil.to_s == '' — so users can target the
-    # entire body with `additional_properties: { '' => ... }`.
     overrides[path.to_s]
   end
 
