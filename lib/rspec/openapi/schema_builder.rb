@@ -217,13 +217,18 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
                            build_array_items_schema(value, record: record, path: path, context: context)
                          end
     when Hash
-      property[:properties] = {}.tap do |properties|
-        value.each do |k, v|
-          child_path = path ? "#{path}.#{k}" : k.to_s
-          properties[k] = build_property(v, record: record, key: k, path: child_path, context: context)
+      additional_properties_schema = infer_additional_properties(path, record, context)
+      if additional_properties_schema
+        property[:additionalProperties] = additional_properties_schema
+      else
+        property[:properties] = {}.tap do |properties|
+          value.each do |k, v|
+            child_path = path ? "#{path}.#{k}" : k.to_s
+            properties[k] = build_property(v, record: record, key: k, path: child_path, context: context)
+          end
         end
+        property = enrich_with_required_keys(property)
       end
-      property = enrich_with_required_keys(property)
     end
     property
   end
@@ -272,6 +277,20 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
     # Keys are already normalized to strings by SharedExtractor.normalize_enum
     enum_hash[path.to_s]
+  end
+
+  def infer_additional_properties(path, record, context)
+    return nil unless record
+
+    overrides = if context == :request
+                  record.request_additional_properties
+                else
+                  record.response_additional_properties
+                end
+    return nil unless overrides
+
+    # path is nil at the body root; nil.to_s == '' lets users target it via { '' => ... }
+    overrides[path.to_s]
   end
 
   # Convert an always-String param to an appropriate type

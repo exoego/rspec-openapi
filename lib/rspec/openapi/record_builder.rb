@@ -14,7 +14,8 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
     title = RSpec::OpenAPI.title.then { |t| t.is_a?(Proc) ? t.call(example) : t }
     path, summary, tags, operation_id, required_request_params, raw_path_params,
       description, security, deprecated, formats, example_mode, example_key,
-      example_name, response_enum, request_enum = extractor.request_attributes(request, example)
+      example_name, response_enum, request_enum, response_additional_properties,
+      request_additional_properties = extractor.request_attributes(request, example)
 
     return if RSpec::OpenAPI.ignored_paths.any? { |ignored_path| path.match?(ignored_path) }
 
@@ -48,6 +49,8 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       example_name: example_name,
       response_enum: response_enum,
       request_enum: request_enum,
+      response_additional_properties: response_additional_properties,
+      request_additional_properties: request_additional_properties,
     ).freeze
   end
 

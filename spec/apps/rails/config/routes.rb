@@ -76,6 +76,12 @@ Rails.application.routes.draw do
     post '/enum_test' => 'enum_test#create'
     get '/enum_test/deeply_nested' => 'enum_test#deeply_nested'
 
+    # Dynamic-key (additionalProperties) test routes
+    get '/dynamic_keys_test/wrapped' => 'dynamic_keys_test#wrapped'
+    get '/dynamic_keys_test/root' => 'dynamic_keys_test#root'
+    get '/dynamic_keys_test/complex_values' => 'dynamic_keys_test#complex_values'
+    post '/dynamic_keys_test' => 'dynamic_keys_test#create'
+
     # Test route for invalid example_mode error handling
     get '/invalid_example_mode' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }
   end
