@@ -704,4 +704,23 @@ RSpec.describe 'Dynamic key (additionalProperties) support', type: :request do
       expect(response.status).to eq(200)
     end
   end
+
+  describe 'deep dot-notation paths' do
+    it 'matches dictionaries nested several levels deep', openapi: {
+      additional_properties: { 'a.b.c' => { type: 'integer' } },
+    } do
+      get '/dynamic_keys_test/deeply_nested'
+      expect(response.status).to eq(200)
+    end
+  end
+
+  describe 'combined with enum metadata' do
+    it 'applies enum and additionalProperties to different paths in the same response', openapi: {
+      enum: { 'status' => %w[active inactive] },
+      additional_properties: { 'counts' => { type: 'integer' } },
+    } do
+      get '/dynamic_keys_test/with_enum'
+      expect(response.status).to eq(200)
+    end
+  end
 end

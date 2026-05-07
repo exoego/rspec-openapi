@@ -1187,6 +1187,63 @@
         }
       }
     },
+    "/dynamic_keys_test/deeply_nested": {
+      "get": {
+        "summary": "deeply_nested",
+        "tags": [
+          "DynamicKeysTest"
+        ],
+        "responses": {
+          "200": {
+            "description": "matches dictionaries nested several levels deep",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "a": {
+                      "type": "object",
+                      "properties": {
+                        "b": {
+                          "type": "object",
+                          "properties": {
+                            "c": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "integer"
+                              }
+                            }
+                          },
+                          "required": [
+                            "c"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "b"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "a"
+                  ]
+                },
+                "example": {
+                  "a": {
+                    "b": {
+                      "c": {
+                        "metric_x": 1,
+                        "metric_y": 2
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/dynamic_keys_test/hybrid": {
       "get": {
         "summary": "hybrid",
@@ -1304,6 +1361,52 @@
                   "org-one": true,
                   "org-two": false,
                   "org-three": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dynamic_keys_test/with_enum": {
+      "get": {
+        "summary": "with_enum",
+        "tags": [
+          "DynamicKeysTest"
+        ],
+        "responses": {
+          "200": {
+            "description": "applies enum and additionalProperties to different paths in the same response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "active",
+                        "inactive"
+                      ]
+                    },
+                    "counts": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "integer"
+                      }
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "counts"
+                  ]
+                },
+                "example": {
+                  "status": "active",
+                  "counts": {
+                    "foo": 1,
+                    "bar": 2
+                  }
                 }
               }
             }

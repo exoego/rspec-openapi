@@ -55,4 +55,29 @@ class DynamicKeysTestController < ApplicationController
       'metric_beta' => 2,
     }
   end
+
+  # Deeply nested dynamic dict at `a.b.c`.
+  def deeply_nested
+    render json: {
+      a: {
+        b: {
+          c: {
+            'metric_x' => 1,
+            'metric_y' => 2,
+          },
+        },
+      },
+    }
+  end
+
+  # Mixes enum metadata (on `status`) with additionalProperties (on `counts`).
+  def with_enum
+    render json: {
+      status: 'active',
+      counts: {
+        'foo' => 1,
+        'bar' => 2,
+      },
+    }
+  end
 end
