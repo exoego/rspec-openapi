@@ -50,18 +50,7 @@ class SharedExtractor
     return nil if hash.nil? || hash.empty?
 
     hash.each_with_object({}) do |(path, schema), result|
-      result[path.to_s] = symbolize_schema(schema)
-    end
-  end
-
-  def self.symbolize_schema(value)
-    case value
-    when Hash
-      value.each_with_object({}) { |(k, v), h| h[k.to_sym] = symbolize_schema(v) }
-    when Array
-      value.map { |v| symbolize_schema(v) }
-    else
-      value
+      result[path.to_s] = RSpec::OpenAPI::KeyTransformer.symbolize(schema)
     end
   end
 

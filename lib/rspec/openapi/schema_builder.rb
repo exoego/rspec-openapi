@@ -289,6 +289,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
                 end
     return nil unless overrides
 
+    # path is nil at the body root; nil.to_s == '' lets users target it via { '' => ... }
     overrides[path.to_s]
   end
 
