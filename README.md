@@ -1,6 +1,5 @@
 # rspec-openapi [![Gem Version](https://badge.fury.io/rb/rspec-openapi.svg)](https://rubygems.org/gems/rspec-openapi) [![test](https://github.com/exoego/rspec-openapi/actions/workflows/test.yml/badge.svg)](https://github.com/exoego/rspec-openapi/actions/workflows/test.yml) [![codecov](https://codecov.io/gh/exoego/rspec-openapi/branch/master/graph/badge.svg?token=egYm6AlxkD)](https://codecov.io/gh/exoego/rspec-openapi) [![Ruby-toolbox](https://img.shields.io/badge/ruby-toolbox-a61414?cacheSeconds=31536000)](https://www.ruby-toolbox.com/projects/rspec-openapi) [![DeepWiki](https://img.shields.io/badge/See_on-DeepWiki-blue)](https://deepwiki.com/exoego/rspec-openapi)
 
-
 Generate OpenAPI schema from RSpec request specs.
 
 ## What's this?
@@ -8,7 +7,8 @@ Generate OpenAPI schema from RSpec request specs.
 There are some gems which generate OpenAPI specs from RSpec request specs.
 However, they require a special DSL specific to these gems, and we can't reuse existing request specs as they are.
 
-Unlike such [existing gems](#links), rspec-openapi can generate OpenAPI specs from request specs without requiring any special DSL.
+Unlike such [existing gems](#links), rspec-openapi can generate OpenAPI specs from request specs without requiring any
+special DSL.
 Furthermore, rspec-openapi keeps manual modifications when it merges automated changes to OpenAPI specs
 in case we can't generate everything from request specs.
 
@@ -30,7 +30,9 @@ $ OPENAPI=1 bundle exec rspec
 
 ### Example
 
-Let's say you have [a request spec](https://github.com/exoego/rspec-openapi/blob/24e5c567c2e90945c7a41f19f71634ac028cc314/spec/requests/rails_spec.rb#L38) like this:
+Let's say you
+have [a request spec](https://github.com/exoego/rspec-openapi/blob/24e5c567c2e90945c7a41f19f71634ac028cc314/spec/requests/rails_spec.rb#L38)
+like this:
 
 ```rb
 RSpec.describe 'Tables', type: :request do
@@ -67,18 +69,18 @@ paths:
     get:
       summary: index
       tags:
-      - Table
+        - Table
       parameters:
-      - name: page
-        in: query
-        schema:
-          type: integer
-        example: 1
-      - name: per
-        in: query
-        schema:
-          type: integer
-        example: 10
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: 1
+        - name: per
+          in: query
+          schema:
+            type: integer
+          example: 10
       responses:
         '200':
           description: returns a list of tables
@@ -96,10 +98,10 @@ paths:
                     # ...
 ```
 
-and the schema file can be used as an input of [Swagger UI](https://github.com/swagger-api/swagger-ui) or [Redoc](https://github.com/Redocly/redoc).
+and the schema file can be used as an input of [Swagger UI](https://github.com/swagger-api/swagger-ui)
+or [Redoc](https://github.com/Redocly/redoc).
 
 ![Redoc example](./spec/apps/rails/doc/screenshot.png)
-
 
 ### Configuration
 
@@ -251,7 +253,8 @@ paths:
 # Note) #/components/schemas is not needed to be defined.
 ```
 
-3. Then, re-run rspec-openapi. It will generate `#/components/schemas` with the referenced schema (`User` for example) newly-generated or updated.
+3. Then, re-run rspec-openapi. It will generate `#/components/schemas` with the referenced schema (`User` for example)
+   newly-generated or updated.
 
 ```yaml
 paths:
@@ -354,21 +357,22 @@ Some examples' attributes can be overwritten via RSpec metadata options. Example
 
 ```rb
   describe 'GET /api/v1/posts', openapi: {
-    summary: 'list all posts',
-    description: 'list all posts ordered by pub_date',
-    tags: %w[v1 posts],
-    required_request_params: %w[limit],
-    security: [{"MyToken" => []}],
-  } do
-    # ...
-  end
+  summary: 'list all posts',
+  description: 'list all posts ordered by pub_date',
+  tags: %w[v1 posts],
+  required_request_params: %w[limit],
+  security: [{ "MyToken" => [] }],
+} do
+  # ...
+end
 ```
 
 **NOTE**: `description` key will override also the one provided by `RSpec::OpenAPI.description_builder` method.
 
 ### Enum Support
 
-You can specify enum values for string properties that should have a fixed set of allowed values. Since enums cannot be reliably inferred from test data, you can define them via the `enum` metadata option:
+You can specify enum values for string properties that should have a fixed set of allowed values. Since enums cannot be
+reliably inferred from test data, you can define them via the `enum` metadata option:
 
 ```rb
 it 'returns user status', openapi: {
@@ -431,7 +435,8 @@ end
 
 #### Request vs Response Enums
 
-By default, `enum` applies to both request and response bodies. If you need different enum values for request and response, use `request_enum` and `response_enum`:
+By default, `enum` applies to both request and response bodies. If you need different enum values for request and
+response, use `request_enum` and `response_enum`:
 
 ```rb
 it 'creates a task', openapi: {
@@ -457,7 +462,7 @@ fixed property. You can override this with the `additional_properties` metadata,
 which replaces the captured `properties` / `required` of the matched object with
 [`additionalProperties`](https://swagger.io/docs/specification/data-models/dictionaries/).
 
-Keys are dot-notation paths (the same scheme as `enum`); the empty string `""`
+Keys are dot-notation paths (the same scheme as `enum`); the empty string `''`
 targets the body root.
 
 ```rb
@@ -542,10 +547,9 @@ end
 
 #### Forbidding extras with `false` (or `true`)
 
-Pass a boolean as the value to keep the captured `properties` / `required`
-and attach `additionalProperties: false` (forbid extras) or `: true`
-(explicitly allow extras) — the OpenAPI default is `true`, so this is
-useful mostly for the `false` case:
+Attaching `additionalProperties: false` forbid dynamic keys while `: true` (default)
+explicitly allow those.
+This is useful mostly for the `false` case, to prevent unexpected extras:
 
 ```rb
 it 'returns a closed object', openapi: {
@@ -563,16 +567,17 @@ schema:
   properties:
     id: { type: integer }
     name: { type: string }
-  required: [id, name]
+  required: [ id, name ]
   additionalProperties: false
 ```
 
-#### Hybrid objects (known keys + dynamic extras)
+#### Hybrid objects (known keys + dynamic keys)
 
-When an object has both a fixed shape and dynamic extras (different types),
-use `hybrid_additional_properties` (`request_hybrid_additional_properties`
-and `response_hybrid_additional_properties` to scope to one side). Captured
-properties stay; the supplied schema is attached as `additionalProperties`:
+When an object has both a fixed shape and dynamic keys, use `hybrid_additional_properties`
+(`request_hybrid_additional_properties` and `response_hybrid_additional_properties` to scope
+to one side). Captured properties stay; the supplied schema is attached as `additionalProperties`.
+
+At the root (whole body is the hybrid object):
 
 ```rb
 it 'returns an item with custom attributes', openapi: {
@@ -591,7 +596,7 @@ schema:
     id: { type: integer }
     attr_color: { type: string }
     attr_size: { type: string }
-  required: [id, attr_color, attr_size]
+  required: [ id, attr_color, attr_size ]
   additionalProperties:
     type: string
 ```
@@ -648,6 +653,7 @@ responses:
 ```
 
 Available `example_mode` values:
+
 - `:single` (default) - generates single `example` field
 - `:multiple` - generates named `examples` with test descriptions as keys
 - `:none` - generates only schema, no examples
@@ -658,12 +664,14 @@ The mode is inherited by nested contexts and can be overridden at any level.
 
 #### Merge Behavior with Mixed Modes
 
-When multiple tests target the same endpoint with different `example_mode` settings (even from different spec files), the merger automatically converts to `examples` format:
+When multiple tests target the same endpoint with different `example_mode` settings (even from different spec files),
+the merger automatically converts to `examples` format:
 
 ```rb
 # spec/requests/api_spec.rb
 describe 'GET /users' do
-  it 'returns users' do  # default :single mode
+  it 'returns users' do
+    # default :single mode
     get '/users'
     expect(response.status).to eq(200)
   end
@@ -679,6 +687,7 @@ end
 ```
 
 Result - both examples merged into `examples`:
+
 ```yaml
 responses:
   '200':
@@ -708,6 +717,7 @@ Even if you are not using `rspec` this gem might help you with its experimental 
 Example:
 
 ```rb
+
 class TablesTest < ActionDispatch::IntegrationTest
   openapi!
 
@@ -725,9 +735,11 @@ class TablesTest < ActionDispatch::IntegrationTest
 end
 ```
 
-It should work with both classes inheriting from `ActionDispatch::IntegrationTest` and with classes using `Rack::Test` directly, as long as you call `openapi!` in your test class.
+It should work with both classes inheriting from `ActionDispatch::IntegrationTest` and with classes using `Rack::Test`
+directly, as long as you call `openapi!` in your test class.
 
-Please note that not all features present in the rspec integration work with minitest (yet). For example, custom per test case metadata is not supported. A custom `description_builder` will not work either.
+Please note that not all features present in the rspec integration work with minitest (yet). For example, custom per
+test case metadata is not supported. A custom `description_builder` will not work either.
 
 Run minitest with OPENAPI=1 to generate `doc/openapi.yaml` for your request specs.
 
@@ -746,15 +758,19 @@ Existing RSpec plugins which have OpenAPI integration:
 ## Acknowledgements
 
 * Heavily inspired by [r7kamura/autodoc](https://github.com/r7kamura/autodoc)
-* Orignally created by [k0kubun](https://github.com/k0kubun) and the ownership was transferred to [exoego](https://github.com/exoego) in 2022-11-29.
-
+* Orignally created by [k0kubun](https://github.com/k0kubun) and the ownership was transferred
+  to [exoego](https://github.com/exoego) in 2022-11-29.
 
 ## Releasing
 
-1. Ensure RubyGems trusted publishing is configured for this repo and gem ownership (see [Trusted publishing](https://guides.rubygems.org/trusted-publishing/)).
-2. In GitHub Actions, run the `prepare release` workflow manually. It bumps `lib/rspec/openapi/version.rb`, pushes `release/v<version>` to origin, and opens a PR.
+1. Ensure RubyGems trusted publishing is configured for this repo and gem ownership (
+   see [Trusted publishing](https://guides.rubygems.org/trusted-publishing/)).
+2. In GitHub Actions, run the `prepare release` workflow manually. It bumps `lib/rspec/openapi/version.rb`, pushes
+   `release/v<version>` to origin, and opens a PR.
 3. Review and merge the release PR into the default branch.
-4. Create and push a tag `v<version>` on the merged commit (via the GitHub UI or `git tag v<version>; git push origin v<version>`). Tag creation triggers the `Publish to RubyGems` workflow, which publishes the gem and creates the GitHub release notes automatically.
+4. Create and push a tag `v<version>` on the merged commit (via the GitHub UI or
+   `git tag v<version>; git push origin v<version>`). Tag creation triggers the `Publish to RubyGems` workflow, which
+   publishes the gem and creates the GitHub release notes automatically.
 
 ## License
 
