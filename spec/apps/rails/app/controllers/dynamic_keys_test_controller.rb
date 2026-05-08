@@ -33,4 +33,51 @@ class DynamicKeysTestController < ApplicationController
   def create
     render json: { ok: true }, status: 201
   end
+
+  # Closed object: a fixed shape that should disallow extras via additionalProperties: false.
+  def closed
+    render json: { id: 1, name: 'sample' }
+  end
+
+  # Hybrid: known keys (id) plus dynamic string-valued extras.
+  def hybrid
+    render json: {
+      id: 1,
+      'attr_color' => 'red',
+      'attr_size' => 'large',
+    }
+  end
+
+  # Fixed-shape request body; response has dynamic keys.
+  def respond_with_dynamic
+    render json: {
+      'metric_alpha' => 1,
+      'metric_beta' => 2,
+    }
+  end
+
+  # Deeply nested dynamic dict at `a.b.c`.
+  def deeply_nested
+    render json: {
+      a: {
+        b: {
+          c: {
+            'metric_x' => 1,
+            'metric_y' => 2,
+          },
+        },
+      },
+    }
+  end
+
+  # Mixes enum metadata (on `status`) with additionalProperties (on `counts`).
+  def with_enum
+    render json: {
+      status: 'active',
+      counts: {
+        'foo' => 1,
+        'bar' => 2,
+      },
+    }
+  end
 end

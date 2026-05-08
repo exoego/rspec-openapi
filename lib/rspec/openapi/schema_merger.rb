@@ -25,6 +25,17 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
       return base
     end
 
+    # When the new spec converts an object to a dictionary (introduces
+    # `additionalProperties` on a node that previously had `properties` /
+    # `required`), drop the stale fields so the merged result reflects the
+    # new intent. We only prune when base does not already declare
+    # `additionalProperties`, to preserve manual edits that intentionally
+    # combine fixed and dynamic keys.
+    if spec.is_a?(Hash) && spec.key?(:additionalProperties) && !base.key?(:additionalProperties)
+      base.delete(:properties)
+      base.delete(:required)
+    end
+
     spec.each do |key, value|
       if base[key].is_a?(Hash) && value.is_a?(Hash)
         # Handle example/examples conflict - convert to examples when mixed

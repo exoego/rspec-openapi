@@ -26,16 +26,26 @@ class SharedExtractor
     request_enum = normalize_enum(metadata[:request_enum]) || base_enum
 
     response_additional_properties, request_additional_properties = resolve_additional_properties(metadata)
+    response_hybrid_additional_properties, request_hybrid_additional_properties =
+      resolve_hybrid_additional_properties(metadata)
 
     [summary, tags, formats, operation_id, required_request_params, security, description, deprecated, example_mode,
      example_key, example_name, response_enum, request_enum, response_additional_properties,
-     request_additional_properties,]
+     request_additional_properties, response_hybrid_additional_properties,
+     request_hybrid_additional_properties,]
   end
 
   def self.resolve_additional_properties(metadata)
     base = normalize_additional_properties(metadata[:additional_properties])
     response = normalize_additional_properties(metadata[:response_additional_properties]) || base
     request = normalize_additional_properties(metadata[:request_additional_properties]) || base
+    [response, request]
+  end
+
+  def self.resolve_hybrid_additional_properties(metadata)
+    base = normalize_additional_properties(metadata[:hybrid_additional_properties])
+    response = normalize_additional_properties(metadata[:response_hybrid_additional_properties]) || base
+    request = normalize_additional_properties(metadata[:request_hybrid_additional_properties]) || base
     [response, request]
   end
 

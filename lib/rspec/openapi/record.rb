@@ -30,5 +30,7 @@ RSpec::OpenAPI::Record = Struct.new(
   :request_enum,          # @param [Hash]    - {"type" => ["create", "update"]}
   :response_additional_properties, # @param [Hash] - {"data" => { type: "boolean" }}
   :request_additional_properties,  # @param [Hash] - {"meta" => { type: "string" }}
+  :response_hybrid_additional_properties, # @param [Hash] - {"data" => { type: "string" }}
+  :request_hybrid_additional_properties,  # @param [Hash] - {"meta" => { type: "string" }}
   keyword_init: true,
 )

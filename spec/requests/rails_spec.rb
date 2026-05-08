@@ -677,4 +677,50 @@ RSpec.describe 'Dynamic key (additionalProperties) support', type: :request do
       expect(response.status).to eq(201)
     end
   end
+
+  describe 'forbidding extra keys with `false`' do
+    it 'keeps observed properties and sets additionalProperties: false', openapi: {
+      additional_properties: { '' => false },
+    } do
+      get '/dynamic_keys_test/closed'
+      expect(response.status).to eq(200)
+    end
+  end
+
+  describe 'hybrid mode (known keys + dynamic extras)' do
+    it 'keeps observed properties and adds additionalProperties from a schema', openapi: {
+      hybrid_additional_properties: { '' => { type: 'string' } },
+    } do
+      get '/dynamic_keys_test/hybrid'
+      expect(response.status).to eq(200)
+    end
+  end
+
+  describe 'response-side override' do
+    it 'applies additionalProperties only to the response body, leaving the request schema intact', openapi: {
+      response_additional_properties: { '' => { type: 'integer' } },
+    } do
+      post '/dynamic_keys_test/respond_with_dynamic', params: { name: 'foo', value: '42' }
+      expect(response.status).to eq(200)
+    end
+  end
+
+  describe 'deep dot-notation paths' do
+    it 'matches dictionaries nested several levels deep', openapi: {
+      additional_properties: { 'a.b.c' => { type: 'integer' } },
+    } do
+      get '/dynamic_keys_test/deeply_nested'
+      expect(response.status).to eq(200)
+    end
+  end
+
+  describe 'combined with enum metadata' do
+    it 'applies enum and additionalProperties to different paths in the same response', openapi: {
+      enum: { 'status' => %w[active inactive] },
+      additional_properties: { 'counts' => { type: 'integer' } },
+    } do
+      get '/dynamic_keys_test/with_enum'
+      expect(response.status).to eq(200)
+    end
+  end
 end
