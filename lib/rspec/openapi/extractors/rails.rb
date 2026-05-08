@@ -56,37 +56,15 @@ class << RSpec::OpenAPI::Extractors::Rails = Object.new
 
   # @param [RSpec::ExampleGroups::*] context
   def request_response(context)
-    session = integration_session(context)
+    # Read @integration_session directly so user-defined let(:request)/let(:response)
+    # don't shadow the real ActionDispatch objects we need for OpenAPI extraction.
+    session = context.instance_variable_get(:@integration_session)
     return [session.request, session.response] if session
 
-    [safe_context_method(context, :request), safe_context_method(context, :response)]
+    [context.request, context.response]
   end
 
   private
-
-  def integration_session(context)
-    return context.instance_variable_get(:@integration_session) if context.instance_variable_defined?(:@integration_session)
-    return context.send(:integration_session) if context.respond_to?(:integration_session, true)
-
-    nil
-  end
-
-  def safe_context_method(context, name)
-    return unless context.respond_to?(name)
-
-    method = context.method(name)
-    owner_name = method.owner.name
-    if method.owner == context.class || owner_name&.start_with?('RSpec::ExampleGroups', 'RSpec::Core::MemoizedHelpers')
-      super_method = method.super_method
-      return super_method.call if super_method
-
-      return nil
-    end
-
-    method.call
-  rescue NameError
-    nil
-  end
 
   # @param [ActionDispatch::Request] request
   def find_rails_route(request, app: Rails.application, path_prefix: '')
