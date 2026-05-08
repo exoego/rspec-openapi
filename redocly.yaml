@@ -1,0 +1,31 @@
+# Config for `redocly lint` used by .github/workflows/validate-openapi.yml
+# to validate test-fixture OpenAPI documents shipped under spec/apps/.
+#
+# spec/apps/rails/doc/smart/openapi.yaml is intentionally excluded:
+# it is the input fixture for the smart-merge feature test (it contains
+# unresolved $refs by design), not a complete API description.
+extends:
+  - minimal
+apis:
+  rails-rspec-yaml:
+    root: spec/apps/rails/doc/rspec_openapi.yaml
+  rails-rspec-json:
+    root: spec/apps/rails/doc/rspec_openapi.json
+  rails-minitest-yaml:
+    root: spec/apps/rails/doc/minitest_openapi.yaml
+  rails-minitest-json:
+    root: spec/apps/rails/doc/minitest_openapi.json
+  rails-smart-expected:
+    root: spec/apps/rails/doc/smart/expected.yaml
+  roda-rspec-yaml:
+    root: spec/apps/roda/doc/rspec_openapi.yaml
+  roda-rspec-json:
+    root: spec/apps/roda/doc/rspec_openapi.json
+  roda-minitest-yaml:
+    root: spec/apps/roda/doc/minitest_openapi.yaml
+  roda-minitest-json:
+    root: spec/apps/roda/doc/minitest_openapi.json
+  hanami-yaml:
+    root: spec/apps/hanami/doc/openapi.yaml
+  hanami-json:
+    root: spec/apps/hanami/doc/openapi.json

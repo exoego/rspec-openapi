@@ -38,7 +38,7 @@ RSpec::OpenAPI.security_schemes = {
   },
 }
 
-RSpec::OpenAPI.post_process_hook = ->(_path, _records, spec) { spec['custom_field'] = 'custom_value' }
+RSpec::OpenAPI.post_process_hook = ->(_path, _records, spec) { spec['x-custom-field'] = 'custom_value' }
 
 module RailsIntegrationTests
   class TablesIndexTest < ActionDispatch::IntegrationTest
