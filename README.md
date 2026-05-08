@@ -652,15 +652,133 @@ responses:
             value: { ... }
 ```
 
+
 Available `example_mode` values:
 
 - `:single` (default) - generates single `example` field
 - `:multiple` - generates named `examples` with test descriptions as keys
 - `:none` - generates only schema, no examples
 
+`example_mode` also accepts a hash form so you can configure the request body and the response independently:
+
+```rb
+describe 'POST /sign_in', openapi: { example_mode: { request: :multiple, response: :multiple } } do
+  ...
+end
+```
+
+Missing keys default to `:single`, so `{ example_mode: { request: :multiple } }` keeps the response on `:single`.
+
+The bare symbol form maps as follows:
+
+| `example_mode` value                          | request side | response side |
+|-----------------------------------------------|--------------|---------------|
+| `:single` (default)                           | `:single`    | `:single`     |
+| `:none`                                       | `:none`      | `:none`       |
+| `:multiple`                                   | `:single` ⚠️ | `:multiple`   |
+| `{ request: :multiple, response: :multiple }` | `:multiple`  | `:multiple`   |
+
+⚠️ The bare `:multiple` shorthand is currently **response-only** to preserve the behavior that existed before
+request-side multi-examples were introduced. A future major release will change it to mean
+`{ request: :multiple, response: :multiple }`.
+
 The mode is inherited by nested contexts and can be overridden at any level.
 
 **Note:** If multiple examples resolve to the same example key for a single endpoint, the last one wins (overwrites).
+
+#### Request Body Multiple Examples
+
+With `example_mode: { request: :multiple }`, the generator produces named `examples:` for `requestBody`.
+This is useful when the same endpoint accepts mutually exclusive request shapes (e.g. OTP vs email/password sign-in),
+where merging them into a single `example:` would produce a nonsensical mixed payload.
+
+```rb
+describe 'POST /sign_in',
+         openapi: { example_mode: { request: :multiple, response: :multiple } } do
+  it 'with otp' do
+    post '/sign_in',
+         params: { auth_type: 'otp', otp: '123456' }.to_json,
+         headers: { 'CONTENT_TYPE' => 'application/json' }
+    expect(response.status).to eq(200)
+  end
+
+  it 'with email password' do
+    post '/sign_in',
+         params: { auth_type: 'email', email: 'a@b.c', password: 'pw' }.to_json,
+         headers: { 'CONTENT_TYPE' => 'application/json' }
+    expect(response.status).to eq(200)
+  end
+end
+```
+
+The generated `requestBody` keeps each shape as its own keyed example:
+
+```yaml
+requestBody:
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          auth_type: { type: string }
+          otp: { type: string }
+          email: { type: string }
+          password: { type: string }
+        required:
+          - auth_type
+      examples:
+        with_otp:
+          summary: with otp
+          value: { auth_type: otp, otp: '123456' }
+        with_email_password:
+          summary: with email password
+          value: { auth_type: email, email: a@b.c, password: pw }
+```
+
+The keys default to the test's description (normalized to lowercase + underscores).
+Override with `openapi: { example_key: 'custom_key', example_name: 'Custom Summary' }`,
+just like for response examples.
+
+##### Capturing 4xx requestBody examples
+
+When `request_example_mode` is `:single` (the default), tests with `status >= 400`
+are intentionally skipped for `requestBody` so that error payloads don't pollute
+the request schema. When `request: :multiple` is set, this short-circuit is lifted:
+each failing test contributes its own keyed example, so you can document
+validation-failure shapes alongside success shapes:
+
+```rb
+describe 'POST /sign_in',
+         openapi: { example_mode: { request: :multiple, response: :multiple } } do
+  it 'with otp' do
+    post '/sign_in', params: { auth_type: 'otp', otp: '123456' }.to_json,
+         headers: { 'CONTENT_TYPE' => 'application/json' }
+    expect(response.status).to eq(200)
+  end
+
+  it 'with missing fields' do
+    post '/sign_in', params: { auth_type: 'email' }.to_json,
+         headers: { 'CONTENT_TYPE' => 'application/json' }
+    expect(response.status).to eq(400)
+  end
+end
+```
+
+```yaml
+requestBody:
+  content:
+    application/json:
+      examples:
+        with_otp: { summary: with otp, value: { ... } }
+        with_missing_fields: { summary: with missing fields, value: { ... } }
+responses:
+  '200': { ... }
+  '400': { ... }
+```
+
+Mixing `:single` (some tests) with `:multiple` (others) on the same endpoint also works for `requestBody` - 
+the merger up-converts the singular `example:` into the `examples:` map automatically
+(see [Merge Behavior with Mixed Modes](#merge-behavior-with-mixed-modes) below).
 
 #### Merge Behavior with Mixed Modes
 
