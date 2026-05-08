@@ -14,6 +14,29 @@ info:
 servers:
 - url: http://localhost:3000
 paths:
+  "/dynamic_keys_test/closed":
+    get:
+      summary: closed
+      tags:
+      - DynamicKeysTest
+      responses:
+        '200':
+          description: stale entry that predates the additional_properties metadata
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  legacy_field_a:
+                    type: integer
+                  legacy_field_b:
+                    type: integer
+                required:
+                - legacy_field_a
+                - legacy_field_b
+              example:
+                legacy_field_a: 1
+                legacy_field_b: 2
   "/no-such-path":
     get:
       summary: no such api
