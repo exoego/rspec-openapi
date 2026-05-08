@@ -1415,6 +1415,34 @@ paths:
                   summary: second with multiple mode
                   value:
                     created: true
+  "/example_mode_request_body_none":
+    post:
+      summary: POST /example_mode_request_body_none
+      tags: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                kind:
+                  type: string
+              required:
+              - kind
+      responses:
+        '201':
+          description: records request schema without an example
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  created:
+                    type: boolean
+                required:
+                - created
+              example:
+                created: true
   "/example_mode_request_only_multi":
     post:
       summary: POST /example_mode_request_only_multi

@@ -74,6 +74,7 @@ Rails.application.routes.draw do
     }
     post '/example_mode_request_body_mixed' => ->(_env) { [201, { 'Content-Type' => 'application/json' }, ['{"created":true}']] }
     post '/example_mode_request_only_multi' => ->(_env) { [201, { 'Content-Type' => 'application/json' }, ['{"created":true}']] }
+    post '/example_mode_request_body_none' => ->(_env) { [201, { 'Content-Type' => 'application/json' }, ['{"created":true}']] }
 
     # Test route for nested arrays (key_transformer coverage)
     get '/nested_arrays_test' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"items":[{"name":"first","tags":["a","b","c"]},{"name":"second","tags":["x","y","z"]}],"matrix":[[1,2],[3,4]]}']] }

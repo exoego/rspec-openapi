@@ -559,6 +559,19 @@ RSpec.describe 'example_mode hash form request-only', type: :request do
   end
 end
 
+# Hash form with request: :none — requestBody should emit only `schema:` (no example).
+RSpec.describe 'example_mode hash form request-none', type: :request do
+  describe 'POST /example_mode_request_body_none',
+           openapi: { example_mode: { request: :none } } do
+    it 'records request schema without an example' do
+      post '/example_mode_request_body_none',
+           params: { kind: 'x' }.to_json,
+           headers: { 'CONTENT_TYPE' => 'application/json' }
+      expect(response.status).to eq(201)
+    end
+  end
+end
+
 # Test global enable_example = false overrides example_mode
 RSpec.describe 'example_mode disabled globally', type: :request do
   before(:context) do
