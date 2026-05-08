@@ -86,6 +86,9 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
     hash.delete(:_example_key)
     hash.delete(:_example_summary)
     hash.delete(:_example_name)
+    if (fallback = hash.delete(:_fallback_description))
+      hash[:description] ||= fallback
+    end
 
     hash.each_value do |value|
       case value

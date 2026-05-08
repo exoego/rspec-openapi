@@ -87,6 +87,11 @@ Rails.application.routes.draw do
     get '/dynamic_keys_test/deeply_nested' => 'dynamic_keys_test#deeply_nested'
     get '/dynamic_keys_test/with_enum' => 'dynamic_keys_test#with_enum'
 
+    # Test routes for description preservation with example_mode :none
+    get '/description_preserve_test' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }
+    get '/description_overwrite_test' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }
+    get '/description_mixed_test' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }
+
     # Test route for invalid example_mode error handling
     get '/invalid_example_mode' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }
   end
