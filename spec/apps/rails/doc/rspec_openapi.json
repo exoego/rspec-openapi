@@ -3248,6 +3248,19 @@
     }
   },
   "components": {
+    "schemas": {
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "label": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "securitySchemes": {
       "SecretApiKeyAuth": {
         "type": "apiKey",
@@ -3256,5 +3269,5 @@
       }
     }
   },
-  "custom_field": "custom_value"
+  "x-custom-field": "custom_value"
 }
