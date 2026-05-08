@@ -4,13 +4,15 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   # @param [RSpec::OpenAPI::Record] record
   # @return [Hash]
   def build(record)
-    response = {
-      description: record.description,
-    }
-
-    # Mark description as low-priority when example_mode is :none, so the merger
-    # won't overwrite a description already set by a documented test.
-    response[:_description_skip_overwrite] = true if record.example_mode == :none
+    response = if record.example_mode == :none
+                 # `:none` opts out of recording, so the description is provisional.
+                 # Stash it under a fallback key; SchemaCleaner promotes it to
+                 # `description` only if no documented test has set one. This makes
+                 # the merge result independent of RSpec's random execution order.
+                 { _fallback_description: record.description }
+               else
+                 { description: record.description }
+               end
 
     response_headers = build_response_headers(record)
     response[:headers] = response_headers unless response_headers.empty?
