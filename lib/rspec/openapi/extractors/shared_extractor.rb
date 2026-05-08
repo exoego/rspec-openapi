@@ -25,8 +25,28 @@ class SharedExtractor
     response_enum = normalize_enum(metadata[:response_enum]) || base_enum
     request_enum = normalize_enum(metadata[:request_enum]) || base_enum
 
+    response_additional_properties, request_additional_properties = resolve_additional_properties(metadata)
+    response_hybrid_additional_properties, request_hybrid_additional_properties =
+      resolve_hybrid_additional_properties(metadata)
+
     [summary, tags, formats, operation_id, required_request_params, security, description, deprecated, example_mode,
-     example_key, example_name, response_enum, request_enum,]
+     example_key, example_name, response_enum, request_enum, response_additional_properties,
+     request_additional_properties, response_hybrid_additional_properties,
+     request_hybrid_additional_properties,]
+  end
+
+  def self.resolve_additional_properties(metadata)
+    base = normalize_additional_properties(metadata[:additional_properties])
+    response = normalize_additional_properties(metadata[:response_additional_properties]) || base
+    request = normalize_additional_properties(metadata[:request_additional_properties]) || base
+    [response, request]
+  end
+
+  def self.resolve_hybrid_additional_properties(metadata)
+    base = normalize_additional_properties(metadata[:hybrid_additional_properties])
+    response = normalize_additional_properties(metadata[:response_hybrid_additional_properties]) || base
+    request = normalize_additional_properties(metadata[:request_hybrid_additional_properties]) || base
+    [response, request]
   end
 
   def self.normalize_enum(enum_hash)
@@ -34,6 +54,14 @@ class SharedExtractor
 
     # Convert all keys to strings for consistent lookup
     enum_hash.transform_keys(&:to_s)
+  end
+
+  def self.normalize_additional_properties(hash)
+    return nil if hash.nil? || hash.empty?
+
+    hash.each_with_object({}) do |(path, schema), result|
+      result[path.to_s] = RSpec::OpenAPI::KeyTransformer.symbolize(schema)
+    end
   end
 
   def self.merge_openapi_metadata(metadata)

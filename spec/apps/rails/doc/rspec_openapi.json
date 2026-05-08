@@ -1066,6 +1066,392 @@
         }
       }
     },
+    "/dynamic_keys_test": {
+      "post": {
+        "summary": "create",
+        "tags": [
+          "DynamicKeysTest"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string",
+                  "enum": [
+                    "1",
+                    "2"
+                  ]
+                }
+              },
+              "example": {
+                "metric_a": "1",
+                "metric_b": "2"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "applies additionalProperties only to the request body and supports array values in the schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "ok"
+                  ]
+                },
+                "example": {
+                  "ok": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dynamic_keys_test/closed": {
+      "get": {
+        "summary": "closed",
+        "tags": [
+          "DynamicKeysTest"
+        ],
+        "responses": {
+          "200": {
+            "description": "keeps observed properties and sets additionalProperties: false",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "id": 1,
+                  "name": "sample"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dynamic_keys_test/complex_values": {
+      "get": {
+        "summary": "complex_values",
+        "tags": [
+          "DynamicKeysTest"
+        ],
+        "responses": {
+          "200": {
+            "description": "supports $ref schemas as the additionalProperties value",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/Tag"
+                  }
+                },
+                "example": {
+                  "tag-1": {
+                    "id": 1,
+                    "label": "urgent"
+                  },
+                  "tag-2": {
+                    "id": 2,
+                    "label": "normal"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dynamic_keys_test/deeply_nested": {
+      "get": {
+        "summary": "deeply_nested",
+        "tags": [
+          "DynamicKeysTest"
+        ],
+        "responses": {
+          "200": {
+            "description": "matches dictionaries nested several levels deep",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "a": {
+                      "type": "object",
+                      "properties": {
+                        "b": {
+                          "type": "object",
+                          "properties": {
+                            "c": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "integer"
+                              }
+                            }
+                          },
+                          "required": [
+                            "c"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "b"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "a"
+                  ]
+                },
+                "example": {
+                  "a": {
+                    "b": {
+                      "c": {
+                        "metric_x": 1,
+                        "metric_y": 2
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dynamic_keys_test/hybrid": {
+      "get": {
+        "summary": "hybrid",
+        "tags": [
+          "DynamicKeysTest"
+        ],
+        "responses": {
+          "200": {
+            "description": "keeps observed properties and adds additionalProperties from a schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "attr_color": {
+                      "type": "string"
+                    },
+                    "attr_size": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "attr_color",
+                    "attr_size"
+                  ],
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "example": {
+                  "id": 1,
+                  "attr_color": "red",
+                  "attr_size": "large"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dynamic_keys_test/respond_with_dynamic": {
+      "post": {
+        "summary": "respond_with_dynamic",
+        "tags": [
+          "DynamicKeysTest"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name",
+                  "value"
+                ]
+              },
+              "example": {
+                "name": "foo",
+                "value": "42"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "applies additionalProperties only to the response body, leaving the request schema intact",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer"
+                  }
+                },
+                "example": {
+                  "metric_alpha": 1,
+                  "metric_beta": 2
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dynamic_keys_test/root": {
+      "get": {
+        "summary": "root",
+        "tags": [
+          "DynamicKeysTest"
+        ],
+        "responses": {
+          "200": {
+            "description": "applies additionalProperties at the body root using empty string path",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "boolean"
+                  }
+                },
+                "example": {
+                  "org-one": true,
+                  "org-two": false,
+                  "org-three": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dynamic_keys_test/with_enum": {
+      "get": {
+        "summary": "with_enum",
+        "tags": [
+          "DynamicKeysTest"
+        ],
+        "responses": {
+          "200": {
+            "description": "applies enum and additionalProperties to different paths in the same response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "active",
+                        "inactive"
+                      ]
+                    },
+                    "counts": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "integer"
+                      }
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "counts"
+                  ]
+                },
+                "example": {
+                  "status": "active",
+                  "counts": {
+                    "foo": 1,
+                    "bar": 2
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dynamic_keys_test/wrapped": {
+      "get": {
+        "summary": "wrapped",
+        "tags": [
+          "DynamicKeysTest"
+        ],
+        "responses": {
+          "200": {
+            "description": "replaces the data field properties with additionalProperties",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "boolean"
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "can_do_thing": true,
+                    "can_do_other_thing": false,
+                    "can_do_third_thing": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/empty_example_name": {
       "get": {
         "summary": "GET /empty_example_name",
@@ -3098,6 +3484,19 @@
     }
   },
   "components": {
+    "schemas": {
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "label": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "securitySchemes": {
       "SecretApiKeyAuth": {
         "type": "apiKey",
@@ -3106,5 +3505,5 @@
       }
     }
   },
-  "custom_field": "custom_value"
+  "x-custom-field": "custom_value"
 }

@@ -28,5 +28,9 @@ RSpec::OpenAPI::Record = Struct.new(
   :response_content_disposition, # @param [String]  - "inline"
   :response_enum,         # @param [Hash]    - {"status" => ["active", "inactive"], "user.role" => ["admin", "user"]}
   :request_enum,          # @param [Hash]    - {"type" => ["create", "update"]}
+  :response_additional_properties, # @param [Hash] - {"data" => { type: "boolean" }}
+  :request_additional_properties,  # @param [Hash] - {"meta" => { type: "string" }}
+  :response_hybrid_additional_properties, # @param [Hash] - {"data" => { type: "string" }}
+  :request_hybrid_additional_properties,  # @param [Hash] - {"meta" => { type: "string" }}
   keyword_init: true,
 )

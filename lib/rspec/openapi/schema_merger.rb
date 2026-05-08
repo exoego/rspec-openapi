@@ -9,6 +9,8 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
     merge_schema!(base, spec)
   end
 
+  SIMILARITY_THRESHOLD = 0.5
+
   private
 
   # Not doing `base.replace(deep_merge(base, spec))` to preserve key orders.
@@ -21,6 +23,17 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
       merge_closest_match!(options, spec)
 
       return base
+    end
+
+    # When the new spec converts an object to a dictionary (introduces
+    # `additionalProperties` on a node that previously had `properties` /
+    # `required`), drop the stale fields so the merged result reflects the
+    # new intent. We only prune when base does not already declare
+    # `additionalProperties`, to preserve manual edits that intentionally
+    # combine fixed and dynamic keys.
+    if spec.is_a?(Hash) && spec.key?(:additionalProperties) && !base.key?(:additionalProperties)
+      base.delete(:properties)
+      base.delete(:required)
     end
 
     spec.each do |key, value|
@@ -126,12 +139,10 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   end
 
   def build_unique_params(base, key)
-    base[key].each_with_object({}) do |parameter, hash|
-      hash[[parameter[:name], parameter[:in]]] = parameter
+    base[key].to_h do |parameter|
+      [[parameter[:name], parameter[:in]], parameter]
     end
   end
-
-  SIMILARITY_THRESHOLD = 0.5
 
   # Normalize example/examples fields when there's a conflict
   # OpenAPI spec doesn't allow both example and examples in the same object

@@ -17,6 +17,7 @@ end
 
 RSpec.shared_context 'Roda app' do
   include Rack::Test::Methods
+
   let(:app) { RodaApp }
 end
 

@@ -38,13 +38,11 @@ end
 InspectorAnalyzer = Inspector.new
 
 # Add default parameter to load inspector before test cases run
-module InspectorAnalyzerPrepender
+Hanami::Slice::ClassMethods.prepend(Module.new do
   def router(inspector: InspectorAnalyzer)
     super
   end
-end
-
-Hanami::Slice::ClassMethods.prepend(InspectorAnalyzerPrepender)
+end)
 
 # Extractor for hanami
 class << RSpec::OpenAPI::Extractors::Hanami = Object.new
@@ -57,17 +55,19 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
     return RSpec::OpenAPI::Extractors::Rack.request_attributes(request, example) unless route.routable?
 
     summary, tags, formats, operation_id, required_request_params, security, description, deprecated, example_mode,
-      example_key, example_name, response_enum, request_enum = SharedExtractor.attributes(example)
+      example_key, example_name, response_enum, request_enum, response_additional_properties,
+      request_additional_properties, response_hybrid_additional_properties,
+      request_hybrid_additional_properties = SharedExtractor.attributes(example)
 
     path = request.path
 
     raw_path_params = route.params
 
-    result = InspectorAnalyzer.call(request.method, add_id(path, route))
+    result = InspectorAnalyzer.call(request.method, replace_path_params(path, route, '/:%{key}'))
 
     summary ||= result[:summary]
     tags ||= result[:tags]
-    path = add_openapi_id(path, route)
+    path = replace_path_params(path, route, '/{%{key}}')
 
     raw_path_params = raw_path_params.slice(*(raw_path_params.keys - RSpec::OpenAPI.ignored_path_params))
 
@@ -87,6 +87,10 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
       example_name,
       response_enum,
       request_enum,
+      response_additional_properties,
+      request_additional_properties,
+      response_hybrid_additional_properties,
+      request_hybrid_additional_properties,
     ]
   end
 
@@ -101,21 +105,11 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
 
   private
 
-  def add_id(path, route)
+  def replace_path_params(path, route, format)
     return path if route.params.empty?
 
     route.params.each_pair do |key, value|
-      path = path.sub("/#{value}", "/:#{key}")
-    end
-
-    path
-  end
-
-  def add_openapi_id(path, route)
-    return path if route.params.empty?
-
-    route.params.each_pair do |key, value|
-      path = path.sub("/#{value}", "/{#{key}}")
+      path = path.sub("/#{value}", format % { key: key })
     end
 
     path
