@@ -67,6 +67,14 @@ Rails.application.routes.draw do
     get '/example_summary_disabled' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"data":"no_summary"}']] }
     get '/empty_example_name' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"data":"empty_name"}']] }
 
+    # Test routes for requestBody multi-example feature (#312)
+    post '/example_mode_multiple_request_body' => lambda { |env|
+      status = (env['HTTP_X_TEST_STATUS'] || '200').to_i
+      [status, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']]
+    }
+    post '/example_mode_request_body_mixed' => ->(_env) { [201, { 'Content-Type' => 'application/json' }, ['{"created":true}']] }
+    post '/example_mode_request_only_multi' => ->(_env) { [201, { 'Content-Type' => 'application/json' }, ['{"created":true}']] }
+
     # Test route for nested arrays (key_transformer coverage)
     get '/nested_arrays_test' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"items":[{"name":"first","tags":["a","b","c"]},{"name":"second","tags":["x","y","z"]}],"matrix":[[1,2],[3,4]]}']] }
 

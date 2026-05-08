@@ -54,7 +54,8 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
 
     return RSpec::OpenAPI::Extractors::Rack.request_attributes(request, example) unless route.routable?
 
-    summary, tags, formats, operation_id, required_request_params, security, description, deprecated, example_mode,
+    summary, tags, formats, operation_id, required_request_params, security, description, deprecated,
+      request_example_mode, response_example_mode,
       example_key, example_name, response_enum, request_enum, response_additional_properties,
       request_additional_properties, response_hybrid_additional_properties,
       request_hybrid_additional_properties = SharedExtractor.attributes(example)
@@ -82,7 +83,8 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
       security,
       deprecated,
       formats,
-      example_mode,
+      request_example_mode,
+      response_example_mode,
       example_key,
       example_name,
       response_enum,

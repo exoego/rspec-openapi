@@ -4,6 +4,14 @@
 class SharedExtractor
   VALID_EXAMPLE_MODES = %i[none single multiple].freeze
 
+  EXAMPLE_MODE_MULTIPLE_SHORTHAND_WARNING = <<~MSG.tr("\n", ' ').strip.freeze
+    [rspec-openapi] DEPRECATION: example_mode: :multiple currently means
+    { request: :single, response: :multiple }. A future major version will
+    change it to { request: :multiple, response: :multiple } (both sides
+    multi). Specify the hash form explicitly to lock in current behavior or
+    opt in early.
+  MSG
+
   def self.attributes(example)
     metadata = merge_openapi_metadata(example.metadata)
     summary = metadata[:summary] || RSpec::OpenAPI.summary_builder.call(example)
@@ -14,7 +22,7 @@ class SharedExtractor
     security = metadata[:security]
     description = metadata[:description] || RSpec::OpenAPI.description_builder.call(example)
     deprecated = metadata[:deprecated]
-    example_mode = normalize_example_mode(metadata[:example_mode], example)
+    request_example_mode, response_example_mode = normalize_example_mode(metadata[:example_mode], example)
     example_name = metadata[:example_name] || RSpec::OpenAPI.example_name_builder.call(example)
     raw_example_key = metadata[:example_key] || example_name
     example_key = RSpec::OpenAPI::ExampleKey.normalize(raw_example_key)
@@ -29,7 +37,8 @@ class SharedExtractor
     response_hybrid_additional_properties, request_hybrid_additional_properties =
       resolve_hybrid_additional_properties(metadata)
 
-    [summary, tags, formats, operation_id, required_request_params, security, description, deprecated, example_mode,
+    [summary, tags, formats, operation_id, required_request_params, security, description, deprecated,
+     request_example_mode, response_example_mode,
      example_key, example_name, response_enum, request_enum, response_additional_properties,
      request_additional_properties, response_hybrid_additional_properties,
      request_hybrid_additional_properties,]
@@ -82,9 +91,33 @@ class SharedExtractor
     end
   end
 
+  # Returns [request_mode, response_mode]. Accepts either a bare Symbol/String
+  # (applied to both sides, except :multiple which is treated as a backward-compat
+  # shorthand for { request: :single, response: :multiple } and emits a one-time
+  # deprecation warning) or a Hash with :request / :response keys.
   def self.normalize_example_mode(value, example = nil)
-    return :single if value.nil?
+    return %i[single single] if value.nil?
 
+    case value
+    when Hash
+      [
+        normalize_example_mode_hash_value(value, :request, example),
+        normalize_example_mode_hash_value(value, :response, example),
+      ]
+    when Symbol, String
+      mode = coerce_example_mode_value(value, example)
+      if mode == :multiple
+        warn_example_mode_multiple_shorthand
+        %i[single multiple]
+      else
+        [mode, mode]
+      end
+    else
+      raise ArgumentError, example_mode_error(value, example)
+    end
+  end
+
+  def self.coerce_example_mode_value(value, example)
     raise ArgumentError, example_mode_error(value, example) unless value.is_a?(String) || value.is_a?(Symbol)
 
     mode = value.to_s.strip.downcase.to_sym
@@ -93,9 +126,25 @@ class SharedExtractor
     raise ArgumentError, example_mode_error(value, example)
   end
 
+  def self.normalize_example_mode_hash_value(hash, key, example)
+    raw = hash[key]
+    raw = hash[key.to_s] if raw.nil?
+    return :single if raw.nil?
+
+    coerce_example_mode_value(raw, example)
+  end
+
+  def self.warn_example_mode_multiple_shorthand
+    return if @warned_example_mode_multiple_shorthand
+
+    @warned_example_mode_multiple_shorthand = true
+    Kernel.warn(EXAMPLE_MODE_MULTIPLE_SHORTHAND_WARNING)
+  end
+
   def self.example_mode_error(value, example)
     context = example&.full_description
     context = " (example: #{context})" if context
-    "example_mode must be one of #{VALID_EXAMPLE_MODES.inspect}, got #{value.inspect}#{context}"
+    "example_mode must be a Symbol/String in #{VALID_EXAMPLE_MODES.inspect} " \
+      "or a Hash with :request/:response keys, got #{value.inspect}#{context}"
   end
 end

@@ -1248,6 +1248,79 @@ paths:
                   summary: second example
                   value:
                     status: multiple
+  "/example_mode_multiple_request_body":
+    post:
+      summary: POST /example_mode_multiple_request_body
+      tags: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                auth_type:
+                  type: string
+                otp:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+              - auth_type
+            examples:
+              with_otp_signin:
+                summary: with otp signin
+                value:
+                  auth_type: otp
+                  otp: '123456'
+              with_email_password_signin:
+                summary: with email password signin
+                value:
+                  auth_type: email
+                  email: a@b.c
+                  password: pw
+              with_validation_error:
+                summary: with validation error
+                value:
+                  auth_type: invalid
+      responses:
+        '200':
+          description: with email password signin
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+              examples:
+                with_otp_signin:
+                  summary: with otp signin
+                  value:
+                    status: ok
+                with_email_password_signin:
+                  summary: with email password signin
+                  value:
+                    status: ok
+        '400':
+          description: with validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+              examples:
+                with_validation_error:
+                  summary: with validation error
+                  value:
+                    status: ok
   "/example_mode_none":
     get:
       summary: GET /example_mode_none
@@ -1298,6 +1371,87 @@ paths:
                 - status
               example:
                 status: override_single
+  "/example_mode_request_body_mixed":
+    post:
+      summary: POST /example_mode_request_body_mixed
+      tags: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                kind:
+                  type: string
+              required:
+              - kind
+            examples:
+              first_with_single_mode:
+                summary: first with single mode
+                value:
+                  kind: first
+              second_with_multiple_mode:
+                summary: second with multiple mode
+                value:
+                  kind: second
+      responses:
+        '201':
+          description: second with multiple mode
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  created:
+                    type: boolean
+                required:
+                - created
+              examples:
+                first_with_single_mode:
+                  summary: first with single mode
+                  value:
+                    created: true
+                second_with_multiple_mode:
+                  summary: second with multiple mode
+                  value:
+                    created: true
+  "/example_mode_request_only_multi":
+    post:
+      summary: POST /example_mode_request_only_multi
+      tags: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                kind:
+                  type: string
+              required:
+              - kind
+            examples:
+              first_variant:
+                summary: first variant
+                value:
+                  kind: a
+              second_variant:
+                summary: second variant
+                value:
+                  kind: b
+      responses:
+        '201':
+          description: second variant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  created:
+                    type: boolean
+                required:
+                - created
+              example:
+                created: true
   "/example_mode_single":
     get:
       summary: GET /example_mode_single

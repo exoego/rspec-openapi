@@ -4,7 +4,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   # @param [RSpec::OpenAPI::Record] record
   # @return [Hash]
   def build(record)
-    response = if record.example_mode == :none
+    response = if record.response_example_mode == :none
                  # `:none` opts out of recording, so the description is provisional.
                  # Stash it under a fallback key; SchemaCleaner promotes it to
                  # `description` only if no documented test has set one. This makes
@@ -58,7 +58,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     # If examples are globally disabled, always return schema-only content.
     return { content_type => { schema: schema }.compact } unless example_enabled?(record)
 
-    case record.example_mode
+    case record.response_example_mode
     when :none
       # Only schema, no examples
       {
@@ -80,8 +80,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         content_type => {
           schema: schema,
           example: response_example(record, disposition: disposition),
-          _example_key: record.example_key,
-          _example_summary: example_summary(record),
+          **example_metadata(record),
         }.compact,
       }
     end
@@ -99,11 +98,19 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   end
 
   def build_example_object(record, disposition:)
+    build_named_example(record, response_example(record, disposition: disposition))
+  end
+
+  def build_named_example(record, value)
     summary = example_summary(record)
     example = {}
     example[:summary] = summary if summary
-    example[:value] = response_example(record, disposition: disposition)
+    example[:value] = value
     example
+  end
+
+  def example_metadata(record)
+    { _example_key: record.example_key, _example_summary: example_summary(record) }
   end
 
   def example_summary(record)
@@ -197,16 +204,33 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
   def build_request_body(record)
     return nil if record.request_content_type.nil?
-    return nil if record.status >= 400
+    return nil if record.status >= 400 && record.request_example_mode != :multiple
 
-    {
-      content: {
-        normalize_content_type(record.request_content_type) => {
-          schema: build_property(record.request_params, record: record, context: :request),
-          example: (build_example(record.request_params) if example_enabled?(record)),
-        }.compact,
-      },
-    }
+    content_type = normalize_content_type(record.request_content_type)
+    schema = build_property(record.request_params, record: record, context: :request)
+
+    return { content: { content_type => { schema: schema }.compact } } unless example_enabled?(record)
+
+    example = build_example(record.request_params)
+
+    body =
+      case record.request_example_mode
+      when :none
+        { schema: schema }
+      when :multiple
+        {
+          schema: schema,
+          examples: { record.example_key => build_named_example(record, example) },
+        }
+      else # :single (default)
+        {
+          schema: schema,
+          example: example,
+          **example_metadata(record),
+        }
+      end
+
+    { content: { content_type => body.compact } }
   end
 
   def build_property(value, disposition: nil, key: nil, record: nil, path: nil, context: nil)

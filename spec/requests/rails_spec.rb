@@ -486,6 +486,79 @@ RSpec.describe 'example_mode mixed', type: :request do
   end
 end
 
+# requestBody multi-examples: mutually-exclusive request shapes on the same endpoint (#312).
+# Uses the explicit hash form to opt in to request-side multi (the bare :multiple
+# symbol is shorthand for { request: :single, response: :multiple } for back-compat).
+RSpec.describe 'example_mode :multiple requestBody', type: :request do
+  describe 'POST /example_mode_multiple_request_body',
+           openapi: { example_mode: { request: :multiple, response: :multiple } } do
+    it 'with otp signin' do
+      post '/example_mode_multiple_request_body',
+           params: { auth_type: 'otp', otp: '123456' }.to_json,
+           headers: { 'CONTENT_TYPE' => 'application/json' }
+      expect(response.status).to eq(200)
+    end
+
+    it 'with email password signin' do
+      post '/example_mode_multiple_request_body',
+           params: { auth_type: 'email', email: 'a@b.c', password: 'pw' }.to_json,
+           headers: { 'CONTENT_TYPE' => 'application/json' }
+      expect(response.status).to eq(200)
+    end
+
+    # Validates that the status >= 400 short-circuit is lifted when
+    # request_example_mode is :multiple (issue #140 / #312).
+    it 'with validation error' do
+      post '/example_mode_multiple_request_body',
+           params: { auth_type: 'invalid' }.to_json,
+           headers: { 'CONTENT_TYPE' => 'application/json', 'X-Test-Status' => '400' }
+      expect(response.status).to eq(400)
+    end
+  end
+end
+
+# requestBody multi-examples: merger up-converts :single -> :examples when modes mix.
+RSpec.describe 'example_mode mixed requestBody', type: :request do
+  describe 'POST /example_mode_request_body_mixed' do
+    it 'first with single mode' do
+      post '/example_mode_request_body_mixed',
+           params: { kind: 'first' }.to_json,
+           headers: { 'CONTENT_TYPE' => 'application/json' }
+      expect(response.status).to eq(201)
+    end
+
+    context 'with multiple',
+            openapi: { example_mode: { request: :multiple, response: :multiple } } do
+      it 'second with multiple mode' do
+        post '/example_mode_request_body_mixed',
+             params: { kind: 'second' }.to_json,
+             headers: { 'CONTENT_TYPE' => 'application/json' }
+        expect(response.status).to eq(201)
+      end
+    end
+  end
+end
+
+# Hash form covering the partial spec (request: only, response defaults to :single).
+RSpec.describe 'example_mode hash form request-only', type: :request do
+  describe 'POST /example_mode_request_only_multi',
+           openapi: { example_mode: { request: :multiple } } do
+    it 'first variant' do
+      post '/example_mode_request_only_multi',
+           params: { kind: 'a' }.to_json,
+           headers: { 'CONTENT_TYPE' => 'application/json' }
+      expect(response.status).to eq(201)
+    end
+
+    it 'second variant' do
+      post '/example_mode_request_only_multi',
+           params: { kind: 'b' }.to_json,
+           headers: { 'CONTENT_TYPE' => 'application/json' }
+      expect(response.status).to eq(201)
+    end
+  end
+end
+
 # Test global enable_example = false overrides example_mode
 RSpec.describe 'example_mode disabled globally', type: :request do
   before(:context) do

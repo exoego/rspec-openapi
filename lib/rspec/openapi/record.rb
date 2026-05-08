@@ -20,7 +20,8 @@ RSpec::OpenAPI::Record = Struct.new(
   :security,              # @param [Array]  - [{securityScheme1: []}]
   :deprecated,            # @param [Boolean] - true
   :example_enabled,       # @param [Boolean] - true
-  :example_mode,          # @param [Symbol]  - :none | :single | :multiple
+  :request_example_mode,  # @param [Symbol]  - :none | :single | :multiple
+  :response_example_mode, # @param [Symbol]  - :none | :single | :multiple
   :status,                # @param [Integer] - 200
   :response_body,         # @param [Object]  - {"status" => "ok"}
   :response_headers,      # @param [Array]  - [["header_key1", "header_value1"], ["header_key2", "header_value2"]]

@@ -13,8 +13,8 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
 
     title = RSpec::OpenAPI.title.then { |t| t.is_a?(Proc) ? t.call(example) : t }
     path, summary, tags, operation_id, required_request_params, raw_path_params,
-      description, security, deprecated, formats, example_mode, example_key,
-      example_name, response_enum, request_enum, response_additional_properties,
+      description, security, deprecated, formats, request_example_mode, response_example_mode,
+      example_key, example_name, response_enum, request_enum, response_additional_properties,
       request_additional_properties, response_hybrid_additional_properties,
       request_hybrid_additional_properties = extractor.request_attributes(request, example)
 
@@ -45,7 +45,8 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
       response_content_type: response.media_type,
       response_content_disposition: response.header['Content-Disposition'],
       example_enabled: RSpec::OpenAPI.enable_example,
-      example_mode: example_mode,
+      request_example_mode: request_example_mode,
+      response_example_mode: response_example_mode,
       example_key: example_key,
       example_name: example_name,
       response_enum: response_enum,
