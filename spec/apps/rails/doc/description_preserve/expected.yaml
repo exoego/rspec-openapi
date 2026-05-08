@@ -7,6 +7,24 @@ info:
 servers:
 - url: http://localhost:3000
 paths:
+  "/description_mixed_test":
+    get:
+      summary: GET /description_mixed_test
+      tags: []
+      responses:
+        '200':
+          description: documented description wins
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+              example:
+                status: ok
   "/description_overwrite_test":
     get:
       summary: GET /description_overwrite_test

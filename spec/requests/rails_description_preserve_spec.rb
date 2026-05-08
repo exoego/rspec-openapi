@@ -29,4 +29,23 @@ RSpec.describe 'Description preservation', type: :request do
       expect(response.status).to eq(200)
     end
   end
+
+  # The exact scenario from #318: same endpoint hit by BOTH a documented test
+  # and an example_mode: :none test. The documented description must win
+  # regardless of RSpec's random execution order.
+  describe 'GET /description_mixed_test' do
+    context 'with example_mode :none', openapi: { example_mode: :none } do
+      it 'should not win description' do
+        get '/description_mixed_test'
+        expect(response.status).to eq(200)
+      end
+    end
+
+    context 'documented' do
+      it 'documented description wins' do
+        get '/description_mixed_test'
+        expect(response.status).to eq(200)
+      end
+    end
+  end
 end
