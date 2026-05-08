@@ -142,6 +142,29 @@ RSpec.describe 'Tables', type: :request do
   end
 end
 
+RSpec.describe 'Rails extractor request_response', type: :request do
+  it 'returns real request/response from integration_session', openapi: false do
+    get '/override_probe', headers: { authorization: 'k0kubun' }
+
+    request, response = RSpec::OpenAPI::Extractors::Rails.request_response(self)
+    expect(request).to be_a(ActionDispatch::Request)
+    expect(response).to be_a(ActionDispatch::TestResponse)
+  end
+
+  context 'when let(:request)/let(:response) shadow the integration helpers' do
+    let(:request) { :stubbed_request }
+    let(:response) { :stubbed_response }
+
+    it 'still returns the real ActionDispatch objects', openapi: false do
+      get '/override_probe', headers: { authorization: 'k0kubun' }
+
+      req, res = RSpec::OpenAPI::Extractors::Rails.request_response(self)
+      expect(req).to be_a(ActionDispatch::Request)
+      expect(res).to be_a(ActionDispatch::TestResponse)
+    end
+  end
+end
+
 RSpec.describe 'Images', type: :request do
   describe '#payload' do
     it 'returns a image payload' do

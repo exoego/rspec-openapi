@@ -56,6 +56,11 @@ class << RSpec::OpenAPI::Extractors::Rails = Object.new
 
   # @param [RSpec::ExampleGroups::*] context
   def request_response(context)
+    # Read @integration_session directly so user-defined let(:request)/let(:response)
+    # don't shadow the real ActionDispatch objects we need for OpenAPI extraction.
+    session = context.instance_variable_get(:@integration_session)
+    return [session.request, session.response] if session
+
     [context.request, context.response]
   end
 
