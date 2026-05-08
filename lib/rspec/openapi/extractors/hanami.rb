@@ -38,13 +38,11 @@ end
 InspectorAnalyzer = Inspector.new
 
 # Add default parameter to load inspector before test cases run
-module InspectorAnalyzerPrepender
+Hanami::Slice::ClassMethods.prepend(Module.new do
   def router(inspector: InspectorAnalyzer)
     super
   end
-end
-
-Hanami::Slice::ClassMethods.prepend(InspectorAnalyzerPrepender)
+end)
 
 # Extractor for hanami
 class << RSpec::OpenAPI::Extractors::Hanami = Object.new
@@ -56,24 +54,20 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
 
     return RSpec::OpenAPI::Extractors::Rack.request_attributes(request, example) unless route.routable?
 
-    metadata = merge_openapi_metadata(example.metadata)
-    summary = metadata[:summary] || RSpec::OpenAPI.summary_builder.call(example)
-    tags = metadata[:tags] || RSpec::OpenAPI.tags_builder.call(example)
-    formats = metadata[:formats] || RSpec::OpenAPI.formats_builder.curry.call(example)
-    operation_id = metadata[:operation_id]
-    required_request_params = metadata[:required_request_params] || []
-    security = metadata[:security]
-    description = metadata[:description] || RSpec::OpenAPI.description_builder.call(example)
-    deprecated = metadata[:deprecated]
+    summary, tags, formats, operation_id, required_request_params, security, description, deprecated, example_mode,
+      example_key, example_name, response_enum, request_enum, response_additional_properties,
+      request_additional_properties, response_hybrid_additional_properties,
+      request_hybrid_additional_properties = SharedExtractor.attributes(example)
+
     path = request.path
 
     raw_path_params = route.params
 
-    result = InspectorAnalyzer.call(request.method, add_id(path, route))
+    result = InspectorAnalyzer.call(request.method, replace_path_params(path, route, '/:%{key}'))
 
     summary ||= result[:summary]
     tags ||= result[:tags]
-    path = add_openapi_id(path, route)
+    path = replace_path_params(path, route, '/{%{key}}')
 
     raw_path_params = raw_path_params.slice(*(raw_path_params.keys - RSpec::OpenAPI.ignored_path_params))
 
@@ -88,6 +82,15 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
       security,
       deprecated,
       formats,
+      example_mode,
+      example_key,
+      example_name,
+      response_enum,
+      request_enum,
+      response_additional_properties,
+      request_additional_properties,
+      response_hybrid_additional_properties,
+      request_hybrid_additional_properties,
     ]
   end
 
@@ -102,39 +105,11 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
 
   private
 
-  def merge_openapi_metadata(metadata)
-    collect_openapi_metadata(metadata).reduce({}, &:merge)
-  end
-
-  def collect_openapi_metadata(metadata)
-    [].tap do |result|
-      current = metadata
-
-      while current
-        [current[:example_group], current].each do |meta|
-          result.unshift(meta[:openapi]) if meta&.dig(:openapi)
-        end
-
-        current = current[:parent_example_group]
-      end
-    end
-  end
-
-  def add_id(path, route)
+  def replace_path_params(path, route, format)
     return path if route.params.empty?
 
     route.params.each_pair do |key, value|
-      path = path.sub("/#{value}", "/:#{key}")
-    end
-
-    path
-  end
-
-  def add_openapi_id(path, route)
-    return path if route.params.empty?
-
-    route.params.each_pair do |key, value|
-      path = path.sub("/#{value}", "/{#{key}}")
+      path = path.sub("/#{value}", format % { key: key })
     end
 
     path

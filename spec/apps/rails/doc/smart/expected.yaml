@@ -14,6 +14,23 @@ info:
 servers:
 - url: http://localhost:3000
 paths:
+  "/dynamic_keys_test/closed":
+    get:
+      summary: closed
+      tags:
+      - DynamicKeysTest
+      responses:
+        '200':
+          description: migrates stale properties to additionalProperties
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+              example:
+                id: 1
+                name: sample
   "/pages":
     get:
       summary: get

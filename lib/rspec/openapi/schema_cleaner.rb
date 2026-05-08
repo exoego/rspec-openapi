@@ -32,10 +32,16 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
     # cleanup requestBody
     cleanup_hash!(base, spec, 'paths.*.*.requestBody.content.application/json.schema.properties.*')
     cleanup_hash!(base, spec, 'paths.*.*.requestBody.content.application/json.example.*')
+    cleanup_hash!(base, spec, 'paths.*.*.requestBody.content.application/json.examples.*')
 
     # cleanup responses
     cleanup_hash!(base, spec, 'paths.*.*.responses.*.content.application/json.schema.properties.*')
     cleanup_hash!(base, spec, 'paths.*.*.responses.*.content.application/json.example.*')
+    cleanup_hash!(base, spec, 'paths.*.*.responses.*.content.application/json.examples.*')
+
+    # cleanup temporary fields used for internal processing
+    cleanup_temporary_fields!(base)
+
     base
   end
 
@@ -64,12 +70,35 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
     ]
     paths_to_objects.each do |path|
       parent = base.dig(*path.take(path.length - 1))
+      next unless parent
+
       # "required" array  must not be present if empty
       parent.delete(:required) if parent[:required] && parent[:required].empty?
     end
   end
 
   private
+
+  # Recursively remove temporary fields like :_example_key and :_example_name from the schema
+  def cleanup_temporary_fields!(hash)
+    return unless hash.is_a?(Hash)
+
+    hash.delete(:_example_key)
+    hash.delete(:_example_summary)
+    hash.delete(:_example_name)
+    if (fallback = hash.delete(:_fallback_description))
+      hash[:description] ||= fallback
+    end
+
+    hash.each_value do |value|
+      case value
+      when Hash
+        cleanup_temporary_fields!(value)
+      when Array
+        value.each { |item| cleanup_temporary_fields!(item) if item.is_a?(Hash) }
+      end
+    end
+  end
 
   def remove_parameters_conflicting_with_security_scheme!(path_definition, security_scheme, security_scheme_name)
     return unless path_definition[:security]

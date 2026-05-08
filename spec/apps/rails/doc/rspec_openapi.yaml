@@ -582,6 +582,761 @@ paths:
                 items:
                 - id: 1
                   name: Item 1
+  "/custom_example_key":
+    get:
+      summary: GET /custom_example_key
+      tags: []
+      responses:
+        '200':
+          description: uses custom example key instead of description
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                required:
+                - data
+              examples:
+                my_custom_key:
+                  summary: uses custom example key instead of description
+                  value:
+                    data: custom_key
+  "/custom_example_name":
+    get:
+      summary: GET /custom_example_name
+      tags: []
+      responses:
+        '200':
+          description: uses custom example name for summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                required:
+                - data
+              examples:
+                my_custom_name:
+                  summary: My Custom Name
+                  value:
+                    data: custom_name
+  "/dynamic_keys_test":
+    post:
+      summary: create
+      tags:
+      - DynamicKeysTest
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              additionalProperties:
+                type: string
+                enum:
+                - '1'
+                - '2'
+            example:
+              metric_a: '1'
+              metric_b: '2'
+      responses:
+        '201':
+          description: applies additionalProperties only to the request body and supports
+            array values in the schema
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                required:
+                - ok
+              example:
+                ok: true
+  "/dynamic_keys_test/closed":
+    get:
+      summary: closed
+      tags:
+      - DynamicKeysTest
+      responses:
+        '200':
+          description: 'keeps observed properties and sets additionalProperties: false'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                required:
+                - id
+                - name
+                additionalProperties: false
+              example:
+                id: 1
+                name: sample
+  "/dynamic_keys_test/complex_values":
+    get:
+      summary: complex_values
+      tags:
+      - DynamicKeysTest
+      responses:
+        '200':
+          description: supports $ref schemas as the additionalProperties value
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  "$ref": "#/components/schemas/Tag"
+              example:
+                tag-1:
+                  id: 1
+                  label: urgent
+                tag-2:
+                  id: 2
+                  label: normal
+  "/dynamic_keys_test/deeply_nested":
+    get:
+      summary: deeply_nested
+      tags:
+      - DynamicKeysTest
+      responses:
+        '200':
+          description: matches dictionaries nested several levels deep
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  a:
+                    type: object
+                    properties:
+                      b:
+                        type: object
+                        properties:
+                          c:
+                            type: object
+                            additionalProperties:
+                              type: integer
+                        required:
+                        - c
+                    required:
+                    - b
+                required:
+                - a
+              example:
+                a:
+                  b:
+                    c:
+                      metric_x: 1
+                      metric_y: 2
+  "/dynamic_keys_test/hybrid":
+    get:
+      summary: hybrid
+      tags:
+      - DynamicKeysTest
+      responses:
+        '200':
+          description: keeps observed properties and adds additionalProperties from
+            a schema
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  attr_color:
+                    type: string
+                  attr_size:
+                    type: string
+                required:
+                - id
+                - attr_color
+                - attr_size
+                additionalProperties:
+                  type: string
+              example:
+                id: 1
+                attr_color: red
+                attr_size: large
+  "/dynamic_keys_test/respond_with_dynamic":
+    post:
+      summary: respond_with_dynamic
+      tags:
+      - DynamicKeysTest
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                value:
+                  type: string
+              required:
+              - name
+              - value
+            example:
+              name: foo
+              value: '42'
+      responses:
+        '200':
+          description: applies additionalProperties only to the response body, leaving
+            the request schema intact
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+              example:
+                metric_alpha: 1
+                metric_beta: 2
+  "/dynamic_keys_test/root":
+    get:
+      summary: root
+      tags:
+      - DynamicKeysTest
+      responses:
+        '200':
+          description: applies additionalProperties at the body root using empty string
+            path
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: boolean
+              example:
+                org-one: true
+                org-two: false
+                org-three: true
+  "/dynamic_keys_test/with_enum":
+    get:
+      summary: with_enum
+      tags:
+      - DynamicKeysTest
+      responses:
+        '200':
+          description: applies enum and additionalProperties to different paths in
+            the same response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                    - active
+                    - inactive
+                  counts:
+                    type: object
+                    additionalProperties:
+                      type: integer
+                required:
+                - status
+                - counts
+              example:
+                status: active
+                counts:
+                  foo: 1
+                  bar: 2
+  "/dynamic_keys_test/wrapped":
+    get:
+      summary: wrapped
+      tags:
+      - DynamicKeysTest
+      responses:
+        '200':
+          description: replaces the data field properties with additionalProperties
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    additionalProperties:
+                      type: boolean
+                required:
+                - data
+              example:
+                data:
+                  can_do_thing: true
+                  can_do_other_thing: false
+                  can_do_third_thing: true
+  "/empty_example_name":
+    get:
+      summary: GET /empty_example_name
+      tags: []
+      responses:
+        '200':
+          description: handles empty example_name
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                required:
+                - data
+              examples:
+                default:
+                  value:
+                    data: empty_name
+  "/enum_test":
+    post:
+      summary: create
+      tags:
+      - EnumTest
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                action_type:
+                  type: string
+                  enum:
+                  - create
+                  - update
+                  - delete
+              required:
+              - action_type
+            example:
+              action_type: create
+      responses:
+        '201':
+          description: generates enum for request body
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  action_type:
+                    type: string
+                  status:
+                    type: string
+                    enum:
+                    - pending
+                    - completed
+                    - failed
+                required:
+                - id
+                - action_type
+                - status
+              example:
+                id: 1
+                action_type: create
+                status: pending
+  "/enum_test/array_items":
+    get:
+      summary: array_items
+      tags:
+      - EnumTest
+      responses:
+        '200':
+          description: generates enum for array item properties
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                        status:
+                          type: string
+                          enum:
+                          - active
+                          - inactive
+                        priority:
+                          type: string
+                          enum:
+                          - high
+                          - medium
+                          - low
+                      required:
+                      - id
+                      - name
+                      - status
+                      - priority
+                required:
+                - items
+              example:
+                items:
+                - id: 1
+                  name: Item 1
+                  status: active
+                  priority: high
+                - id: 2
+                  name: Item 2
+                  status: inactive
+                  priority: low
+  "/enum_test/deeply_nested":
+    get:
+      summary: deeply_nested
+      tags:
+      - EnumTest
+      responses:
+        '200':
+          description: generates enum for deeply nested paths
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  organization:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      settings:
+                        type: object
+                        properties:
+                          visibility:
+                            type: string
+                            enum:
+                            - public
+                            - private
+                            - internal
+                          access_level:
+                            type: string
+                            enum:
+                            - standard
+                            - premium
+                            - enterprise
+                        required:
+                        - visibility
+                        - access_level
+                    required:
+                    - name
+                    - settings
+                required:
+                - organization
+              example:
+                organization:
+                  name: Acme Corp
+                  settings:
+                    visibility: public
+                    access_level: standard
+  "/enum_test/nested":
+    get:
+      summary: nested
+      tags:
+      - EnumTest
+      responses:
+        '200':
+          description: generates enum for nested paths
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  group_name:
+                    type: string
+                  status:
+                    type: string
+                    enum:
+                    - active
+                    - inactive
+                  user:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      role:
+                        type: string
+                        enum:
+                        - admin
+                        - user
+                        - guest
+                    required:
+                    - name
+                    - role
+                required:
+                - group_name
+                - status
+                - user
+              example:
+                group_name: Marketing
+                status: active
+                user:
+                  name: John Doe
+                  role: admin
+  "/enum_test/status":
+    get:
+      summary: status
+      tags:
+      - EnumTest
+      responses:
+        '200':
+          description: supports symbol keys in enum hash
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                    - active
+                    - inactive
+                  message:
+                    type: string
+                required:
+                - status
+                - message
+              example:
+                status: active
+                message: User status retrieved
+  "/example_mode_disabled":
+    get:
+      summary: GET /example_mode_disabled
+      tags: []
+      responses:
+        '200':
+          description: does not generate examples for default mode
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+  "/example_mode_disabled_multiple":
+    get:
+      summary: GET /example_mode_disabled_multiple
+      tags: []
+      responses:
+        '200':
+          description: does not generate examples for multiple mode
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+  "/example_mode_disabled_none":
+    get:
+      summary: GET /example_mode_disabled_none
+      tags: []
+      responses:
+        '200':
+          description: does not generate examples for none mode
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+  "/example_mode_disabled_single":
+    get:
+      summary: GET /example_mode_disabled_single
+      tags: []
+      responses:
+        '200':
+          description: does not generate examples for single mode
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+  "/example_mode_inherit":
+    get:
+      summary: GET /example_mode_inherit
+      tags: []
+      responses:
+        '200':
+          description: also inherits multiple from parent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+              examples:
+                inherits_multiple_from_parent:
+                  summary: inherits multiple from parent
+                  value:
+                    status: inherit
+                also_inherits_multiple_from_parent:
+                  summary: also inherits multiple from parent
+                  value:
+                    status: inherit
+  "/example_mode_mixed":
+    get:
+      summary: GET /example_mode_mixed
+      tags: []
+      responses:
+        '200':
+          description: second with multiple mode
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+              examples:
+                first_with_single_mode:
+                  summary: first with single mode
+                  value:
+                    status: mixed
+                second_with_multiple_mode:
+                  summary: second with multiple mode
+                  value:
+                    status: mixed
+  "/example_mode_multiple":
+    get:
+      summary: GET /example_mode_multiple
+      tags: []
+      responses:
+        '200':
+          description: second example
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+              examples:
+                first_example:
+                  summary: first example
+                  value:
+                    status: multiple
+                second_example:
+                  summary: second example
+                  value:
+                    status: multiple
+  "/example_mode_none":
+    get:
+      summary: GET /example_mode_none
+      tags: []
+      responses:
+        '200':
+          description: generates schema without example
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+  "/example_mode_override_none":
+    get:
+      summary: GET /example_mode_override_none
+      tags: []
+      responses:
+        '200':
+          description: overrides to none
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+  "/example_mode_override_single":
+    get:
+      summary: GET /example_mode_override_single
+      tags: []
+      responses:
+        '200':
+          description: overrides to single
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+              example:
+                status: override_single
+  "/example_mode_single":
+    get:
+      summary: GET /example_mode_single
+      tags: []
+      responses:
+        '200':
+          description: generates schema with single example
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+              example:
+                status: single
+  "/example_summary_disabled":
+    get:
+      summary: GET /example_summary_disabled
+      tags: []
+      responses:
+        '200':
+          description: generates examples without summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                required:
+                - data
+              examples:
+                generates_examples_without_summary:
+                  summary: generates examples without summary
+                  value:
+                    data: no_summary
   "/images":
     get:
       summary: index
@@ -779,6 +1534,58 @@ paths:
               schema:
                 type: string
               example: ANOTHER TEST
+  "/nested_arrays_test":
+    get:
+      summary: GET /nested_arrays_test
+      tags: []
+      responses:
+        '200':
+          description: returns nested arrays
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        tags:
+                          type: array
+                          items:
+                            type: string
+                      required:
+                      - name
+                      - tags
+                  matrix:
+                    type: array
+                    items:
+                      type: array
+                      items:
+                        type: integer
+                required:
+                - items
+                - matrix
+              example:
+                items:
+                - name: first
+                  tags:
+                  - a
+                  - b
+                  - c
+                - name: second
+                  tags:
+                  - x
+                  - "y"
+                  - z
+                matrix:
+                - - 1
+                  - 2
+                - - 3
+                  - 4
   "/rack/bar":
     get:
       summary: GET /rack/bar
@@ -887,26 +1694,14 @@ paths:
         in: query
         required: false
         schema:
-          type: object
-          properties:
-            name:
-              type: string
-          required:
-          - name
-        example:
-          name: Example Table
+          type: string
+        example: Example Table
       - name: filter[price]
         in: query
         required: false
         schema:
-          type: object
-          properties:
-            price:
-              type: string
-          required:
-          - price
-        example:
-          price: '0'
+          type: integer
+        example: 0
       - name: page
         in: query
         required: false
@@ -1255,8 +2050,10 @@ paths:
         in: path
         required: true
         schema:
-          type: integer
-        example: 1
+          oneOf:
+          - type: integer
+          - type: string
+        example: abc-123
       requestBody:
         content:
           application/x-www-form-urlencoded:
@@ -1271,7 +2068,7 @@ paths:
               name: test
       responses:
         '200':
-          description: returns a table
+          description: returns a table via a UUID
           content:
             application/json:
               schema:
@@ -1313,17 +2110,72 @@ paths:
                 - storage_size
                 - created_at
                 - updated_at
+              examples:
+                returns_a_table:
+                  summary: returns a table
+                  value:
+                    id: 1
+                    name: access
+                    description: logs
+                    database:
+                      id: 2
+                      name: production
+                    null_sample:
+                    storage_size: 12.3
+                    created_at: '2020-07-17T00:00:00+00:00'
+                    updated_at: '2020-07-17T00:00:00+00:00'
+                returns_a_table_via_a_uuid:
+                  summary: returns a table via a UUID
+                  value:
+                    id: 1
+                    name: access
+                    description: logs
+                    database:
+                      id: 2
+                      name: production
+                    null_sample:
+                    storage_size: 12.3
+                    created_at: '2020-07-17T00:00:00+00:00'
+                    updated_at: '2020-07-17T00:00:00+00:00'
+  "/tags":
+    post:
+      summary: POST /tags
+      tags: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                names:
+                  type: array
+                  items:
+                    type: string
+                priority:
+                  type: integer
+              required:
+              - names
+              - priority
+            example:
+              names:
+              - ruby
+              - rails
+              - rspec
+              priority: 1
+      responses:
+        '201':
+          description: creates tags with array of strings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  created:
+                    type: boolean
+                required:
+                - created
               example:
-                id: 1
-                name: access
-                description: logs
-                database:
-                  id: 2
-                  name: production
-                null_sample:
-                storage_size: 12.3
-                created_at: '2020-07-17T00:00:00+00:00'
-                updated_at: '2020-07-17T00:00:00+00:00'
+                created: true
   "/test_block":
     get:
       summary: GET /test_block
@@ -1338,9 +2190,17 @@ paths:
               example: A TEST
       deprecated: true
 components:
+  schemas:
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+        label:
+          type: string
   securitySchemes:
     SecretApiKeyAuth:
       type: apiKey
       in: header
       name: Secret-Key
-custom_field: custom_value
+x-custom-field: custom_value

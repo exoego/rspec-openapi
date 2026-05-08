@@ -6,6 +6,543 @@
   },
   "servers": [],
   "paths": {
+    "/custom_example_key": {
+      "get": {
+        "summary": "GET /custom_example_key",
+        "responses": {
+          "200": {
+            "description": "it uses custom example key instead of description",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "examples": {
+                  "my_custom_key": {
+                    "summary": "uses custom example key instead of description",
+                    "value": {
+                      "data": "custom_key"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/custom_example_name": {
+      "get": {
+        "summary": "GET /custom_example_name",
+        "responses": {
+          "200": {
+            "description": "it uses custom example name for summary",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "examples": {
+                  "my_custom_name": {
+                    "summary": "My Custom Name",
+                    "value": {
+                      "data": "custom_name"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/empty_example_name": {
+      "get": {
+        "summary": "GET /empty_example_name",
+        "responses": {
+          "200": {
+            "description": "it handles empty example_name",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "data": "empty_name"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/example_mode_disabled": {
+      "get": {
+        "summary": "GET /example_mode_disabled",
+        "responses": {
+          "200": {
+            "description": "it does not generate examples for default mode",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/example_mode_disabled_multiple": {
+      "get": {
+        "summary": "GET /example_mode_disabled_multiple",
+        "responses": {
+          "200": {
+            "description": "it does not generate examples for multiple mode",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/example_mode_disabled_none": {
+      "get": {
+        "summary": "GET /example_mode_disabled_none",
+        "responses": {
+          "200": {
+            "description": "it does not generate examples for none mode",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/example_mode_disabled_single": {
+      "get": {
+        "summary": "GET /example_mode_disabled_single",
+        "responses": {
+          "200": {
+            "description": "it does not generate examples for single mode",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/example_mode_inherit": {
+      "get": {
+        "summary": "GET /example_mode_inherit",
+        "responses": {
+          "200": {
+            "description": "it also inherits multiple from parent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                },
+                "examples": {
+                  "inherits_multiple_from_parent": {
+                    "summary": "inherits multiple from parent",
+                    "value": {
+                      "status": "inherit"
+                    }
+                  },
+                  "also_inherits_multiple_from_parent": {
+                    "summary": "also inherits multiple from parent",
+                    "value": {
+                      "status": "inherit"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/example_mode_mixed": {
+      "get": {
+        "summary": "GET /example_mode_mixed",
+        "responses": {
+          "200": {
+            "description": "it second with multiple mode",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                },
+                "examples": {
+                  "first_with_single_mode": {
+                    "summary": "first with single mode",
+                    "value": {
+                      "status": "mixed"
+                    }
+                  },
+                  "second_with_multiple_mode": {
+                    "summary": "second with multiple mode",
+                    "value": {
+                      "status": "mixed"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/example_mode_multiple": {
+      "get": {
+        "summary": "GET /example_mode_multiple",
+        "responses": {
+          "200": {
+            "description": "it second example",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                },
+                "examples": {
+                  "first_example": {
+                    "summary": "first example",
+                    "value": {
+                      "status": "multiple"
+                    }
+                  },
+                  "second_example": {
+                    "summary": "second example",
+                    "value": {
+                      "status": "multiple"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/example_mode_none": {
+      "get": {
+        "summary": "GET /example_mode_none",
+        "responses": {
+          "200": {
+            "description": "it generates schema without example",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/example_mode_override_none": {
+      "get": {
+        "summary": "GET /example_mode_override_none",
+        "responses": {
+          "200": {
+            "description": "it overrides to none",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/example_mode_override_single": {
+      "get": {
+        "summary": "GET /example_mode_override_single",
+        "responses": {
+          "200": {
+            "description": "it overrides to single",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                },
+                "example": {
+                  "status": "override_single"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/example_mode_single": {
+      "get": {
+        "summary": "GET /example_mode_single",
+        "responses": {
+          "200": {
+            "description": "it generates schema with single example",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                },
+                "example": {
+                  "status": "single"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/example_summary_disabled": {
+      "get": {
+        "summary": "GET /example_summary_disabled",
+        "responses": {
+          "200": {
+            "description": "it generates examples without summary",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "examples": {
+                  "generates_examples_without_summary": {
+                    "summary": "generates examples without summary",
+                    "value": {
+                      "data": "no_summary"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/nested_arrays_test": {
+      "get": {
+        "summary": "GET /nested_arrays_test",
+        "responses": {
+          "200": {
+            "description": "it returns nested arrays",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "tags": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "required": [
+                          "name",
+                          "tags"
+                        ]
+                      }
+                    },
+                    "matrix": {
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "matrix"
+                  ]
+                },
+                "example": {
+                  "items": [
+                    {
+                      "name": "first",
+                      "tags": [
+                        "a",
+                        "b",
+                        "c"
+                      ]
+                    },
+                    {
+                      "name": "second",
+                      "tags": [
+                        "x",
+                        "y",
+                        "z"
+                      ]
+                    }
+                  ],
+                  "matrix": [
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      3,
+                      4
+                    ]
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/roda": {
       "post": {
         "summary": "Create roda resource",
@@ -52,6 +589,66 @@
                 "example": {
                   "id": 1,
                   "name": "hello"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tags": {
+      "post": {
+        "summary": "POST /tags",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "names": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "priority": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "names",
+                  "priority"
+                ]
+              },
+              "example": {
+                "names": [
+                  "ruby",
+                  "rails",
+                  "rspec"
+                ],
+                "priority": 1
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "it creates tags with array of strings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "created": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "created"
+                  ]
+                },
+                "example": {
+                  "created": true
                 }
               }
             }

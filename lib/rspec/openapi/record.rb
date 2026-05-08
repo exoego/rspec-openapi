@@ -15,12 +15,22 @@ RSpec::OpenAPI::Record = Struct.new(
   :formats,               # @param [Proc]    - ->(key) { key.end_with?('_at') ? 'date-time' : nil }
   :operation_id,          # @param [String]   - "request-1234"
   :description,           # @param [String]  - "returns a status"
+  :example_key,           # @param [String]  - "with_flat_query_parameters"
+  :example_name,          # @param [String]  - "with flat query parameters"
   :security,              # @param [Array]  - [{securityScheme1: []}]
   :deprecated,            # @param [Boolean] - true
+  :example_enabled,       # @param [Boolean] - true
+  :example_mode,          # @param [Symbol]  - :none | :single | :multiple
   :status,                # @param [Integer] - 200
   :response_body,         # @param [Object]  - {"status" => "ok"}
   :response_headers,      # @param [Array]  - [["header_key1", "header_value1"], ["header_key2", "header_value2"]]
   :response_content_type, # @param [String]  - "application/json"
   :response_content_disposition, # @param [String]  - "inline"
+  :response_enum,         # @param [Hash]    - {"status" => ["active", "inactive"], "user.role" => ["admin", "user"]}
+  :request_enum,          # @param [Hash]    - {"type" => ["create", "update"]}
+  :response_additional_properties, # @param [Hash] - {"data" => { type: "boolean" }}
+  :request_additional_properties,  # @param [Hash] - {"meta" => { type: "string" }}
+  :response_hybrid_additional_properties, # @param [Hash] - {"data" => { type: "string" }}
+  :request_hybrid_additional_properties,  # @param [Hash] - {"meta" => { type: "string" }}
   keyword_init: true,
 )

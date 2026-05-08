@@ -4,9 +4,15 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   # @param [RSpec::OpenAPI::Record] record
   # @return [Hash]
   def build(record)
-    response = {
-      description: record.description,
-    }
+    response = if record.example_mode == :none
+                 # `:none` opts out of recording, so the description is provisional.
+                 # Stash it under a fallback key; SchemaCleaner promotes it to
+                 # `description` only if no documented test has set one. This makes
+                 # the merge result independent of RSpec's random execution order.
+                 { _fallback_description: record.description }
+               else
+                 { description: record.description }
+               end
 
     response_headers = build_response_headers(record)
     response[:headers] = response_headers unless response_headers.empty?
@@ -15,14 +21,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       disposition = normalize_content_disposition(record.response_content_disposition)
 
       has_content = !normalize_content_type(record.response_content_type).nil?
-      if has_content
-        response[:content] = {
-          normalize_content_type(record.response_content_type) => {
-            schema: build_property(record.response_body, disposition: disposition, record: record),
-            example: response_example(record, disposition: disposition),
-          }.compact,
-        }
-      end
+      response[:content] = build_content(disposition, record) if has_content
     end
 
     http_method = record.http_method.downcase
@@ -52,19 +51,74 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     %w[delete get].include?(http_method)
   end
 
+  def build_content(disposition, record)
+    content_type = normalize_content_type(record.response_content_type)
+    schema = build_property(record.response_body, disposition: disposition, record: record, context: :response)
+
+    # If examples are globally disabled, always return schema-only content.
+    return { content_type => { schema: schema }.compact } unless example_enabled?(record)
+
+    case record.example_mode
+    when :none
+      # Only schema, no examples
+      {
+        content_type => {
+          schema: schema,
+        }.compact,
+      }
+    when :multiple
+      # Multiple named examples
+      {
+        content_type => {
+          schema: schema,
+          examples: { record.example_key => build_example_object(record, disposition: disposition) },
+        }.compact,
+      }
+    else # :single (default)
+      # Single example + store name for possible merger conversion
+      {
+        content_type => {
+          schema: schema,
+          example: response_example(record, disposition: disposition),
+          _example_key: record.example_key,
+          _example_summary: example_summary(record),
+        }.compact,
+      }
+    end
+  end
+
   def enrich_with_required_keys(obj)
     obj[:required] = obj[:properties]&.keys || []
     obj
   end
 
   def response_example(record, disposition:)
-    return nil if !example_enabled? || disposition
+    return nil if !example_enabled?(record) || disposition
 
     record.response_body
   end
 
-  def example_enabled?
-    RSpec::OpenAPI.enable_example
+  def build_example_object(record, disposition:)
+    summary = example_summary(record)
+    example = {}
+    example[:summary] = summary if summary
+    example[:value] = response_example(record, disposition: disposition)
+    example
+  end
+
+  def example_summary(record)
+    return nil unless example_summary_enabled?
+    return nil if record.example_name.nil? || record.example_name.empty?
+
+    record.example_name
+  end
+
+  def example_enabled?(record)
+    record.example_enabled
+  end
+
+  def example_summary_enabled?
+    RSpec::OpenAPI.enable_example_summary
   end
 
   def build_parameters(record)
@@ -73,18 +127,18 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         name: build_parameter_name(key, value),
         in: 'path',
         required: true,
-        schema: build_property(try_cast(value), key: key, record: record),
-        example: (try_cast(value) if example_enabled?),
+        schema: build_property(try_cast(value), key: key, record: record, path: key.to_s, context: :request),
+        example: (try_cast(value) if example_enabled?(record)),
       }.compact
     end
 
-    query_params = record.query_params.map do |key, value|
+    query_params = flatten_query_params(record.query_params).map do |key, value|
       {
-        name: build_parameter_name(key, value),
+        name: key,
         in: 'query',
         required: record.required_request_params.include?(key),
-        schema: build_property(try_cast(value), key: key, record: record),
-        example: (try_cast(value) if example_enabled?),
+        schema: build_property(try_cast(value), key: key, record: record, path: key.to_s, context: :request),
+        example: (try_cast(value) if example_enabled?(record)),
       }.compact
     end
 
@@ -93,8 +147,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         name: build_parameter_name(key, value),
         in: 'header',
         required: true,
-        schema: build_property(try_cast(value), key: key, record: record),
-        example: (try_cast(value) if example_enabled?),
+        schema: build_property(try_cast(value), key: key, record: record, path: key.to_s, context: :request),
+        example: (try_cast(value) if example_enabled?(record)),
       }.compact
     end
 
@@ -110,7 +164,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
     record.response_headers.each do |key, value|
       headers[key] = {
-        schema: build_property(try_cast(value), key: key, record: record),
+        schema: build_property(try_cast(value), key: key, record: record, path: key.to_s, context: :response),
       }.compact
     end
 
@@ -127,6 +181,20 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     end
   end
 
+  def flatten_query_params(params, parent_key = nil)
+    result = {}
+    params.each do |key, value|
+      full_key = parent_key ? "#{parent_key}[#{key}]" : key.to_s
+
+      if value.is_a?(Hash)
+        result.merge!(flatten_query_params(value, full_key))
+      else
+        result[full_key] = value
+      end
+    end
+    result
+  end
+
   def build_request_body(record)
     return nil if record.request_content_type.nil?
     return nil if record.status >= 400
@@ -134,65 +202,131 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     {
       content: {
         normalize_content_type(record.request_content_type) => {
-          schema: build_property(record.request_params, record: record),
-          example: (build_example(record.request_params) if example_enabled?),
+          schema: build_property(record.request_params, record: record, context: :request),
+          example: (build_example(record.request_params) if example_enabled?(record)),
         }.compact,
       },
     }
   end
 
-  def build_property(value, disposition: nil, key: nil, record: nil)
+  def build_property(value, disposition: nil, key: nil, record: nil, path: nil, context: nil)
     format = disposition ? 'binary' : infer_format(key, record)
+    enum = infer_enum(path, record, context)
 
-    property = build_type(value, format: format)
+    property = build_type(value, format: format, enum: enum)
 
     case value
     when Array
       property[:items] = if value.empty?
                            {} # unknown
                          else
-                           build_array_items_schema(value, record: record)
+                           build_array_items_schema(value, record: record, path: path, context: context)
                          end
     when Hash
-      property[:properties] = {}.tap do |properties|
-        value.each do |key, v|
-          properties[key] = build_property(v, record: record, key: key)
+      override = infer_additional_properties(path, record, context)
+      hybrid_override = infer_hybrid_additional_properties(path, record, context)
+      if override.is_a?(Hash) && !override.empty?
+        # Schema override: the object's keys are dynamic — replace captured
+        # `properties` / `required` with the supplied dictionary value schema.
+        property[:additionalProperties] = override
+      else
+        property[:properties] = {}.tap do |properties|
+          value.each do |k, v|
+            child_path = path ? "#{path}.#{k}" : k.to_s
+            properties[k] = build_property(v, record: record, key: k, path: child_path, context: context)
+          end
+        end
+        property = enrich_with_required_keys(property)
+        # Hybrid: keep the observed `properties` / `required` and attach
+        # `additionalProperties` alongside.
+        # - Boolean values are constraints (`false` forbids extras, `true`
+        #   explicitly allows them).
+        # - Hash schema values come from the dedicated `hybrid_additional_properties`
+        #   metadata, expressing "known keys + extras of this type".
+        if override == true || override == false
+          property[:additionalProperties] = override
+        elsif hybrid_override.is_a?(Hash) && !hybrid_override.empty?
+          property[:additionalProperties] = hybrid_override
         end
       end
-      property = enrich_with_required_keys(property)
     end
     property
   end
 
-  def build_type(value, format: nil)
-    return { type: 'string', format: format } if format
+  def build_type(value, format: nil, enum: nil)
+    result = if format
+               { type: 'string', format: format }
+             else
+               case value
+               when String
+                 { type: 'string' }
+               when Integer
+                 { type: 'integer' }
+               when Float
+                 { type: 'number', format: 'float' }
+               when TrueClass, FalseClass
+                 { type: 'boolean' }
+               when Array
+                 { type: 'array' }
+               when Hash
+                 { type: 'object' }
+               when ActionDispatch::Http::UploadedFile
+                 { type: 'string', format: 'binary' }
+               when NilClass
+                 { nullable: true }
+               else
+                 raise NotImplementedError, "type detection is not implemented for: #{value.inspect}"
+               end
+             end
 
-    case value
-    when String
-      { type: 'string' }
-    when Integer
-      { type: 'integer' }
-    when Float
-      { type: 'number', format: 'float' }
-    when TrueClass, FalseClass
-      { type: 'boolean' }
-    when Array
-      { type: 'array' }
-    when Hash
-      { type: 'object' }
-    when ActionDispatch::Http::UploadedFile
-      { type: 'string', format: 'binary' }
-    when NilClass
-      { nullable: true }
-    else
-      raise NotImplementedError, "type detection is not implemented for: #{value.inspect}"
-    end
+    result[:enum] = enum if enum
+    result
   end
 
   def infer_format(key, record)
     return nil if !key || !record || !record.formats
 
     record.formats[key]
+  end
+
+  def infer_enum(path, record, context)
+    return nil if !path || !record
+
+    enum_hash = context == :request ? record.request_enum : record.response_enum
+    return nil unless enum_hash
+
+    # Keys are already normalized to strings by SharedExtractor.normalize_enum
+    enum_hash[path.to_s]
+  end
+
+  def infer_additional_properties(path, record, context)
+    return nil unless record
+
+    overrides = if context == :request
+                  record.request_additional_properties
+                else
+                  record.response_additional_properties
+                end
+    return nil unless overrides
+
+    # path is nil at the body root; nil.to_s == '' lets users target it via { '' => ... }.
+    # Use `key?` so a literal `false` override is distinguishable from "no override".
+    return nil unless overrides.key?(path.to_s)
+
+    overrides[path.to_s]
+  end
+
+  def infer_hybrid_additional_properties(path, record, context)
+    return nil unless record
+
+    overrides = if context == :request
+                  record.request_hybrid_additional_properties
+                else
+                  record.response_hybrid_additional_properties
+                end
+    return nil unless overrides
+
+    overrides[path.to_s]
   end
 
   # Convert an always-String param to an appropriate type
@@ -240,16 +374,15 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     content_type&.sub(/;.+\z/, '')
   end
 
-  def normalize_content_disposition(content_disposition)
-    content_disposition&.sub(/;.+\z/, '')
-  end
+  # Same logic as normalize_content_type – strips header parameters after ';'
+  alias normalize_content_disposition normalize_content_type
 
-  def build_array_items_schema(array, record: nil)
+  def build_array_items_schema(array, record: nil, path: nil, context: nil)
     return {} if array.empty?
-    return build_property(array.first, record: record) if array.size == 1
-    return build_property(array.first, record: record) unless array.all? { |item| item.is_a?(Hash) }
+    return build_property(array.first, record: record, path: path, context: context) if array.size == 1
+    return build_property(array.first, record: record, path: path, context: context) unless array.all?(Hash)
 
-    all_schemas = array.map { |item| build_property(item, record: record) }
+    all_schemas = array.map { |item| build_property(item, record: record, path: path, context: context) }
     merged_schema = all_schemas.first.dup
     merged_schema[:properties] = {}
 

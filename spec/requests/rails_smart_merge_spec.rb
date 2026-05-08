@@ -141,3 +141,14 @@ RSpec.describe 'Pages', type: :request do
     end
   end
 end
+
+RSpec.describe 'DynamicKeysTest migration', type: :request do
+  describe 'GET /dynamic_keys_test/closed' do
+    it 'migrates stale properties to additionalProperties', openapi: {
+      additional_properties: { '' => { type: 'string' } },
+    } do
+      get '/dynamic_keys_test/closed'
+      expect(response.status).to eq(200)
+    end
+  end
+end

@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to release (e.g. 0.21.3 or v0.21.3)'
+        description: 'Version to release (e.g. 0.25.2 or 0.26.0)'
         required: true
 
 jobs:
@@ -12,15 +12,11 @@ jobs:
     name: Prepare release PR
     runs-on: ubuntu-latest
 
-    permissions:
-      id-token: write # IMPORTANT: this permission is mandatory for trusted publishing
-      contents: write # required to push release branch and open PR
-      pull-requests: write # required to create the release PR with GITHUB_TOKEN
-
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          token: ${{ secrets.PREPARE_RELEASE_PAT }}
 
       - name: Bump version.rb
         run: |
@@ -47,8 +43,27 @@ jobs:
               exit 1
             end
           RUBY
-
           ruby -pi -e "sub(/VERSION = .*/, \"VERSION = '$version'\")" lib/rspec/openapi/version.rb
+
+          VERSION_NO_V="$version" ruby - <<'RUBY'
+            version = ENV.fetch('VERSION_NO_V')
+            segments = version.split('.').map(&:to_i)
+            unless segments.size >= 3
+              warn "Version must have at least major.minor.patch: #{version}"
+              exit 1
+            end
+
+            major, minor, patch = segments
+            patch_bump = [major, minor, patch + 1].join('.')
+            minor_bump = [major, minor + 1, 0].join('.')
+            example = "Version to release (e.g. #{patch_bump} or #{minor_bump})"
+
+            path = ".github/workflows/create_release.yml"
+            content = File.read(path)
+            content.sub!(/description:\s*'Version to release \(e\.g\. [^']+\)'/,
+                         "description: '#{example}'")
+            File.write(path, content)
+          RUBY
           git status --short
 
       - name: Commit version bump
@@ -65,11 +80,12 @@ jobs:
           git push origin "HEAD:${release_branch}"
 
       - name: Open release PR
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PREPARE_RELEASE_PAT }}
           add-paths: |
             lib/rspec/openapi/version.rb
+            .github/workflows/create_release.yml
           branch: ${{ env.RELEASE_BRANCH }}
           title: Release v${{ env.VERSION_NO_V }}
           commit-message: Bump version to ${{ env.VERSION_NO_V }}
