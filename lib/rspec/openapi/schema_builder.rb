@@ -17,11 +17,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     response_headers = build_response_headers(record)
     response[:headers] = response_headers unless response_headers.empty?
 
-    if record.response_body
-      disposition = normalize_content_disposition(record.response_content_disposition)
-
-      has_content = !normalize_content_type(record.response_content_type).nil?
-      response[:content] = build_content(disposition, record) if has_content
+    if record.response_body && !normalize_content_type(record.response_content_type).nil?
+      response[:content] = build_content(record)
     end
 
     http_method = record.http_method.downcase
@@ -51,7 +48,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     ['delete', 'get'].include?(http_method)
   end
 
-  def build_content(disposition, record)
+  def build_content(record)
+    disposition = normalize_content_disposition(record.response_content_disposition)
     content_type = normalize_content_type(record.response_content_type)
     schema = build_property(record.response_body, disposition: disposition, record: record, context: :response)
     example = response_example(record, disposition: disposition)
@@ -143,15 +141,11 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   end
 
   def build_response_headers(record)
-    headers = {}
-
-    record.response_headers.each do |key, value|
+    record.response_headers.each_with_object({}) do |(key, value), headers|
       headers[key] = {
         schema: build_property(try_cast(value), key: key, record: record, path: key.to_s, context: :response),
       }.compact
     end
-
-    headers
   end
 
   def build_parameter_name(key, value)
@@ -165,8 +159,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   end
 
   def flatten_query_params(params, parent_key = nil)
-    result = {}
-    params.each do |key, value|
+    params.each_with_object({}) do |(key, value), result|
       full_key = parent_key ? "#{parent_key}[#{key}]" : key.to_s
 
       if value.is_a?(Hash)
@@ -175,7 +168,6 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         result[full_key] = value
       end
     end
-    result
   end
 
   def build_request_body(record)
@@ -198,11 +190,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
     case value
     when Array
-      property[:items] = if value.empty?
-                           {} # unknown
-                         else
-                           build_array_items_schema(value, record: record, path: path, context: context)
-                         end
+      property[:items] = value.empty? ? {} : build_array_items_schema(value, record: record, path: path, context: context)
     when Hash
       override = infer_override(path, record, context, :additional_properties)
       hybrid_override = infer_override(path, record, context, :hybrid_additional_properties)
@@ -211,11 +199,9 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         # `properties` / `required` with the supplied dictionary value schema.
         property[:additionalProperties] = override
       else
-        property[:properties] = {}.tap do |properties|
-          value.each do |k, v|
-            child_path = path ? "#{path}.#{k}" : k.to_s
-            properties[k] = build_property(v, record: record, key: k, path: child_path, context: context)
-          end
+        property[:properties] = value.each_with_object({}) do |(k, v), props|
+          child_path = path ? "#{path}.#{k}" : k.to_s
+          props[k] = build_property(v, record: record, key: k, path: child_path, context: context)
         end
         property[:required] = property[:properties].keys
         # Hybrid: keep the observed `properties` / `required` and attach
@@ -239,24 +225,15 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
                { type: 'string', format: format }
              else
                case value
-               when String
-                 { type: 'string' }
-               when Integer
-                 { type: 'integer' }
-               when Float
-                 { type: 'number', format: 'float' }
-               when TrueClass, FalseClass
-                 { type: 'boolean' }
-               when Array
-                 { type: 'array' }
-               when Hash
-                 { type: 'object' }
-               when ActionDispatch::Http::UploadedFile
-                 { type: 'string', format: 'binary' }
-               when NilClass
-                 { nullable: true }
-               else
-                 raise NotImplementedError, "type detection is not implemented for: #{value.inspect}"
+               when String                          then { type: 'string' }
+               when Integer                         then { type: 'integer' }
+               when Float                           then { type: 'number', format: 'float' }
+               when TrueClass, FalseClass           then { type: 'boolean' }
+               when Array                           then { type: 'array' }
+               when Hash                            then { type: 'object' }
+               when ActionDispatch::Http::UploadedFile then { type: 'string', format: 'binary' }
+               when NilClass                        then { nullable: true }
+               else raise NotImplementedError, "type detection is not implemented for: #{value.inspect}"
                end
              end
 
@@ -307,8 +284,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   def build_example(value)
     return nil if value.nil?
 
-    value = value.dup
-    adjust_params(value)
+    adjust_params(value.dup)
   end
 
   def adjust_params(value)
@@ -319,18 +295,16 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       when Hash
         adjust_params(v)
       when Array
-        result = v.map do |item|
-          case item
-          when ActionDispatch::Http::UploadedFile
-            item.original_filename
-          when Hash
-            adjust_params(item)
-          else
-            item
-          end
-        end
-        value[key] = result
+        value[key] = v.map { |item| adjust_array_item(item) }
       end
+    end
+  end
+
+  def adjust_array_item(item)
+    case item
+    when ActionDispatch::Http::UploadedFile then item.original_filename
+    when Hash                               then adjust_params(item)
+    else item
     end
   end
 
