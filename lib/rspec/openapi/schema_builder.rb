@@ -17,6 +17,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
   def build_operation(record)
     http_method = record.http_method.downcase
+    # GET and DELETE never have a request body in OpenAPI.
+    request_body = ['delete', 'get'].include?(http_method) ? nil : build_request_body(record)
     {
       summary: record.summary,
       tags: record.tags,
@@ -24,7 +26,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       security: record.security,
       deprecated: record.deprecated ? true : nil,
       parameters: build_parameters(record),
-      requestBody: include_nil_request_body?(http_method) ? nil : build_request_body(record),
+      requestBody: request_body,
       responses: { record.status.to_s => build_response(record) },
     }.compact
   end
@@ -34,7 +36,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     # it under a fallback key; SchemaCleaner promotes it to `description` only
     # if no documented test has set one. This makes the merge result
     # independent of RSpec's random execution order.
-    response = record.response_example_mode == :none ? { _fallback_description: record.description } : { description: record.description }
+    desc_key = record.response_example_mode == :none ? :_fallback_description : :description
+    response = { desc_key => record.description }
 
     response_headers = build_response_headers(record)
     response[:headers] = response_headers unless response_headers.empty?
@@ -44,10 +47,6 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     end
 
     response
-  end
-
-  def include_nil_request_body?(http_method)
-    ['delete', 'get'].include?(http_method)
   end
 
   def build_content(record)
@@ -132,10 +131,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   end
 
   def build_response_headers(record)
-    record.response_headers.each_with_object({}) do |(key, value), headers|
-      headers[key] = {
-        schema: build_property(try_cast(value), key: key, record: record, path: key.to_s, context: :response),
-      }.compact
+    record.response_headers.to_h do |key, value|
+      [key, { schema: build_property(try_cast(value), key: key, record: record, path: key.to_s, context: :response) }]
     end
   end
 
@@ -240,9 +237,9 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   end
 
   def infer_format(key, record)
-    return nil if !key || !record || !record.formats
+    return nil unless key && record
 
-    record.formats[key]
+    record.formats&.[](key)
   end
 
   def infer_enum(path, record, context)
@@ -338,19 +335,16 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   # When false (callsite: array-items merging), divergent property variations
   # become oneOf without recursive descent.
   def merge_property_variations(variations, allow_recursive_merge:)
-    {}.tap do |merged_props|
-      property_keys(variations).each do |key|
-        all = variations.map { |v| v[:properties]&.[](key) }
-        prop_variations = all.reject { |p| p.nil? || p.keys == [:nullable] }
-        has_nullable = nullable_present?(all, recursive: allow_recursive_merge)
+    property_keys(variations).each_with_object({}) do |key, merged_props|
+      all = variations.map { |v| v[:properties]&.[](key) }
+      prop_variations = all.reject { |p| p.nil? || p.keys == [:nullable] }
+      has_nullable = nullable_present?(all, recursive: allow_recursive_merge)
 
-        next if prop_variations.empty? && !has_nullable
+      next if prop_variations.empty? && !has_nullable
 
-        merged_prop = merge_single_property(prop_variations, has_nullable,
-                                            variations_total: variations.size,
-                                            allow_recursive_merge: allow_recursive_merge)
-        merged_props[key] = merged_prop if merged_prop
-      end
+      merged_props[key] = merge_single_property(prop_variations, has_nullable,
+                                                variations_total: variations.size,
+                                                allow_recursive_merge: allow_recursive_merge)
     end
   end
 
