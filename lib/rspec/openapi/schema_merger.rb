@@ -72,21 +72,33 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   end
 
   def merge_parameters(base, key, value)
-    all_parameters = value | base[key]
+    base_params = index_parameters_by_identity(base[key])
+    new_params = index_parameters_by_identity(value)
 
-    unique_base_parameters = build_unique_params(base, key)
+    base[key] = (base_params.keys | new_params.keys).map do |param_key|
+      base_param = base_params[param_key]
+      new_param = new_params[param_key]
 
-    all_parameters = all_parameters.map do |parameter|
-      base_parameter = unique_base_parameters[[parameter[:name], parameter[:in]]] || {}
-      if base_parameter.empty?
-        parameter
+      if base_param && new_param
+        merge_parameter_with_schema(base_param, new_param)
+      elsif new_param
+        # Parameter only in the new spec. Treat as optional unless its `required: true`
+        # came from explicit `required_request_params` metadata — distinguishable only
+        # for `query`, where the schema_builder default is `required: false`. `header`
+        # defaults to `required: true`, so the value alone can't signal user intent.
+        new_param[:in] == 'query' && new_param[:required] ? new_param : mark_optional_unless_path(new_param)
       else
-        merge_parameter_with_schema(base_parameter, parameter)
+        mark_optional_unless_path(base_param)
       end
     end
+  end
 
-    all_parameters.uniq! { |param| param.slice(:name, :in) }
-    base[key] = all_parameters
+  # OpenAPI requires `in: path` parameters to be `required: true`, so this leaves
+  # them untouched.
+  def mark_optional_unless_path(parameter)
+    return parameter if parameter[:in] == 'path'
+
+    parameter.merge(required: false)
   end
 
   def merge_parameter_with_schema(base_param, new_param)
@@ -94,12 +106,20 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
     new_schema = new_param[:schema]
 
     # If schemas have different types, create a oneOf
-    if base_schema && new_schema && schemas_have_different_types?(base_schema, new_schema)
-      merged_schema = merge_schemas_into_one_of(base_schema, new_schema)
-      base_param.merge(new_param).merge(schema: merged_schema)
-    else
-      base_param.merge(new_param)
+    merged = if base_schema && new_schema && schemas_have_different_types?(base_schema, new_schema)
+               merged_schema = merge_schemas_into_one_of(base_schema, new_schema)
+               base_param.merge(new_param).merge(schema: merged_schema)
+             else
+               base_param.merge(new_param)
+             end
+
+    # Once a parameter has been seen missing in any earlier test case, keep it optional
+    # even if later test cases mark it required again.
+    if base_param[:required] == false || new_param[:required] == false
+      merged = mark_optional_unless_path(merged)
     end
+
+    merged
   end
 
   def schemas_have_different_types?(schema1, schema2)
@@ -133,10 +153,8 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
     end
   end
 
-  def build_unique_params(base, key)
-    base[key].to_h do |parameter|
-      [[parameter[:name], parameter[:in]], parameter]
-    end
+  def index_parameters_by_identity(parameters)
+    parameters.to_h { |p| [[p[:name], p[:in]], p] }
   end
 
   # Normalize example/examples fields when there's a conflict
