@@ -20,6 +20,8 @@ Style/ClassAndModuleChildren:
     - 'lib/rspec/openapi/version.rb'
 Layout/FirstArrayElementIndentation:
   EnforcedStyle: consistent
+Style/SymbolArray:
+  EnforcedStyle: brackets
 Metrics/BlockLength:
   Exclude:
     - 'spec/**/*'

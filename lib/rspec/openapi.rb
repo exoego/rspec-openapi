@@ -43,10 +43,10 @@ module RSpec::OpenAPI
   @request_headers = []
   @servers = []
   @security_schemes = []
-  @example_types = %i[request]
+  @example_types = [:request]
   @response_headers = []
   @path_records = Hash.new { |h, k| h[k] = [] }
-  @ignored_path_params = %i[controller action format]
+  @ignored_path_params = [:controller, :action, :format]
   @ignored_paths = []
   @post_process_hook = nil
 

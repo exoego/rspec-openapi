@@ -61,7 +61,7 @@ RSpec.describe 'schema merger spec' do
           can_do_thing: { type: 'boolean' },
           can_do_other_thing: { type: 'boolean' },
         },
-        required: %i[can_do_thing can_do_other_thing],
+        required: [:can_do_thing, :can_do_other_thing],
       }
       spec = {
         type: 'object',
@@ -127,7 +127,7 @@ RSpec.describe 'schema merger spec' do
               can_edit: { type: 'boolean' },
               can_delete: { type: 'boolean' },
             },
-            required: %i[can_edit can_delete],
+            required: [:can_edit, :can_delete],
           },
         },
         required: [:data],
