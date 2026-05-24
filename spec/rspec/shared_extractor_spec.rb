@@ -29,7 +29,7 @@ RSpec.describe 'SharedExtractor.normalize_example_mode' do
 
   it 'emits the deprecation warning only once per process' do
     expect { 3.times { SharedExtractor.normalize_example_mode(:multiple) } }
-      .to output(a_string_including('DEPRECATION').and(satisfy { |s| s.scan(/DEPRECATION/).size == 1 }))
+      .to output(a_string_including('DEPRECATION').and(satisfy { |s| s.scan('DEPRECATION').size == 1 }))
       .to_stderr
   end
 

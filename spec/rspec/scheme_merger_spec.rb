@@ -174,8 +174,8 @@ RSpec.describe 'schema merger spec' do
       result = RSpec::OpenAPI::SchemaMerger.merge!(base, spec)
 
       expect(result[:parameters]).to eq([
-                                          { name: 'X-Auth', in: 'header', required: true, schema: { type: 'string' } },
-                                        ])
+        { name: 'X-Auth', in: 'header', required: true, schema: { type: 'string' } },
+      ])
     end
 
     it 'demotes a header that is missing from the new spec to required: false' do
