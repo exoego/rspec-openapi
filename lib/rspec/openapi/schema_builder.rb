@@ -109,7 +109,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     flatten_query_params(record.query_params).each do |key, value|
       parameters << build_parameter(key, value, location: 'query',
                                                 required: record.required_request_params.include?(key),
-                                                record: record)
+                                                record: record,)
     end
 
     record.request_headers.each do |key, value|
@@ -177,7 +177,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
     case value
     when Array
-      property[:items] = value.empty? ? {} : build_array_items_schema(value, record: record, path: path, context: context)
+      property[:items] =
+        value.empty? ? {} : build_array_items_schema(value, record: record, path: path, context: context)
     when Hash
       apply_object_schema(property, value, record: record, path: path, context: context)
     end
@@ -199,7 +200,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       [k, build_property(v, record: record, key: k, path: child_path, context: context)]
     end
     property[:required] = property[:properties].keys
-    apply_additional_properties(property, override, infer_override(path, record, context, :hybrid_additional_properties))
+    apply_additional_properties(property, override,
+                                infer_override(path, record, context, :hybrid_additional_properties),)
   end
 
   # Hybrid: keep the observed `properties` / `required` and attach
@@ -227,7 +229,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
                when Array                           then { type: 'array' }
                when Hash                            then { type: 'object' }
                when ActionDispatch::Http::UploadedFile then { type: 'string', format: 'binary' }
-               when NilClass                        then { nullable: true }
+               when NilClass then { nullable: true }
                else raise NotImplementedError, "type detection is not implemented for: #{value.inspect}"
                end
              end
@@ -344,7 +346,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
       merged_props[key] = merge_single_property(prop_variations, has_nullable,
                                                 variations_total: variations.size,
-                                                allow_recursive_merge: allow_recursive_merge)
+                                                allow_recursive_merge: allow_recursive_merge,)
     end
   end
 
