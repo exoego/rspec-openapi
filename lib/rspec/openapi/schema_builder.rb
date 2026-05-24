@@ -4,15 +4,37 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   # @param [RSpec::OpenAPI::Record] record
   # @return [Hash]
   def build(record)
-    response = if record.response_example_mode == :none
-                 # `:none` opts out of recording, so the description is provisional.
-                 # Stash it under a fallback key; SchemaCleaner promotes it to
-                 # `description` only if no documented test has set one. This makes
-                 # the merge result independent of RSpec's random execution order.
-                 { _fallback_description: record.description }
-               else
-                 { description: record.description }
-               end
+    {
+      paths: {
+        normalize_path(record.path) => {
+          record.http_method.downcase => build_operation(record),
+        },
+      },
+    }
+  end
+
+  private
+
+  def build_operation(record)
+    http_method = record.http_method.downcase
+    {
+      summary: record.summary,
+      tags: record.tags,
+      operationId: record.operation_id,
+      security: record.security,
+      deprecated: record.deprecated ? true : nil,
+      parameters: build_parameters(record),
+      requestBody: include_nil_request_body?(http_method) ? nil : build_request_body(record),
+      responses: { record.status.to_s => build_response(record) },
+    }.compact
+  end
+
+  def build_response(record)
+    # `:none` opts out of recording, so the description is provisional. Stash
+    # it under a fallback key; SchemaCleaner promotes it to `description` only
+    # if no documented test has set one. This makes the merge result
+    # independent of RSpec's random execution order.
+    response = record.response_example_mode == :none ? { _fallback_description: record.description } : { description: record.description }
 
     response_headers = build_response_headers(record)
     response[:headers] = response_headers unless response_headers.empty?
@@ -21,28 +43,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       response[:content] = build_content(record)
     end
 
-    http_method = record.http_method.downcase
-    {
-      paths: {
-        normalize_path(record.path) => {
-          http_method => {
-            summary: record.summary,
-            tags: record.tags,
-            operationId: record.operation_id,
-            security: record.security,
-            deprecated: record.deprecated ? true : nil,
-            parameters: build_parameters(record),
-            requestBody: include_nil_request_body?(http_method) ? nil : build_request_body(record),
-            responses: {
-              record.status.to_s => response,
-            },
-          }.compact,
-        },
-      },
-    }
+    response
   end
-
-  private
 
   def include_nil_request_body?(http_method)
     ['delete', 'get'].include?(http_method)
