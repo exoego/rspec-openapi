@@ -170,7 +170,7 @@ end
 RSpec.describe 'Tags with array params', type: :request do
   describe '#create' do
     it 'creates tags with array of strings' do
-      post '/tags', { names: %w[ruby rails rspec], priority: 1 }.to_json,
+      post '/tags', { names: ['ruby', 'rails', 'rspec'], priority: 1 }.to_json,
            { 'CONTENT_TYPE' => 'application/json' }
       expect(last_response.status).to eq(201)
     end

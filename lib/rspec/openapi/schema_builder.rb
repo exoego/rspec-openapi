@@ -48,7 +48,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   private
 
   def include_nil_request_body?(http_method)
-    %w[delete get].include?(http_method)
+    ['delete', 'get'].include?(http_method)
   end
 
   def build_content(disposition, record)

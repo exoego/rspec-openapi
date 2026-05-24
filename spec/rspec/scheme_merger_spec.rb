@@ -9,10 +9,10 @@ RSpec.describe 'schema merger spec' do
     let(:base) do
       {
         'n' => 1,
-        'required' => %w[foo bar],
+        'required' => ['foo', 'bar'],
         'a' => {
           b1: 1,
-          b2: %w[foo bar],
+          b2: ['foo', 'bar'],
           'b3' => {
             'c1' => 2,
             c2: 3,
@@ -27,7 +27,7 @@ RSpec.describe 'schema merger spec' do
         required: ['buz'],
         a: {
           'b1' => 1,
-          'b2' => %w[foo bar],
+          'b2' => ['foo', 'bar'],
           b3: {
             c1: 2,
             'c2' => 3,
@@ -43,7 +43,7 @@ RSpec.describe 'schema merger spec' do
                              required: [],
                              a: {
                                b1: 1,
-                               b2: %w[foo bar],
+                               b2: ['foo', 'bar'],
                                b3: {
                                  c1: 2,
                                  c2: 3,

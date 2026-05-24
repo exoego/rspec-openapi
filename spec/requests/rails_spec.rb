@@ -8,8 +8,8 @@ require File.expand_path('../apps/rails/config/environment', __dir__)
 require 'rspec/rails'
 
 RSpec::OpenAPI.title = 'OpenAPI Documentation'
-RSpec::OpenAPI.request_headers = %w[X-Authorization-Token Secret-Key]
-RSpec::OpenAPI.response_headers = %w[X-Cursor]
+RSpec::OpenAPI.request_headers = ['X-Authorization-Token', 'Secret-Key']
+RSpec::OpenAPI.response_headers = ['X-Cursor']
 RSpec::OpenAPI.path = File.expand_path("../apps/rails/doc/rspec_openapi.#{ENV.fetch('OPENAPI_OUTPUT', nil)}", __dir__)
 RSpec::OpenAPI.ignored_paths = ['/admin/masters/extensions']
 RSpec::OpenAPI.comment = <<~COMMENT
@@ -616,7 +616,7 @@ end
 RSpec.describe 'Tags with array params', type: :request do
   describe '#create' do
     it 'creates tags with array of strings' do
-      post '/tags', params: { names: %w[ruby rails rspec], priority: 1 }.to_json,
+      post '/tags', params: { names: ['ruby', 'rails', 'rspec'], priority: 1 }.to_json,
                     headers: { 'CONTENT_TYPE' => 'application/json' }
       expect(response.status).to eq(201)
     end
@@ -685,7 +685,7 @@ end
 # Enum support tests
 RSpec.describe 'Enum support', type: :request do
   describe 'simple enum' do
-    it 'generates enum for status field', openapi: { enum: { 'status' => %w[active inactive suspended] } } do
+    it 'generates enum for status field', openapi: { enum: { 'status' => ['active', 'inactive', 'suspended'] } } do
       get '/enum_test/status'
       expect(response.status).to eq(200)
     end
@@ -694,8 +694,8 @@ RSpec.describe 'Enum support', type: :request do
   describe 'nested enum' do
     it 'generates enum for nested paths', openapi: {
       enum: {
-        'status' => %w[active inactive],
-        'user.role' => %w[admin user guest],
+        'status' => ['active', 'inactive'],
+        'user.role' => ['admin', 'user', 'guest'],
       },
     } do
       get '/enum_test/nested'
@@ -706,8 +706,8 @@ RSpec.describe 'Enum support', type: :request do
   describe 'array items enum' do
     it 'generates enum for array item properties', openapi: {
       enum: {
-        'items.status' => %w[active inactive],
-        'items.priority' => %w[high medium low],
+        'items.status' => ['active', 'inactive'],
+        'items.priority' => ['high', 'medium', 'low'],
       },
     } do
       get '/enum_test/array_items'
@@ -717,8 +717,8 @@ RSpec.describe 'Enum support', type: :request do
 
   describe 'request enum' do
     it 'generates enum for request body', openapi: {
-      request_enum: { 'action_type' => %w[create update delete] },
-      response_enum: { 'status' => %w[pending completed failed] },
+      request_enum: { 'action_type' => ['create', 'update', 'delete'] },
+      response_enum: { 'status' => ['pending', 'completed', 'failed'] },
     } do
       post '/enum_test', params: { action_type: 'create' }
       expect(response.status).to eq(201)
@@ -728,8 +728,8 @@ RSpec.describe 'Enum support', type: :request do
   describe 'deeply nested enum' do
     it 'generates enum for deeply nested paths', openapi: {
       enum: {
-        'organization.settings.visibility' => %w[public private internal],
-        'organization.settings.access_level' => %w[standard premium enterprise],
+        'organization.settings.visibility' => ['public', 'private', 'internal'],
+        'organization.settings.access_level' => ['standard', 'premium', 'enterprise'],
       },
     } do
       get '/enum_test/deeply_nested'
@@ -740,7 +740,7 @@ RSpec.describe 'Enum support', type: :request do
   describe 'enum with symbol keys' do
     it 'supports symbol keys in enum hash', openapi: {
       enum: {
-        status: %w[active inactive],
+        status: ['active', 'inactive'],
       },
     } do
       get '/enum_test/status'
@@ -780,7 +780,7 @@ RSpec.describe 'Dynamic key (additionalProperties) support', type: :request do
 
   describe 'request-side override with enum array value' do
     it 'applies additionalProperties only to the request body and supports array values in the schema', openapi: {
-      request_additional_properties: { '' => { type: 'string', enum: %w[1 2] } },
+      request_additional_properties: { '' => { type: 'string', enum: ['1', '2'] } },
     } do
       post '/dynamic_keys_test', params: { 'metric_a' => 1, 'metric_b' => 2 }
       expect(response.status).to eq(201)
@@ -825,7 +825,7 @@ RSpec.describe 'Dynamic key (additionalProperties) support', type: :request do
 
   describe 'combined with enum metadata' do
     it 'applies enum and additionalProperties to different paths in the same response', openapi: {
-      enum: { 'status' => %w[active inactive] },
+      enum: { 'status' => ['active', 'inactive'] },
       additional_properties: { 'counts' => { type: 'integer' } },
     } do
       get '/dynamic_keys_test/with_enum'

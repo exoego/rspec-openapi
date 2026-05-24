@@ -22,6 +22,8 @@ Layout/FirstArrayElementIndentation:
   EnforcedStyle: consistent
 Style/SymbolArray:
   EnforcedStyle: brackets
+Style/WordArray:
+  EnforcedStyle: brackets
 Metrics/BlockLength:
   Exclude:
     - 'spec/**/*'
