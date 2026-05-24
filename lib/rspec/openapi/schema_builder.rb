@@ -404,19 +404,16 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   # recursing into nested objects/arrays beyond one level.
   def merge_multi_array_items(prop_variations)
     unique_types = prop_variations.map { |p| p[:type] }.compact.uniq
+    return one_of_schema(prop_variations) if unique_types.size > 1
 
-    if unique_types.size > 1
-      { oneOf: prop_variations.map { |p| p.reject { |k, _| k == :nullable } }.uniq }
+    case unique_types.first
+    when 'array'
+      items_variations = prop_variations.map { |p| p[:items] }.compact
+      { type: 'array', items: build_merged_schema_from_variations(items_variations) }
+    when 'object'
+      build_merged_schema_from_variations(prop_variations)
     else
-      case unique_types.first
-      when 'array'
-        items_variations = prop_variations.map { |p| p[:items] }.compact
-        { type: 'array', items: build_merged_schema_from_variations(items_variations) }
-      when 'object'
-        build_merged_schema_from_variations(prop_variations)
-      else
-        prop_variations.first.dup
-      end
+      prop_variations.first.dup
     end
   end
 
@@ -426,23 +423,27 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     return { oneOf: flatten_one_of(prop_variations) } if prop_variations.any? { |p| p.key?(:oneOf) }
 
     prop_types = prop_variations.map { |p| p[:type] }.compact.uniq
-    if prop_types.size == 1
-      prop_types.first == 'object' ? build_merged_schema_from_variations(prop_variations) : prop_variations.first.dup
-    else
-      { oneOf: prop_variations.map { |p| p.reject { |k, _| k == :nullable } }.uniq }
-    end
+    return one_of_schema(prop_variations) if prop_types.size > 1
+
+    prop_types.first == 'object' ? build_merged_schema_from_variations(prop_variations) : prop_variations.first.dup
   end
 
   def flatten_one_of(prop_variations)
-    options = []
-    prop_variations.each do |prop|
-      clean = prop.reject { |k, _| k == :nullable }
+    prop_variations.each_with_object([]) do |prop, options|
+      clean = without_nullable(prop)
       if clean.key?(:oneOf)
         options.concat(clean[:oneOf])
       elsif !clean.empty?
         options << clean
       end
-    end
-    options.uniq
+    end.uniq
+  end
+
+  def without_nullable(prop)
+    prop.reject { |k, _| k == :nullable }
+  end
+
+  def one_of_schema(variations)
+    { oneOf: variations.map { |p| without_nullable(p) }.uniq }
   end
 end
