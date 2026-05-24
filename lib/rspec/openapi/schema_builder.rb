@@ -247,8 +247,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
                            build_array_items_schema(value, record: record, path: path, context: context)
                          end
     when Hash
-      override = infer_additional_properties(path, record, context)
-      hybrid_override = infer_hybrid_additional_properties(path, record, context)
+      override = infer_override(path, record, context, :additional_properties)
+      hybrid_override = infer_override(path, record, context, :hybrid_additional_properties)
       if override.is_a?(Hash) && !override.empty?
         # Schema override: the object's keys are dynamic — replace captured
         # `properties` / `required` with the supplied dictionary value schema.
@@ -323,32 +323,19 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     enum_hash[path.to_s]
   end
 
-  def infer_additional_properties(path, record, context)
+  # Looks up an override for the current path under one of the per-context
+  # override maps on the record (e.g. request_additional_properties).
+  # For :additional_properties we use `key?` so a literal `false` is
+  # distinguishable from "no override"; for :hybrid_additional_properties
+  # plain lookup is enough because only Hash values are meaningful.
+  def infer_override(path, record, context, kind)
     return nil unless record
 
-    overrides = if context == :request
-                  record.request_additional_properties
-                else
-                  record.response_additional_properties
-                end
+    overrides = record.send("#{context}_#{kind}")
     return nil unless overrides
 
     # path is nil at the body root; nil.to_s == '' lets users target it via { '' => ... }.
-    # Use `key?` so a literal `false` override is distinguishable from "no override".
-    return nil unless overrides.key?(path.to_s)
-
-    overrides[path.to_s]
-  end
-
-  def infer_hybrid_additional_properties(path, record, context)
-    return nil unless record
-
-    overrides = if context == :request
-                  record.request_hybrid_additional_properties
-                else
-                  record.response_hybrid_additional_properties
-                end
-    return nil unless overrides
+    return nil if kind == :additional_properties && !overrides.key?(path.to_s)
 
     overrides[path.to_s]
   end
