@@ -13,8 +13,8 @@ Dir.chdir('spec/apps/hanami') # HACK: for load hanami success
 require 'hanami/prepare'
 
 RSpec::OpenAPI.title = 'OpenAPI Documentation'
-RSpec::OpenAPI.request_headers = %w[X-Authorization-Token Secret-Key]
-RSpec::OpenAPI.response_headers = %w[X-Cursor]
+RSpec::OpenAPI.request_headers = ['X-Authorization-Token', 'Secret-Key']
+RSpec::OpenAPI.response_headers = ['X-Cursor']
 RSpec::OpenAPI.path = File.expand_path("../apps/hanami/doc/openapi.#{ENV.fetch('OPENAPI_OUTPUT', nil)}", __dir__)
 RSpec::OpenAPI.ignored_paths = ['/admin/masters/extensions']
 RSpec::OpenAPI.comment = <<~COMMENT
@@ -444,7 +444,7 @@ end
 RSpec.describe 'Tags with array params', type: :request do
   describe '#create' do
     it 'creates tags with array of strings' do
-      post '/tags', { names: %w[ruby rails rspec], priority: 1 }.to_json,
+      post '/tags', { names: ['ruby', 'rails', 'rspec'], priority: 1 }.to_json,
            { 'CONTENT_TYPE' => 'application/json' }
       expect(last_response.status).to eq(201)
     end
