@@ -2,7 +2,7 @@
 
 # Shared extractor for extracting OpenAPI metadata from RSpec examples
 class SharedExtractor
-  VALID_EXAMPLE_MODES = %i[none single multiple].freeze
+  VALID_EXAMPLE_MODES = [:none, :single, :multiple].freeze
 
   EXAMPLE_MODE_MULTIPLE_SHORTHAND_WARNING = <<~MSG.tr("\n", ' ').strip.freeze
     [rspec-openapi] DEPRECATION: example_mode: :multiple currently means
@@ -96,7 +96,7 @@ class SharedExtractor
   # shorthand for { request: :single, response: :multiple } and emits a one-time
   # deprecation warning) or a Hash with :request / :response keys.
   def self.normalize_example_mode(value, example = nil)
-    return %i[single single] if value.nil?
+    return [:single, :single] if value.nil?
 
     case value
     when Hash
@@ -108,7 +108,7 @@ class SharedExtractor
       mode = coerce_example_mode_value(value, example)
       if mode == :multiple
         warn_example_mode_multiple_shorthand
-        %i[single multiple]
+        [:single, :multiple]
       else
         [mode, mode]
       end

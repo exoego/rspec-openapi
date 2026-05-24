@@ -52,7 +52,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
         merge_arrays(base, key, value)
       else
         # do not ADD `properties` or `required` fields if `additionalProperties` field is present
-        base[key] = value unless base.key?(:additionalProperties) && %i[properties required].include?(key)
+        base[key] = value unless base.key?(:additionalProperties) && [:properties, :required].include?(key)
       end
     end
     base

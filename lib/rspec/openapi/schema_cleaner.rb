@@ -27,7 +27,7 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
     cleanup_hash!(base, spec, 'paths.*.*')
 
     # cleanup parameters
-    cleanup_array!(base, spec, 'paths.*.*.parameters', %i[name in])
+    cleanup_array!(base, spec, 'paths.*.*.parameters', [:name, :in])
 
     # cleanup requestBody
     cleanup_hash!(base, spec, 'paths.*.*.requestBody.content.application/json.schema.properties.*')
