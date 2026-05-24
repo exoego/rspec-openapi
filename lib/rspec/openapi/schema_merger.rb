@@ -115,9 +115,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
 
     # Once a parameter has been seen missing in any earlier test case, keep it optional
     # even if later test cases mark it required again.
-    if base_param[:required] == false || new_param[:required] == false
-      merged = mark_optional_unless_path(merged)
-    end
+    merged = mark_optional_unless_path(merged) if base_param[:required] == false || new_param[:required] == false
 
     merged
   end

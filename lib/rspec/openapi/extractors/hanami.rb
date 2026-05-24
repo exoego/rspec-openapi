@@ -64,11 +64,11 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
 
     raw_path_params = route.params
 
-    result = InspectorAnalyzer.call(request.method, replace_path_params(path, route, '/:%{key}'))
+    result = InspectorAnalyzer.call(request.method, replace_path_params(path, route, '/:%<key>s'))
 
     summary ||= result[:summary]
     tags ||= result[:tags]
-    path = replace_path_params(path, route, '/{%{key}}')
+    path = replace_path_params(path, route, '/{%<key>s}')
 
     raw_path_params = raw_path_params.slice(*(raw_path_params.keys - RSpec::OpenAPI.ignored_path_params))
 
@@ -111,7 +111,7 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
     return path if route.params.empty?
 
     route.params.each_pair do |key, value|
-      path = path.sub("/#{value}", format % { key: key })
+      path = path.sub("/#{value}", format(format, key: key))
     end
 
     path

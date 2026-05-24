@@ -267,7 +267,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
         #   explicitly allows them).
         # - Hash schema values come from the dedicated `hybrid_additional_properties`
         #   metadata, expressing "known keys + extras of this type".
-        if override == true || override == false
+        if [true, false].include?(override)
           property[:additionalProperties] = override
         elsif hybrid_override.is_a?(Hash) && !hybrid_override.empty?
           property[:additionalProperties] = hybrid_override

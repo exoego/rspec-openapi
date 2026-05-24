@@ -48,7 +48,8 @@ module RailsIntegrationTests
     # Patch minitest's ordering of examples to match RSpec's
     # in order to get comparable results
     def self.runnable_methods
-      ['test_with_flat_query_parameters', 'test_with_deep_query_parameters', 'test_with_different_deep_query_parameters', 'test_has_a_request_spec_which_does_not_make_any_request', 'test_does_not_return_tables_if_unauthorized']
+      ['test_with_flat_query_parameters', 'test_with_deep_query_parameters',
+       'test_with_different_deep_query_parameters', 'test_has_a_request_spec_which_does_not_make_any_request', 'test_does_not_return_tables_if_unauthorized',]
     end
 
     def test_with_flat_query_parameters
@@ -84,7 +85,8 @@ module RailsIntegrationTests
     # Patch minitest's ordering of examples to match RSpec's
     # in order to get comparable results
     def self.runnable_methods
-      ['test_returns_a_table', 'test_does_not_return_a_table_if_unauthorized', 'test_does_not_return_a_table_if_not_found']
+      ['test_returns_a_table', 'test_does_not_return_a_table_if_unauthorized',
+       'test_does_not_return_a_table_if_not_found',]
     end
 
     def test_does_not_return_a_table_if_unauthorized
