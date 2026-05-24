@@ -129,41 +129,34 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   end
 
   def build_parameters(record)
-    path_params = record.path_params.map do |key, value|
-      {
-        name: build_parameter_name(key, value),
-        in: 'path',
-        required: true,
-        schema: build_property(try_cast(value), key: key, record: record, path: key.to_s, context: :request),
-        example: (try_cast(value) if example_enabled?(record)),
-      }.compact
+    parameters = []
+
+    record.path_params.each do |key, value|
+      parameters << build_parameter(key, value, location: 'path', required: true, record: record, compound_name: true)
     end
 
-    query_params = flatten_query_params(record.query_params).map do |key, value|
-      {
-        name: key,
-        in: 'query',
-        required: record.required_request_params.include?(key),
-        schema: build_property(try_cast(value), key: key, record: record, path: key.to_s, context: :request),
-        example: (try_cast(value) if example_enabled?(record)),
-      }.compact
+    flatten_query_params(record.query_params).each do |key, value|
+      parameters << build_parameter(key, value, location: 'query',
+                                                required: record.required_request_params.include?(key),
+                                                record: record)
     end
 
-    header_params = record.request_headers.map do |key, value|
-      {
-        name: build_parameter_name(key, value),
-        in: 'header',
-        required: true,
-        schema: build_property(try_cast(value), key: key, record: record, path: key.to_s, context: :request),
-        example: (try_cast(value) if example_enabled?(record)),
-      }.compact
+    record.request_headers.each do |key, value|
+      parameters << build_parameter(key, value, location: 'header', required: true, record: record, compound_name: true)
     end
 
-    parameters = path_params + query_params + header_params
+    parameters.empty? ? nil : parameters
+  end
 
-    return nil if parameters.empty?
-
-    parameters
+  def build_parameter(key, value, location:, required:, record:, compound_name: false)
+    cast = try_cast(value)
+    {
+      name: compound_name ? build_parameter_name(key, value) : key,
+      in: location,
+      required: required,
+      schema: build_property(cast, key: key, record: record, path: key.to_s, context: :request),
+      example: (cast if example_enabled?(record)),
+    }.compact
   end
 
   def build_response_headers(record)
