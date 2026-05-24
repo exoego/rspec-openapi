@@ -157,4 +157,160 @@ RSpec.describe 'schema merger spec' do
       )
     end
   end
+
+  describe 'parameter optionality across test cases' do
+    it 'keeps required: true when the same parameter appears in both specs' do
+      base = {
+        parameters: [
+          { name: 'X-Auth', in: 'header', required: true, schema: { type: 'string' } },
+        ],
+      }
+      spec = {
+        parameters: [
+          { name: 'X-Auth', in: 'header', required: true, schema: { type: 'string' } },
+        ],
+      }
+
+      result = RSpec::OpenAPI::SchemaMerger.merge!(base, spec)
+
+      expect(result[:parameters]).to eq([
+                                          { name: 'X-Auth', in: 'header', required: true, schema: { type: 'string' } },
+                                        ])
+    end
+
+    it 'demotes a header that is missing from the new spec to required: false' do
+      base = {
+        parameters: [
+          { name: 'X-Foo', in: 'header', required: true, schema: { type: 'string' } },
+          { name: 'X-Bar', in: 'header', required: true, schema: { type: 'string' } },
+        ],
+      }
+      spec = {
+        parameters: [
+          { name: 'X-Foo', in: 'header', required: true, schema: { type: 'string' } },
+        ],
+      }
+
+      result = RSpec::OpenAPI::SchemaMerger.merge!(base, spec)
+
+      expect(result[:parameters]).to contain_exactly(
+        { name: 'X-Foo', in: 'header', required: true, schema: { type: 'string' } },
+        { name: 'X-Bar', in: 'header', required: false, schema: { type: 'string' } },
+      )
+    end
+
+    it 'demotes a newly appearing header to required: false' do
+      # Newly appearing parameters are also treated as optional — they were
+      # missing in earlier test cases. Headers have no metadata to express
+      # "explicit required" intent, so the default-`required: true` is overridden.
+      base = {
+        parameters: [
+          { name: 'X-Foo', in: 'header', required: true, schema: { type: 'string' } },
+        ],
+      }
+      spec = {
+        parameters: [
+          { name: 'X-Foo', in: 'header', required: true, schema: { type: 'string' } },
+          { name: 'X-Bar', in: 'header', required: true, schema: { type: 'string' } },
+        ],
+      }
+
+      result = RSpec::OpenAPI::SchemaMerger.merge!(base, spec)
+
+      expect(result[:parameters]).to contain_exactly(
+        { name: 'X-Foo', in: 'header', required: true, schema: { type: 'string' } },
+        { name: 'X-Bar', in: 'header', required: false, schema: { type: 'string' } },
+      )
+    end
+
+    it 'preserves a newly appearing query param when explicitly marked via required_request_params' do
+      # The schema_builder only sets `required: true` on query params listed in
+      # `required_request_params`, so a value-only query with `required: true`
+      # signals explicit user intent and is respected.
+      base = {
+        parameters: [
+          { name: 'page', in: 'query', required: false, schema: { type: 'integer' } },
+        ],
+      }
+      spec = {
+        parameters: [
+          { name: 'page', in: 'query', required: false, schema: { type: 'integer' } },
+          { name: 'limit', in: 'query', required: true, schema: { type: 'integer' } },
+        ],
+      }
+
+      result = RSpec::OpenAPI::SchemaMerger.merge!(base, spec)
+
+      expect(result[:parameters]).to contain_exactly(
+        { name: 'page', in: 'query', required: false, schema: { type: 'integer' } },
+        { name: 'limit', in: 'query', required: true, schema: { type: 'integer' } },
+      )
+    end
+
+    it 'keeps optional once a parameter has been observed missing (optional propagation)' do
+      # Simulates 3 test cases where X-Bar appears in cases 1 and 3 but is missing in case 2.
+      # After case 2 demotes X-Bar to optional, case 3's `required: true` should NOT undo it.
+      base = {
+        parameters: [
+          { name: 'X-Foo', in: 'header', required: true, schema: { type: 'string' } },
+          { name: 'X-Bar', in: 'header', required: false, schema: { type: 'string' } },
+        ],
+      }
+      spec = {
+        parameters: [
+          { name: 'X-Foo', in: 'header', required: true, schema: { type: 'string' } },
+          { name: 'X-Bar', in: 'header', required: true, schema: { type: 'string' } },
+        ],
+      }
+
+      result = RSpec::OpenAPI::SchemaMerger.merge!(base, spec)
+
+      expect(result[:parameters]).to contain_exactly(
+        { name: 'X-Foo', in: 'header', required: true, schema: { type: 'string' } },
+        { name: 'X-Bar', in: 'header', required: false, schema: { type: 'string' } },
+      )
+    end
+
+    it 'demotes query parameters the same way' do
+      base = {
+        parameters: [
+          { name: 'page', in: 'query', required: true, schema: { type: 'integer' } },
+          { name: 'filter', in: 'query', required: true, schema: { type: 'string' } },
+        ],
+      }
+      spec = {
+        parameters: [
+          { name: 'page', in: 'query', required: true, schema: { type: 'integer' } },
+        ],
+      }
+
+      result = RSpec::OpenAPI::SchemaMerger.merge!(base, spec)
+
+      expect(result[:parameters]).to contain_exactly(
+        { name: 'page', in: 'query', required: true, schema: { type: 'integer' } },
+        { name: 'filter', in: 'query', required: false, schema: { type: 'string' } },
+      )
+    end
+
+    it 'keeps path parameters required even if missing from one spec' do
+      base = {
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'integer' } },
+          { name: 'X-Auth', in: 'header', required: true, schema: { type: 'string' } },
+        ],
+      }
+      spec = {
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'integer' } },
+        ],
+      }
+
+      result = RSpec::OpenAPI::SchemaMerger.merge!(base, spec)
+
+      expect(result[:parameters]).to contain_exactly(
+        { name: 'id', in: 'path', required: true, schema: { type: 'integer' } },
+        { name: 'X-Auth', in: 'header', required: false, schema: { type: 'string' } },
+      )
+    end
+  end
 end

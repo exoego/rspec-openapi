@@ -879,7 +879,7 @@ paths:
       parameters:
       - name: X-Authorization-Token
         in: header
-        required: true
+        required: false
         schema:
           type: string
         example: token
