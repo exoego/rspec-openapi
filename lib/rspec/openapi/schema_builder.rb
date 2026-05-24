@@ -63,22 +63,14 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   # Returns the per-content-type body (schema + optional example/examples).
   # Shared by response content and request body to keep example_mode handling in one place.
   def build_example_body(schema, record, mode:, example:)
-    return { schema: schema }.compact unless example_enabled?(record)
+    return { schema: schema } if !example_enabled?(record) || mode == :none
 
     case mode
-    when :none
-      { schema: schema }.compact
     when :multiple
-      {
-        schema: schema,
-        examples: { record.example_key => build_named_example(record, example) },
-      }.compact
+      { schema: schema, examples: { record.example_key => build_named_example(record, example) } }
     else # :single (default)
-      {
-        schema: schema,
-        example: example,
-        **example_metadata(record),
-      }.compact
+      # :single may emit nil example or nil _example_summary; compact strips them.
+      { schema: schema, example: example, **example_metadata(record) }.compact
     end
   end
 
@@ -90,10 +82,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
   def build_named_example(record, value)
     summary = example_summary(record)
-    example = {}
-    example[:summary] = summary if summary
-    example[:value] = value
-    example
+    summary ? { summary: summary, value: value } : { value: value }
   end
 
   def example_metadata(record)
@@ -252,11 +241,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   def infer_enum(path, record, context)
     return nil if !path || !record
 
-    enum_hash = context == :request ? record.request_enum : record.response_enum
-    return nil unless enum_hash
-
     # Keys are already normalized to strings by SharedExtractor.normalize_enum
-    enum_hash[path.to_s]
+    record.send("#{context}_enum")&.[](path.to_s)
   end
 
   # Looks up an override for the current path under one of the per-context
