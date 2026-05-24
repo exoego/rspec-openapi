@@ -176,39 +176,46 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   def build_property(value, disposition: nil, key: nil, record: nil, path: nil, context: nil)
     format = disposition ? 'binary' : infer_format(key, record)
     enum = infer_enum(path, record, context)
-
     property = build_type(value, format: format, enum: enum)
 
     case value
     when Array
       property[:items] = value.empty? ? {} : build_array_items_schema(value, record: record, path: path, context: context)
     when Hash
-      override = infer_override(path, record, context, :additional_properties)
-      hybrid_override = infer_override(path, record, context, :hybrid_additional_properties)
-      if override.is_a?(Hash) && !override.empty?
-        # Schema override: the object's keys are dynamic — replace captured
-        # `properties` / `required` with the supplied dictionary value schema.
-        property[:additionalProperties] = override
-      else
-        property[:properties] = value.each_with_object({}) do |(k, v), props|
-          child_path = path ? "#{path}.#{k}" : k.to_s
-          props[k] = build_property(v, record: record, key: k, path: child_path, context: context)
-        end
-        property[:required] = property[:properties].keys
-        # Hybrid: keep the observed `properties` / `required` and attach
-        # `additionalProperties` alongside.
-        # - Boolean values are constraints (`false` forbids extras, `true`
-        #   explicitly allows them).
-        # - Hash schema values come from the dedicated `hybrid_additional_properties`
-        #   metadata, expressing "known keys + extras of this type".
-        if [true, false].include?(override)
-          property[:additionalProperties] = override
-        elsif hybrid_override.is_a?(Hash) && !hybrid_override.empty?
-          property[:additionalProperties] = hybrid_override
-        end
-      end
+      apply_object_schema(property, value, record: record, path: path, context: context)
     end
     property
+  end
+
+  def apply_object_schema(property, value, record:, path:, context:)
+    override = infer_override(path, record, context, :additional_properties)
+
+    if override.is_a?(Hash) && !override.empty?
+      # Schema override: the object's keys are dynamic — replace captured
+      # `properties` / `required` with the supplied dictionary value schema.
+      property[:additionalProperties] = override
+      return
+    end
+
+    property[:properties] = value.to_h do |k, v|
+      child_path = path ? "#{path}.#{k}" : k.to_s
+      [k, build_property(v, record: record, key: k, path: child_path, context: context)]
+    end
+    property[:required] = property[:properties].keys
+    apply_additional_properties(property, override, infer_override(path, record, context, :hybrid_additional_properties))
+  end
+
+  # Hybrid: keep the observed `properties` / `required` and attach
+  # `additionalProperties` alongside.
+  # - Boolean values are constraints (`false` forbids extras, `true` explicitly allows them).
+  # - Hash schema values come from the dedicated `hybrid_additional_properties`
+  #   metadata, expressing "known keys + extras of this type".
+  def apply_additional_properties(property, override, hybrid_override)
+    if [true, false].include?(override)
+      property[:additionalProperties] = override
+    elsif hybrid_override.is_a?(Hash) && !hybrid_override.empty?
+      property[:additionalProperties] = hybrid_override
+    end
   end
 
   def build_type(value, format: nil, enum: nil)
