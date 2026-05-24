@@ -54,35 +54,31 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   def build_content(disposition, record)
     content_type = normalize_content_type(record.response_content_type)
     schema = build_property(record.response_body, disposition: disposition, record: record, context: :response)
+    example = response_example(record, disposition: disposition)
 
-    # If examples are globally disabled, always return schema-only content.
-    return { content_type => { schema: schema }.compact } unless example_enabled?(record)
+    body = build_example_body(schema, record, mode: record.response_example_mode, example: example)
+    { content_type => body }
+  end
 
-    case record.response_example_mode
+  # Returns the per-content-type body (schema + optional example/examples).
+  # Shared by response content and request body to keep example_mode handling in one place.
+  def build_example_body(schema, record, mode:, example:)
+    return { schema: schema }.compact unless example_enabled?(record)
+
+    case mode
     when :none
-      # Only schema, no examples
-      {
-        content_type => {
-          schema: schema,
-        }.compact,
-      }
+      { schema: schema }.compact
     when :multiple
-      # Multiple named examples
       {
-        content_type => {
-          schema: schema,
-          examples: { record.example_key => build_example_object(record, disposition: disposition) },
-        }.compact,
-      }
+        schema: schema,
+        examples: { record.example_key => build_named_example(record, example) },
+      }.compact
     else # :single (default)
-      # Single example + store name for possible merger conversion
       {
-        content_type => {
-          schema: schema,
-          example: response_example(record, disposition: disposition),
-          **example_metadata(record),
-        }.compact,
-      }
+        schema: schema,
+        example: example,
+        **example_metadata(record),
+      }.compact
     end
   end
 
@@ -201,29 +197,10 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
     content_type = normalize_content_type(record.request_content_type)
     schema = build_property(record.request_params, record: record, context: :request)
+    example = example_enabled?(record) ? build_example(record.request_params) : nil
 
-    return { content: { content_type => { schema: schema }.compact } } unless example_enabled?(record)
-
-    example = build_example(record.request_params)
-
-    body =
-      case record.request_example_mode
-      when :none
-        { schema: schema }
-      when :multiple
-        {
-          schema: schema,
-          examples: { record.example_key => build_named_example(record, example) },
-        }
-      else # :single (default)
-        {
-          schema: schema,
-          example: example,
-          **example_metadata(record),
-        }
-      end
-
-    { content: { content_type => body.compact } }
+    body = build_example_body(schema, record, mode: record.request_example_mode, example: example)
+    { content: { content_type => body } }
   end
 
   def build_property(value, disposition: nil, key: nil, record: nil, path: nil, context: nil)
