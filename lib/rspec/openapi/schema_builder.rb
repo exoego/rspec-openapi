@@ -321,56 +321,14 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
   def build_array_items_schema(array, record: nil, path: nil, context: nil)
     return {} if array.empty?
-    return build_property(array.first, record: record, path: path, context: context) if array.size == 1
-    return build_property(array.first, record: record, path: path, context: context) unless array.all?(Hash)
 
-    all_schemas = array.map { |item| build_property(item, record: record, path: path, context: context) }
-    merged_schema = all_schemas.first.dup
-    merged_schema[:properties] = {}
+    schemas = array.map { |item| build_property(item, record: record, path: path, context: context) }
+    return schemas.first if schemas.size == 1 || !array.all?(Hash)
 
-    all_keys = all_schemas.flat_map { |s| s[:properties]&.keys || [] }.uniq
-
-    all_keys.each do |key|
-      all_property_schemas = all_schemas.map { |s| s[:properties]&.[](key) }
-
-      nullable_only_schemas = all_property_schemas.select { |p| p && p.keys == [:nullable] }
-      property_variations = all_property_schemas.select { |p| p && p.keys != [:nullable] }
-
-      has_nullable = all_property_schemas.any?(&:nil?) || nullable_only_schemas.any?
-
-      next if property_variations.empty? && !has_nullable
-
-      if property_variations.empty? && has_nullable
-        merged_schema[:properties][key] = { nullable: true }
-      elsif property_variations.size == 1
-        merged_schema[:properties][key] = property_variations.first.dup
-      else
-        unique_types = property_variations.map { |p| p[:type] }.compact.uniq
-
-        if unique_types.size > 1
-          unique_props = property_variations.map { |p| p.reject { |k, _| k == :nullable } }.uniq
-          merged_schema[:properties][key] = { oneOf: unique_props }
-        else
-          case unique_types.first
-          when 'array'
-            merged_schema[:properties][key] = { type: 'array' }
-            items_variations = property_variations.map { |p| p[:items] }.compact
-            merged_schema[:properties][key][:items] = build_merged_schema_from_variations(items_variations)
-          when 'object'
-            merged_schema[:properties][key] = build_merged_schema_from_variations(property_variations)
-          else
-            merged_schema[:properties][key] = property_variations.first.dup
-          end
-        end
-      end
-
-      merged_schema[:properties][key][:nullable] = true if has_nullable && merged_schema[:properties][key].is_a?(Hash)
-    end
-
-    all_required_sets = all_schemas.map { |s| s[:required] || [] }
-    merged_schema[:required] = all_required_sets.reduce(:&) || []
-
-    merged_schema
+    merged = schemas.first.dup
+    merged[:properties] = merge_property_variations(schemas, allow_recursive_merge: false)
+    merged[:required] = schemas.map { |s| s[:required] || [] }.reduce(:&) || []
+    merged
   end
 
   def build_merged_schema_from_variations(variations)
@@ -378,64 +336,119 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     return variations.first if variations.size == 1
 
     types = variations.map { |v| v[:type] }.compact.uniq
+    return variations.first unless types.size == 1 && types.first == 'object'
 
-    if types.size == 1 && types.first == 'object'
-      merged = { type: 'object', properties: {} }
-      all_keys = variations.flat_map { |v| v[:properties]&.keys || [] }.uniq
+    {
+      type: 'object',
+      properties: merge_property_variations(variations, allow_recursive_merge: true),
+      required: variations.map { |v| v[:required] || [] }.reduce(:&) || [],
+    }
+  end
 
-      all_keys.each do |key|
-        all_prop_variations = variations.map { |v| v[:properties]&.[](key) }
+  # Merge the per-key property schemas of multiple object variations.
+  # When `allow_recursive_merge` is true, objects are recursively merged via
+  # build_merged_schema_from_variations and existing oneOf entries are flattened.
+  # When false (callsite: array-items merging), divergent property variations
+  # become oneOf without recursive descent.
+  def merge_property_variations(variations, allow_recursive_merge:)
+    {}.tap do |merged_props|
+      property_keys(variations).each do |key|
+        all = variations.map { |v| v[:properties]&.[](key) }
+        prop_variations = all.reject { |p| p.nil? || p.keys == [:nullable] }
+        has_nullable = nullable_present?(all, recursive: allow_recursive_merge)
 
-        nullable_only = all_prop_variations.select { |p| p && p.keys == [:nullable] }
-        prop_variations = all_prop_variations.select { |p| p && p.keys != [:nullable] }.compact
+        next if prop_variations.empty? && !has_nullable
 
-        has_nullable = all_prop_variations.any? do |v|
-          v.nil? || (v.is_a?(Hash) && v[:nullable] == true)
-        end || nullable_only.any?
+        merged_prop = merge_single_property(prop_variations, has_nullable,
+                                            variations_total: variations.size,
+                                            allow_recursive_merge: allow_recursive_merge)
+        merged_props[key] = merged_prop if merged_prop
+      end
+    end
+  end
 
-        if prop_variations.empty? && has_nullable
-          merged[:properties][key] = { nullable: true }
-        elsif prop_variations.size == 1
-          merged[:properties][key] = prop_variations.first.dup
-          merged[:properties][key][:nullable] = true if has_nullable
-        elsif prop_variations.size > 1
-          prop_types = prop_variations.map { |p| p[:type] }.compact.uniq
-          has_one_of = prop_variations.any? { |p| p.key?(:oneOf) }
+  def property_keys(variations)
+    variations.flat_map { |v| v[:properties]&.keys || [] }.uniq
+  end
 
-          if has_one_of
-            all_options = []
-            prop_variations.each do |prop|
-              clean_prop = prop.reject { |k, _| k == :nullable }
-              if clean_prop.key?(:oneOf)
-                all_options.concat(clean_prop[:oneOf])
-              else
-                all_options << clean_prop unless clean_prop.empty?
-              end
-            end
-            all_options.uniq!
-            merged[:properties][key] = { oneOf: all_options }
-          elsif prop_types.size == 1
-            # Only recursively merge if it's an object type
-            merged[:properties][key] = if prop_types.first == 'object'
-                                         build_merged_schema_from_variations(prop_variations)
-                                       else
-                                         prop_variations.first.dup
-                                       end
-          else
-            unique_props = prop_variations.map { |p| p.reject { |k, _| k == :nullable } }.uniq
-            merged[:properties][key] = { oneOf: unique_props }
-          end
+  # `recursive` mirrors build_merged_schema_from_variations' original rule that
+  # also treats `{ ..., nullable: true }` as a nullable signal. Array-items
+  # merging only looks at outright nil or `{ nullable: true }` markers.
+  def nullable_present?(all_props, recursive:)
+    all_props.any? do |p|
+      p.nil? || (p.is_a?(Hash) && (p.keys == [:nullable] || (recursive && p[:nullable] == true)))
+    end
+  end
 
-          merged[:properties][key][:nullable] = true if has_nullable || prop_variations.size < variations.size
-        end
+  def merge_single_property(prop_variations, has_nullable, variations_total:, allow_recursive_merge:)
+    return { nullable: true } if prop_variations.empty?
+
+    merged =
+      if prop_variations.size == 1
+        prop_variations.first.dup
+      elsif allow_recursive_merge
+        merge_multi_recursive(prop_variations)
+      else
+        merge_multi_array_items(prop_variations)
       end
 
-      all_required = variations.map { |v| v[:required] || [] }
-      merged[:required] = all_required.reduce(:&) || []
+    return merged unless merged.is_a?(Hash)
 
-      merged
+    # In recursive mode, multi-variation merges also flag nullable when the key
+    # only appeared in some of the source variations.
+    needs_nullable =
+      if allow_recursive_merge && prop_variations.size > 1
+        has_nullable || prop_variations.size < variations_total
+      else
+        has_nullable
+      end
+    merged[:nullable] = true if needs_nullable
+    merged
+  end
+
+  # Array-items mode: combine multiple variations of the same property without
+  # recursing into nested objects/arrays beyond one level.
+  def merge_multi_array_items(prop_variations)
+    unique_types = prop_variations.map { |p| p[:type] }.compact.uniq
+
+    if unique_types.size > 1
+      { oneOf: prop_variations.map { |p| p.reject { |k, _| k == :nullable } }.uniq }
     else
-      variations.first
+      case unique_types.first
+      when 'array'
+        items_variations = prop_variations.map { |p| p[:items] }.compact
+        { type: 'array', items: build_merged_schema_from_variations(items_variations) }
+      when 'object'
+        build_merged_schema_from_variations(prop_variations)
+      else
+        prop_variations.first.dup
+      end
     end
+  end
+
+  # Recursive-merge mode (used inside build_merged_schema_from_variations):
+  # additionally flattens existing oneOf entries and recurses into objects.
+  def merge_multi_recursive(prop_variations)
+    return { oneOf: flatten_one_of(prop_variations) } if prop_variations.any? { |p| p.key?(:oneOf) }
+
+    prop_types = prop_variations.map { |p| p[:type] }.compact.uniq
+    if prop_types.size == 1
+      prop_types.first == 'object' ? build_merged_schema_from_variations(prop_variations) : prop_variations.first.dup
+    else
+      { oneOf: prop_variations.map { |p| p.reject { |k, _| k == :nullable } }.uniq }
+    end
+  end
+
+  def flatten_one_of(prop_variations)
+    options = []
+    prop_variations.each do |prop|
+      clean = prop.reject { |k, _| k == :nullable }
+      if clean.key?(:oneOf)
+        options.concat(clean[:oneOf])
+      elsif !clean.empty?
+        options << clean
+      end
+    end
+    options.uniq
   end
 end
