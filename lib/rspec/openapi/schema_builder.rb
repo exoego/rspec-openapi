@@ -82,19 +82,10 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     end
   end
 
-  def enrich_with_required_keys(obj)
-    obj[:required] = obj[:properties]&.keys || []
-    obj
-  end
-
   def response_example(record, disposition:)
     return nil if !example_enabled?(record) || disposition
 
     record.response_body
-  end
-
-  def build_example_object(record, disposition:)
-    build_named_example(record, response_example(record, disposition: disposition))
   end
 
   def build_named_example(record, value)
@@ -110,7 +101,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   end
 
   def example_summary(record)
-    return nil unless example_summary_enabled?
+    return nil unless RSpec::OpenAPI.enable_example_summary
     return nil if record.example_name.nil? || record.example_name.empty?
 
     record.example_name
@@ -118,10 +109,6 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
   def example_enabled?(record)
     record.example_enabled
-  end
-
-  def example_summary_enabled?
-    RSpec::OpenAPI.enable_example_summary
   end
 
   def build_parameters(record)
@@ -230,7 +217,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
             properties[k] = build_property(v, record: record, key: k, path: child_path, context: context)
           end
         end
-        property = enrich_with_required_keys(property)
+        property[:required] = property[:properties].keys
         # Hybrid: keep the observed `properties` / `required` and attach
         # `additionalProperties` alongside.
         # - Boolean values are constraints (`false` forbids extras, `true`
