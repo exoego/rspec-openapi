@@ -67,7 +67,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     case mode
     when :multiple
       { schema: schema, examples: { record.example_key => build_named_example(record, example) } }
-    else # :single (default)
+    else
+      # :single (default)
       # :single may emit nil example or nil _example_summary; compact strips them.
       { schema: schema, example: example, **example_metadata(record) }.compact
     end
@@ -100,23 +101,21 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   end
 
   def build_parameters(record)
-    parameters = []
-
-    record.path_params.each do |key, value|
-      parameters << build_parameter(key, value, location: 'path', required: true, record: record, compound_name: true)
+    parameters = record.path_params.map do |key, value|
+      build_parameter(key, value, location: 'path', required: true, record: record, compound_name: true)
     end
 
-    flatten_query_params(record.query_params).each do |key, value|
-      parameters << build_parameter(key, value, location: 'query',
-                                                required: record.required_request_params.include?(key),
-                                                record: record,)
+    parameters += flatten_query_params(record.query_params).map do |key, value|
+      build_parameter(key, value, location: 'query',
+                      required: record.required_request_params.include?(key),
+                      record: record,)
     end
 
-    record.request_headers.each do |key, value|
-      parameters << build_parameter(key, value, location: 'header', required: true, record: record, compound_name: true)
+    parameters += record.request_headers.map do |key, value|
+      build_parameter(key, value, location: 'header', required: true, record: record, compound_name: true)
     end
 
-    parameters.empty? ? nil : parameters
+    parameters&.empty? ? nil : parameters
   end
 
   def build_parameter(key, value, location:, required:, record:, compound_name: false)
@@ -222,12 +221,12 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
                { type: 'string', format: format }
              else
                case value
-               when String                          then { type: 'string' }
-               when Integer                         then { type: 'integer' }
-               when Float                           then { type: 'number', format: 'float' }
-               when TrueClass, FalseClass           then { type: 'boolean' }
-               when Array                           then { type: 'array' }
-               when Hash                            then { type: 'object' }
+               when String then { type: 'string' }
+               when Integer then { type: 'integer' }
+               when Float then { type: 'number', format: 'float' }
+               when TrueClass, FalseClass then { type: 'boolean' }
+               when Array then { type: 'array' }
+               when Hash then { type: 'object' }
                when ActionDispatch::Http::UploadedFile then { type: 'string', format: 'binary' }
                when NilClass then { nullable: true }
                else raise NotImplementedError, "type detection is not implemented for: #{value.inspect}"
@@ -288,8 +287,8 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   def adjust_value(value)
     case value
     when ActionDispatch::Http::UploadedFile then value.original_filename
-    when Hash                               then adjust_params(value)
-    when Array                              then value.map { |item| adjust_value(item) }
+    when Hash then adjust_params(value)
+    when Array then value.map { |item| adjust_value(item) }
     else value
     end
   end
