@@ -14,34 +14,41 @@ class SharedExtractor
 
   def self.attributes(example)
     metadata = merge_openapi_metadata(example.metadata)
-    summary = metadata[:summary] || RSpec::OpenAPI.summary_builder.call(example)
-    tags = metadata[:tags] || RSpec::OpenAPI.tags_builder.call(example)
-    formats = metadata[:formats] || RSpec::OpenAPI.formats_builder.curry.call(example)
-    operation_id = metadata[:operation_id]
-    required_request_params = metadata[:required_request_params] || []
-    security = metadata[:security]
-    description = metadata[:description] || RSpec::OpenAPI.description_builder.call(example)
-    deprecated = metadata[:deprecated]
     request_example_mode, response_example_mode = normalize_example_mode(metadata[:example_mode], example)
+    response_additional_properties, request_additional_properties = resolve_additional_properties(metadata)
+    response_hybrid_additional_properties, request_hybrid_additional_properties =
+      resolve_hybrid_additional_properties(metadata)
+    # Enum support: response_enum and request_enum can override the general enum
+    base_enum = normalize_enum(metadata[:enum])
+
+    {
+      summary: metadata[:summary] || RSpec::OpenAPI.summary_builder.call(example),
+      tags: metadata[:tags] || RSpec::OpenAPI.tags_builder.call(example),
+      formats: metadata[:formats] || RSpec::OpenAPI.formats_builder.curry.call(example),
+      operation_id: metadata[:operation_id],
+      required_request_params: metadata[:required_request_params] || [],
+      security: metadata[:security],
+      description: metadata[:description] || RSpec::OpenAPI.description_builder.call(example),
+      deprecated: metadata[:deprecated],
+      request_example_mode: request_example_mode,
+      response_example_mode: response_example_mode,
+      example_key: resolve_example_key(metadata, example),
+      example_name: metadata[:example_name] || RSpec::OpenAPI.example_name_builder.call(example),
+      response_enum: normalize_enum(metadata[:response_enum]) || base_enum,
+      request_enum: normalize_enum(metadata[:request_enum]) || base_enum,
+      response_additional_properties: response_additional_properties,
+      request_additional_properties: request_additional_properties,
+      response_hybrid_additional_properties: response_hybrid_additional_properties,
+      request_hybrid_additional_properties: request_hybrid_additional_properties,
+    }
+  end
+
+  def self.resolve_example_key(metadata, example)
     example_name = metadata[:example_name] || RSpec::OpenAPI.example_name_builder.call(example)
     raw_example_key = metadata[:example_key] || example_name
     example_key = RSpec::OpenAPI::ExampleKey.normalize(raw_example_key)
     example_key = 'default' if example_key.nil? || example_key.empty?
-
-    # Enum support: response_enum and request_enum can override the general enum
-    base_enum = normalize_enum(metadata[:enum])
-    response_enum = normalize_enum(metadata[:response_enum]) || base_enum
-    request_enum = normalize_enum(metadata[:request_enum]) || base_enum
-
-    response_additional_properties, request_additional_properties = resolve_additional_properties(metadata)
-    response_hybrid_additional_properties, request_hybrid_additional_properties =
-      resolve_hybrid_additional_properties(metadata)
-
-    [summary, tags, formats, operation_id, required_request_params, security, description, deprecated,
-     request_example_mode, response_example_mode,
-     example_key, example_name, response_enum, request_enum, response_additional_properties,
-     request_additional_properties, response_hybrid_additional_properties,
-     request_hybrid_additional_properties,]
+    example_key
   end
 
   def self.resolve_additional_properties(metadata)

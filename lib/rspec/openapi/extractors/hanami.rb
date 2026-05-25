@@ -48,52 +48,25 @@ end)
 class << RSpec::OpenAPI::Extractors::Hanami = Object.new
   # @param [ActionDispatch::Request] request
   # @param [RSpec::Core::Example] example
-  # @return Array
+  # @return [Hash]
   def request_attributes(request, example)
     route = Hanami.app.router.recognize(Rack::MockRequest.env_for(request.path, method: request.method))
 
     return RSpec::OpenAPI::Extractors::Rack.request_attributes(request, example) unless route.routable?
 
-    summary, tags, formats, operation_id, required_request_params, security, description, deprecated,
-      request_example_mode, response_example_mode,
-      example_key, example_name, response_enum, request_enum, response_additional_properties,
-      request_additional_properties, response_hybrid_additional_properties,
-      request_hybrid_additional_properties = SharedExtractor.attributes(example)
-
+    attrs = SharedExtractor.attributes(example)
     path = request.path
-
-    raw_path_params = route.params
-
     result = InspectorAnalyzer.call(request.method, replace_path_params(path, route, '/:%<key>s'))
 
-    summary ||= result[:summary]
-    tags ||= result[:tags]
-    path = replace_path_params(path, route, '/{%<key>s}')
-
+    raw_path_params = route.params
     raw_path_params = raw_path_params.slice(*(raw_path_params.keys - RSpec::OpenAPI.ignored_path_params))
 
-    [
-      path,
-      summary,
-      tags,
-      operation_id,
-      required_request_params,
-      raw_path_params,
-      description,
-      security,
-      deprecated,
-      formats,
-      request_example_mode,
-      response_example_mode,
-      example_key,
-      example_name,
-      response_enum,
-      request_enum,
-      response_additional_properties,
-      request_additional_properties,
-      response_hybrid_additional_properties,
-      request_hybrid_additional_properties,
-    ]
+    attrs.merge(
+      path: replace_path_params(path, route, '/{%<key>s}'),
+      path_params: raw_path_params,
+      summary: attrs[:summary] || result[:summary],
+      tags: attrs[:tags] || result[:tags],
+    )
   end
 
   # @param [RSpec::ExampleGroups::*] context
