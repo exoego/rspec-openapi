@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
     `git ls-files -z`.split("\x0").select do |f|
-      f.start_with?('lib/') || %w[LICENSE.txt README.md rspec-openapi.gemspec].include?(f)
+      f.start_with?('lib/') || ['LICENSE.txt', 'README.md', 'rspec-openapi.gemspec'].include?(f)
     end
   end
   spec.require_paths = ['lib']
