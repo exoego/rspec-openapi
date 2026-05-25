@@ -4,40 +4,15 @@
 class << RSpec::OpenAPI::Extractors::Rack = Object.new
   # @param [ActionDispatch::Request] request
   # @param [RSpec::Core::Example] example
-  # @return Array
+  # @return [Hash]
   def request_attributes(request, example)
-    summary, tags, formats, operation_id, required_request_params, security, description, deprecated,
-      request_example_mode, response_example_mode,
-      example_key, example_name, response_enum, request_enum, response_additional_properties,
-      request_additional_properties, response_hybrid_additional_properties,
-      request_hybrid_additional_properties = SharedExtractor.attributes(example)
-
-    raw_path_params = request.path_parameters
     path = request.path
-    summary ||= "#{request.method} #{path}"
-
-    [
-      path,
-      summary,
-      tags,
-      operation_id,
-      required_request_params,
-      raw_path_params,
-      description,
-      security,
-      deprecated,
-      formats,
-      request_example_mode,
-      response_example_mode,
-      example_key,
-      example_name,
-      response_enum,
-      request_enum,
-      response_additional_properties,
-      request_additional_properties,
-      response_hybrid_additional_properties,
-      request_hybrid_additional_properties,
-    ]
+    attrs = SharedExtractor.attributes(example)
+    attrs.merge(
+      path: path,
+      path_params: request.path_parameters,
+      summary: attrs[:summary] || "#{request.method} #{path}",
+    )
   end
 
   # @param [RSpec::ExampleGroups::*] context
