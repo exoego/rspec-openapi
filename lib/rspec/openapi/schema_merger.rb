@@ -25,37 +25,51 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
       return base
     end
 
-    # When the new spec converts an object to a dictionary (introduces
-    # `additionalProperties` on a node that previously had `properties` /
-    # `required`), drop the stale fields so the merged result reflects the
-    # new intent. We only prune when base does not already declare
-    # `additionalProperties`, to preserve manual edits that intentionally
-    # combine fixed and dynamic keys.
-    if spec.is_a?(Hash) && spec.key?(:additionalProperties) && !base.key?(:additionalProperties)
-      base.delete(:properties)
-      base.delete(:required)
-    end
+    prune_stale_object_fields!(base, spec)
 
-    spec.each do |key, value|
-      if base[key].is_a?(Hash) && value.is_a?(Hash)
-        # Handle example/examples conflict - convert to examples when mixed
-        normalize_example_fields!(base[key], value)
-
-        # If the new value has oneOf, replace the entire value instead of merging
-        if value.key?(:oneOf)
-          base[key] = value
-        else
-          merge_schema!(base[key], value) unless base[key].key?(:$ref)
-        end
-      elsif base[key].is_a?(Array) && value.is_a?(Array)
-        # parameters need to be merged as if `name` and `in` were the Hash keys.
-        merge_arrays(base, key, value)
-      else
-        # do not ADD `properties` or `required` fields if `additionalProperties` field is present
-        base[key] = value unless base.key?(:additionalProperties) && [:properties, :required].include?(key)
-      end
-    end
+    spec.each { |key, value| merge_entry!(base, key, value) }
     base
+  end
+
+  # When the new spec converts an object to a dictionary (introduces
+  # `additionalProperties` on a node that previously had `properties` /
+  # `required`), drop the stale fields so the merged result reflects the
+  # new intent. We only prune when base does not already declare
+  # `additionalProperties`, to preserve manual edits that intentionally
+  # combine fixed and dynamic keys.
+  def prune_stale_object_fields!(base, spec)
+    return unless spec.is_a?(Hash) && spec.key?(:additionalProperties) && !base.key?(:additionalProperties)
+
+    base.delete(:properties)
+    base.delete(:required)
+  end
+
+  def merge_entry!(base, key, value)
+    if base[key].is_a?(Hash) && value.is_a?(Hash)
+      merge_hash_entry!(base, key, value)
+    elsif base[key].is_a?(Array) && value.is_a?(Array)
+      # parameters need to be merged as if `name` and `in` were the Hash keys.
+      merge_arrays(base, key, value)
+    elsif !skip_due_to_additional_properties?(base, key)
+      base[key] = value
+    end
+  end
+
+  def merge_hash_entry!(base, key, value)
+    # Handle example/examples conflict - convert to examples when mixed
+    normalize_example_fields!(base[key], value)
+
+    # If the new value has oneOf, replace the entire value instead of merging
+    if value.key?(:oneOf)
+      base[key] = value
+    elsif !base[key].key?(:$ref)
+      merge_schema!(base[key], value)
+    end
+  end
+
+  # do not ADD `properties` or `required` fields if `additionalProperties` field is present
+  def skip_due_to_additional_properties?(base, key)
+    base.key?(:additionalProperties) && [:properties, :required].include?(key)
   end
 
   def merge_arrays(base, key, value)
