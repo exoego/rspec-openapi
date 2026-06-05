@@ -1129,6 +1129,161 @@
         }
       }
     },
+    "/array_hashes/regression_arrays_of_arrays_divergent": {
+      "get": {
+        "summary": "regression_arrays_of_arrays_divergent",
+        "tags": [
+          "ArrayHash"
+        ],
+        "responses": {
+          "200": {
+            "description": "should produce items schema expressing both inner types",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "values": {
+                            "type": "array",
+                            "items": {
+                              "type": "array",
+                              "items": {
+                                "oneOf": [
+                                  {
+                                    "type": "integer"
+                                  },
+                                  {
+                                    "type": "string"
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        },
+                        "required": [
+                          "values"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "items"
+                  ]
+                },
+                "example": {
+                  "items": [
+                    {
+                      "values": [
+                        [
+                          1,
+                          2,
+                          3
+                        ]
+                      ]
+                    },
+                    {
+                      "values": [
+                        [
+                          "x",
+                          "y",
+                          "z"
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/array_hashes/regression_nested_array_empty_then_populated": {
+      "get": {
+        "summary": "regression_nested_array_empty_then_populated",
+        "tags": [
+          "ArrayHash"
+        ],
+        "responses": {
+          "200": {
+            "description": "should preserve populated schema with sensible required keys",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "wrapper": {
+                            "type": "object",
+                            "properties": {
+                              "tags": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "value": {
+                                      "type": "integer"
+                                    }
+                                  },
+                                  "required": [
+                                    "name",
+                                    "value"
+                                  ]
+                                }
+                              }
+                            },
+                            "required": [
+                              "tags"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "wrapper"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "items"
+                  ]
+                },
+                "example": {
+                  "items": [
+                    {
+                      "wrapper": {
+                        "tags": []
+                      }
+                    },
+                    {
+                      "wrapper": {
+                        "tags": [
+                          {
+                            "name": "first",
+                            "value": 1
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/array_hashes/single_item": {
       "get": {
         "summary": "single_item",
