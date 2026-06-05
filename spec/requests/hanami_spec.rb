@@ -587,4 +587,11 @@ RSpec.describe 'Array of hashes', type: :request do
       expect(last_response.status).to eq(200)
     end
   end
+
+  describe 'with heterogeneous nested-array items spread across outer items' do
+    it 'returns nested array shapes that differ between outer array items' do
+      get '/array_hashes/nested_arrays_across_items'
+      expect(last_response.status).to eq(200)
+    end
+  end
 end

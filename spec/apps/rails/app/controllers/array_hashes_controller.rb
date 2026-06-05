@@ -250,6 +250,60 @@ class ArrayHashesController < ApplicationController
     render json: response
   end
 
+  def nested_arrays_across_items
+    response = {
+      "form" => [
+        {
+          "label" => "User details",
+          "inputs" => [
+            {
+              "type" => "columns",
+              "columns" => [
+                {
+                  "input" => {
+                    "name" => "first_name",
+                    "type" => "text",
+                    "validations" => {
+                      "presence" => true
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type" => "text",
+              "name" => "email",
+              "validations" => {
+                "presence" => true
+              }
+            }
+          ]
+        },
+        {
+          "label" => "Billing details",
+          "inputs" => [
+            {
+              "type" => "columns",
+              "columns" => [
+                {
+                  "input" => {
+                    "name" => "country_code",
+                    "type" => "dropdown",
+                    "validations" => nil,
+                    "answer_options" => [
+                      {"label" => "United Kingdom", "value" => "GB"}
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+    render json: response
+  end
+
   def multiple_one_of_test
     response = {
       "data" => {

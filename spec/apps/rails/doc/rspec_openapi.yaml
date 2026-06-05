@@ -348,6 +348,118 @@ paths:
                 - id: 3
                   tags:
                   - javascript
+  "/array_hashes/nested_arrays_across_items":
+    get:
+      summary: nested_arrays_across_items
+      tags:
+      - ArrayHash
+      responses:
+        '200':
+          description: returns nested array shapes that differ between outer array
+            items
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  form:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        label:
+                          type: string
+                        inputs:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              type:
+                                type: string
+                              columns:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    input:
+                                      type: object
+                                      properties:
+                                        name:
+                                          type: string
+                                        type:
+                                          type: string
+                                        validations:
+                                          type: object
+                                          properties:
+                                            presence:
+                                              type: boolean
+                                          required:
+                                          - presence
+                                          nullable: true
+                                        answer_options:
+                                          type: array
+                                          items:
+                                            type: object
+                                            properties:
+                                              label:
+                                                type: string
+                                              value:
+                                                type: string
+                                            required:
+                                            - label
+                                            - value
+                                          nullable: true
+                                      required:
+                                      - name
+                                      - type
+                                      - validations
+                                  required:
+                                  - input
+                                nullable: true
+                              name:
+                                type: string
+                                nullable: true
+                              validations:
+                                type: object
+                                properties:
+                                  presence:
+                                    type: boolean
+                                required:
+                                - presence
+                                nullable: true
+                            required:
+                            - type
+                      required:
+                      - label
+                      - inputs
+                required:
+                - form
+              example:
+                form:
+                - label: User details
+                  inputs:
+                  - type: columns
+                    columns:
+                    - input:
+                        name: first_name
+                        type: text
+                        validations:
+                          presence: true
+                  - type: text
+                    name: email
+                    validations:
+                      presence: true
+                - label: Billing details
+                  inputs:
+                  - type: columns
+                    columns:
+                    - input:
+                        name: country_code
+                        type: dropdown
+                        validations:
+                        answer_options:
+                        - label: United Kingdom
+                          value: GB
   "/array_hashes/nested_objects":
     get:
       summary: nested_objects

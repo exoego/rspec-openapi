@@ -371,6 +371,11 @@ module RailsIntegrationTests
       get '/array_hashes/multiple_one_of_test'
       assert_response 200
     end
+
+    test 'with heterogeneous nested-array items spread across outer items' do
+      get '/array_hashes/nested_arrays_across_items'
+      assert_response 200
+    end
   end
 
   class RSpecHooksAfterSuiteTest < Minitest::Test
