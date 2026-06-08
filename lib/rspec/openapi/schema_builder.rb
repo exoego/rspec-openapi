@@ -377,10 +377,8 @@ class << RSpec::OpenAPI::SchemaBuilder
     merged =
       if prop_variations.size == 1
         prop_variations.first.dup
-      elsif allow_recursive_merge
-        merge_multi_recursive(prop_variations)
       else
-        merge_multi_array_items(prop_variations)
+        merge_multi(prop_variations)
       end
 
     return merged unless merged.is_a?(Hash)
@@ -397,13 +395,16 @@ class << RSpec::OpenAPI::SchemaBuilder
     merged
   end
 
-  # Array-items mode: combine multiple variations of the same property without
-  # recursing into nested objects/arrays beyond one level.
-  def merge_multi_array_items(prop_variations)
-    unique_types = prop_variations.map { |p| p[:type] }.compact.uniq
-    return one_of_schema(prop_variations) if unique_types.size > 1
+  # Combine multiple variations of the same property: flatten existing oneOf
+  # entries, recurse into objects and arrays, and combine divergent types into
+  # oneOf. Scalar variations of a single type collapse to the first schema.
+  def merge_multi(prop_variations)
+    return { oneOf: flatten_one_of(prop_variations) } if prop_variations.any? { |p| p.key?(:oneOf) }
 
-    case unique_types.first
+    prop_types = prop_variations.map { |p| p[:type] }.compact.uniq
+    return one_of_schema(prop_variations) if prop_types.size > 1
+
+    case prop_types.first
     when 'array'
       items_variations = prop_variations.map { |p| p[:items] }.compact
       { type: 'array', items: build_merged_schema_from_variations(items_variations) }
@@ -412,17 +413,6 @@ class << RSpec::OpenAPI::SchemaBuilder
     else
       prop_variations.first.dup
     end
-  end
-
-  # Recursive-merge mode (used inside build_merged_schema_from_variations):
-  # additionally flattens existing oneOf entries and recurses into objects.
-  def merge_multi_recursive(prop_variations)
-    return { oneOf: flatten_one_of(prop_variations) } if prop_variations.any? { |p| p.key?(:oneOf) }
-
-    prop_types = prop_variations.map { |p| p[:type] }.compact.uniq
-    return one_of_schema(prop_variations) if prop_types.size > 1
-
-    prop_types.first == 'object' ? build_merged_schema_from_variations(prop_variations) : prop_variations.first.dup
   end
 
   def flatten_one_of(prop_variations)
