@@ -327,16 +327,30 @@ class << RSpec::OpenAPI::SchemaBuilder
 
   def build_merged_schema_from_variations(variations)
     return {} if variations.empty?
-    return variations.first if variations.size == 1
 
-    types = variations.map { |v| v[:type] }.compact.uniq
-    return variations.first unless types.size == 1 && types.first == 'object'
+    # Drop empty `{}` schemas (e.g. items of an empty array) — they carry no
+    # type info and would otherwise spuriously mark every property of their
+    # populated siblings as nullable via the missing-key nullable rule.
+    non_empty = variations.reject(&:empty?)
+    return {} if non_empty.empty?
+    return non_empty.first if non_empty.size == 1
 
-    {
-      type: 'object',
-      properties: merge_property_variations(variations, allow_recursive_merge: true),
-      required: variations.map { |v| v[:required] || [] }.reduce(:&) || [],
-    }
+    types = non_empty.map { |v| v[:type] }.compact.uniq
+    return one_of_schema(non_empty) if types.size > 1
+
+    case types.first
+    when 'object'
+      {
+        type: 'object',
+        properties: merge_property_variations(non_empty, allow_recursive_merge: true),
+        required: non_empty.map { |v| v[:required] || [] }.reduce(:&) || [],
+      }
+    when 'array'
+      items_variations = non_empty.map { |v| v[:items] }.compact
+      { type: 'array', items: build_merged_schema_from_variations(items_variations) }
+    else
+      non_empty.first
+    end
   end
 
   # Merge the per-key property schemas of multiple object variations.

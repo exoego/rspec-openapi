@@ -406,6 +406,20 @@ RSpec.describe 'Array of hashes', type: :request do
       expect(response.status).to eq(200)
     end
   end
+
+  describe '[regression #2] arrays-of-arrays with divergent inner element types' do
+    it 'should produce items schema expressing both inner types' do
+      get '/array_hashes/regression_arrays_of_arrays_divergent'
+      expect(response.status).to eq(200)
+    end
+  end
+
+  describe '[regression #3] nested array: empty in one outer item, populated in another at depth >= 2' do
+    it 'should preserve populated schema with sensible required keys' do
+      get '/array_hashes/regression_nested_array_empty_then_populated'
+      expect(response.status).to eq(200)
+    end
+  end
 end
 
 # Tests for example_mode feature

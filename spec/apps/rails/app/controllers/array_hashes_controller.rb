@@ -304,6 +304,34 @@ class ArrayHashesController < ApplicationController
     render json: response
   end
 
+  # Regression probe (#2): arrays-of-arrays with divergent inner element types.
+  # Outer items each contain `values` whose items are themselves arrays of
+  # differently-typed scalars. Expect the merged items schema to express both
+  # types (oneOf integer/string). If it shows only the first type, the bug is real.
+  def regression_arrays_of_arrays_divergent
+    response = {
+      "items" => [
+        { "values" => [[1, 2, 3]] },
+        { "values" => [["x", "y", "z"]] },
+      ],
+    }
+    render json: response
+  end
+
+  # Regression probe (#3): nested array empty in one outer item, populated in another,
+  # at depth >= 2 of merge recursion. Old merge_multi_recursive would .first.dup arrays
+  # (losing the populated schema); new merge_multi recurses into items and forces every
+  # property nullable. Expect a sensible merge (populated schema preserved, required kept).
+  def regression_nested_array_empty_then_populated
+    response = {
+      "items" => [
+        { "wrapper" => { "tags" => [] } },
+        { "wrapper" => { "tags" => [{ "name" => "first", "value" => 1 }] } },
+      ],
+    }
+    render json: response
+  end
+
   def multiple_one_of_test
     response = {
       "data" => {
