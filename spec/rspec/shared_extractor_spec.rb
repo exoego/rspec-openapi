@@ -65,3 +65,67 @@ RSpec.describe 'SharedExtractor.normalize_example_mode' do
     expect { SharedExtractor.normalize_example_mode(123) }.to raise_error(ArgumentError, /example_mode/)
   end
 end
+
+RSpec.describe 'SharedExtractor.merge_openapi_metadata' do
+  describe 'nested context that overrides :openapi', openapi: { summary: 'List things', operation_id: 'listThings' } do
+    context 'inner', openapi: { description: 'an edge case' } do
+      it "recovers the ancestor's summary and operation_id" do
+        merged = SharedExtractor.merge_openapi_metadata(RSpec.current_example.metadata)
+        expect(merged[:summary]).to eq('List things')
+        expect(merged[:operation_id]).to eq('listThings')
+        expect(merged[:description]).to eq('an edge case')
+      end
+
+      # Group metadata has no :example_group, so the walk must fall back to
+      # :parent_example_group (mirroring RSpec::Core::Metadata.ascending).
+      it 'also works when handed group metadata directly' do
+        group_metadata = RSpec.current_example.metadata[:example_group]
+        merged = SharedExtractor.merge_openapi_metadata(group_metadata)
+        expect(merged[:summary]).to eq('List things')
+        expect(merged[:description]).to eq('an edge case')
+      end
+    end
+  end
+
+  describe 'key declared at multiple levels', openapi: { summary: 'outer', tags: ['Things'] } do
+    context 'inner', openapi: { summary: 'inner' } do
+      it 'lets the nearest level win while recovering ancestor-only keys' do
+        merged = SharedExtractor.merge_openapi_metadata(RSpec.current_example.metadata)
+        expect(merged[:summary]).to eq('inner')
+        expect(merged[:tags]).to eq(['Things'])
+      end
+    end
+  end
+
+  describe 'example-level override', openapi: { summary: 'from group' } do
+    it "lets the example's own :openapi win over its group", openapi: { summary: 'from example' } do
+      merged = SharedExtractor.merge_openapi_metadata(RSpec.current_example.metadata)
+      expect(merged[:summary]).to eq('from example')
+    end
+  end
+
+  describe 'no nested override', openapi: { summary: 'S' } do
+    it 'is a no-op' do
+      expect(SharedExtractor.merge_openapi_metadata(RSpec.current_example.metadata)).to eq(summary: 'S')
+    end
+  end
+
+  describe 'overrides several levels deep', openapi: { summary: 'List things' } do
+    context 'middle', openapi: { tags: ['Things'] } do
+      context 'inner', openapi: { description: 'edge' } do
+        it 'recovers keys from every ancestor level, not just the immediate parent' do
+          merged = SharedExtractor.merge_openapi_metadata(RSpec.current_example.metadata)
+          expect(merged[:summary]).to eq('List things') # two parent hops up
+          expect(merged[:tags]).to eq(['Things']) # one parent hop up
+          expect(merged[:description]).to eq('edge') # immediate
+        end
+      end
+    end
+  end
+
+  describe 'no :openapi metadata anywhere' do
+    it 'returns an empty hash' do
+      expect(SharedExtractor.merge_openapi_metadata(RSpec.current_example.metadata)).to eq({})
+    end
+  end
+end
