@@ -18,4 +18,5 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '22'
+      # renovate: datasource=npm depName=@redocly/cli
       - run: npx --yes @redocly/cli@2.30.4 lint
