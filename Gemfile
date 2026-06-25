@@ -19,7 +19,7 @@ if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('3.0.0')
   gem 'hanami-router'
 end
 
-gem 'concurrent-ruby', '1.3.4'
+gem 'concurrent-ruby', '1.3.7'
 
 gem 'roda'
 

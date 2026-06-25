@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'logger'
 require 'action_dispatch'
 require 'rspec/openapi/record'
 
