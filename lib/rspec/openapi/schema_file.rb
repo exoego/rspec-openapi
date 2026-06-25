@@ -14,11 +14,30 @@ class RSpec::OpenAPI::SchemaFile
     @path = path
   end
 
+  # Reads the existing spec, lets the block mutate it, writes the result back
+  # and returns the (symbolized) spec so it can be mirrored to other files.
+  # @return [Hash]
   def edit(&block)
     spec = read
     block.call(spec)
+    spec
   ensure
-    write(RSpec::OpenAPI::KeyTransformer.stringify(spec))
+    write(spec)
+  end
+
+  # Writes an already-built spec to this file, choosing the format from the
+  # file extension.
+  # @param [Hash] spec
+  def write(spec)
+    stringified = RSpec::OpenAPI::KeyTransformer.stringify(spec)
+    FileUtils.mkdir_p(File.dirname(@path))
+    output =
+      if json?
+        JSON.pretty_generate(stringified)
+      else
+        prepend_comment(YAML.dump(stringified))
+      end
+    File.write(@path, output)
   end
 
   private
@@ -31,18 +50,6 @@ class RSpec::OpenAPI::SchemaFile
     return {} if content.nil?
 
     RSpec::OpenAPI::KeyTransformer.symbolize(content)
-  end
-
-  # @param [Hash] spec
-  def write(spec)
-    FileUtils.mkdir_p(File.dirname(@path))
-    output =
-      if json?
-        JSON.pretty_generate(spec)
-      else
-        prepend_comment(YAML.dump(spec))
-      end
-    File.write(@path, output)
   end
 
   def prepend_comment(content)

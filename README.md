@@ -116,6 +116,10 @@ RSpec::OpenAPI.path = 'doc/schema.yaml'
 # Change the output type to JSON
 RSpec::OpenAPI.path = 'doc/schema.json'
 
+# Or emit the same schema in multiple formats from a single run by passing an array.
+# The output format of each file is still chosen by its extension (`.json` -> JSON, otherwise YAML).
+RSpec::OpenAPI.path = ['doc/openapi.yaml', 'doc/openapi.json']
+
 # Or generate multiple partial schema files, given an RSpec example
 RSpec::OpenAPI.path = -> (example) {
   case example.file_path
@@ -123,6 +127,12 @@ RSpec::OpenAPI.path = -> (example) {
   when %r[spec/requests/api/v2/] then 'doc/openapi/v2.yaml'
   else 'doc/openapi.yaml'
   end
+}
+
+# The two can be combined: a proc may also return an array to fan a partial schema out to multiple formats.
+RSpec::OpenAPI.path = -> (example) {
+  base = example.file_path.match?(%r[spec/requests/api/v2/]) ? 'doc/openapi/v2' : 'doc/openapi'
+  ["#{base}.yaml", "#{base}.json"]
 }
 
 # Change the default title of the generated schema
