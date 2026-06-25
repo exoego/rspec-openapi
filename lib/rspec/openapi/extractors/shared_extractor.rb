@@ -86,14 +86,12 @@ class SharedExtractor
 
   def self.collect_openapi_metadata(metadata)
     [].tap do |result|
-      current = metadata
+      result.unshift(metadata[:openapi]) if metadata[:openapi]
 
-      while current
-        [current[:example_group], current].each do |meta|
-          result.unshift(meta[:openapi]) if meta&.dig(:openapi)
-        end
-
-        current = current[:parent_example_group]
+      group = metadata.fetch(:example_group) { metadata[:parent_example_group] }
+      while group
+        result.unshift(group[:openapi]) if group[:openapi]
+        group = group[:parent_example_group]
       end
     end
   end

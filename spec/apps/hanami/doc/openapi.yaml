@@ -1325,7 +1325,7 @@ paths:
                 message: not found
   "/tables":
     get:
-      summary: index
+      summary: Get a list of tables
       tags:
       - Table
       parameters:
