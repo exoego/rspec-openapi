@@ -190,10 +190,16 @@ RSpec::OpenAPI.description_builder = -> (example) { example.description }
 
 # Generate a custom summary, given an RSpec example
 # This example uses the summary from the example_group.
+# NOTE: a fixed `dig` only reaches one specific depth. `summary` declared on an
+# ancestor group is already inherited automatically (see "Inheritance of
+# `openapi:` metadata"), so a builder is only needed for fully custom logic.
 RSpec::OpenAPI.summary_builder = ->(example) { example.metadata.dig(:example_group, :openapi, :summary) }
 
 # Generate a custom tags, given an RSpec example
-# This example uses the tags from the parent_example_group
+# This example uses the tags from the parent_example_group.
+# NOTE: `dig(:example_group, :parent_example_group, ...)` only matches tags
+# declared exactly two levels up; it won't find tags on deeper ancestors. Rely
+# on the built-in inheritance unless you need custom resolution.
 RSpec::OpenAPI.tags_builder = -> (example) { example.metadata.dig(:example_group, :parent_example_group, :openapi, :tags) }
 
 # Configure custom format for specific properties
@@ -368,6 +374,26 @@ end
 ```
 
 **NOTE**: `description` key will override also the one provided by `RSpec::OpenAPI.description_builder` method.
+
+### Inheritance of `openapi:` metadata
+
+`openapi:` metadata is inherited from the surrounding `describe`/`context` groups down to each
+example, at any nesting depth. Inner levels override outer ones key by key, so a nested group only
+needs to declare the keys it wants to change:
+
+```rb
+describe 'GET /tables', openapi: { summary: 'Get a list of tables', tags: %w[Table] } do
+  context 'with pagination', openapi: { example_mode: :multiple } do
+    # This example inherits summary: 'Get a list of tables' and tags: ['Table']
+    # from the outer describe, and adds example_mode: :multiple.
+    it { get '/tables', params: { page: 1 } }
+  end
+end
+```
+
+The merge happens at the top level of the `openapi:` hash. Scalar keys (`summary`, `operation_id`,
+…) follow last-wins, and a nested level that re-declares a structured key (`tags`, `security`,
+`enum`, …) replaces the inherited value for that key rather than deep-merging it.
 
 ### Enum Support
 
