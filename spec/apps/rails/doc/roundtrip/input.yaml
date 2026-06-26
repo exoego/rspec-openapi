@@ -1,0 +1,47 @@
+---
+openapi: 3.2.0
+info:
+  title: Round-trip
+  version: 1.0.0
+servers: []
+paths:
+  # A non-object path item: the converters must skip it without raising.
+  "/weird_non_hash": just a string, not a path item object
+  "/roundtrip":
+    get:
+      summary: placeholder overwritten by the recording
+      responses:
+        '200':
+          description: old description
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+  # Untouched path carrying JSON-Schema null type arrays in every shape the
+  # reader normalizes: multi-type-with-null, null-only, and multi-type-no-null.
+  "/legacy":
+    get:
+      summary: legacy endpoint kept verbatim
+      responses:
+        '200':
+          description: legacy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  multi_with_null:
+                    type:
+                    - string
+                    - integer
+                    - 'null'
+                  only_null:
+                    type:
+                    - 'null'
+                  multi_no_null:
+                    type:
+                    - string
+                    - integer

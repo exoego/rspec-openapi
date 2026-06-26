@@ -11,26 +11,49 @@ module SpecHelper
   def assert_run(*args)
     out, err, status = Open3.capture3(*args)
     expect(status.success?).to eq(true), "stdout:\n#{out}\nstderr:\n#{err}"
+    [out, err, status]
   end
 
-  def run_tests(*args, command:, openapi: false, output: :yaml)
+  # Run inside the repo with the gem bundle, asserting the run succeeds.
+  def run_tests(*args, command:, openapi: false, output: :yaml, openapi_version: nil)
+    within_test_run(*args, command: command, openapi: openapi, output: output,
+                           openapi_version: openapi_version,) { |argv| assert_run(*argv) }
+  end
+
+  # Same as run_tests, but returns [out, err, status] without asserting success,
+  # so negative cases can assert on a run that is expected to abort.
+  def capture_tests(*args, command:, openapi: false, output: :yaml, openapi_version: nil)
+    within_test_run(*args, command: command, openapi: openapi, output: output,
+                           openapi_version: openapi_version,) { |argv| Open3.capture3(*argv) }
+  end
+
+  def rspec(*args, openapi: false, output: :yaml, openapi_version: nil)
+    run_tests(*args, command: 'scripts/rspec_with_simplecov', openapi: openapi, output: output,
+                     openapi_version: openapi_version,)
+  end
+
+  def rspec_capture(*args, openapi: false, output: :yaml, openapi_version: nil)
+    capture_tests(*args, command: 'scripts/rspec_with_simplecov', openapi: openapi, output: output,
+                         openapi_version: openapi_version,)
+  end
+
+  def minitest(*args, openapi: false, output: :yaml, openapi_version: nil)
+    run_tests(*args, command: 'ruby', openapi: openapi, output: output, openapi_version: openapi_version)
+  end
+
+  private
+
+  def within_test_run(*args, command:, openapi:, output:, openapi_version:)
     env = {
       'OPENAPI' => ('1' if openapi),
       'OPENAPI_OUTPUT' => output.to_s,
+      'OPENAPI_VERSION' => openapi_version,
     }.compact
     Bundler.public_send(Bundler.respond_to?(:with_unbundled_env) ? :with_unbundled_env : :with_clean_env) do
       Dir.chdir(repo_root) do
-        assert_run env, 'bundle', 'exec', command, '-r./.simplecov_spawn', *args
+        yield [env, 'bundle', 'exec', command, '-r./.simplecov_spawn', *args]
       end
     end
-  end
-
-  def rspec(*args, openapi: false, output: :yaml)
-    run_tests(*args, command: 'scripts/rspec_with_simplecov', openapi: openapi, output: output)
-  end
-
-  def minitest(*args, openapi: false, output: :yaml)
-    run_tests(*args, command: 'ruby', openapi: openapi, output: output)
   end
 end
 

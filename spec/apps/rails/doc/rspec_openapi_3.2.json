@@ -1,5 +1,5 @@
 {
-  "openapi": "3.0.3",
+  "openapi": "3.2.0",
   "info": {
     "title": "OpenAPI Documentation",
     "version": "1.0.0",
@@ -34,9 +34,22 @@
                     },
                     "variadic_key": {
                       "type": "object",
-                      "additionalProperties": {
-                        "type": "integer"
-                      }
+                      "properties": {
+                        "gold": {
+                          "type": "integer"
+                        },
+                        "silver": {
+                          "type": "integer"
+                        },
+                        "bronze": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "gold",
+                        "silver",
+                        "bronze"
+                      ]
                     }
                   },
                   "required": [
@@ -129,8 +142,10 @@
                                 "type": "string"
                               },
                               "ssl": {
-                                "type": "boolean",
-                                "nullable": true
+                                "type": [
+                                  "boolean",
+                                  "null"
+                                ]
                               }
                             },
                             "required": [
@@ -139,7 +154,10 @@
                             ]
                           },
                           "form": {
-                            "type": "array",
+                            "type": [
+                              "array",
+                              "null"
+                            ],
                             "items": {
                               "type": "object",
                               "properties": {
@@ -153,7 +171,7 @@
                                       "items": {}
                                     }
                                   ],
-                                  "nullable": true
+                                  "type": "null"
                                 },
                                 "options": {
                                   "oneOf": [
@@ -187,14 +205,14 @@
                                       ]
                                     }
                                   ],
-                                  "nullable": true
+                                  "type": "null"
                                 }
                               },
                               "required": [
-                                "value"
+                                "value",
+                                "options"
                               ]
-                            },
-                            "nullable": true
+                            }
                           }
                         },
                         "required": [
@@ -309,7 +327,7 @@
                                           }
                                         }
                                       ],
-                                      "nullable": true
+                                      "type": "null"
                                     }
                                   },
                                   "required": [
@@ -477,7 +495,10 @@
                             }
                           },
                           "validations": {
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "properties": {
                               "presence": {
                                 "type": "boolean"
@@ -485,16 +506,17 @@
                             },
                             "required": [
                               "presence"
-                            ],
-                            "nullable": true
+                            ]
                           },
                           "always_nil": {
-                            "nullable": true
+                            "type": "null"
                           }
                         },
                         "required": [
                           "id",
-                          "options"
+                          "options",
+                          "validations",
+                          "always_nil"
                         ]
                       }
                     }
@@ -646,7 +668,10 @@
                                   "type": "string"
                                 },
                                 "columns": {
-                                  "type": "array",
+                                  "type": [
+                                    "array",
+                                    "null"
+                                  ],
                                   "items": {
                                     "type": "object",
                                     "properties": {
@@ -660,7 +685,10 @@
                                             "type": "string"
                                           },
                                           "validations": {
-                                            "type": "object",
+                                            "type": [
+                                              "object",
+                                              "null"
+                                            ],
                                             "properties": {
                                               "presence": {
                                                 "type": "boolean"
@@ -668,11 +696,13 @@
                                             },
                                             "required": [
                                               "presence"
-                                            ],
-                                            "nullable": true
+                                            ]
                                           },
                                           "answer_options": {
-                                            "type": "array",
+                                            "type": [
+                                              "array",
+                                              "null"
+                                            ],
                                             "items": {
                                               "type": "object",
                                               "properties": {
@@ -687,8 +717,7 @@
                                                 "label",
                                                 "value"
                                               ]
-                                            },
-                                            "nullable": true
+                                            }
                                           }
                                         },
                                         "required": [
@@ -701,15 +730,19 @@
                                     "required": [
                                       "input"
                                     ]
-                                  },
-                                  "nullable": true
+                                  }
                                 },
                                 "name": {
-                                  "type": "string",
-                                  "nullable": true
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ]
                                 },
                                 "validations": {
-                                  "type": "object",
+                                  "type": [
+                                    "object",
+                                    "null"
+                                  ],
                                   "properties": {
                                     "presence": {
                                       "type": "boolean"
@@ -717,8 +750,7 @@
                                   },
                                   "required": [
                                     "presence"
-                                  ],
-                                  "nullable": true
+                                  ]
                                 }
                               },
                               "required": [
@@ -826,12 +858,16 @@
                                 "type": "string"
                               },
                               "version": {
-                                "type": "string",
-                                "nullable": true
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
                               },
                               "reviewed": {
-                                "type": "boolean",
-                                "nullable": true
+                                "type": [
+                                  "boolean",
+                                  "null"
+                                ]
                               }
                             },
                             "required": [
@@ -839,7 +875,10 @@
                             ]
                           },
                           "actions": {
-                            "type": "array",
+                            "type": [
+                              "array",
+                              "null"
+                            ],
                             "items": {
                               "type": "object",
                               "properties": {
@@ -847,35 +886,39 @@
                                   "type": "string"
                                 },
                                 "modal": {
-                                  "type": "object",
+                                  "type": [
+                                    "object",
+                                    "null"
+                                  ],
                                   "properties": {
                                     "confirm_action": {
                                       "type": "object",
                                       "properties": {
                                         "label": {
-                                          "type": "string",
-                                          "nullable": true
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
                                         },
                                         "endpoint": {
-                                          "nullable": true
+                                          "type": "null"
                                         }
                                       },
                                       "required": [
-                                        "label"
+                                        "label",
+                                        "endpoint"
                                       ]
                                     }
                                   },
                                   "required": [
                                     "confirm_action"
-                                  ],
-                                  "nullable": true
+                                  ]
                                 }
                               },
                               "required": [
                                 "label"
                               ]
-                            },
-                            "nullable": true
+                            }
                           }
                         },
                         "required": [
@@ -1079,19 +1122,25 @@
                         "type": "object",
                         "properties": {
                           "label": {
-                            "type": "string",
-                            "nullable": true
+                            "type": [
+                              "string",
+                              "null"
+                            ]
                           },
                           "value": {
                             "type": "string"
                           },
                           "admin": {
-                            "type": "boolean",
-                            "nullable": true
+                            "type": [
+                              "boolean",
+                              "null"
+                            ]
                           },
                           "invited": {
-                            "type": "boolean",
-                            "nullable": true
+                            "type": [
+                              "boolean",
+                              "null"
+                            ]
                           }
                         },
                         "required": [
@@ -2203,7 +2252,6 @@
         "tags": [],
         "responses": {
           "200": {
-            "description": "does not generate examples for none mode",
             "content": {
               "application/json": {
                 "schema": {
@@ -2218,7 +2266,8 @@
                   ]
                 }
               }
-            }
+            },
+            "description": "does not generate examples for none mode"
           }
         }
       }
@@ -2490,7 +2539,6 @@
         "tags": [],
         "responses": {
           "200": {
-            "description": "generates schema without example",
             "content": {
               "application/json": {
                 "schema": {
@@ -2505,7 +2553,8 @@
                   ]
                 }
               }
-            }
+            },
+            "description": "generates schema without example"
           }
         }
       }
@@ -2516,7 +2565,6 @@
         "tags": [],
         "responses": {
           "200": {
-            "description": "overrides to none",
             "content": {
               "application/json": {
                 "schema": {
@@ -2531,7 +2579,8 @@
                   ]
                 }
               }
-            }
+            },
+            "description": "overrides to none"
           }
         }
       }
@@ -3089,7 +3138,6 @@
     "/my_engine/eng_route": {
       "get": {
         "summary": "GET /my_engine/eng_route",
-        "tags": [],
         "responses": {
           "200": {
             "description": "returns some content from the engine",
@@ -3108,7 +3156,6 @@
     "/my_engine/test": {
       "get": {
         "summary": "GET /my_engine/test",
-        "tags": [],
         "responses": {
           "200": {
             "description": "returns the block content",
@@ -3281,17 +3328,6 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "authorizes with secret key",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                },
-                "example": ""
-              }
-            }
           }
         }
       }
@@ -3368,10 +3404,23 @@
             "description": "returns newline-delimited JSON",
             "content": {
               "application/x-ndjson": {
-                "schema": {
-                  "type": "string"
-                },
-                "example": "{\"id\":1,\"name\":\"a\"}\n{\"id\":2,\"name\":null}\n{\"id\":3}\n"
+                "itemSchema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ]
+                }
               }
             }
           }
@@ -3383,53 +3432,6 @@
         "summary": "Get a list of tables",
         "tags": [
           "Table"
-        ],
-        "parameters": [
-          {
-            "name": "X-Authorization-Token",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "type": "string"
-            },
-            "example": "token"
-          },
-          {
-            "name": "filter[name]",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            },
-            "example": "Example Table"
-          },
-          {
-            "name": "filter[price]",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer"
-            },
-            "example": 0
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer"
-            },
-            "example": 1
-          },
-          {
-            "name": "per",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer"
-            },
-            "example": 10
-          }
         ],
         "responses": {
           "200": {
@@ -3473,7 +3475,7 @@
                         ]
                       },
                       "null_sample": {
-                        "nullable": true
+                        "type": "null"
                       },
                       "storage_size": {
                         "type": "number",
@@ -3539,13 +3541,90 @@
               }
             }
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "X-Authorization-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "token"
+          },
+          {
+            "name": "filter[name]",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "Example Table"
+          },
+          {
+            "name": "filter[price]",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 0
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "name": "per",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 10
+          }
+        ]
       },
       "post": {
         "summary": "create",
         "tags": [
           "Table"
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "database_id": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "name",
+                  "description",
+                  "database_id"
+                ]
+              },
+              "example": {
+                "name": "k0kubun",
+                "description": "description",
+                "database_id": 2
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": "returns a table",
@@ -3579,7 +3658,7 @@
                       ]
                     },
                     "null_sample": {
-                      "nullable": true
+                      "type": "null"
                     },
                     "storage_size": {
                       "type": "number",
@@ -3642,36 +3721,6 @@
               }
             }
           }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string"
-                  },
-                  "description": {
-                    "type": "string"
-                  },
-                  "database_id": {
-                    "type": "integer"
-                  }
-                },
-                "required": [
-                  "name",
-                  "description",
-                  "database_id"
-                ]
-              },
-              "example": {
-                "name": "k0kubun",
-                "description": "description",
-                "database_id": 2
-              }
-            }
-          }
         }
       }
     },
@@ -3725,7 +3774,7 @@
                       ]
                     },
                     "null_sample": {
-                      "nullable": true
+                      "type": "null"
                     },
                     "storage_size": {
                       "type": "number",
@@ -3821,7 +3870,7 @@
                       ]
                     },
                     "null_sample": {
-                      "nullable": true
+                      "type": "null"
                     },
                     "storage_size": {
                       "type": "number",
@@ -3983,7 +4032,7 @@
                       ]
                     },
                     "null_sample": {
-                      "nullable": true
+                      "type": "null"
                     },
                     "storage_size": {
                       "type": "number",
@@ -4114,6 +4163,7 @@
       "get": {
         "summary": "GET /test_block",
         "tags": [],
+        "deprecated": true,
         "responses": {
           "200": {
             "description": "returns the block content",
@@ -4126,25 +4176,11 @@
               }
             }
           }
-        },
-        "deprecated": true
+        }
       }
     }
   },
   "components": {
-    "schemas": {
-      "Tag": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "label": {
-            "type": "string"
-          }
-        }
-      }
-    },
     "securitySchemes": {
       "SecretApiKeyAuth": {
         "type": "apiKey",
@@ -4152,6 +4188,5 @@
         "name": "Secret-Key"
       }
     }
-  },
-  "x-custom-field": "custom_value"
+  }
 }

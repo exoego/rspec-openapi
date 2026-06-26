@@ -12,6 +12,7 @@ require 'rack/test'
 Dir.chdir('spec/apps/hanami') # HACK: for load hanami success
 require 'hanami/prepare'
 
+RSpec::OpenAPI.openapi_version = '3.0.3'
 RSpec::OpenAPI.title = 'OpenAPI Documentation'
 RSpec::OpenAPI.request_headers = ['X-Authorization-Token', 'Secret-Key']
 RSpec::OpenAPI.response_headers = ['X-Cursor']

@@ -56,11 +56,25 @@ class << RSpec::OpenAPI::SchemaBuilder
     disposition = normalize_content_disposition(record.response_content_disposition)
     content_type = normalize_content_type(record.response_content_type)
     ctx = BuildContext.new(record: record, context: :response)
+
+    if RSpec::OpenAPI.supports_item_schema? && RSpec::OpenAPI.sequential_media_type?(content_type)
+      item_schema = build_stream_item_schema(record.response_body, content_type, ctx)
+      return { content_type => { itemSchema: item_schema } } if item_schema
+    end
+
     schema = build_property(record.response_body, ctx, disposition: disposition)
     example = response_example(record, disposition: disposition)
 
     body = build_example_body(schema, record, mode: record.response_example_mode, example: example)
     { content_type => body }
+  end
+
+  def build_stream_item_schema(raw, content_type, ctx)
+    items = RSpec::OpenAPI::StreamParser.items(raw, content_type)
+    return nil if items.empty?
+
+    variations = items.map { |item| build_property(item, ctx) }
+    build_merged_schema_from_variations(variations)
   end
 
   # Returns the per-content-type body (schema + optional example/examples).

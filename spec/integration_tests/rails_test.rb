@@ -10,6 +10,7 @@ require 'open3'
 require 'minitest/autorun'
 require File.expand_path('../apps/rails/config/environment', __dir__)
 
+RSpec::OpenAPI.openapi_version = '3.0.3'
 RSpec::OpenAPI.title = 'OpenAPI Documentation'
 RSpec::OpenAPI.request_headers = ['X-Authorization-Token']
 RSpec::OpenAPI.response_headers = ['X-Cursor']

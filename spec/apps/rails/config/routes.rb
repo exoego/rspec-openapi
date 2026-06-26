@@ -70,6 +70,60 @@ Rails.application.routes.draw do
     get '/example_summary_disabled' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"data":"no_summary"}']] }
     get '/empty_example_name' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"data":"empty_name"}']] }
 
+    # Streaming media type: `itemSchema` on 3.2, a string schema on 3.0/3.1.
+    get '/stream' => ->(_env) {
+      body = %({"id":1,"name":"a"}\n{"id":2,"name":null}\n{"id":3}\n)
+      [200, { 'Content-Type' => 'application/x-ndjson' }, [body]]
+    }
+
+    # JSON Text Sequences (RFC 7464): records separated by the RS byte (\x1e).
+    # The leading separator yields an empty leading chunk that StreamParser skips.
+    get '/stream_json_seq' => ->(_env) {
+      body = %(\x1e{"id":1,"name":"a"}\n\x1e{"id":2,"name":null}\n\x1e{"id":3}\n)
+      [200, { 'Content-Type' => 'application/json-seq' }, [body]]
+    }
+
+    # Server-Sent Events: blank-line separated events whose `data:` lines hold the
+    # JSON. Includes a leading blank line, a non-`data:` field line, and a
+    # non-JSON event so the empty-buffer, ignored-line and unparseable-chunk paths
+    # are all exercised. Ends without a trailing blank line (last event flushed
+    # after the loop).
+    get '/stream_sse' => ->(_env) {
+      body = +''
+      body << %(\n)
+      body << %(event: message\n)
+      body << %(data: {"id":1,"name":"a"}\n\n)
+      body << %(data: {"id":2,"name":null}\n\n)
+      body << %(data: not-json\n\n)
+      body << %(data: {"id":3}\n)
+      [200, { 'Content-Type' => 'text/event-stream' }, [body]]
+    }
+
+    # SSE that ends WITH a trailing blank line, so the after-loop flush sees an
+    # empty buffer (the counterpart of /stream_sse).
+    get '/stream_sse_blank_end' => ->(_env) {
+      [200, { 'Content-Type' => 'text/event-stream' }, [%(data: {"id":1}\n\n)]]
+    }
+
+    # Sequential media type whose body has no parseable items: every line is
+    # blank, so StreamParser yields nothing and the builder falls back to a
+    # plain string schema instead of itemSchema.
+    get '/stream_empty' => ->(_env) {
+      [200, { 'Content-Type' => 'application/x-ndjson' }, [%(\n\n)]]
+    }
+
+    # Minimal endpoint used by the hand-edited-document round-trip spec.
+    get '/roundtrip' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"ok":true}']] }
+
+    # QUERY / additionalOperations demo. Non-standard-verb routing is verified on
+    # Rails 7.1+, so these routes are defined only there.
+    if Gem::Version.new(Rails::VERSION::STRING) >= Gem::Version.new('7.1')
+      match '/aop_search' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"results":[]}']] },
+            via: :query
+      match '/aop_resource' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"copied":true}']] },
+            via: :copy
+    end
+
     # Test routes for requestBody multi-example feature (#312)
     post '/example_mode_multiple_request_body' => lambda { |env|
       status = (env['HTTP_X_TEST_STATUS'] || '200').to_i

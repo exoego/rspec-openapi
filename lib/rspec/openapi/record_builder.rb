@@ -43,6 +43,8 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
   def safe_parse_body(response, media_type)
     # Use raw body, because Nokogiri-parsed HTML are modified (new lines injection, meta injection, and so on) :(
     return response.body if media_type == 'text/html'
+    # Keep streaming bodies raw so they can be split per item (see StreamParser).
+    return response.body if RSpec::OpenAPI.sequential_media_type?(media_type)
 
     response.parsed_body
   rescue JSON::ParserError

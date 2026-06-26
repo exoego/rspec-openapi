@@ -3,7 +3,7 @@
 # When you write a spec in spec/requests, running the spec with `OPENAPI=1 rspec` will
 # update this file automatically. You can also manually edit this file.
 ---
-openapi: 3.0.3
+openapi: 3.2.0
 info:
   title: OpenAPI Documentation
   version: 1.0.0
@@ -31,8 +31,17 @@ paths:
                     type: string
                   variadic_key:
                     type: object
-                    additionalProperties:
-                      type: integer
+                    properties:
+                      gold:
+                        type: integer
+                      silver:
+                        type: integer
+                      bronze:
+                        type: integer
+                    required:
+                    - gold
+                    - silver
+                    - bronze
                 required:
                 - required_key
                 - variadic_key
@@ -92,13 +101,16 @@ paths:
                             host:
                               type: string
                             ssl:
-                              type: boolean
-                              nullable: true
+                              type:
+                              - boolean
+                              - 'null'
                           required:
                           - port
                           - host
                         form:
-                          type: array
+                          type:
+                          - array
+                          - 'null'
                           items:
                             type: object
                             properties:
@@ -107,7 +119,7 @@ paths:
                                 - type: string
                                 - type: array
                                   items: {}
-                                nullable: true
+                                type: 'null'
                               options:
                                 oneOf:
                                 - type: array
@@ -127,10 +139,10 @@ paths:
                                       type: string
                                   required:
                                   - endpoint
-                                nullable: true
+                                type: 'null'
                             required:
                             - value
-                          nullable: true
+                            - options
                       required:
                       - id
                       - config
@@ -198,7 +210,7 @@ paths:
                                     - type: array
                                       items:
                                         type: string
-                                    nullable: true
+                                    type: 'null'
                                 required:
                                 - value
                           required:
@@ -273,18 +285,21 @@ paths:
                             - id
                             - label
                         validations:
-                          type: object
+                          type:
+                          - object
+                          - 'null'
                           properties:
                             presence:
                               type: boolean
                           required:
                           - presence
-                          nullable: true
                         always_nil:
-                          nullable: true
+                          type: 'null'
                       required:
                       - id
                       - options
+                      - validations
+                      - always_nil
                 required:
                 - fields
               example:
@@ -377,7 +392,9 @@ paths:
                               type:
                                 type: string
                               columns:
-                                type: array
+                                type:
+                                - array
+                                - 'null'
                                 items:
                                   type: object
                                   properties:
@@ -389,15 +406,18 @@ paths:
                                         type:
                                           type: string
                                         validations:
-                                          type: object
+                                          type:
+                                          - object
+                                          - 'null'
                                           properties:
                                             presence:
                                               type: boolean
                                           required:
                                           - presence
-                                          nullable: true
                                         answer_options:
-                                          type: array
+                                          type:
+                                          - array
+                                          - 'null'
                                           items:
                                             type: object
                                             properties:
@@ -408,25 +428,25 @@ paths:
                                             required:
                                             - label
                                             - value
-                                          nullable: true
                                       required:
                                       - name
                                       - type
                                       - validations
                                   required:
                                   - input
-                                nullable: true
                               name:
-                                type: string
-                                nullable: true
+                                type:
+                                - string
+                                - 'null'
                               validations:
-                                type: object
+                                type:
+                                - object
+                                - 'null'
                                 properties:
                                   presence:
                                     type: boolean
                                 required:
                                 - presence
-                                nullable: true
                             required:
                             - type
                       required:
@@ -486,39 +506,45 @@ paths:
                             author:
                               type: string
                             version:
-                              type: string
-                              nullable: true
+                              type:
+                              - string
+                              - 'null'
                             reviewed:
-                              type: boolean
-                              nullable: true
+                              type:
+                              - boolean
+                              - 'null'
                           required:
                           - author
                         actions:
-                          type: array
+                          type:
+                          - array
+                          - 'null'
                           items:
                             type: object
                             properties:
                               label:
                                 type: string
                               modal:
-                                type: object
+                                type:
+                                - object
+                                - 'null'
                                 properties:
                                   confirm_action:
                                     type: object
                                     properties:
                                       label:
-                                        type: string
-                                        nullable: true
+                                        type:
+                                        - string
+                                        - 'null'
                                       endpoint:
-                                        nullable: true
+                                        type: 'null'
                                     required:
                                     - label
+                                    - endpoint
                                 required:
                                 - confirm_action
-                                nullable: true
                             required:
                             - label
-                          nullable: true
                       required:
                       - id
                       - metadata
@@ -638,16 +664,19 @@ paths:
                       type: object
                       properties:
                         label:
-                          type: string
-                          nullable: true
+                          type:
+                          - string
+                          - 'null'
                         value:
                           type: string
                         admin:
-                          type: boolean
-                          nullable: true
+                          type:
+                          - boolean
+                          - 'null'
                         invited:
-                          type: boolean
-                          nullable: true
+                          type:
+                          - boolean
+                          - 'null'
                       required:
                       - label
                       - value
@@ -1346,7 +1375,6 @@ paths:
       tags: []
       responses:
         '200':
-          description: does not generate examples for none mode
           content:
             application/json:
               schema:
@@ -1356,6 +1384,7 @@ paths:
                     type: string
                 required:
                 - status
+          description: does not generate examples for none mode
   "/example_mode_disabled_single":
     get:
       summary: GET /example_mode_disabled_single
@@ -1526,7 +1555,6 @@ paths:
       tags: []
       responses:
         '200':
-          description: generates schema without example
           content:
             application/json:
               schema:
@@ -1536,13 +1564,13 @@ paths:
                     type: string
                 required:
                 - status
+          description: generates schema without example
   "/example_mode_override_none":
     get:
       summary: GET /example_mode_override_none
       tags: []
       responses:
         '200':
-          description: overrides to none
           content:
             application/json:
               schema:
@@ -1552,6 +1580,7 @@ paths:
                     type: string
                 required:
                 - status
+          description: overrides to none
   "/example_mode_override_single":
     get:
       summary: GET /example_mode_override_single
@@ -1894,7 +1923,6 @@ paths:
   "/my_engine/eng_route":
     get:
       summary: GET /my_engine/eng_route
-      tags: []
       responses:
         '200':
           description: returns some content from the engine
@@ -1906,7 +1934,6 @@ paths:
   "/my_engine/test":
     get:
       summary: GET /my_engine/test
-      tags: []
       responses:
         '200':
           description: returns the block content
@@ -2013,13 +2040,6 @@ paths:
               example:
                 items:
                 - secrets
-        '401':
-          description: authorizes with secret key
-          content:
-            text/html:
-              schema:
-                type: string
-              example: ''
   "/sites/{name}":
     get:
       summary: show
@@ -2068,48 +2088,22 @@ paths:
           description: returns newline-delimited JSON
           content:
             application/x-ndjson:
-              schema:
-                type: string
-              example: |
-                {"id":1,"name":"a"}
-                {"id":2,"name":null}
-                {"id":3}
+              itemSchema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type:
+                    - string
+                    - 'null'
+                required:
+                - id
   "/tables":
     get:
       summary: Get a list of tables
       tags:
       - Table
-      parameters:
-      - name: X-Authorization-Token
-        in: header
-        required: false
-        schema:
-          type: string
-        example: token
-      - name: filter[name]
-        in: query
-        required: false
-        schema:
-          type: string
-        example: Example Table
-      - name: filter[price]
-        in: query
-        required: false
-        schema:
-          type: integer
-        example: 0
-      - name: page
-        in: query
-        required: false
-        schema:
-          type: integer
-        example: 1
-      - name: per
-        in: query
-        required: false
-        schema:
-          type: integer
-        example: 10
       responses:
         '200':
           description: with different deep query parameters
@@ -2141,7 +2135,7 @@ paths:
                       - id
                       - name
                     null_sample:
-                      nullable: true
+                      type: 'null'
                     storage_size:
                       type: number
                       format: float
@@ -2184,10 +2178,61 @@ paths:
                 - message
               example:
                 message: Unauthorized
+      parameters:
+      - name: X-Authorization-Token
+        in: header
+        required: false
+        schema:
+          type: string
+        example: token
+      - name: filter[name]
+        in: query
+        required: false
+        schema:
+          type: string
+        example: Example Table
+      - name: filter[price]
+        in: query
+        required: false
+        schema:
+          type: integer
+        example: 0
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+        example: 1
+      - name: per
+        in: query
+        required: false
+        schema:
+          type: integer
+        example: 10
     post:
       summary: create
       tags:
       - Table
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                database_id:
+                  type: integer
+              required:
+              - name
+              - description
+              - database_id
+            example:
+              name: k0kubun
+              description: description
+              database_id: 2
       responses:
         '201':
           description: returns a table
@@ -2213,7 +2258,7 @@ paths:
                     - id
                     - name
                   null_sample:
-                    nullable: true
+                    type: 'null'
                   storage_size:
                     type: number
                     format: float
@@ -2256,26 +2301,6 @@ paths:
                 - error
               example:
                 error: invalid name parameter
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                description:
-                  type: string
-                database_id:
-                  type: integer
-              required:
-              - name
-              - description
-              - database_id
-            example:
-              name: k0kubun
-              description: description
-              database_id: 2
   "/tables/{id}":
     delete:
       summary: destroy
@@ -2313,7 +2338,7 @@ paths:
                     - id
                     - name
                   null_sample:
-                    nullable: true
+                    type: 'null'
                   storage_size:
                     type: number
                     format: float
@@ -2381,7 +2406,7 @@ paths:
                     - id
                     - name
                   null_sample:
-                    nullable: true
+                    type: 'null'
                   storage_size:
                     type: number
                     format: float
@@ -2487,7 +2512,7 @@ paths:
                     - id
                     - name
                   null_sample:
-                    nullable: true
+                    type: 'null'
                   storage_size:
                     type: number
                     format: float
@@ -2576,6 +2601,7 @@ paths:
     get:
       summary: GET /test_block
       tags: []
+      deprecated: true
       responses:
         '200':
           description: returns the block content
@@ -2584,19 +2610,9 @@ paths:
               schema:
                 type: string
               example: A TEST
-      deprecated: true
 components:
-  schemas:
-    Tag:
-      type: object
-      properties:
-        id:
-          type: integer
-        label:
-          type: string
   securitySchemes:
     SecretApiKeyAuth:
       type: apiKey
       in: header
       name: Secret-Key
-x-custom-field: custom_value
