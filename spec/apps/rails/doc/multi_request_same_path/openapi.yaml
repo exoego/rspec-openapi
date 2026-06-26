@@ -1,0 +1,62 @@
+---
+openapi: 3.0.3
+info:
+  title: rspec-openapi
+  version: 1.0.0
+paths:
+  "/multi_request_same_path":
+    delete:
+      summary: Delete multi request resource
+      tags: []
+      responses:
+        '200':
+          description: deletes resource and verifies it is gone with a follow-up GET
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  operation:
+                    type: string
+                required:
+                - operation
+              example:
+                operation: delete
+    get:
+      summary: Get multi request resource
+      tags: []
+      responses:
+        '200':
+          description: returns resource details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  operation:
+                    type: string
+                required:
+                - operation
+              example:
+                operation: get
+        '404':
+          description: returns 404 when missing=true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+              example:
+                error: not found
+      parameters:
+      - name: missing
+        in: query
+        required: false
+        schema:
+          type: integer
+        example: 1
+servers: []

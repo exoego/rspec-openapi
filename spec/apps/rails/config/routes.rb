@@ -107,5 +107,17 @@ Rails.application.routes.draw do
 
     # Test route for invalid example_mode error handling
     get '/invalid_example_mode' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }
+
+    # Regression route: used to verify request extraction when one example
+    # performs multiple requests on the same endpoint path.
+    get '/multi_request_same_path' => lambda { |env|
+      req = Rack::Request.new(env)
+      if req.params['missing'] == '1'
+        [404, { 'Content-Type' => 'application/json' }, ['{"error":"not found"}']]
+      else
+        [200, { 'Content-Type' => 'application/json' }, ['{"operation":"get"}']]
+      end
+    }
+    delete '/multi_request_same_path' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"operation":"delete"}']] }
   end
 end
