@@ -3,6 +3,10 @@
   "extends": [
     "config:recommended"
   ],
+  "minimumReleaseAge": "7 days",
+  "ignorePaths": [
+    "spec/apps/**"
+  ],
   "customManagers": [
     {
       "customType": "regex",
@@ -13,6 +17,17 @@
         "# renovate: datasource=(?<datasource>[a-z-]+) depName=(?<depName>\\S+)(?: versioning=(?<versioning>\\S+))?\\s+.*@(?<currentValue>[^\\s@]+)"
       ],
       "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}npm{{/if}}"
+    }
+  ],
+  "packageRules": [
+    {
+      "enabled": false,
+      "matchPackageNames": [
+        "rails",
+        "rspec-rails",
+        "hanami",
+        "dry-logger"
+      ]
     }
   ]
 }
