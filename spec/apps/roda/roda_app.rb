@@ -4,6 +4,7 @@ require 'roda'
 
 class RodaApp < Roda
   plugin :json, classes: [Array, Hash]
+  plugin :all_verbs
 
   route do |r|
     r.on 'roda' do
@@ -94,6 +95,23 @@ class RodaApp < Roda
     # Test route for invalid example_mode error handling
     r.get 'invalid_example_mode' do
       { status: 'ok' }
+    end
+
+    # Multi-request same-path regression (#371) for the Rack::Test path: one
+    # example deletes a widget, then issues a follow-up GET. request_pattern
+    # keeps the DELETE as the documented operation.
+    r.on 'widgets', Integer do |id|
+      r.get do
+        if r.params['missing'] == '1'
+          response.status = 404
+          { error: 'not found' }
+        else
+          { id: id, name: 'widget' }
+        end
+      end
+      r.delete do
+        { deleted: true }
+      end
     end
   end
 end

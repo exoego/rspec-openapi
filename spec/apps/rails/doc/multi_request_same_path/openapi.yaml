@@ -1,0 +1,167 @@
+---
+openapi: 3.2.0
+info:
+  title: rspec-openapi
+  version: 1.0.0
+servers: []
+paths:
+  "/orgs/{org_id}/members/{user_id}":
+    delete:
+      summary: Remove an org member
+      tags: []
+      parameters:
+      - name: org_id
+        in: path
+        required: true
+        schema:
+          type: string
+        example: acme
+      - name: user_id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 42
+      responses:
+        '200':
+          description: removes the member and verifies it is gone
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  removed:
+                    type: boolean
+                required:
+                - removed
+              example:
+                removed: true
+    get:
+      summary: Get an org member
+      tags: []
+      parameters:
+      - name: missing
+        in: query
+        required: false
+        schema:
+          type: integer
+        example: 1
+      - name: org_id
+        in: path
+        required: true
+        schema:
+          type: string
+        example: acme
+      - name: user_id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 42
+      responses:
+        '200':
+          description: returns the member
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  org_id:
+                    type: string
+                  user_id:
+                    type: integer
+                  role:
+                    type: string
+                required:
+                - org_id
+                - user_id
+                - role
+              example:
+                org_id: acme
+                user_id: 42
+                role: admin
+        '404':
+          description: returns 404 when missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+              example:
+                error: not found
+  "/widgets/{id}":
+    delete:
+      summary: Delete a widget
+      tags: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
+      responses:
+        '200':
+          description: deletes the widget and verifies it is gone
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deleted:
+                    type: boolean
+                required:
+                - deleted
+              example:
+                deleted: true
+    get:
+      summary: Get a widget
+      tags: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
+      - name: missing
+        in: query
+        required: false
+        schema:
+          type: integer
+        example: 1
+      responses:
+        '200':
+          description: returns the widget
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                required:
+                - id
+                - name
+              example:
+                id: 1
+                name: widget
+        '404':
+          description: returns 404 when missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+              example:
+                error: not found
