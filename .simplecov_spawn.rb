@@ -18,6 +18,10 @@ unless ENV.fetch('COVERAGE', '').empty?
     add_filter '/scripts/'
   end
 
+  # at_fork names a child "(subprocess: N)" from a serial the parent counts up
+  # on each fork. A spawned process never forked, so its serial is 0 in every
+  # spawn and the results would overwrite each other under one shared name.
+  SimpleCov.command_name("rspec-#{Process.pid}")
   SimpleCov.at_fork.call(Process.pid)
   SimpleCov.formatter SimpleCov::Formatter::MultiFormatter.new([
     SimpleCov::Formatter::CoberturaFormatter,
