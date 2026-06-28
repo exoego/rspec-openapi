@@ -7,6 +7,7 @@ ENV['OPENAPI_OUTPUT'] ||= 'json'
 require File.expand_path('../apps/rails/config/environment', __dir__)
 require 'rspec/rails'
 
+RSpec::OpenAPI.openapi_version = '3.0.3'
 RSpec::OpenAPI.request_headers = ['X-Authorization-Token']
 RSpec::OpenAPI.response_headers = ['X-Cursor']
 RSpec::OpenAPI.path = File.expand_path("../apps/rails/doc/smart/openapi.#{ENV.fetch('OPENAPI_OUTPUT', nil)}", __dir__)

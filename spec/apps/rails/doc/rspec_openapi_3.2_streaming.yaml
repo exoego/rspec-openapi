@@ -1,0 +1,80 @@
+---
+openapi: 3.2.0
+info:
+  title: OpenAPI Documentation
+  version: 1.0.0
+servers: []
+paths:
+  "/stream_empty":
+    get:
+      summary: GET /stream_empty
+      tags: []
+      responses:
+        '200':
+          description: falls back to a string schema when a stream has no parseable
+            items
+          content:
+            application/x-ndjson:
+              schema:
+                type: string
+              example: "\n\n"
+  "/stream_json_seq":
+    get:
+      summary: GET /stream_json_seq
+      tags: []
+      responses:
+        '200':
+          description: records a JSON Text Sequence (application/json-seq) as itemSchema
+          content:
+            application/json-seq:
+              itemSchema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type:
+                    - string
+                    - 'null'
+                required:
+                - id
+  "/stream_sse":
+    get:
+      summary: GET /stream_sse
+      tags: []
+      responses:
+        '200':
+          description: records a Server-Sent Events stream (text/event-stream) as
+            itemSchema
+          content:
+            text/event-stream:
+              itemSchema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type:
+                    - string
+                    - 'null'
+                required:
+                - id
+  "/stream_sse_blank_end":
+    get:
+      summary: GET /stream_sse_blank_end
+      tags: []
+      responses:
+        '200':
+          description: records an SSE stream that ends with a trailing blank line
+          content:
+            text/event-stream:
+              itemSchema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                required:
+                - id
+tags:
+- name: Streaming
+  summary: Streaming endpoints

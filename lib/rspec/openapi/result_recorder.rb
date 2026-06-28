@@ -45,6 +45,10 @@ class RSpec::OpenAPI::ResultRecorder
   def build_spec(primary, records)
     title = records.first.title
     RSpec::OpenAPI::SchemaFile.new(primary).edit do |spec|
+      # Normalize an existing file back to the internal form so merge/cleanup is
+      # version-agnostic; cleanup_schema! re-applies the target form.
+      RSpec::OpenAPI::NullableConverter.normalize!(spec)
+      RSpec::OpenAPI::OperationConverter.normalize!(spec)
       schema = RSpec::OpenAPI::DefaultSchema.build(title)
       schema[:info].merge!(RSpec::OpenAPI.info)
       RSpec::OpenAPI::SchemaMerger.merge!(spec, schema)
@@ -70,6 +74,8 @@ class RSpec::OpenAPI::ResultRecorder
     RSpec::OpenAPI::SchemaCleaner.cleanup!(spec, new_from_zero)
     RSpec::OpenAPI::ComponentsUpdater.update!(spec, new_from_zero)
     RSpec::OpenAPI::SchemaCleaner.cleanup_empty_required_array!(spec)
+    RSpec::OpenAPI::OperationConverter.to_additional_operations!(spec) if RSpec::OpenAPI.supports_additional_operations?
     RSpec::OpenAPI::SchemaSorter.deep_sort!(spec)
+    RSpec::OpenAPI::NullableConverter.to_json_schema!(spec) if RSpec::OpenAPI.json_schema_based?
   end
 end

@@ -1,0 +1,25 @@
+---
+openapi: 3.2.0
+info:
+  title: Round-trip
+  version: 1.0.0
+servers: []
+paths:
+  "/roundtrip":
+    get:
+      summary: GET /roundtrip
+      responses:
+        '200':
+          description: records the touched path and preserves the hand-edited one
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                required:
+                - ok
+              example:
+                ok: true
+      tags: []

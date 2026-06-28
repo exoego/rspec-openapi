@@ -159,6 +159,10 @@ RSpec::OpenAPI.enable_example_summary = false
 # Change `info.version`
 RSpec::OpenAPI.application_version = '1.0.0'
 
+# Change the target OpenAPI version (defaults to '3.2.0').
+# Use a 3.0.x string to keep the previous output, or a 3.1.x string.
+RSpec::OpenAPI.openapi_version = '3.0.3'
+
 # Set the info header details
 RSpec::OpenAPI.info = {
   description: 'My beautiful API',
@@ -186,6 +190,14 @@ RSpec::OpenAPI.security_schemes = {
     bearerFormat: 'JWT',
   },
 }
+
+# Set root-level `tags` definitions, emitted verbatim.
+#
+# OpenAPI 3.2+: Structured fields such as `summary`, `parent` and `kind` are allowed.
+RSpec::OpenAPI.root_tags = [
+  { name: 'Users', summary: 'User management', kind: 'nav' },
+  { name: 'Admin', parent: 'Users' },
+]
 
 # Generate a comment on top of a schema file
 RSpec::OpenAPI.comment = <<~EOS
@@ -237,6 +249,46 @@ RSpec::OpenAPI.post_process_hook = -> (path, records, spec) do
   end
 end
 ```
+
+### OpenAPI version
+
+The generated `openapi` version defaults to `3.2.0` (the latest). OpenAPI 3.1+ is aligned with
+JSON Schema 2020-12, so nullable values are expressed via the type array instead of the `nullable` keyword.
+
+```yaml
+# 3.0 (set RSpec::OpenAPI.openapi_version = '3.0.x')
+name:
+  type: string
+  nullable: true
+```
+
+```yaml
+# 3.1 (set RSpec::OpenAPI.openapi_version = '3.1.x')
+# 3.2 (set RSpec::OpenAPI.openapi_version = '3.2.x')
+name:
+  type:
+  - string
+  - null
+```
+
+- Set `RSpec::OpenAPI.openapi_version` to a `3.0.x` string to keep the previous `nullable: true` output.
+- A `3.1.x` string produces the same schema shapes as the default `3.2.0`; they differ only in the reported
+  version and the 3.2-only constructs described below (`query` / `additionalOperations` / `itemSchema`).
+
+Upgrade note: an existing file is read regardless of its version, so the first `OPENAPI=1` run after upgrading
+rewrites it to the new default (e.g. `3.0.3` -> `3.2.0`, `nullable: true` -> a `null` type). Pin
+`RSpec::OpenAPI.openapi_version = '3.0.3'` to opt out.
+
+### Supported OpenAPI features
+
+| Feature |  OpenAPI 3.0.x   | 3.1.x | 3.2.x (default) |
+|---|:----------------:|:---:|:---:|
+| Core generation (paths / schemas / examples) |        ✓         | ✓ | ✓ |
+| Null representation | `nullable: true` | type array `[..., 'null']` | type array `[..., 'null']` |
+| Structured root tags (`summary` / `parent` / `kind`) |    name only     | name only | ✓ |
+| `query` field (QUERY method) |        —         | — | ✓ |
+| `additionalOperations` (non-standard verbs: COPY, MOVE, …) |        —         | — | ✓ |
+| Streaming `itemSchema` (jsonl / ndjson / json-seq / SSE) |        —         | — | ✓ |
 
 ### Can I use rspec-openapi with `$ref` to minimize duplication of schema?
 

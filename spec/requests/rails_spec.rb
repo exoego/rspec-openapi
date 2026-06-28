@@ -10,12 +10,19 @@ require 'rspec/rails'
 RSpec::OpenAPI.title = 'OpenAPI Documentation'
 RSpec::OpenAPI.request_headers = ['X-Authorization-Token', 'Secret-Key']
 RSpec::OpenAPI.response_headers = ['X-Cursor']
+RSpec::OpenAPI.openapi_version = ENV.fetch('OPENAPI_VERSION', '3.0.3')
+rails_fixture_basename =
+  if RSpec::OpenAPI.openapi_version.start_with?('3.0')
+    'rspec_openapi'
+  else
+    "rspec_openapi_#{RSpec::OpenAPI.openapi_version.split('.').first(2).join('.')}"
+  end
 RSpec::OpenAPI.path =
   if ENV.fetch('OPENAPI_OUTPUT', nil) == 'both'
     # Emit both YAML and JSON from a single run by passing an array of paths.
-    ['yaml', 'json'].map { |ext| File.expand_path("../apps/rails/doc/rspec_openapi.#{ext}", __dir__) }
+    ['yaml', 'json'].map { |ext| File.expand_path("../apps/rails/doc/#{rails_fixture_basename}.#{ext}", __dir__) }
   else
-    File.expand_path("../apps/rails/doc/rspec_openapi.#{ENV.fetch('OPENAPI_OUTPUT', nil)}", __dir__)
+    File.expand_path("../apps/rails/doc/#{rails_fixture_basename}.#{ENV.fetch('OPENAPI_OUTPUT', nil)}", __dir__)
   end
 RSpec::OpenAPI.ignored_paths = ['/admin/masters/extensions']
 RSpec::OpenAPI.comment = <<~COMMENT
@@ -856,6 +863,13 @@ RSpec.describe 'Dynamic key (additionalProperties) support', type: :request do
       additional_properties: { 'counts' => { type: 'integer' } },
     } do
       get '/dynamic_keys_test/with_enum'
+      expect(response.status).to eq(200)
+    end
+  end
+
+  describe 'streaming media type' do
+    it 'returns newline-delimited JSON' do
+      get '/stream'
       expect(response.status).to eq(200)
     end
   end

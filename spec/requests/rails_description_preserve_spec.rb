@@ -7,6 +7,7 @@ ENV['OPENAPI_OUTPUT'] ||= 'yaml'
 require File.expand_path('../apps/rails/config/environment', __dir__)
 require 'rspec/rails'
 
+RSpec::OpenAPI.openapi_version = '3.0.3'
 RSpec::OpenAPI.path = File.expand_path(
   "../apps/rails/doc/description_preserve/openapi.#{ENV.fetch('OPENAPI_OUTPUT', nil)}", __dir__,
 )

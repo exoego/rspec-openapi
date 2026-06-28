@@ -8,6 +8,7 @@ require 'rspec/openapi'
 
 ENV['OPENAPI_OUTPUT'] ||= 'yaml'
 
+RSpec::OpenAPI.openapi_version = '3.0.3'
 RSpec::OpenAPI.title = 'OpenAPI Documentation'
 RSpec::OpenAPI.path = File.expand_path("../apps/roda/doc/minitest_openapi.#{ENV.fetch('OPENAPI_OUTPUT', nil)}", __dir__)
 RSpec::OpenAPI.ignored_paths = ['/admin/masters/extensions']

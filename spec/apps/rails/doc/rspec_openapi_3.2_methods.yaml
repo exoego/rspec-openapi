@@ -1,0 +1,64 @@
+---
+openapi: 3.2.0
+info:
+  title: OpenAPI Documentation
+  version: 1.0.0
+servers: []
+paths:
+  "/aop_resource":
+    additionalOperations:
+      COPY:
+        summary: COPY /aop_resource
+        tags: []
+        requestBody:
+          content:
+            application/x-www-form-urlencoded:
+              schema:
+                type: object
+                properties: {}
+              example: {}
+        responses:
+          '200':
+            description: records COPY under additionalOperations
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    copied:
+                      type: boolean
+                  required:
+                  - copied
+                example:
+                  copied: true
+  "/aop_search":
+    query:
+      summary: QUERY /aop_search
+      tags: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: string
+              required:
+              - q
+            example:
+              q: ruby
+      responses:
+        '200':
+          description: records QUERY as the query field with a request body
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items: {}
+                required:
+                - results
+              example:
+                results: []
