@@ -9,7 +9,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
   # @param [RSpec::Core::Example] example
   # @return [RSpec::OpenAPI::Record,nil]
   def build(context, example:, extractor:)
-    request, response = extractor.request_response(context)
+    request, response = select_request_response(context, example, extractor)
     return if request.nil?
 
     attributes = extractor.request_attributes(request, example)
@@ -20,6 +20,13 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
   end
 
   private
+
+  def select_request_response(context, example, extractor)
+    pattern = RSpec::OpenAPI::ExchangeRecorder.pattern_for(example)
+    return RSpec::OpenAPI::ExchangeRecorder.fetch(pattern) if pattern
+
+    extractor.request_response(context)
+  end
 
   def build_record(title, request, response, attributes)
     request_headers, response_headers = extract_headers(request, response)

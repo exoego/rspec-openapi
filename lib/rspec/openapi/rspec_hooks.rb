@@ -2,6 +2,10 @@
 
 require 'rspec/core'
 
+RSpec.configuration.before(:each) do |example|
+  RSpec::OpenAPI::ExchangeRecorder.reset!(example)
+end
+
 RSpec.configuration.after(:each) do |example|
   if RSpec::OpenAPI.example_types.include?(example.metadata[:type]) && example.metadata[:openapi] != false
     path = RSpec::OpenAPI.path.then { |p| p.is_a?(Proc) ? p.call(example) : p }

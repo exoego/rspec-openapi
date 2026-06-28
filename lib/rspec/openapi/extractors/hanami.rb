@@ -71,11 +71,7 @@ class << RSpec::OpenAPI::Extractors::Hanami = Object.new
 
   # @param [RSpec::ExampleGroups::*] context
   def request_response(context)
-    request = ActionDispatch::Request.new(context.last_request.env)
-    request.body.rewind if request.body.respond_to?(:rewind)
-    response = ActionDispatch::TestResponse.new(*context.last_response.to_a)
-
-    [request, response]
+    SharedExtractor.build_request_response(context.last_request.env, context.last_response.to_a)
   end
 
   private

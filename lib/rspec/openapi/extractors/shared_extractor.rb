@@ -12,6 +12,12 @@ class SharedExtractor
     opt in early.
   MSG
 
+  def self.build_request_response(env, response_array)
+    request = ActionDispatch::Request.new(env)
+    request.body.rewind if request.body.respond_to?(:rewind)
+    [request, ActionDispatch::TestResponse.new(*response_array)]
+  end
+
   def self.attributes(example)
     metadata = merge_openapi_metadata(example.metadata)
     request_example_mode, response_example_mode = normalize_example_mode(metadata[:example_mode], example)

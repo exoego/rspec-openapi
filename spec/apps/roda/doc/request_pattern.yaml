@@ -1,0 +1,24 @@
+---
+openapi: 3.0.3
+info:
+  title: rspec-openapi
+  version: 7.7.7
+servers: []
+paths:
+  "/widgets/1":
+    delete:
+      summary: Delete a widget
+      responses:
+        '200':
+          description: deletes the widget and verifies it is gone
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deleted:
+                    type: boolean
+                required:
+                - deleted
+              example:
+                deleted: true

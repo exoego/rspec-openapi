@@ -161,5 +161,32 @@ Rails.application.routes.draw do
 
     # Test route for invalid example_mode error handling
     get '/invalid_example_mode' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }
+
+    # Regression routes for "multiple requests on the same path in one example"
+    # (#371). The `openapi: { request_pattern: 'METHOD /path' }` selector picks the
+    # documented exchange so a setup/teardown request on the same path can't
+    # contaminate the generated operation.
+    get '/widgets/:id' => lambda { |env|
+      req = Rack::Request.new(env)
+      if req.params['missing'] == '1'
+        [404, { 'Content-Type' => 'application/json' }, ['{"error":"not found"}']]
+      else
+        [200, { 'Content-Type' => 'application/json' }, ['{"id":1,"name":"widget"}']]
+      end
+    }
+    delete '/widgets/:id' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"deleted":true}']] }
+
+    # Same regression on a deeply nested path with multiple path params, to
+    # verify the selector's `{param}` templates match each segment
+    # independently (e.g. '/orgs/{org_id}/members/{user_id}').
+    get '/orgs/:org_id/members/:user_id' => lambda { |env|
+      req = Rack::Request.new(env)
+      if req.params['missing'] == '1'
+        [404, { 'Content-Type' => 'application/json' }, ['{"error":"not found"}']]
+      else
+        [200, { 'Content-Type' => 'application/json' }, ['{"org_id":"acme","user_id":42,"role":"admin"}']]
+      end
+    }
+    delete '/orgs/:org_id/members/:user_id' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"removed":true}']] }
   end
 end

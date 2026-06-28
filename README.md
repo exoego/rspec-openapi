@@ -457,6 +457,39 @@ The merge happens at the top level of the `openapi:` hash. Scalar keys (`summary
 …) follow last-wins, and a nested level that re-declares a structured key (`tags`, `security`,
 `enum`, …) replaces the inherited value for that key rather than deep-merging it.
 
+### Selecting which request to document (`request_pattern`)
+
+By default rspec-openapi documents the *last* request/response exchange issued in an example.
+When a single example performs several requests on the same path (for example a `DELETE`
+followed by a `GET` that asserts the resource is gone), that trailing request would otherwise
+overwrite the operation you actually want to document.
+
+Use the `request_pattern` metadata to pick the exchange explicitly. Its value is a
+`"<HTTP method> <path>"` string, where the path may use `{param}` placeholders:
+
+```rb
+describe 'Deleting a widget',
+         openapi: { summary: 'Delete a widget', request_pattern: 'DELETE /widgets/{id}' } do
+  it 'deletes the widget and verifies it is gone' do
+    delete '/widgets/1'
+    expect(response.status).to eq(200)
+
+    # Without request_pattern this trailing GET would become the documented
+    # exchange; the selector keeps the DELETE above as the operation instead.
+    get '/widgets/1?missing=1'
+    expect(response.status).to eq(404)
+  end
+end
+```
+
+- Each `{param}` placeholder matches a single path segment independently, so multi-segment
+  templates such as `'DELETE /orgs/{org_id}/members/{user_id}'` work as expected.
+- When several requests match the pattern, the last one wins.
+- It works for both Rails (`ActionDispatch::IntegrationTest`) and `Rack::Test`-based specs
+  (e.g. Roda, Hanami).
+- If the pattern can't be parsed, or no request issued in the example matches it, generation
+  fails fast with a message listing the requests that were actually recorded.
+
 ### Enum Support
 
 You can specify enum values for string properties that should have a fixed set of allowed values. Since enums cannot be
