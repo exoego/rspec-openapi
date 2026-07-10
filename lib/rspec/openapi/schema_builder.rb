@@ -292,6 +292,9 @@ class << RSpec::OpenAPI::SchemaBuilder
 
   # Convert an always-String param to an appropriate type
   def try_cast(value)
+    return true if value == 'true'
+    return false if value == 'false'
+
     Integer(value)
   rescue TypeError, ArgumentError
     value

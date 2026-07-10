@@ -3553,6 +3553,15 @@
             "example": "token"
           },
           {
+            "name": "active",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "example": true
+          },
+          {
             "name": "filter[name]",
             "in": "query",
             "required": false,
