@@ -101,9 +101,13 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
   end
 
   def remove_parameters_conflicting_with_security_scheme!(path_definition, security_scheme, security_scheme_name)
+    return unless path_definition
     return unless path_definition[:security]
     return unless path_definition[:parameters]
-    return unless path_definition.dig(:security, 0).keys.include?(security_scheme_name)
+
+    security_requirement = path_definition.dig(:security, 0)
+    return unless security_requirement.is_a?(Hash)
+    return unless security_requirement.key?(security_scheme_name)
 
     path_definition[:parameters].reject! do |parameter|
       parameter[:in] == security_scheme[:in] && # same location (ie. header)
