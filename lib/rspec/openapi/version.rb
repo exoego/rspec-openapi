@@ -2,6 +2,6 @@
 
 module RSpec
   module OpenAPI
-    VERSION = '0.30.0'
+    VERSION = '0.30.1'
   end
 end
