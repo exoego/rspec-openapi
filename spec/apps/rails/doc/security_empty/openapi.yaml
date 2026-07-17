@@ -1,0 +1,143 @@
+---
+openapi: 3.2.0
+info:
+  title: rspec-openapi
+  version: 1.0.0
+servers: []
+paths:
+  "/orgs/{org_id}/members/{user_id}":
+    get:
+      summary: GET /orgs/:org_id/members/:user_id
+      tags: []
+      parameters:
+      - name: Secret-Key
+        in: header
+        required: true
+        schema:
+          type: integer
+        example: 42
+      - name: org_id
+        in: path
+        required: true
+        schema:
+          type: string
+        example: acme
+      - name: user_id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 42
+      responses:
+        '200':
+          description: returns the member
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  org_id:
+                    type: string
+                  user_id:
+                    type: integer
+                  role:
+                    type: string
+                required:
+                - org_id
+                - user_id
+                - role
+              example:
+                org_id: acme
+                user_id: 42
+                role: admin
+  "/secret_items":
+    get:
+      summary: index
+      tags:
+      - SecretItem
+      security:
+      - SecretApiKeyAuth: []
+      responses:
+        '200':
+          description: authorizes with secret key
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: string
+                required:
+                - items
+              example:
+                items:
+                - secrets
+  "/test_block":
+    get:
+      summary: GET /test_block
+      tags: []
+      security:
+      - OtherApiKeyAuth: []
+      parameters:
+      - name: Secret-Key
+        in: header
+        required: true
+        schema:
+          type: integer
+        example: 42
+      responses:
+        '200':
+          description: authorizes with the other scheme
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: A TEST
+  "/widgets/{id}":
+    get:
+      summary: GET /widgets/:id
+      tags: []
+      security: []
+      parameters:
+      - name: Secret-Key
+        in: header
+        required: true
+        schema:
+          type: string
+        example: ignored-by-public-endpoint
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
+      responses:
+        '200':
+          description: returns the widget without authentication
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                required:
+                - id
+                - name
+              example:
+                id: 1
+                name: widget
+components:
+  securitySchemes:
+    SecretApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Secret-Key
+    OtherApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-Api-Token
