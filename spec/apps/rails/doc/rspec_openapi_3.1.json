@@ -3540,6 +3540,24 @@
             "example": "token"
           },
           {
+            "name": "active",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "example": true
+          },
+          {
+            "name": "archived",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "example": false
+          },
+          {
             "name": "filter[name]",
             "in": "query",
             "required": false,

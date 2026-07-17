@@ -81,8 +81,8 @@ paths:
         in: query
         required: true
         schema:
-          type: string
-        example: "true"
+          type: boolean
+        example: true
       responses:
         '200':
           description: with flat query parameters
