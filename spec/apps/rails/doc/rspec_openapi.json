@@ -3244,6 +3244,168 @@
         }
       }
     },
+    "/root_array_body": {
+      "post": {
+        "summary": "POST /root_array_body",
+        "tags": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "priority": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "priority"
+                  ]
+                }
+              },
+              "example": [
+                {
+                  "name": "ruby",
+                  "priority": 1
+                },
+                {
+                  "name": "rails",
+                  "priority": 2
+                }
+              ]
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "documents an array body as an array",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "created": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "created"
+                  ]
+                },
+                "example": {
+                  "created": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/root_json_key": {
+      "post": {
+        "summary": "POST /root_json_key",
+        "tags": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "_json": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "_json",
+                  "name"
+                ]
+              },
+              "example": {
+                "_json": [
+                  "a",
+                  "b"
+                ],
+                "name": "ruby"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "leaves an object that merely contains a _json key alone",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "created": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "created"
+                  ]
+                },
+                "example": {
+                  "created": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/root_scalar_body": {
+      "post": {
+        "summary": "POST /root_scalar_body",
+        "tags": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              },
+              "example": "hello"
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "documents a scalar body as a scalar",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "created": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "created"
+                  ]
+                },
+                "example": {
+                  "created": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/secret_items": {
       "get": {
         "summary": "index",

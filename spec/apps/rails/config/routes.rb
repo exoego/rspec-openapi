@@ -133,6 +133,11 @@ Rails.application.routes.draw do
     post '/example_mode_request_only_multi' => ->(_env) { [201, { 'Content-Type' => 'application/json' }, ['{"created":true}']] }
     post '/example_mode_request_body_none' => ->(_env) { [201, { 'Content-Type' => 'application/json' }, ['{"created":true}']] }
 
+    # Top-level (non-Hash) JSON request bodies, which Rails' default JSON parser wraps in `{ _json: ... }`.
+    post '/root_array_body' => ->(_env) { [201, { 'Content-Type' => 'application/json' }, ['{"created":true}']] }
+    post '/root_scalar_body' => ->(_env) { [201, { 'Content-Type' => 'application/json' }, ['{"created":true}']] }
+    post '/root_json_key' => ->(_env) { [201, { 'Content-Type' => 'application/json' }, ['{"created":true}']] }
+
     # Test route for nested arrays (key_transformer coverage)
     get '/nested_arrays_test' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"items":[{"name":"first","tags":["a","b","c"]},{"name":"second","tags":["x","y","z"]}],"matrix":[[1,2],[3,4]]}']] }
 
