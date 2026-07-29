@@ -657,6 +657,27 @@ RSpec.describe 'Tags with array params', type: :request do
   end
 end
 
+# Rails' default JSON parser wraps a non-Hash body in `{ _json: ... }`, which is
+# an implementation detail clients never send.
+RSpec.describe 'Top-level JSON request body', type: :request do
+  it 'documents an array body as an array' do
+    post '/root_array_body', params: [{ name: 'ruby', priority: 1 }, { name: 'rails', priority: 2 }].to_json,
+                             headers: { 'CONTENT_TYPE' => 'application/json' }
+    expect(response.status).to eq(201)
+  end
+
+  it 'documents a scalar body as a scalar' do
+    post '/root_scalar_body', params: 'hello'.to_json, headers: { 'CONTENT_TYPE' => 'application/json' }
+    expect(response.status).to eq(201)
+  end
+
+  it 'leaves an object that merely contains a _json key alone' do
+    post '/root_json_key', params: { _json: ['a', 'b'], name: 'ruby' }.to_json,
+                           headers: { 'CONTENT_TYPE' => 'application/json' }
+    expect(response.status).to eq(201)
+  end
+end
+
 # Test custom example_key override
 RSpec.describe 'Custom example_key', type: :request do
   describe 'GET /custom_example_key', openapi: { example_mode: :multiple, example_key: 'my_custom_key' } do

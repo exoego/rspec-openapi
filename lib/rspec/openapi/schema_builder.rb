@@ -303,7 +303,7 @@ class << RSpec::OpenAPI::SchemaBuilder
   def build_example(value)
     return nil if value.nil?
 
-    adjust_params(value.dup)
+    adjust_value(value.dup)
   end
 
   def adjust_params(hash)

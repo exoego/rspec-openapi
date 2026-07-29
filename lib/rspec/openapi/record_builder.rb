@@ -79,8 +79,19 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
   # because ActionController::ParamsWrapper overwrites request_parameters
   def raw_request_params(request)
     original = request.delete_header('action_dispatch.request.request_parameters')
-    request.request_parameters
+    unwrap_json_root(request.request_parameters)
   ensure
     request.set_header('action_dispatch.request.request_parameters', original)
+  end
+
+  # Rails' default JSON parser wraps a body that isn't a Hash - a top-level array,
+  # string, number, and so on - as `{ _json: <body> }`, so `request_parameters`
+  # stops reflecting what the client actually sent.
+  # See ActionDispatch::Http::Parameters::DEFAULT_PARSERS
+  def unwrap_json_root(params)
+    return params unless params.is_a?(Hash) && params.size == 1
+
+    key, value = params.first
+    key.to_s == '_json' ? value : params
   end
 end

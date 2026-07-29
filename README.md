@@ -897,7 +897,7 @@ responses:
   '400': { ... }
 ```
 
-Mixing `:single` (some tests) with `:multiple` (others) on the same endpoint also works for `requestBody` - 
+Mixing `:single` (some tests) with `:multiple` (others) on the same endpoint also works for `requestBody` -
 the merger up-converts the singular `example:` into the `examples:` map automatically
 (see [Merge Behavior with Mixed Modes](#merge-behavior-with-mixed-modes) below).
 
@@ -997,7 +997,7 @@ Existing RSpec plugins which have OpenAPI integration:
 ## Acknowledgements
 
 * Heavily inspired by [r7kamura/autodoc](https://github.com/r7kamura/autodoc)
-* Orignally created by [k0kubun](https://github.com/k0kubun) and the ownership was transferred
+* Originally created by [k0kubun](https://github.com/k0kubun) and the ownership was transferred
   to [exoego](https://github.com/exoego) in 2022-11-29.
 
 ## Releasing
