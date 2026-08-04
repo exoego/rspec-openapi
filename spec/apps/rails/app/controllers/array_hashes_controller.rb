@@ -332,6 +332,23 @@ class ArrayHashesController < ApplicationController
     render json: response
   end
 
+  def heterogeneous_non_hash_items
+    response = {
+      "export_options" => [
+        ["Default", nil],
+        ["Mean", "mean"],
+        ["Median", "median"]
+      ],
+      "leading_null" => [
+        [nil, "north"]
+      ],
+      "divergent_scalars" => [
+        [1, "one"]
+      ]
+    }
+    render json: response
+  end
+
   def multiple_one_of_test
     response = {
       "data" => {

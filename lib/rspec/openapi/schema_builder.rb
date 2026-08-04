@@ -334,11 +334,22 @@ class << RSpec::OpenAPI::SchemaBuilder
     return {} if array.empty?
 
     schemas = array.map { |item| build_property(item, ctx) }
-    return schemas.first if schemas.size == 1 || !array.all?(Hash)
+    return schemas.first if schemas.size == 1
+    return merge_non_object_item_variations(schemas) unless array.all?(Hash)
 
     merged = schemas.first.dup
     merged[:properties] = merge_property_variations(schemas, allow_recursive_merge: false)
     merged[:required] = schemas.map { |s| s[:required] || [] }.reduce(:&) || []
+    merged
+  end
+
+  def merge_non_object_item_variations(schemas)
+    nullable_only = ->(schema) { schema.keys == [:nullable] }
+    typed = schemas.reject(&nullable_only)
+    return { nullable: true } if typed.empty?
+
+    merged = typed.size == 1 ? typed.first.dup : merge_multi(typed)
+    merged[:nullable] = true if schemas.any?(&nullable_only) && merged.is_a?(Hash)
     merged
   end
 

@@ -71,6 +71,61 @@ paths:
                 - items
               example:
                 items: []
+  "/array_hashes/heterogeneous_non_hash_items":
+    get:
+      summary: heterogeneous_non_hash_items
+      tags:
+      - ArrayHash
+      responses:
+        '200':
+          description: returns tuples whose items mix strings, nulls and integers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  export_options:
+                    type: array
+                    items:
+                      type: array
+                      items:
+                        type:
+                        - string
+                        - 'null'
+                  leading_null:
+                    type: array
+                    items:
+                      type: array
+                      items:
+                        type:
+                        - string
+                        - 'null'
+                  divergent_scalars:
+                    type: array
+                    items:
+                      type: array
+                      items:
+                        oneOf:
+                        - type: integer
+                        - type: string
+                required:
+                - export_options
+                - leading_null
+                - divergent_scalars
+              example:
+                export_options:
+                - - Default
+                  -
+                - - Mean
+                  - mean
+                - - Median
+                  - median
+                leading_null:
+                - -
+                  - north
+                divergent_scalars:
+                - - 1
+                  - one
   "/array_hashes/mixed_types_nested":
     get:
       summary: mixed_types_nested

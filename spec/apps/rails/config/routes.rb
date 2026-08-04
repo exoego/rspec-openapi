@@ -42,6 +42,7 @@ Rails.application.routes.draw do
       get :mixed_types_nested, on: :collection
       get :multiple_one_of_test, on: :collection
       get :nested_arrays_across_items, on: :collection
+      get :heterogeneous_non_hash_items, on: :collection
       get :regression_arrays_of_arrays_divergent, on: :collection
       get :regression_nested_array_empty_then_populated, on: :collection
     end
