@@ -420,13 +420,6 @@ RSpec.describe 'Array of hashes', type: :request do
     end
   end
 
-  describe 'with items of a non-object array disagreeing on type' do
-    it 'returns tuples whose items mix strings, nulls and integers' do
-      get '/array_hashes/heterogeneous_non_hash_items'
-      expect(response.status).to eq(200)
-    end
-  end
-
   describe '[regression #2] arrays-of-arrays with divergent inner element types' do
     it 'should produce items schema expressing both inner types' do
       get '/array_hashes/regression_arrays_of_arrays_divergent'

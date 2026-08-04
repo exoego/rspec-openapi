@@ -90,97 +90,6 @@
         }
       }
     },
-    "/array_hashes/heterogeneous_non_hash_items": {
-      "get": {
-        "summary": "heterogeneous_non_hash_items",
-        "tags": [
-          "ArrayHash"
-        ],
-        "responses": {
-          "200": {
-            "description": "with items of a non-object array disagreeing on type",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "export_options": {
-                      "type": "array",
-                      "items": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "nullable": true
-                        }
-                      }
-                    },
-                    "leading_null": {
-                      "type": "array",
-                      "items": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "nullable": true
-                        }
-                      }
-                    },
-                    "divergent_scalars": {
-                      "type": "array",
-                      "items": {
-                        "type": "array",
-                        "items": {
-                          "oneOf": [
-                            {
-                              "type": "integer"
-                            },
-                            {
-                              "type": "string"
-                            }
-                          ]
-                        }
-                      }
-                    }
-                  },
-                  "required": [
-                    "export_options",
-                    "leading_null",
-                    "divergent_scalars"
-                  ]
-                },
-                "example": {
-                  "export_options": [
-                    [
-                      "Default",
-                      null
-                    ],
-                    [
-                      "Mean",
-                      "mean"
-                    ],
-                    [
-                      "Median",
-                      "median"
-                    ]
-                  ],
-                  "leading_null": [
-                    [
-                      null,
-                      "north"
-                    ]
-                  ],
-                  "divergent_scalars": [
-                    [
-                      1,
-                      "one"
-                    ]
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/array_hashes/mixed_types_nested": {
       "get": {
         "summary": "mixed_types_nested",
@@ -1076,6 +985,42 @@
                       "items": {
                         "type": "string"
                       }
+                    },
+                    "export_options": {
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "nullable": true
+                        }
+                      }
+                    },
+                    "leading_null": {
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "nullable": true
+                        }
+                      }
+                    },
+                    "divergent_scalars": {
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "oneOf": [
+                            {
+                              "type": "integer"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        }
+                      }
                     }
                   },
                   "required": [
@@ -1087,6 +1032,32 @@
                     "string1",
                     "string2",
                     "string3"
+                  ],
+                  "export_options": [
+                    [
+                      "Default",
+                      null
+                    ],
+                    [
+                      "Mean",
+                      "mean"
+                    ],
+                    [
+                      "Median",
+                      "median"
+                    ]
+                  ],
+                  "leading_null": [
+                    [
+                      null,
+                      "north"
+                    ]
+                  ],
+                  "divergent_scalars": [
+                    [
+                      1,
+                      "one"
+                    ]
                   ]
                 }
               }

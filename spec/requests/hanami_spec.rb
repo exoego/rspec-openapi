@@ -595,11 +595,4 @@ RSpec.describe 'Array of hashes', type: :request do
       expect(last_response.status).to eq(200)
     end
   end
-
-  describe 'with items of a non-object array disagreeing on type' do
-    it 'returns tuples whose items mix strings, nulls and integers' do
-      get '/array_hashes/heterogeneous_non_hash_items'
-      expect(last_response.status).to eq(200)
-    end
-  end
 end
