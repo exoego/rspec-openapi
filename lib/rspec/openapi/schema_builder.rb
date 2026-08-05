@@ -331,8 +331,6 @@ class << RSpec::OpenAPI::SchemaBuilder
   alias normalize_content_disposition normalize_content_type
 
   def build_array_items_schema(array, ctx)
-    return {} if array.empty?
-
     schemas = array.map { |item| build_property(item, ctx) }
     return schemas.first if schemas.size == 1
     return merge_non_object_item_variations(schemas) unless array.all?(Hash)
@@ -346,7 +344,6 @@ class << RSpec::OpenAPI::SchemaBuilder
   def merge_non_object_item_variations(schemas)
     nullable_only = ->(schema) { schema.keys == [:nullable] }
     typed = schemas.reject(&nullable_only)
-    return { nullable: true } if typed.empty?
 
     merged = typed.size == 1 ? typed.first.dup : merge_multi(typed)
     merged[:nullable] = true if schemas.any?(&nullable_only) && merged.is_a?(Hash)
@@ -354,8 +351,6 @@ class << RSpec::OpenAPI::SchemaBuilder
   end
 
   def build_merged_schema_from_variations(variations)
-    return {} if variations.empty?
-
     # Drop empty `{}` schemas (e.g. items of an empty array) — they carry no
     # type info and would otherwise spuriously mark every property of their
     # populated siblings as nullable via the missing-key nullable rule.
