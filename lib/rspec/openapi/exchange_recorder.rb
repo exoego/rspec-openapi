@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
+# Records every request/response exchange issued in an example so that
+# the exchange matching `request_pattern` can be looked up afterwards.
 module RSpec::OpenAPI::ExchangeRecorder
   THREAD_KEY = :rspec_openapi_exchanges
   VERBS = [:get, :post, :put, :patch, :delete, :head, :options].freeze
 
+  # Wraps HTTP verb methods to capture the exchange right after each request.
   module VerbTracking
     VERBS.each do |verb|
       define_method(verb) do |*args, &block|
