@@ -267,8 +267,6 @@ class << RSpec::OpenAPI::SchemaBuilder
   # distinguishable from "no override"; for :hybrid_additional_properties
   # plain lookup is enough because only Hash values are meaningful.
   def infer_override(path, record, context, kind)
-    return nil unless record
-
     overrides = record.send("#{context}_#{kind}")
     return nil unless overrides
 

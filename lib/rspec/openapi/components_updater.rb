@@ -32,7 +32,7 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
       # Skip if the property using $ref is not found in the parent schema. The property may be removed.
       next if nested_schema.nil?
 
-      schema_name = extract_schema_name(base.dig(*paths))&.to_sym
+      schema_name = extract_schema_name(base.dig(*paths)).to_sym
       fresh_schemas[schema_name] ||= {}
       RSpec::OpenAPI::SchemaMerger.merge_normalized!(fresh_schemas[schema_name], nested_schema)
     end
@@ -101,8 +101,9 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
     [paths] if schema_ref?(dig_schema(base, paths)&.dig(:$ref))
   end
 
+  # Only ever given the value at a path ending in $ref, which is the link itself.
   def extract_schema_name(ref_link)
-    ref_link&.delete_prefix(SCHEMA_REF_PREFIX)
+    ref_link.delete_prefix(SCHEMA_REF_PREFIX)
   end
 
   def schema_ref?(ref_link)

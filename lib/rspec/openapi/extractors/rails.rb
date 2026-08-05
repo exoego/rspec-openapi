@@ -12,9 +12,9 @@ class << RSpec::OpenAPI::Extractors::Rails = Object.new
 
     route, path = find_rails_route(fixed_request)
 
+    # find_rails_route yields nil, [route, nil] or [route, path]; a path always
+    # comes with the route it was taken from.
     return RSpec::OpenAPI::Extractors::Rack.request_attributes(request, example) unless path
-
-    raise "No route matched for #{fixed_request.request_method} #{fixed_request.path_info}" if route.nil?
 
     attrs = SharedExtractor.attributes(example)
     # :controller and :action always exist. :format is added when routes is configured as such.
