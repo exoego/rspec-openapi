@@ -16,7 +16,13 @@ RSpec::OpenAPI.title = 'OpenAPI Documentation'
 RSpec::OpenAPI.path = File.expand_path('../apps/rails/tmp/invalid_example_mode.yaml', __dir__)
 
 RSpec.describe 'invalid example_mode', type: :request do
-  it 'aborts the example', openapi: { example_mode: 42 } do
+  it 'aborts on a bare value that is not a mode', openapi: { example_mode: 42 } do
+    get '/example_mode_single'
+    expect(response).to have_http_status(:ok)
+  end
+
+  # The per-side form is validated separately from the bare one.
+  it 'aborts on a per-side value that is not a mode', openapi: { example_mode: { request: 42 } } do
     get '/example_mode_single'
     expect(response).to have_http_status(:ok)
   end

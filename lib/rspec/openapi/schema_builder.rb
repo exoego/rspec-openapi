@@ -131,7 +131,7 @@ class << RSpec::OpenAPI::SchemaBuilder
       build_parameter(key, value, location: 'header', record: record)
     end
 
-    parameters&.empty? ? nil : parameters
+    parameters.empty? ? nil : parameters
   end
 
   # Path and header params are always required; query params are pre-flattened
@@ -267,8 +267,6 @@ class << RSpec::OpenAPI::SchemaBuilder
   # distinguishable from "no override"; for :hybrid_additional_properties
   # plain lookup is enough because only Hash values are meaningful.
   def infer_override(path, record, context, kind)
-    return nil unless record
-
     overrides = record.send("#{context}_#{kind}")
     return nil unless overrides
 
