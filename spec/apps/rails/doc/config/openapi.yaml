@@ -1,0 +1,100 @@
+# This file is auto-generated. Edits are preserved where possible.
+---
+openapi: 3.2.0
+info:
+  title: OpenAPI Documentation for request
+  version: 1.0.0
+  x-request-count: 2
+servers: []
+paths:
+  "/example_mode_multiple":
+    get:
+      summary: GET /example_mode_multiple
+      tags: []
+      responses:
+        '200':
+          description: records a response in :multiple example mode
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+              examples:
+                records_a_response_in_:multiple_example_mode:
+                  value:
+                    status: multiple
+  "/tables/{id}":
+    get:
+      summary: show
+      tags:
+      - Table
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+        example: 1
+      responses:
+        '200':
+          description: records a table with path and query parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  database:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                    required:
+                    - id
+                    - name
+                  null_sample:
+                    type: 'null'
+                  storage_size:
+                    type: number
+                    format: float
+                  created_at:
+                    type: string
+                  updated_at:
+                    type: string
+                required:
+                - id
+                - name
+                - description
+                - database
+                - null_sample
+                - storage_size
+                - created_at
+                - updated_at
+              example:
+                id: 1
+                name: access
+                description: logs
+                database:
+                  id: 2
+                  name: production
+                null_sample:
+                storage_size: 12.3
+                created_at: '2020-07-17T00:00:00+00:00'
+                updated_at: '2020-07-17T00:00:00+00:00'

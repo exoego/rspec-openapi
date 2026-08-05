@@ -134,17 +134,15 @@ class << RSpec::OpenAPI::SchemaBuilder
     parameters&.empty? ? nil : parameters
   end
 
-  # `compound_name` and `required` follow from `location`:
-  # path/header params are always required and use bracketed names like
-  # `key[subkey]`; query params are pre-flattened and may be optional.
+  # Path and header params are always required; query params are pre-flattened
+  # by flatten_query_params and may be optional.
   def build_parameter(key, value, location:, record:)
     is_query = location == 'query'
-    compound_name = !is_query
     required = is_query ? record.required_request_params.include?(key) : true
     cast = try_cast(value)
     ctx = BuildContext.new(record: record, context: :request, key: key, path: key.to_s)
     {
-      name: compound_name ? build_parameter_name(key, value) : key,
+      name: key.to_s,
       in: location,
       required: required,
       schema: build_property(cast, ctx),
@@ -156,16 +154,6 @@ class << RSpec::OpenAPI::SchemaBuilder
     record.response_headers.to_h do |key, value|
       ctx = BuildContext.new(record: record, context: :response, key: key, path: key.to_s)
       [key, { schema: build_property(try_cast(value), ctx) }]
-    end
-  end
-
-  def build_parameter_name(key, value)
-    key = key.to_s
-    if value.is_a?(Hash) && (value_keys = value.keys).size == 1
-      value_key = value_keys.first
-      build_parameter_name("#{key}[#{value_key}]", value[value_key])
-    else
-      key
     end
   end
 
