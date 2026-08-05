@@ -30,6 +30,22 @@ RSpec.describe 'rails request spec, configuration' do
     end
   end
 
+  describe 'enable_example turned off' do
+    let(:openapi_path) do
+      File.expand_path('spec/apps/rails/doc/no_example/openapi.yaml', repo_root)
+    end
+
+    it 'generates the committed no_example/openapi.yaml' do
+      org_yaml = YAML.safe_load(File.read(openapi_path))
+      rspec 'spec/requests/rails_no_example_spec.rb', openapi: true, output: :yaml
+      expect(YAML.safe_load(File.read(openapi_path))).to eq org_yaml
+    end
+
+    it 'leaves example values out of parameters and the request body' do
+      expect(File.read(openapi_path)).not_to include('example:')
+    end
+  end
+
   describe 'an invalid example_mode' do
     it 'aborts the example naming both the value and the example' do
       out, err, status = rspec_capture 'spec/requests/rails_invalid_example_mode_spec.rb', openapi: true, output: :yaml
