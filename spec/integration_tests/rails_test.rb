@@ -9,6 +9,7 @@ require 'fileutils'
 require 'open3'
 require 'minitest/autorun'
 require File.expand_path('../apps/rails/config/environment', __dir__)
+require File.expand_path('../support/upload_fixture', __dir__)
 
 RSpec::OpenAPI.openapi_version = '3.0.3'
 RSpec::OpenAPI.title = 'OpenAPI Documentation'
@@ -185,37 +186,25 @@ module RailsIntegrationTests
     end
 
     test 'returns a image payload with upload' do
-      png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
-    QBoAAAAASUVORK5CYII='.unpack1('m')
-      File.binwrite('test.png', png)
-      image = Rack::Test::UploadedFile.new('test.png', 'image/png')
+      image = Rack::Test::UploadedFile.new(UploadFixture.path, 'image/png')
       post '/images/upload', params: { image: image }
       assert_response 200
     end
 
     test 'returns a image payload with upload nested' do
-      png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
-    QBoAAAAASUVORK5CYII='.unpack1('m')
-      File.binwrite('test.png', png)
-      image = Rack::Test::UploadedFile.new('test.png', 'image/png')
+      image = Rack::Test::UploadedFile.new(UploadFixture.path, 'image/png')
       post '/images/upload_nested', params: { nested_image: { image: image, caption: 'Some caption' } }
       assert_response 200
     end
 
     test 'returns a image payload with upload multiple' do
-      png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
-    QBoAAAAASUVORK5CYII='.unpack1('m')
-      File.binwrite('test.png', png)
-      image = Rack::Test::UploadedFile.new('test.png', 'image/png')
+      image = Rack::Test::UploadedFile.new(UploadFixture.path, 'image/png')
       post '/images/upload_multiple', params: { images: [image, image] }
       assert_response 200
     end
 
     test 'returns a image payload with upload multiple nested' do
-      png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
-    QBoAAAAASUVORK5CYII='.unpack1('m')
-      File.binwrite('test.png', png)
-      image = Rack::Test::UploadedFile.new('test.png', 'image/png')
+      image = Rack::Test::UploadedFile.new(UploadFixture.path, 'image/png')
       post '/images/upload_multiple_nested', params: { images: [{ image: image }, { image: image }] }
       assert_response 200
     end
@@ -391,8 +380,12 @@ module RailsIntegrationTests
         'RSPEC_HOOK_OPENAPI_PATH' => RSPEC_HOOK_PATH,
       }.compact
 
+      # -r./.simplecov_spawn keeps this child in line with every other spawned
+      # run. Without it the child falls back to the default SimpleCov formatter
+      # and writes a full HTML report over the whole merged result set.
       stdout, stderr, status = Bundler.with_unbundled_env do
-        Open3.capture3(env, 'bundle', 'exec', 'scripts/rspec_with_simplecov', 'spec/requests/rspec_hook_error_spec.rb')
+        Open3.capture3(env, 'bundle', 'exec', 'scripts/rspec_with_simplecov', '-r./.simplecov_spawn',
+                       'spec/requests/rspec_hook_error_spec.rb',)
       end
 
       combined_output = stdout + stderr

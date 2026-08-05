@@ -37,7 +37,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: bundle install
         run: bundle install -j$(nproc) --retry 3
-      - run: bundle exec rspec
+      - run: bundle exec scripts/parallel_rspec
         timeout-minutes: 2
       - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
         name: codecov-action@v4 workaround

@@ -1,0 +1,91 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Runs this repository's spec files over several worker processes.
+#
+# Nearly every example boots a Rails, Hanami or Roda app in a child process and
+# compares the document it generates against a committed fixture, so the suite
+# spends almost all of its time waiting on child processes rather than running
+# Ruby. Run serially it leaves every core but one idle. No two spec files write
+# the same document, which is what makes running them side by side safe.
+#
+#   bundle exec scripts/parallel_rspec                    # one worker per core
+#   RSPEC_WORKERS=1 bundle exec scripts/parallel_rspec    # back to a serial run
+#   bundle exec scripts/parallel_rspec spec/rspec         # a subset
+#
+# Output is buffered per file and printed when that file finishes, so the
+# workers do not interleave their reports. Use plain `rspec` when you want the
+# usual streaming output or `--only-failures`, which reads the .rspec_status
+# that only a serial run maintains.
+
+require 'bundler/setup'
+require 'etc'
+require 'fileutils'
+require 'rspec/core'
+require 'tmpdir'
+
+# Ask RSpec itself which files it would run, so .rspec (its --pattern and
+# --exclude-pattern in particular) stays the single source of truth.
+def spec_files(args)
+  config = RSpec::Core::Configuration.new
+  RSpec::Core::ConfigurationOptions.new(args).configure(config)
+  # Configuration only falls back to the default path when it believes it was
+  # invoked as `rspec`, which it was not, so hand it the default explicitly.
+  config.files_or_directories_to_run = config.default_path if config.files_to_run.empty?
+  config.files_to_run.uniq
+end
+
+# Rough cost of a spec file: each of these calls boots an app in a child process
+# and they dominate the run time. Starting with the most expensive file keeps
+# the workers busy to the end. A bad guess only costs some scheduling.
+def spawn_count(file)
+  File.read(file).scan(/^\s*(?:rspec|rspec_capture|minitest)[\s(]/).size
+end
+
+args = ARGV.dup
+files = spec_files(args).sort_by { |file| [-spawn_count(file), file] }
+abort('No spec files found') if files.empty?
+
+flags = args.reject { |arg| File.exist?(arg.sub(/[\[:]\d.*\z/, '')) }
+workers = Integer(ENV.fetch('RSPEC_WORKERS') { Etc.nprocessors }).clamp(1, files.size)
+rspec = Gem.bin_path('rspec-core', 'rspec')
+
+status_dir = File.join(Dir.tmpdir, "rspec-openapi-parallel-#{Process.pid}")
+FileUtils.mkdir_p(status_dir)
+at_exit { FileUtils.remove_entry(status_dir, true) }
+
+puts "Running #{files.size} spec files over #{workers} workers"
+started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+
+queue = files.dup
+running = {}
+failed = []
+
+until queue.empty? && running.empty?
+  while running.size < workers && !queue.empty?
+    file = queue.shift
+    log = File.join(status_dir, "#{running.size}-#{File.basename(file)}.log")
+    # Each worker keeps its own example status file: RSpec rewrites the whole
+    # file on exit, so sharing one would let the workers corrupt each other's.
+    env = { 'RSPEC_STATUS_FILE' => File.join(status_dir, "#{File.basename(file)}.status") }
+    pid = Process.spawn(env, RbConfig.ruby, rspec, *flags, file, out: log, err: log)
+    running[pid] = [file, log]
+  end
+
+  pid, status = Process.wait2
+  file, log = running.delete(pid)
+  next unless file
+
+  puts "\n===== #{file} ====="
+  print File.read(log)
+  failed << file unless status.success?
+end
+
+elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - started
+puts format("\n===== %<files>d spec files in %<elapsed>.1fs over %<workers>d workers =====",
+            files: files.size, elapsed: elapsed, workers: workers,)
+
+unless failed.empty?
+  puts "Failed spec files:\n#{failed.map { |file| "  #{file}" }.join("\n")}"
+  exit 1
+end
