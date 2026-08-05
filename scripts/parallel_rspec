@@ -48,7 +48,12 @@ abort('No spec files found') if files.empty?
 
 flags = args.reject { |arg| File.exist?(arg.sub(/[\[:]\d.*\z/, '')) }
 workers = Integer(ENV.fetch('RSPEC_WORKERS') { Etc.nprocessors }).clamp(1, files.size)
-rspec = Gem.bin_path('rspec-core', 'rspec')
+# Route the workers through the SimpleCov wrapper rather than rspec directly.
+# schema_file_spec, scheme_merger_spec and shared_extractor_spec exercise the
+# library in the worker itself rather than in a spawned app, so without this
+# nothing they cover is recorded. The wrapper and .simplecov_spawn both no-op
+# unless COVERAGE is set, so the other jobs are unaffected.
+rspec = File.expand_path('rspec_with_simplecov', __dir__)
 
 status_dir = File.join(Dir.tmpdir, "rspec-openapi-parallel-#{Process.pid}")
 FileUtils.mkdir_p(status_dir)
@@ -68,7 +73,7 @@ until queue.empty? && running.empty?
     # Each worker keeps its own example status file: RSpec rewrites the whole
     # file on exit, so sharing one would let the workers corrupt each other's.
     env = { 'RSPEC_STATUS_FILE' => File.join(status_dir, "#{File.basename(file)}.status") }
-    pid = Process.spawn(env, RbConfig.ruby, rspec, *flags, file, out: log, err: log)
+    pid = Process.spawn(env, RbConfig.ruby, rspec, '-r./.simplecov_spawn', *flags, file, out: log, err: log)
     running[pid] = [file, log]
   end
 
