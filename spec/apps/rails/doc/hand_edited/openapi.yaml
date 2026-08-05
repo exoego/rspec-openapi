@@ -1,0 +1,44 @@
+---
+openapi: 3.2.0
+info:
+  title: Hand edited
+  version: 1.0.0
+servers: []
+paths:
+  "/example_mode_single":
+    get:
+      summary: GET /example_mode_single
+      tags: []
+      responses:
+        '200':
+          description: records over them without disturbing them
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+              example:
+                status: single
+        '409':
+          description: written by hand, mixed oneOf
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - "$ref": "#/components/schemas/HandEditedConflict"
+                -
+                - type: object
+                  properties:
+                    reason:
+                      type: string
+        '503':
+          description: written by hand, no schema
+          content:
+            application/json: {}
+components:
+  schemas:
+    HandEditedConflict:
