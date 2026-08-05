@@ -58,8 +58,10 @@ module SpecHelper
 end
 
 RSpec.configure do |config|
-  # Enable flags like --only-failures and --next-failure
-  config.example_status_persistence_file_path = '.rspec_status'
+  # Enable flags like --only-failures and --next-failure.
+  # scripts/parallel_rspec points each worker at its own file, because RSpec
+  # rewrites this file wholesale and parallel workers would clobber each other.
+  config.example_status_persistence_file_path = ENV.fetch('RSPEC_STATUS_FILE', '.rspec_status')
 
   # Disable RSpec exposing methods globally on `Module` and `main`
   config.disable_monkey_patching!

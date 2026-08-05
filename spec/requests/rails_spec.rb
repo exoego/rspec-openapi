@@ -5,6 +5,7 @@ ENV['RAILS_ENV'] ||= 'test'
 ENV['OPENAPI_OUTPUT'] ||= 'yaml'
 
 require File.expand_path('../apps/rails/config/environment', __dir__)
+require File.expand_path('../support/upload_fixture', __dir__)
 require 'rspec/rails'
 
 RSpec::OpenAPI.title = 'OpenAPI Documentation'
@@ -194,12 +195,7 @@ RSpec.describe 'Images', type: :request do
   end
 
   describe '#upload' do
-    before do
-      png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
-      QBoAAAAASUVORK5CYII='.unpack1('m')
-      File.binwrite('test.png', png)
-    end
-    let(:image) { Rack::Test::UploadedFile.new('test.png', 'image/png') }
+    let(:image) { Rack::Test::UploadedFile.new(UploadFixture.path, 'image/png') }
 
     it 'returns a image payload with upload' do
       post '/images/upload', params: { image: image }
@@ -208,12 +204,7 @@ RSpec.describe 'Images', type: :request do
   end
 
   describe '#upload_nested' do
-    before do
-      png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
-      QBoAAAAASUVORK5CYII='.unpack1('m')
-      File.binwrite('test.png', png)
-    end
-    let(:image) { Rack::Test::UploadedFile.new('test.png', 'image/png') }
+    let(:image) { Rack::Test::UploadedFile.new(UploadFixture.path, 'image/png') }
 
     it 'returns a image payload with upload nested' do
       post '/images/upload_nested', params: { nested_image: { image: image, caption: 'Some caption' } }
@@ -222,12 +213,7 @@ RSpec.describe 'Images', type: :request do
   end
 
   describe '#upload_multiple' do
-    before do
-      png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
-      QBoAAAAASUVORK5CYII='.unpack1('m')
-      File.binwrite('test.png', png)
-    end
-    let(:image) { Rack::Test::UploadedFile.new('test.png', 'image/png') }
+    let(:image) { Rack::Test::UploadedFile.new(UploadFixture.path, 'image/png') }
 
     it 'returns a image payload with upload multiple' do
       post '/images/upload_multiple', params: { images: [image, image] }
@@ -236,12 +222,7 @@ RSpec.describe 'Images', type: :request do
   end
 
   describe '#upload_multiple_nested' do
-    before do
-      png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
-      QBoAAAAASUVORK5CYII='.unpack1('m')
-      File.binwrite('test.png', png)
-    end
-    let(:image) { Rack::Test::UploadedFile.new('test.png', 'image/png') }
+    let(:image) { Rack::Test::UploadedFile.new(UploadFixture.path, 'image/png') }
 
     it 'returns a image payload with upload multiple nested' do
       post '/images/upload_multiple_nested', params: { images: [{ image: image }, { image: image }] }
