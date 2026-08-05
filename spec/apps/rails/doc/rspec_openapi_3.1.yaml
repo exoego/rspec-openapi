@@ -605,6 +605,30 @@ paths:
                     type: array
                     items:
                       type: string
+                  export_options:
+                    type: array
+                    items:
+                      type: array
+                      items:
+                        type:
+                        - string
+                        - 'null'
+                  leading_null:
+                    type: array
+                    items:
+                      type: array
+                      items:
+                        type:
+                        - string
+                        - 'null'
+                  divergent_scalars:
+                    type: array
+                    items:
+                      type: array
+                      items:
+                        oneOf:
+                        - type: integer
+                        - type: string
                 required:
                 - items
               example:
@@ -612,6 +636,19 @@ paths:
                 - string1
                 - string2
                 - string3
+                export_options:
+                - - Default
+                  -
+                - - Mean
+                  - mean
+                - - Median
+                  - median
+                leading_null:
+                - -
+                  - north
+                divergent_scalars:
+                - - 1
+                  - one
   "/array_hashes/non_nullable":
     get:
       summary: non_nullable

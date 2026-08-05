@@ -1028,6 +1028,46 @@
                       "items": {
                         "type": "string"
                       }
+                    },
+                    "export_options": {
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
+                    },
+                    "leading_null": {
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
+                    },
+                    "divergent_scalars": {
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "oneOf": [
+                            {
+                              "type": "integer"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        }
+                      }
                     }
                   },
                   "required": [
@@ -1039,6 +1079,32 @@
                     "string1",
                     "string2",
                     "string3"
+                  ],
+                  "export_options": [
+                    [
+                      "Default",
+                      null
+                    ],
+                    [
+                      "Mean",
+                      "mean"
+                    ],
+                    [
+                      "Median",
+                      "median"
+                    ]
+                  ],
+                  "leading_null": [
+                    [
+                      null,
+                      "north"
+                    ]
+                  ],
+                  "divergent_scalars": [
+                    [
+                      1,
+                      "one"
+                    ]
                   ]
                 }
               }

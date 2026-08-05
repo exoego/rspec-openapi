@@ -8,7 +8,18 @@ module HanamiTest
           response.format = :json
 
           response.body = {
-            "items" => ["string1", "string2", "string3"]
+            "items" => ["string1", "string2", "string3"],
+            "export_options" => [
+              ["Default", nil],
+              ["Mean", "mean"],
+              ["Median", "median"]
+            ],
+            "leading_null" => [
+              [nil, "north"]
+            ],
+            "divergent_scalars" => [
+              [1, "one"]
+            ]
           }.to_json
         end
       end

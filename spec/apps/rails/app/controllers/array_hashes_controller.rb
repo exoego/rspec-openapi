@@ -99,7 +99,18 @@ class ArrayHashesController < ApplicationController
 
   def non_hash_items
     response = {
-      "items" => ["string1", "string2", "string3"]
+      "items" => ["string1", "string2", "string3"],
+      "export_options" => [
+        ["Default", nil],
+        ["Mean", "mean"],
+        ["Median", "median"]
+      ],
+      "leading_null" => [
+        [nil, "north"]
+      ],
+      "divergent_scalars" => [
+        [1, "one"]
+      ]
     }
     render json: response
   end
