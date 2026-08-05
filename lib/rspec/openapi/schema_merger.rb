@@ -1,12 +1,28 @@
 # frozen_string_literal: true
 
 class << RSpec::OpenAPI::SchemaMerger = Object.new
+  # Merge spec into base, normalizing the keys of both to symbols first.
+  #
   # @param [Hash] base
   # @param [Hash] spec
   def merge!(base, spec)
-    spec = RSpec::OpenAPI::KeyTransformer.symbolize(spec)
     base.replace(RSpec::OpenAPI::KeyTransformer.symbolize(base))
-    merge_schema!(base, spec)
+    merge_normalized!(base, spec)
+  end
+
+  # Same, for a base whose keys are already symbols.
+  #
+  # Normalizing base rebuilds every hash and array in it. Callers that merge
+  # record after record into one document hold a base of thousands of nodes and
+  # merge into it twice per request, so paying for that rebuild each time makes
+  # the whole build quadratic in the number of requests. A document read back
+  # from a file is normalized by SchemaFile, and anything this file builds is
+  # normalized by construction, so those callers can skip it.
+  #
+  # @param [Hash] base
+  # @param [Hash] spec
+  def merge_normalized!(base, spec)
+    merge_schema!(base, RSpec::OpenAPI::KeyTransformer.symbolize(spec))
   end
 
   SIMILARITY_THRESHOLD = 0.5
@@ -180,7 +196,11 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   end
 
   def convert_example_to_examples!(hash)
-    name = RSpec::OpenAPI::ExampleKey.normalize(hash.delete(:_example_key)) || 'default'
+    # This writes straight into the document rather than going through
+    # KeyTransformer, so symbolize the name here the way symbolize_examples
+    # would. Otherwise the next merge sees a string key beside the symbol one
+    # the builder produces and treats them as two different examples.
+    name = RSpec::OpenAPI::ExampleKey.normalize(hash.delete(:_example_key))&.to_sym || :default
     summary = hash.delete(:_example_summary)
     value = hash.delete(:example)
     example = {}

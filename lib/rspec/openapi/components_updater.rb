@@ -34,10 +34,10 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
 
       schema_name = extract_schema_name(base.dig(*paths))&.to_sym
       fresh_schemas[schema_name] ||= {}
-      RSpec::OpenAPI::SchemaMerger.merge!(fresh_schemas[schema_name], nested_schema)
+      RSpec::OpenAPI::SchemaMerger.merge_normalized!(fresh_schemas[schema_name], nested_schema)
     end
 
-    RSpec::OpenAPI::SchemaMerger.merge!(base, { components: { schemas: fresh_schemas } })
+    RSpec::OpenAPI::SchemaMerger.merge_normalized!(base, { components: { schemas: fresh_schemas } })
     RSpec::OpenAPI::SchemaCleaner.cleanup_components_schemas!(base, { components: { schemas: fresh_schemas } })
   end
 
@@ -49,7 +49,7 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
       schema_name = extract_schema_name(ref_link)
       schema_body = dig_schema(fresh, paths.grep_v(Integer))
 
-      RSpec::OpenAPI::SchemaMerger.merge!(acc, { schema_name => schema_body })
+      RSpec::OpenAPI::SchemaMerger.merge_normalized!(acc, { schema_name => schema_body })
     end
   end
 
