@@ -51,12 +51,13 @@ class RSpec::OpenAPI::ResultRecorder
       RSpec::OpenAPI::OperationConverter.normalize!(spec)
       schema = RSpec::OpenAPI::DefaultSchema.build(title)
       schema[:info].merge!(RSpec::OpenAPI.info)
+      # Normalize the document once here rather than on every merge below.
       RSpec::OpenAPI::SchemaMerger.merge!(spec, schema)
       new_from_zero = {}
       records.each do |record|
         record_schema = RSpec::OpenAPI::SchemaBuilder.build(record)
-        RSpec::OpenAPI::SchemaMerger.merge!(spec, record_schema)
-        RSpec::OpenAPI::SchemaMerger.merge!(new_from_zero, record_schema)
+        RSpec::OpenAPI::SchemaMerger.merge_normalized!(spec, record_schema)
+        RSpec::OpenAPI::SchemaMerger.merge_normalized!(new_from_zero, record_schema)
       rescue StandardError, NotImplementedError => e # e.g. SchemaBuilder raises a NotImplementedError
         @error_records[e] = record # Avoid failing the build
       end

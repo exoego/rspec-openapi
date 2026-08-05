@@ -313,4 +313,42 @@ RSpec.describe 'schema merger spec' do
       )
     end
   end
+
+  describe 'example and examples conflict' do
+    it 'names a hand-written example "default" when it carries no example key' do
+      # A document someone edited by hand has `example` but none of the
+      # bookkeeping a recorded one carries, and then a run records the same
+      # operation in :multiple mode.
+      base = { content: { 'application/json': { example: { status: 'ok' } } } }
+      spec = { content: { 'application/json': { examples: { recorded: { value: { status: 'created' } } } } } }
+
+      result = RSpec::OpenAPI::SchemaMerger.merge!(base, spec)
+
+      expect(result[:content][:'application/json']).to eq(
+        examples: {
+          default: { value: { status: 'ok' } },
+          recorded: { value: { status: 'created' } },
+        },
+      )
+    end
+
+    it 'uses the recorded example key, normalized, when there is one' do
+      base = {
+        content: {
+          'application/json': {
+            example: { status: 'ok' },
+            _example_key: 'With Flat Query Parameters',
+            _example_summary: 'with flat query parameters',
+          },
+        },
+      }
+      spec = { content: { 'application/json': { examples: { recorded: { value: { status: 'created' } } } } } }
+
+      result = RSpec::OpenAPI::SchemaMerger.merge!(base, spec)
+
+      expect(result[:content][:'application/json'][:examples].keys).to eq(
+        [:with_flat_query_parameters, :recorded],
+      )
+    end
+  end
 end
