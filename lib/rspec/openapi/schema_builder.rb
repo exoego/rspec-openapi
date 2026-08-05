@@ -131,7 +131,7 @@ class << RSpec::OpenAPI::SchemaBuilder
       build_parameter(key, value, location: 'header', record: record)
     end
 
-    parameters&.empty? ? nil : parameters
+    parameters.empty? ? nil : parameters
   end
 
   # Path and header params are always required; query params are pre-flattened

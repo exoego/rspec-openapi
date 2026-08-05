@@ -79,10 +79,9 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
 
   private
 
-  # Recursively remove temporary fields like :_example_key and :_example_name from the schema
+  # Recursively remove temporary fields like :_example_key and :_example_name from the schema.
+  # Every caller has already established that it holds a Hash.
   def cleanup_temporary_fields!(hash)
-    return unless hash.is_a?(Hash)
-
     hash.delete(:_example_key)
     hash.delete(:_example_summary)
     hash.delete(:_example_name)

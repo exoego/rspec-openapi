@@ -11,7 +11,7 @@ require 'rspec/rails'
 # no integration session, so the request and response come off the example
 # group itself rather than off ActionDispatch::Integration::Session.
 RSpec::OpenAPI.title = 'OpenAPI Documentation'
-RSpec::OpenAPI.example_types = %i[request controller]
+RSpec::OpenAPI.example_types = [:request, :controller]
 RSpec::OpenAPI.path = File.expand_path('../apps/rails/doc/controller/openapi.yaml', __dir__)
 
 RSpec.describe TablesController, type: :controller do
