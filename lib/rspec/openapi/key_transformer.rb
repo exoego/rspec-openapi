@@ -18,18 +18,16 @@ class << RSpec::OpenAPI::KeyTransformer = Object.new
     end
   end
 
+  # `examples` is a map of named examples under a media type, whose names are
+  # normalized here. Under a schema it is a JSON Schema keyword holding a plain
+  # array instead, which has no names to normalize.
   def symbolize_examples(value)
-    case value
-    when Hash
-      value.to_h do |k, v|
-        k = k.downcase.tr(' ', '_') unless k.is_a?(Symbol)
+    return symbolize(value) unless value.is_a?(Hash)
 
-        [k.to_sym, symbolize(v)]
-      end
-    when Array
-      value.map { |v| symbolize(v) }
-    else
-      value
+    value.to_h do |k, v|
+      k = k.downcase.tr(' ', '_') unless k.is_a?(Symbol)
+
+      [k.to_sym, symbolize(v)]
     end
   end
 

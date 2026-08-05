@@ -131,10 +131,13 @@ module RSpec::OpenAPI
     # Allow Rails request specs to issue extra verbs (e.g. QUERY); ActionDispatch
     # otherwise rejects unknown verbs. No-op outside Rails.
     def register_http_methods(methods)
-      # simplecov:disable branch non-Rails guard for roda/hanami; the suite always loads Rails
+      # :nocov:
+      # Guards users without Rails. Every job here installs it, so this arm is
+      # unreachable from the suite. SimpleCov's token is `nocov`, so the marker
+      # this used to carry never actually excluded anything.
       return unless defined?(ActionDispatch::Request::HTTP_METHODS)
 
-      # simplecov:enable
+      # :nocov:
       Array(methods).each do |method|
         verb = method.to_s.upcase
         next if ActionDispatch::Request::HTTP_METHODS.include?(verb)
@@ -149,6 +152,9 @@ end
 if ENV['OPENAPI']
   RSpec::OpenAPI::Config.load_environment_settings
 
+  # :nocov:
+  # These two rescues report a framework the user does not have. Every job here
+  # installs both Hanami and Rails, so no run can reach them.
   begin
     require 'hanami'
   rescue LoadError
@@ -164,6 +170,7 @@ if ENV['OPENAPI']
   else
     require 'rspec/openapi/extractors/rails'
   end
+  # :nocov:
 end
 
 require 'rspec/openapi/minitest_hooks' if Object.const_defined?('Minitest')

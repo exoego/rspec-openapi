@@ -1,0 +1,25 @@
+---
+openapi: 3.2.0
+info:
+  title: OpenAPI Documentation
+  version: 1.0.0
+servers: []
+paths:
+  "/example_mode_single":
+    get:
+      summary: GET /example_mode_single
+      tags: []
+      responses:
+        '200':
+          description: still records the request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+              example:
+                status: single

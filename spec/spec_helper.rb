@@ -15,39 +15,41 @@ module SpecHelper
   end
 
   # Run inside the repo with the gem bundle, asserting the run succeeds.
-  def run_tests(*args, command:, openapi: false, output: :yaml, openapi_version: nil)
-    within_test_run(*args, command: command, openapi: openapi, output: output,
-                           openapi_version: openapi_version,) { |argv| assert_run(*argv) }
+  # Options shape the spawned run's environment; see within_test_run.
+  def run_tests(*args, command:, **options)
+    within_test_run(*args, command: command, **options) { |argv| assert_run(*argv) }
   end
 
   # Same as run_tests, but returns [out, err, status] without asserting success,
   # so negative cases can assert on a run that is expected to abort.
-  def capture_tests(*args, command:, openapi: false, output: :yaml, openapi_version: nil)
-    within_test_run(*args, command: command, openapi: openapi, output: output,
-                           openapi_version: openapi_version,) { |argv| Open3.capture3(*argv) }
+  def capture_tests(*args, command:, **options)
+    within_test_run(*args, command: command, **options) { |argv| Open3.capture3(*argv) }
   end
 
-  def rspec(*args, openapi: false, output: :yaml, openapi_version: nil)
-    run_tests(*args, command: 'scripts/rspec_with_simplecov', openapi: openapi, output: output,
-                     openapi_version: openapi_version,)
+  def rspec(*args, **options)
+    run_tests(*args, command: 'scripts/rspec_with_simplecov', **options)
   end
 
-  def rspec_capture(*args, openapi: false, output: :yaml, openapi_version: nil)
-    capture_tests(*args, command: 'scripts/rspec_with_simplecov', openapi: openapi, output: output,
-                         openapi_version: openapi_version,)
+  def rspec_capture(*args, **options)
+    capture_tests(*args, command: 'scripts/rspec_with_simplecov', **options)
   end
 
-  def minitest(*args, openapi: false, output: :yaml, openapi_version: nil)
-    run_tests(*args, command: 'ruby', openapi: openapi, output: output, openapi_version: openapi_version)
+  def minitest(*args, **options)
+    run_tests(*args, command: 'ruby', **options)
   end
 
   private
 
-  def within_test_run(*args, command:, openapi:, output:, openapi_version:)
+  # @param options [Hash] :openapi enables generation, :output picks yaml/json/both,
+  #   :openapi_version pins the document version, :debug turns on rspec-openapi's
+  #   own diagnostics. All of them are read while the child boots, which is why
+  #   they travel as environment rather than as configuration in the spec.
+  def within_test_run(*args, command:, **options)
     env = {
-      'OPENAPI' => ('1' if openapi),
-      'OPENAPI_OUTPUT' => output.to_s,
-      'OPENAPI_VERSION' => openapi_version,
+      'OPENAPI' => ('1' if options[:openapi]),
+      'OPENAPI_OUTPUT' => options.fetch(:output, :yaml).to_s,
+      'OPENAPI_VERSION' => options[:openapi_version],
+      'DEBUG' => ('1' if options[:debug]),
     }.compact
     Bundler.public_send(Bundler.respond_to?(:with_unbundled_env) ? :with_unbundled_env : :with_clean_env) do
       Dir.chdir(repo_root) do

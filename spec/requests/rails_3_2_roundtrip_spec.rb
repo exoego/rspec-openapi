@@ -8,9 +8,10 @@ require File.expand_path('../apps/rails/config/environment', __dir__)
 require 'rspec/rails'
 
 # Re-records over a hand-edited 3.2 document. The untouched entries exercise the
-# read-side normalization: /legacy carries JSON-Schema null type arrays, and
-# /weird_non_hash is a non-object path item the converters must skip. Both are
-# dropped from the output (as any un-recorded path is).
+# read-side normalization: /legacy carries JSON-Schema null type arrays and an
+# `examples` array under a schema, and /weird_non_hash is a non-object path item
+# the converters must skip. All are dropped from the output (as any un-recorded
+# path is).
 RSpec::OpenAPI.title = 'Round-trip'
 RSpec::OpenAPI.openapi_version = '3.2.0'
 RSpec::OpenAPI.path = File.expand_path('../apps/rails/doc/roundtrip/input.yaml', __dir__)

@@ -1,0 +1,130 @@
+---
+openapi: 3.2.0
+info:
+  title: OpenAPI Documentation
+  version: 1.0.0
+servers: []
+paths:
+  "/tables":
+    post:
+      summary: create
+      tags:
+      - Table
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+              required:
+              - name
+              - description
+      responses:
+        '201':
+          description: records a request body without an example value
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  database:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                    required:
+                    - id
+                    - name
+                  null_sample:
+                    type: 'null'
+                  storage_size:
+                    type: number
+                    format: float
+                  created_at:
+                    type: string
+                  updated_at:
+                    type: string
+                required:
+                - id
+                - name
+                - description
+                - database
+                - null_sample
+                - storage_size
+                - created_at
+                - updated_at
+  "/tables/{id}":
+    get:
+      summary: show
+      tags:
+      - Table
+      parameters:
+      - name: X-Authorization-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: records path and query parameters without example values
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  database:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                    required:
+                    - id
+                    - name
+                  null_sample:
+                    type: 'null'
+                  storage_size:
+                    type: number
+                    format: float
+                  created_at:
+                    type: string
+                  updated_at:
+                    type: string
+                required:
+                - id
+                - name
+                - description
+                - database
+                - null_sample
+                - storage_size
+                - created_at
+                - updated_at

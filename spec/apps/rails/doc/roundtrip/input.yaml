@@ -45,3 +45,8 @@ paths:
                     type:
                     - string
                     - integer
+                    # `examples` under a schema is the JSON Schema keyword: a
+                    # plain array, not the named map it is under a media type.
+                    examples:
+                    - a string
+                    - 42
