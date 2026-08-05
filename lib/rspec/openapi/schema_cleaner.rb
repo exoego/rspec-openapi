@@ -113,9 +113,9 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
     path_definition.delete(:parameters) if path_definition[:parameters].empty?
   end
 
-  def cleanup_array!(base, spec, selector, fields_for_identity = [])
+  def cleanup_array!(base, spec, selector, fields_for_identity)
     marshal = lambda do |obj|
-      Marshal.dump(slice(obj, fields_for_identity))
+      Marshal.dump(obj.slice(*fields_for_identity))
     end
 
     RSpec::OpenAPI::HashHelper.matched_paths(base, selector).each do |paths|
@@ -127,33 +127,20 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
       target_array.select! { |e| spec_identities.include?(marshal.call(e)) }
       target_array.sort_by! { |param| fields_for_identity.map { |f| param[f] }.join('-') }
       # Keep the last duplicate to produce the result stably
-      deduplicated = target_array.reverse.uniq { |param| slice(param, fields_for_identity) }.reverse
+      deduplicated = target_array.reverse.uniq { |param| param.slice(*fields_for_identity) }.reverse
       target_array.replace(deduplicated)
     end
     base
   end
 
+  # Every selector above names at least two segments, so a matched path always
+  # has a parent to delete the entry from.
   def cleanup_hash!(base, spec, selector)
     RSpec::OpenAPI::HashHelper.matched_paths(base, selector).each do |paths|
       exist_in_base = !base.dig(*paths).nil?
       not_in_spec = spec.dig(*paths).nil?
-      if exist_in_base && not_in_spec
-        if paths.size == 1
-          base.delete(paths.last)
-        else
-          parent_node = base.dig(*paths[0..-2])
-          parent_node.delete(paths.last)
-        end
-      end
+      base.dig(*paths[0..-2]).delete(paths.last) if exist_in_base && not_in_spec
     end
     base
-  end
-
-  def slice(obj, fields_for_identity)
-    if fields_for_identity.any?
-      obj.slice(*fields_for_identity)
-    else
-      obj
-    end
   end
 end

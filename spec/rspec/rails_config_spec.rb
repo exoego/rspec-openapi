@@ -41,6 +41,20 @@ RSpec.describe 'rails request spec, configuration' do
     end
   end
 
+  describe 'DEBUG in the environment' do
+    let(:openapi_path) do
+      File.expand_path('spec/apps/rails/doc/config/openapi.yaml', repo_root)
+    end
+
+    # DEBUG is read once while rspec-openapi loads, so it has to be set for the
+    # spawned run rather than from inside the spec.
+    it 'records the same document as a run without it' do
+      org_yaml = YAML.safe_load(File.read(openapi_path))
+      rspec 'spec/requests/rails_config_spec.rb', openapi: true, output: :yaml, debug: true
+      expect(YAML.safe_load(File.read(openapi_path))).to eq org_yaml
+    end
+  end
+
   describe 'a per-directory config file that raises' do
     let(:openapi_path) do
       File.expand_path('spec/apps/rails/doc/broken_config/openapi.yaml', repo_root)
