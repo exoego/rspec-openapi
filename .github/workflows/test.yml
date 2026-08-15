@@ -8,6 +8,10 @@ on:
       - opened
       - synchronize
       - reopened
+
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
