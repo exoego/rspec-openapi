@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
-unless ENV['COVERAGE'] && ENV['COVERAGE'].empty?
+# Coverage is opt-in: it costs roughly a quarter of each spawned run, so only
+# instrument when COVERAGE is set to something non-empty, as the one CI job
+# that uploads to codecov does.
+unless ENV.fetch('COVERAGE', '').empty?
   require 'simplecov'
   require 'simplecov-cobertura'
 

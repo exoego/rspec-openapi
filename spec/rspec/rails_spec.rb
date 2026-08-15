@@ -3,7 +3,6 @@
 require 'spec_helper'
 require 'yaml'
 require 'json'
-require 'pry'
 
 RSpec.describe 'rails request spec' do
   include SpecHelper

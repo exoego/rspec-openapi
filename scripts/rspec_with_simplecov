@@ -32,7 +32,9 @@ begin
   old_verbose = $VERBOSE
   $VERBOSE = false
 
-  unless (ENV.fetch('COVERAGE', nil) && ENV['COVERAGE'].empty?) || RUBY_VERSION < '1.9.3'
+  # Coverage is opt-in: only instrument when COVERAGE is set to something
+  # non-empty, as the one CI job that uploads to codecov does.
+  if !ENV.fetch('COVERAGE', '').empty? && RUBY_VERSION >= '1.9.3'
     require 'simplecov'
 
     SimpleCov.start do

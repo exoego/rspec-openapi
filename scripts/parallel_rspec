@@ -9,11 +9,18 @@
 # Ruby. Run serially it leaves every core but one idle. No two spec files write
 # the same document, which is what makes running them side by side safe.
 #
+# Booting a worker (bundler, rspec, spec_helper, SimpleCov when enabled) costs
+# around a second, so spawning one process per spec file wastes more time than
+# the parallelism buys back. Instead the files are packed into one batch per
+# worker up front, and each worker runs its whole batch in a single rspec
+# process. Files in a batch run sequentially, so sharing a batch never violates
+# the one-writer-per-document constraint above.
+#
 #   bundle exec scripts/parallel_rspec                    # one worker per core
 #   RSPEC_WORKERS=1 bundle exec scripts/parallel_rspec    # back to a serial run
 #   bundle exec scripts/parallel_rspec spec/rspec         # a subset
 #
-# Output is buffered per file and printed when that file finishes, so the
+# Output is buffered per worker and printed when that worker finishes, so the
 # workers do not interleave their reports. Use plain `rspec` when you want the
 # usual streaming output or `--only-failures`, which reads the .rspec_status
 # that only a serial run maintains.
@@ -35,60 +42,95 @@ def spec_files(args)
   config.files_to_run.uniq
 end
 
-# Rough cost of a spec file: each of these calls boots an app in a child process
-# and they dominate the run time. Starting with the most expensive file keeps
-# the workers busy to the end. A bad guess only costs some scheduling.
-def spawn_count(file)
-  File.read(file).scan(/^\s*(?:rspec|rspec_capture|minitest)[\s(]/).size
+# Rough cost of a spec file, in units of one spawned app boot. Each rspec /
+# rspec_capture / minitest call boots an app in a child process. Booting the
+# app dominates a child, so every spawn costs about one unit, with a mild
+# bump for how much spec the child then runs. A bad guess only costs some
+# scheduling.
+def spawn_cost(file)
+  dir = File.expand_path('..', __dir__)
+  File.read(file).scan(/\b(?:rspec|rspec_capture|minitest)[\s(]+'([^']+)'/).sum do |(spawned)|
+    path = File.join(dir, spawned)
+    1.0 + (File.exist?(path) ? File.size(path) / 100_000.0 : 0.0)
+  end
+end
+
+# Every worker runs alongside the app process it spawns, and on Apple silicon
+# pushing that pairing onto the efficiency cores slows the whole run down, so
+# default to one worker per performance core there.
+def default_workers
+  return Etc.nprocessors unless RUBY_PLATFORM.include?('darwin')
+
+  begin
+    Integer(`sysctl -n hw.perflevel0.physicalcpu`)
+  rescue StandardError
+    Etc.nprocessors
+  end
 end
 
 args = ARGV.dup
-files = spec_files(args).sort_by { |file| [-spawn_count(file), file] }
+files = spec_files(args)
 abort('No spec files found') if files.empty?
 
 flags = args.reject { |arg| File.exist?(arg.sub(/[\[:]\d.*\z/, '')) }
-workers = Integer(ENV.fetch('RSPEC_WORKERS') { Etc.nprocessors }).clamp(1, files.size)
+workers = Integer(ENV.fetch('RSPEC_WORKERS') { default_workers }).clamp(1, files.size)
+
+# Pack the files into one batch per worker, assigning the most expensive file
+# to the least loaded batch. The small constant is the per-file load cost, so
+# the many nearly-free files do not all pile into one batch.
+batches = Array.new(workers) { { files: [], cost: 0.0 } }
+costs = files.to_h { |file| [file, spawn_cost(file)] }
+files.sort_by { |file| [-costs[file], file] }.each do |file|
+  batch = batches.min_by { |b| b[:cost] }
+  batch[:files] << file
+  batch[:cost] += costs[file] + 0.1
+end
+batches.reject! { |batch| batch[:files].empty? }
+
 # Route the workers through the SimpleCov wrapper rather than rspec directly.
 # schema_file_spec, scheme_merger_spec and shared_extractor_spec exercise the
 # library in the worker itself rather than in a spawned app, so without this
-# nothing they cover is recorded. The wrapper and .simplecov_spawn both no-op
-# unless COVERAGE is set, so the other jobs are unaffected.
+# nothing they cover is recorded. The wrapper and .simplecov_spawn no-op when
+# COVERAGE is unset or empty, so the other jobs are unaffected.
 rspec = File.expand_path('rspec_with_simplecov', __dir__)
 
 status_dir = File.join(Dir.tmpdir, "rspec-openapi-parallel-#{Process.pid}")
 FileUtils.mkdir_p(status_dir)
 at_exit { FileUtils.remove_entry(status_dir, true) }
 
-puts "Running #{files.size} spec files over #{workers} workers"
+puts "Running #{files.size} spec files over #{batches.size} workers"
 started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 
-queue = files.dup
 running = {}
 failed = []
 
-until queue.empty? && running.empty?
-  while running.size < workers && !queue.empty?
-    file = queue.shift
-    log = File.join(status_dir, "#{running.size}-#{File.basename(file)}.log")
-    # Each worker keeps its own example status file: RSpec rewrites the whole
-    # file on exit, so sharing one would let the workers corrupt each other's.
-    env = { 'RSPEC_STATUS_FILE' => File.join(status_dir, "#{File.basename(file)}.status") }
-    pid = Process.spawn(env, RbConfig.ruby, rspec, '-r./.simplecov_spawn', *flags, file, out: log, err: log)
-    running[pid] = [file, log]
-  end
+batches.each_with_index do |batch, index|
+  log = File.join(status_dir, "worker-#{index}.log")
+  # Each worker keeps its own example status file: RSpec rewrites the whole
+  # file on exit, so sharing one would let the workers corrupt each other's.
+  env = { 'RSPEC_STATUS_FILE' => File.join(status_dir, "worker-#{index}.status") }
+  pid = Process.spawn(env, RbConfig.ruby, rspec, '-r./.simplecov_spawn', *flags, *batch[:files], out: log, err: log)
+  running[pid] = [batch, log]
+end
 
+until running.empty?
   pid, status = Process.wait2
-  file, log = running.delete(pid)
-  next unless file
+  batch, log = running.delete(pid)
+  next unless batch
 
-  puts "\n===== #{file} ====="
+  puts "\n===== #{batch[:files].map { |file| file.sub("#{Dir.pwd}/", '') }.join(' ')} ====="
   print File.read(log)
-  failed << file unless status.success?
+  next if status.success?
+
+  # RSpec lists each failure as a `rspec ./spec/...:12` rerun line; recover the
+  # failing files from those, falling back to blaming the whole batch.
+  from_log = File.read(log).scan(%r{^rspec (?:\./)?(\S+\.rb)}).flatten.uniq
+  failed.concat(from_log.empty? ? batch[:files] : from_log)
 end
 
 elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - started
 puts format("\n===== %<files>d spec files in %<elapsed>.1fs over %<workers>d workers =====",
-            files: files.size, elapsed: elapsed, workers: workers,)
+            files: files.size, elapsed: elapsed, workers: batches.size,)
 
 unless failed.empty?
   puts "Failed spec files:\n#{failed.map { |file| "  #{file}" }.join("\n")}"

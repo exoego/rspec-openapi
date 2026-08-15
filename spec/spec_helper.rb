@@ -44,6 +44,11 @@ module SpecHelper
   #   :openapi_version pins the document version, :debug turns on rspec-openapi's
   #   own diagnostics. All of them are read while the child boots, which is why
   #   they travel as environment rather than as configuration in the spec.
+  #
+  # The child runs the current Ruby directly rather than through `bundle exec`,
+  # which would boot a whole extra Ruby process per spawn just to set up an
+  # environment that `require 'bundler/setup'` (in scripts/rspec_with_simplecov,
+  # or injected below for plain ruby) recreates from the Gemfile in the cwd.
   def within_test_run(*args, command:, **options)
     env = {
       'OPENAPI' => ('1' if options[:openapi]),
@@ -51,9 +56,10 @@ module SpecHelper
       'OPENAPI_VERSION' => options[:openapi_version],
       'DEBUG' => ('1' if options[:debug]),
     }.compact
+    argv = command == 'ruby' ? ['-rbundler/setup'] : [command]
     Bundler.public_send(Bundler.respond_to?(:with_unbundled_env) ? :with_unbundled_env : :with_clean_env) do
       Dir.chdir(repo_root) do
-        yield [env, 'bundle', 'exec', command, '-r./.simplecov_spawn', *args]
+        yield [env, RbConfig.ruby, *argv, '-r./.simplecov_spawn', *args]
       end
     end
   end
