@@ -986,6 +986,13 @@ Run minitest with OPENAPI=1 to generate `doc/openapi.yaml` for your request spec
 $ OPENAPI=1 bundle exec rails t
 ```
 
+### Parallel test execution
+
+Minitest's parallel execution is supported, both thread-based (`parallelize_me!`) and
+process-based (Rails' `parallelize`). With forked workers, each worker dumps its
+records to a temporary directory on exit and the main process merges them back
+before writing the schema. No configuration is needed.
+
 ## Links
 
 Existing RSpec plugins which have OpenAPI integration:
