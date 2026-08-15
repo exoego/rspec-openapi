@@ -5,6 +5,10 @@ require 'minitest'
 module RSpec::OpenAPI::Minitest
   Example = Struct.new(:context, :description, :metadata, :file_path)
 
+  # Guards path_records against concurrent appends from Minitest's
+  # thread-based parallel executor (parallelize_me!).
+  RECORD_MUTEX = Mutex.new
+
   module RunPatch
     def run(*args)
       result = super
@@ -14,7 +18,12 @@ module RSpec::OpenAPI::Minitest
         example = Example.new(self, human_name, {}, file_path)
         path = RSpec::OpenAPI.path.then { |p| p.is_a?(Proc) ? p.call(example) : p }
         record = RSpec::OpenAPI::RecordBuilder.build(self, example: example, extractor: SharedHooks.find_extractor)
-        RSpec::OpenAPI.path_records[path] << record if record
+        if record
+          RECORD_MUTEX.synchronize do
+            RSpec::OpenAPI::ParallelRecords.schedule_dump!
+            RSpec::OpenAPI.path_records[path] << record
+          end
+        end
       end
       result
     end
@@ -43,6 +52,7 @@ if ENV['OPENAPI']
   Minitest::Test.prepend RSpec::OpenAPI::Minitest::RunPatch
 
   Minitest.after_run do
+    RSpec::OpenAPI::ParallelRecords.merge!
     result_recorder = RSpec::OpenAPI::ResultRecorder.new(RSpec::OpenAPI.path_records)
     result_recorder.record_results!
     puts result_recorder.error_message if result_recorder.errors?

@@ -1,0 +1,228 @@
+---
+openapi: 3.0.3
+info:
+  title: OpenAPI Documentation
+  version: 1.0.0
+servers:
+- url: http://localhost:3000
+paths:
+  "/additional_properties":
+    get:
+      summary: index
+      tags:
+      - AdditionalProperty
+      responses:
+        '200':
+          description: returns additional properties
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  required_key:
+                    type: string
+                  variadic_key:
+                    type: object
+                    properties:
+                      gold:
+                        type: integer
+                      silver:
+                        type: integer
+                      bronze:
+                        type: integer
+                    required:
+                    - gold
+                    - silver
+                    - bronze
+                required:
+                - required_key
+                - variadic_key
+              example:
+                required_key: value
+                variadic_key:
+                  gold: 1
+                  silver: 2
+                  bronze: 3
+  "/images":
+    get:
+      summary: index
+      tags:
+      - Image
+      responses:
+        '200':
+          description: returns a list of images
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    tags:
+                      type: array
+                      items: {}
+                  required:
+                  - name
+                  - tags
+              example:
+              - name: file.png
+                tags: []
+  "/images/{id}":
+    get:
+      summary: show
+      tags:
+      - Image
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
+      responses:
+        '200':
+          description: returns an image payload
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+  "/tables":
+    get:
+      summary: index
+      tags:
+      - Table
+      responses:
+        '200':
+          description: returns tables
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    database:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                      required:
+                      - id
+                      - name
+                    null_sample:
+                      nullable: true
+                    storage_size:
+                      type: number
+                      format: float
+                    created_at:
+                      type: string
+                    updated_at:
+                      type: string
+                  required:
+                  - id
+                  - name
+                  - description
+                  - database
+                  - null_sample
+                  - storage_size
+                  - created_at
+                  - updated_at
+              example:
+              - id: 1
+                name: access
+                description: logs
+                database:
+                  id: 2
+                  name: production
+                null_sample:
+                storage_size: 12.3
+                created_at: '2020-07-17T00:00:00+00:00'
+                updated_at: '2020-07-17T00:00:00+00:00'
+  "/tables/{id}":
+    get:
+      summary: show
+      tags:
+      - Table
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
+      responses:
+        '200':
+          description: returns a table
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  database:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                    required:
+                    - id
+                    - name
+                  null_sample:
+                    nullable: true
+                  storage_size:
+                    type: number
+                    format: float
+                  created_at:
+                    type: string
+                  updated_at:
+                    type: string
+                required:
+                - id
+                - name
+                - description
+                - database
+                - null_sample
+                - storage_size
+                - created_at
+                - updated_at
+              example:
+                id: 1
+                name: access
+                description: logs
+                database:
+                  id: 2
+                  name: production
+                null_sample:
+                storage_size: 12.3
+                created_at: '2020-07-17T00:00:00+00:00'
+                updated_at: '2020-07-17T00:00:00+00:00'
+  "/test_block":
+    get:
+      summary: GET /test_block
+      tags: []
+      responses:
+        '200':
+          description: returns the block content
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: A TEST
