@@ -7,6 +7,10 @@ on:
         description: 'Version to release (e.g. 0.33.1 or 0.34.0)'
         required: true
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   push:
     name: Prepare release PR
