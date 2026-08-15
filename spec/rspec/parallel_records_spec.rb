@@ -52,5 +52,27 @@ RSpec.describe RSpec::OpenAPI::ParallelRecords do
       described_class.merge!
       expect(RSpec::OpenAPI.path_records).to be_empty
     end
+
+    it 'rebuilds uploaded files, which cannot be serialized as-is' do
+      require 'action_dispatch'
+      upload = ActionDispatch::Http::UploadedFile.new(
+        tempfile: StringIO.new('png bytes'), filename: 'test.png', type: 'image/png',
+      )
+      record = RSpec::OpenAPI::Record.new(
+        http_method: 'POST', path: '/images/upload', status: 200,
+        request_params: { 'image' => upload, 'images' => [upload] },
+      )
+      RSpec::OpenAPI.path_records['doc/openapi.yaml'] << record
+      described_class.dump!
+      RSpec::OpenAPI.path_records.clear
+
+      described_class.merge!
+      restored = RSpec::OpenAPI.path_records['doc/openapi.yaml'].first.request_params
+      [restored['image'], restored['images'].first].each do |file|
+        expect(file).to be_an(ActionDispatch::Http::UploadedFile)
+        expect(file.original_filename).to eq('test.png')
+        expect(file.content_type).to eq('image/png')
+      end
+    end
   end
 end

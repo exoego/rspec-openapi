@@ -2,6 +2,7 @@
 
 require 'fileutils'
 require 'securerandom'
+require 'stringio'
 require 'tmpdir'
 require 'yaml'
 
@@ -24,6 +25,11 @@ module RSpec::OpenAPI::ParallelRecords
   # directory, which lives in the world-writable system tmpdir.
   RUN_ID = SecureRandom.hex(16)
 
+  # Marks the stand-in a multipart upload leaves in a dump. The schema
+  # builder only ever asks an upload for its class and metadata, never for
+  # its content, so the file itself does not need to survive the trip.
+  UPLOADED_FILE_MARKER = '__rspec_openapi_uploaded_file'
+
   class << self
     def worker?
       Process.pid != MAIN_PID
@@ -45,14 +51,18 @@ module RSpec::OpenAPI::ParallelRecords
       return if RSpec::OpenAPI.path_records.empty?
 
       FileUtils.mkdir_p(dump_dir, mode: 0o700)
-      File.write(File.join(dump_dir, "#{Process.pid}.yaml"), YAML.dump(RSpec::OpenAPI.path_records))
+      encoded = RSpec::OpenAPI.path_records.transform_values do |records|
+        records.map { |record| transform_record(record) { |value| encode(value) } }
+      end
+      File.write(File.join(dump_dir, "#{Process.pid}.yaml"), YAML.dump(encoded))
     end
 
     def merge!
       Dir.glob(File.join(dump_dir, '*.yaml')).sort.each do |file|
         records_by_path = YAML.safe_load(File.read(file), permitted_classes: permitted_classes, aliases: true)
         records_by_path.each do |path, records|
-          RSpec::OpenAPI.path_records[path].concat(records)
+          decoded = records.map { |record| transform_record(record) { |value| decode(value) } }
+          RSpec::OpenAPI.path_records[path].concat(decoded)
         end
       end
     ensure
@@ -71,6 +81,36 @@ module RSpec::OpenAPI::ParallelRecords
       classes = [Symbol, RSpec::OpenAPI::Record]
       classes << ActiveSupport::HashWithIndifferentAccess if defined?(ActiveSupport::HashWithIndifferentAccess)
       classes
+    end
+
+    def transform_record(record, &block)
+      RSpec::OpenAPI::Record.new(**record.to_h.transform_values(&block))
+    end
+
+    # Uploads hold an open Tempfile, which no serializer can represent, so
+    # dump their metadata instead.
+    def encode(value)
+      case value
+      when Array then value.map { |item| encode(item) }
+      when Hash then value.transform_values { |item| encode(item) }
+      when defined?(ActionDispatch::Http::UploadedFile) && ActionDispatch::Http::UploadedFile
+        { UPLOADED_FILE_MARKER => { 'filename' => value.original_filename, 'type' => value.content_type } }
+      else value
+      end
+    end
+
+    # Rebuilds a real UploadedFile so the schema builder's class checks match,
+    # backed by an empty StringIO in place of the worker's Tempfile.
+    def decode(value)
+      return value unless value.is_a?(Array) || value.is_a?(Hash)
+      return value.map { |item| decode(item) } if value.is_a?(Array)
+
+      meta = value[UPLOADED_FILE_MARKER]
+      if meta && value.size == 1 && defined?(ActionDispatch::Http::UploadedFile)
+        ActionDispatch::Http::UploadedFile.new(tempfile: StringIO.new, filename: meta['filename'], type: meta['type'])
+      else
+        value.transform_values { |item| decode(item) }
+      end
     end
   end
 end

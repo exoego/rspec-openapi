@@ -8,6 +8,7 @@ require 'bundler'
 require 'fileutils'
 require 'minitest/autorun'
 require File.expand_path('../apps/rails/config/environment', __dir__)
+require File.expand_path('../support/upload_fixture', __dir__)
 
 RSpec::OpenAPI.openapi_version = '3.0.3'
 RSpec::OpenAPI.title = 'OpenAPI Documentation'
@@ -71,6 +72,15 @@ module RailsParallelIntegrationTests
     test 'returns a list of images' do
       record_pid
       get '/images'
+      assert_response 200
+    end
+
+    # Uploads exercise the worker-side encoding of UploadedFile, which holds
+    # an open Tempfile that cannot travel between processes as-is.
+    test 'returns an image payload with upload' do
+      record_pid
+      image = Rack::Test::UploadedFile.new(UploadFixture.path, 'image/png')
+      post '/images/upload', params: { image: image }
       assert_response 200
     end
   end

@@ -69,6 +69,32 @@ paths:
               example:
               - name: file.png
                 tags: []
+  "/images/upload":
+    post:
+      summary: upload
+      tags:
+      - Image
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+              required:
+              - image
+            example:
+              image: test.png
+      responses:
+        '200':
+          description: returns an image payload with upload
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
   "/images/{id}":
     get:
       summary: show
