@@ -20,4 +20,8 @@ RSpec.describe TablesController, type: :controller do
     get :show, params: { id: 1 }
     expect(response).to have_http_status(:ok)
   end
+
+  it 'ignores an example that issues no request' do
+    expect(described_class).to eq(TablesController)
+  end
 end
