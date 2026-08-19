@@ -36,6 +36,7 @@ RSpec.describe 'rails request spec, configuration variants' do
     it 'does not record a controller example that issued no request' do
       rspec 'spec/requests/rails_controller_spec.rb', openapi: true, output: :yaml
       paths = YAML.safe_load(File.read(openapi_path)).fetch('paths').keys
+      expect(paths).not_to be_empty
       expect(paths).to all(start_with('/'))
     end
   end
