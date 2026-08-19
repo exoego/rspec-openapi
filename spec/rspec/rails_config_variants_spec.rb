@@ -32,5 +32,11 @@ RSpec.describe 'rails request spec, configuration variants' do
       rspec 'spec/requests/rails_controller_spec.rb', openapi: true, output: :yaml
       expect(YAML.safe_load(File.read(openapi_path))).to eq org_yaml
     end
+
+    it 'does not record a controller example that issued no request' do
+      rspec 'spec/requests/rails_controller_spec.rb', openapi: true, output: :yaml
+      paths = YAML.safe_load(File.read(openapi_path)).fetch('paths').keys
+      expect(paths).to all(start_with('/'))
+    end
   end
 end

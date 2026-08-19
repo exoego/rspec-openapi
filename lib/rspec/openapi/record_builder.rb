@@ -11,6 +11,7 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
   def build(context, example:, extractor:)
     request, response = select_request_response(context, example, extractor)
     return if request.nil?
+    return unless request_dispatched?(request)
 
     attributes = extractor.request_attributes(request, example)
     return if RSpec::OpenAPI.ignored_paths.any? { |ignored_path| attributes[:path].match?(ignored_path) }
@@ -20,6 +21,10 @@ class << RSpec::OpenAPI::RecordBuilder = Object.new
   end
 
   private
+
+  def request_dispatched?(request)
+    !request.path.to_s.empty?
+  end
 
   def select_request_response(context, example, extractor)
     pattern = RSpec::OpenAPI::ExchangeRecorder.pattern_for(example)
