@@ -22,4 +22,4 @@ jobs:
         with:
           node-version: '24'
       # renovate: datasource=npm depName=@redocly/cli
-      - run: npx --yes @redocly/cli@2.47.0 lint
+      - run: npx --yes @redocly/cli@2.48.0 lint
