@@ -242,6 +242,10 @@ RSpec::OpenAPI.ignored_path_params = %i[controller action format]
 # String or Regexp is acceptable.
 RSpec::OpenAPI.ignored_paths = ["/admin/full/path/", Regexp.new("^/_internal/")]
 
+# Whether a run adds and updates without removing anything. `nil` (default) decides per run,
+# see "Can I run a subset of specs?" below. `true` or `false` forces it, as does `OPENAPI_PARTIAL_UPDATE=1` or `=0`.
+RSpec::OpenAPI.partial_update = nil
+
 # Your custom post-processing hook (like unrandomizing IDs)
 RSpec::OpenAPI.post_process_hook = -> (path, records, spec) do
   RSpec::OpenAPI::HashHelper.matched_paths(spec, 'paths.*.*.responses.*.content.*.*.*.id').each do |paths|
@@ -400,6 +404,23 @@ If you find a room for improvement, open an issue.
 
 rspec-openapi tries to preserve manual modifications as much as possible when generating specs.
 You can directly edit `doc/openapi.yaml` as you like without spoiling the automatic generation capability.
+
+### Can I run a subset of specs?
+
+Yes. A run that names spec files, or narrows the examples with `-e`, `--tag`, a line number or `--only-failures`,
+adds and updates what it records and removes nothing. The run prints a notice when it updates the file this way.
+
+```bash
+$ OPENAPI=1 bundle exec rspec spec/requests/tables_spec.rb
+```
+
+A run that names a directory, or nothing, also removes every path, operation, parameter and property it did not record.
+This is how removed endpoints disappear, so run all specs for that.
+
+Set `RSpec::OpenAPI.partial_update` to `true` or `false`, or `OPENAPI_PARTIAL_UPDATE=1` or `=0`, to force one mode.
+Force `false` if your whole API lives in one spec file.
+
+Minitest updates the whole file unless the option is `true`.
 
 ### Can I exclude specific specs from OpenAPI generation?
 

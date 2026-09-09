@@ -77,8 +77,6 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
     end
   end
 
-  private
-
   # Recursively remove temporary fields like :_example_key and :_example_name from the schema.
   # Every caller has already established that it holds a Hash.
   def cleanup_temporary_fields!(hash)
@@ -98,6 +96,8 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
       end
     end
   end
+
+  private
 
   def remove_parameters_conflicting_with_security_scheme!(path_definition, security_scheme, security_scheme_name)
     security = path_definition[:security]

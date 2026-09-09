@@ -9,6 +9,7 @@ require 'rspec/openapi/stream_parser'
 require 'rspec/openapi/record_builder'
 require 'rspec/openapi/exchange_recorder'
 require 'rspec/openapi/parallel_records'
+require 'rspec/openapi/partial_run'
 require 'rspec/openapi/result_recorder'
 require 'rspec/openapi/schema_builder'
 require 'rspec/openapi/schema_file'
@@ -65,6 +66,8 @@ module RSpec::OpenAPI
   @ignored_path_params = [:controller, :action, :format]
   @ignored_paths = []
   @post_process_hook = nil
+  # true or false forces the mode. nil decides per run, see PartialRun.
+  @partial_update = { '1' => true, '0' => false }[ENV.fetch('OPENAPI_PARTIAL_UPDATE', nil)]
 
   # This is the configuraion override file name we look for within each path.
   @config_filename = 'rspec_openapi.rb'
@@ -91,7 +94,8 @@ module RSpec::OpenAPI
                   :path_records,
                   :ignored_paths,
                   :ignored_path_params,
-                  :post_process_hook
+                  :post_process_hook,
+                  :partial_update
 
     attr_reader   :config_filename, :openapi_version
 

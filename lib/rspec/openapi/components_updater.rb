@@ -7,9 +7,10 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
 
   # @param [Hash] base
   # @param [Hash] fresh
-  def update!(base, fresh)
+  # @param [Boolean] partial add to the schemas without removing anything
+  def update!(base, fresh, partial: false)
     # Top-level schema: Used as the body of request or response
-    top_level_refs = paths_to_top_level_refs(base)
+    top_level_refs = paths_to_top_level_refs(base, fresh)
     return if top_level_refs.empty?
 
     fresh_schemas = build_fresh_schemas(top_level_refs, base, fresh)
@@ -37,8 +38,9 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
       RSpec::OpenAPI::SchemaMerger.merge_normalized!(fresh_schemas[schema_name], nested_schema)
     end
 
-    RSpec::OpenAPI::SchemaMerger.merge_normalized!(base, { components: { schemas: fresh_schemas } })
-    RSpec::OpenAPI::SchemaCleaner.cleanup_components_schemas!(base, { components: { schemas: fresh_schemas } })
+    fresh_components = { components: { schemas: fresh_schemas } }
+    RSpec::OpenAPI::SchemaMerger.merge_normalized!(base, fresh_components)
+    RSpec::OpenAPI::SchemaCleaner.cleanup_components_schemas!(base, fresh_components) unless partial
   end
 
   private
@@ -63,10 +65,14 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
     item_schema || object_schema || one_of_schema
   end
 
-  def paths_to_top_level_refs(base)
+  # An operation fresh lacks has nothing recorded to fill a schema from. Only
+  # a partial run leaves such operations in base.
+  def paths_to_top_level_refs(base, fresh)
     request_bodies = RSpec::OpenAPI::HashHelper.matched_paths(base, 'paths.*.*.requestBody.content.application/json')
     responses = RSpec::OpenAPI::HashHelper.matched_paths(base, 'paths.*.*.responses.*.content.application/json')
     (request_bodies + responses).flat_map do |paths|
+      next [] if fresh.dig(*paths.first(3)).nil?
+
       object_paths = find_object_refs(base, paths)
       one_of_paths = find_one_of_refs(base, paths)
 

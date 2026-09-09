@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 class RSpec::OpenAPI::ResultRecorder
-  def initialize(path_records)
+  # @param [Boolean] partial add and update without removing anything
+  def initialize(path_records, partial: false)
     @path_records = path_records
+    @partial = partial
     @error_records = {}
   end
 
@@ -72,8 +74,12 @@ class RSpec::OpenAPI::ResultRecorder
 
   def cleanup_schema!(new_from_zero, spec)
     RSpec::OpenAPI::SchemaCleaner.cleanup_conflicting_security_parameters!(spec)
-    RSpec::OpenAPI::SchemaCleaner.cleanup!(spec, new_from_zero)
-    RSpec::OpenAPI::ComponentsUpdater.update!(spec, new_from_zero)
+    if @partial
+      RSpec::OpenAPI::SchemaCleaner.cleanup_temporary_fields!(spec)
+    else
+      RSpec::OpenAPI::SchemaCleaner.cleanup!(spec, new_from_zero)
+    end
+    RSpec::OpenAPI::ComponentsUpdater.update!(spec, new_from_zero, partial: @partial)
     RSpec::OpenAPI::SchemaCleaner.cleanup_empty_required_array!(spec)
     RSpec::OpenAPI::OperationConverter.to_additional_operations!(spec) if RSpec::OpenAPI.supports_additional_operations?
     RSpec::OpenAPI::SchemaSorter.deep_sort!(spec)

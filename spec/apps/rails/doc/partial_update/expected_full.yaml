@@ -1,0 +1,33 @@
+---
+openapi: 3.2.0
+info:
+  title: Partial update
+  version: 1.0.0
+paths:
+  "/roundtrip":
+    get:
+      summary: GET /roundtrip
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: returns ok
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Ok"
+      tags: []
+components:
+  schemas:
+    Ok:
+      type: object
+      properties:
+        ok:
+          type: boolean
+      required:
+      - ok
+servers: []

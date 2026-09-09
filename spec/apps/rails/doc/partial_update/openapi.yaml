@@ -1,0 +1,49 @@
+---
+openapi: 3.2.0
+info:
+  title: Partial update
+  version: 1.0.0
+paths:
+  "/roundtrip":
+    # Recorded. Both runs update it.
+    get:
+      summary: GET /roundtrip
+      parameters:
+      # Not sent by the run. A partial run keeps it, a full run removes it.
+      - name: stale
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: returns ok
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Ok"
+      tags: []
+    # Not recorded. A partial run keeps it, a full run removes it.
+    post:
+      summary: hand-written
+      responses:
+        '201':
+          description: created
+  # Not recorded. A partial run keeps it, a full run removes it.
+  "/stale":
+    get:
+      summary: hand-written
+      responses:
+        '200':
+          description: ok
+components:
+  schemas:
+    # Referred to by the recorded operation, so the response fills it in both runs.
+    Ok:
+      type: object
+      properties:
+        # Not in the response. A partial run keeps it, a full run removes it.
+        stale:
+          type: string
+    # Referred to by nothing. A partial run keeps it, a full run removes it.
+    Orphan:
+      type: object
