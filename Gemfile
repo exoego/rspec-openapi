@@ -7,6 +7,9 @@ gemspec
 
 gem 'rails', ENV['RAILS_VERSION'] || '6.0.6.1'
 
+# json 3 rejects the quirks_mode option Rails passes to it
+gem 'json', '< 3'
+
 if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('3.0.0')
   if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('4.0.0')
     gem 'dry-logger', '1.2.1'
