@@ -37,4 +37,7 @@ Rails.application.configure do
 
   # Raises error for missing translations.
   # config.action_view.raise_on_missing_translations = true
+
+  # A fixed value keeps parallel app boots from racing on tmp/local_secret.txt.
+  config.secret_key_base = 'rspec-openapi-test-secret-key-base'
 end
