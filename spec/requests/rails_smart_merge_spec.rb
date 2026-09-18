@@ -62,6 +62,13 @@ RSpec.describe 'Tables', type: :request do
       expect(response.status).to eq(200)
     end
   end
+
+  describe '#rooms_summary' do
+    it 'returns rooms inline, without a component wrapping the envelope' do
+      get '/room_summaries', headers: { authorization: 'k0kubun' }
+      expect(response.status).to eq(200)
+    end
+  end
 end
 
 RSpec.describe 'Users', type: :request do

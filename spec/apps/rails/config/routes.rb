@@ -10,6 +10,7 @@ Rails.application.routes.draw do
 
   defaults format: 'json' do
     get '/override_probe' => 'tables#override_probe'
+    get '/room_summaries' => 'tables#rooms_summary'
     resources :sites, param: :name, only: [:show]
     resources :tables, only: [:index, :show, :create, :update, :destroy]
     resources :images, only: [:index, :show] do

@@ -53,6 +53,30 @@ paths:
               example: '<!DOCTYPE html><html lang="en"><head><title>Hello</title></head><body>Hello</body></html>'
         '204':
           description: return no content
+  "/room_summaries":
+    get:
+      summary: rooms_summary
+      tags:
+      - Table
+      responses:
+        '200':
+          description: returns rooms inline, without a component wrapping the envelope
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rooms:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/Room"
+                required:
+                  - rooms
+              example:
+                rooms:
+                - id: 1
+                  name: Kitchen
+                  area: 12.5
   "/tables":
     get:
       summary: index
@@ -358,6 +382,21 @@ components:
       required:
         - id
         - name
+    Room:
+      type: object
+      description: 'this should be preserved'
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        area:
+          type: number
+          format: float
+      required:
+        - id
+        - name
+        - area
     Column:
       type: object
       properties:
