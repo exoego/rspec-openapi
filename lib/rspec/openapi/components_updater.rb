@@ -10,15 +10,17 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
   def update!(base, fresh)
     # Top-level schema: Used as the body of request or response
     top_level_refs = paths_to_top_level_refs(base)
-    return if top_level_refs.empty?
-
     fresh_schemas = build_fresh_schemas(top_level_refs, base, fresh)
 
     # Nested schema: References in top-level schemas. May contain some top-level schema.
-    apply_component_nested_refs!(fresh_schemas, base)
+    # A parent to dig fresh data out of only exists once some top-level schema was found.
+    apply_component_nested_refs!(fresh_schemas, base) unless top_level_refs.empty?
 
     # Nested schema: References inline in a request/response body, not inside a component.
+    # Unlike the above, this doesn't depend on any top-level schema being found first.
     apply_inline_nested_refs!(fresh_schemas, base, fresh)
+
+    return if fresh_schemas.empty?
 
     RSpec::OpenAPI::SchemaMerger.merge_normalized!(base, { components: { schemas: fresh_schemas } })
     RSpec::OpenAPI::SchemaCleaner.cleanup_components_schemas!(base, { components: { schemas: fresh_schemas } })
