@@ -14,10 +14,20 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
 
     fresh_schemas = build_fresh_schemas(top_level_refs, base, fresh)
 
-    # Nested schema: References in Top-level schemas. May contain some top-level schema.
-    generated_schema_names = fresh_schemas.keys
-    nested_refs = find_non_top_level_nested_refs(base, generated_schema_names)
-    nested_refs.each do |paths|
+    # Nested schema: References in top-level schemas. May contain some top-level schema.
+    apply_component_nested_refs!(fresh_schemas, base)
+
+    # Nested schema: References inline in a request/response body, not inside a component.
+    apply_inline_nested_refs!(fresh_schemas, base, fresh)
+
+    RSpec::OpenAPI::SchemaMerger.merge_normalized!(base, { components: { schemas: fresh_schemas } })
+    RSpec::OpenAPI::SchemaCleaner.cleanup_components_schemas!(base, { components: { schemas: fresh_schemas } })
+  end
+
+  private
+
+  def apply_component_nested_refs!(fresh_schemas, base)
+    find_non_top_level_nested_refs(base, fresh_schemas.keys).each do |paths|
       # Slice between the parent name and the element before "$ref"
       # ["components", "schema", "Table", "properties", "database",                       "$ref"]
       #  0             1         2 ^....................^
@@ -32,29 +42,26 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
       # Skip if the property using $ref is not found in the parent schema. The property may be removed.
       next if nested_schema.nil?
 
-      schema_name = extract_schema_name(base.dig(*paths)).to_sym
-      fresh_schemas[schema_name] ||= {}
-      RSpec::OpenAPI::SchemaMerger.merge_normalized!(fresh_schemas[schema_name], nested_schema)
+      merge_fresh_schema!(fresh_schemas, base, paths, nested_schema)
     end
+  end
 
-    # Nested schema: References inline in a request/response body, not inside a component
-    # (e.g. a $ref directly inside an inline envelope object). No promoted parent schema to
-    # dig from here, so pull the fresh data from the same relative path in the raw document.
-    inline_refs = find_inline_nested_refs(base, fresh_schemas.keys)
-    inline_refs.each do |paths|
+  # No promoted parent schema to dig from here, so pull the fresh data from the same
+  # relative path in the raw document instead.
+  def apply_inline_nested_refs!(fresh_schemas, base, fresh)
+    find_inline_nested_refs(base, fresh_schemas.keys).each do |paths|
       nested_schema = fresh.dig(*paths[0..-2])
       next if nested_schema.nil?
 
-      schema_name = extract_schema_name(base.dig(*paths)).to_sym
-      fresh_schemas[schema_name] ||= {}
-      RSpec::OpenAPI::SchemaMerger.merge_normalized!(fresh_schemas[schema_name], nested_schema)
+      merge_fresh_schema!(fresh_schemas, base, paths, nested_schema)
     end
-
-    RSpec::OpenAPI::SchemaMerger.merge_normalized!(base, { components: { schemas: fresh_schemas } })
-    RSpec::OpenAPI::SchemaCleaner.cleanup_components_schemas!(base, { components: { schemas: fresh_schemas } })
   end
 
-  private
+  def merge_fresh_schema!(fresh_schemas, base, paths, nested_schema)
+    schema_name = extract_schema_name(base.dig(*paths)).to_sym
+    fresh_schemas[schema_name] ||= {}
+    RSpec::OpenAPI::SchemaMerger.merge_normalized!(fresh_schemas[schema_name], nested_schema)
+  end
 
   def build_fresh_schemas(references, base, fresh)
     references.inject({}) do |acc, paths|
@@ -93,23 +100,26 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
       *RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, 'components.schemas', 'properties.*.items.$ref'),
       *RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, 'components.schemas', 'oneOf.*.$ref'),
     ]
-    # Reject already-generated schemas to reduce unnecessary loop
-    nested_refs.reject do |paths|
-      ref_link = base.dig(*paths)
-      schema_name = extract_schema_name(ref_link)
-      generated_names.include?(schema_name)
-    end
+    reject_already_generated_refs(nested_refs, base, generated_names)
   end
 
   # Like find_non_top_level_nested_refs, but for a $ref inside a schema that's inline
   # rather than itself a component, so it's not reachable by walking components.schemas.
   def find_inline_nested_refs(base, generated_names)
-    nested_refs = [
-      *RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, 'paths.*.*.requestBody.content.application/json.schema', 'properties.*.$ref'),
-      *RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, 'paths.*.*.requestBody.content.application/json.schema', 'properties.*.items.$ref'),
-      *RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, 'paths.*.*.responses.*.content.application/json.schema', 'properties.*.$ref'),
-      *RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, 'paths.*.*.responses.*.content.application/json.schema', 'properties.*.items.$ref'),
+    roots = [
+      'paths.*.*.requestBody.content.application/json.schema',
+      'paths.*.*.responses.*.content.application/json.schema',
     ]
+    nested_refs = roots.flat_map do |root|
+      [
+        *RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, root, 'properties.*.$ref'),
+        *RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, root, 'properties.*.items.$ref'),
+      ]
+    end
+    reject_already_generated_refs(nested_refs, base, generated_names)
+  end
+
+  def reject_already_generated_refs(nested_refs, base, generated_names)
     nested_refs.reject do |paths|
       ref_link = base.dig(*paths)
       schema_name = extract_schema_name(ref_link)
