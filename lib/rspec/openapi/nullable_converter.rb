@@ -27,6 +27,7 @@ class << RSpec::OpenAPI::NullableConverter = Object.new
     schema[:type] =
       case (type = schema[:type])
       when nil then 'null'
+      when Array then type | ['null']
       else [type, 'null']
       end
   end
