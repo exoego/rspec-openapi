@@ -112,6 +112,11 @@ Rails.application.routes.draw do
       [200, { 'Content-Type' => 'application/x-ndjson' }, [%(\n\n)]]
     }
 
+    # Endpoint for the multi-type nullable schema round-trip spec: the 200 is
+    # recorded, the hand-written 409 next to it carries the multi-type nullable
+    # schema the run must rewrite flat.
+    get '/nullable_roundtrip' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"ok":true}']] }
+
     # Minimal endpoint used by the hand-edited-document round-trip spec.
     get '/roundtrip' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"ok":true}']] }
 
