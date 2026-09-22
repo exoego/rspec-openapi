@@ -50,6 +50,25 @@ paths:
                 type: number
               example:
                 - 1
+  "/room_summaries":
+    get:
+      summary: rooms_summary
+      responses:
+        '200':
+          description: dummy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rooms:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/Room"
+                  this_field_should_not_exist_in_expected:
+                    type: string
+              example:
+                rooms: []
   "/tables":
     get:
       summary: index
@@ -322,6 +341,14 @@ components:
           type: string
         this_field_should_not_exist_in_expected_2:
           "$ref": "#/components/schemas/NoSuchSchemaFound"
+    Room:
+      type: object
+      description: 'this should be preserved'
+      properties:
+        id:
+          type: integer
+        this_field_should_not_exist_in_expected:
+          type: string
     SchemaNotInUse:
       type: object
       description: 'should be deleted'

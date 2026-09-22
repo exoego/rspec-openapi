@@ -1,0 +1,119 @@
+---
+openapi: 3.2.0
+info:
+  title: rspec-openapi
+  version: 1.0.0
+servers: []
+paths:
+  "/rooms":
+    get:
+      summary: GET /rooms
+      tags: []
+      responses:
+        '200':
+          description: returns rooms in an envelope
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rooms:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/Room"
+                required:
+                - rooms
+              example:
+                rooms:
+                - id: 1
+                  name: Kitchen
+                  area: 12.5
+    post:
+      summary: POST /rooms
+      tags: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                room:
+                  "$ref": "#/components/schemas/RoomInput"
+              required:
+              - room
+            example:
+              room:
+                name: Kitchen
+                area: 12.5
+      responses:
+        '201':
+          description: creates a room from an envelope
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  room:
+                    "$ref": "#/components/schemas/Room"
+                required:
+                - room
+              example:
+                room:
+                  id: 1
+                  name: Kitchen
+                  area: 12.5
+  "/rooms/{id}":
+    get:
+      summary: GET /rooms/:id
+      tags: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
+      responses:
+        '200':
+          description: returns a room in an envelope
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  room:
+                    "$ref": "#/components/schemas/Room"
+                required:
+                - room
+              example:
+                room:
+                  id: 1
+                  name: Kitchen
+                  area: 12.5
+components:
+  schemas:
+    RoomInput:
+      type: object
+      properties:
+        name:
+          type: string
+        area:
+          type: number
+          format: float
+      required:
+      - name
+      - area
+    Room:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        area:
+          type: number
+          format: float
+      required:
+      - id
+      - name
+      - area

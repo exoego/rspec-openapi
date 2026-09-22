@@ -10,6 +10,7 @@ Rails.application.routes.draw do
 
   defaults format: 'json' do
     get '/override_probe' => 'tables#override_probe'
+    get '/room_summaries' => 'tables#rooms_summary'
     resources :sites, param: :name, only: [:show]
     resources :tables, only: [:index, :show, :create, :update, :destroy]
     resources :images, only: [:index, :show] do
@@ -168,6 +169,11 @@ Rails.application.routes.draw do
     get '/description_preserve_test' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }
     get '/description_overwrite_test' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }
     get '/description_mixed_test' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }
+
+    # An API that wraps every request and response body in an envelope
+    get '/rooms' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"rooms":[{"id":1,"name":"Kitchen","area":12.5}]}']] }
+    get '/rooms/:id' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"room":{"id":1,"name":"Kitchen","area":12.5}}']] }
+    post '/rooms' => ->(_env) { [201, { 'Content-Type' => 'application/json' }, ['{"room":{"id":1,"name":"Kitchen","area":12.5}}']] }
 
     # Test route for invalid example_mode error handling
     get '/invalid_example_mode' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }

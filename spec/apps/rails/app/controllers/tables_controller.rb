@@ -16,6 +16,10 @@ class TablesController < ApplicationController
     render json: { ok: true }
   end
 
+  def rooms_summary
+    render json: { rooms: [{ id: 1, name: 'Kitchen', area: 12.5 }] }
+  end
+
   def show
     render json: find_table(params[:id])
   end
