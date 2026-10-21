@@ -57,11 +57,23 @@ class << RSpec::OpenAPI::SchemaBuilder
     private
 
     def merge_object_variations(variations)
-      {
-        type: 'object',
-        properties: merge_property_variations(variations, allow_recursive_merge: true),
-        required: variations.map { |v| v[:required] || [] }.reduce(:&) || [],
-      }
+      merged = { type: 'object' }
+      if variations.any? { |v| v.key?(:properties) }
+        merged[:properties] = merge_property_variations(variations, allow_recursive_merge: true)
+        merged[:required] = variations.map { |v| v[:required] || [] }.reduce(:&) || []
+      end
+      additional = merge_additional_properties(variations)
+      merged[:additionalProperties] = additional unless additional.nil?
+      merged
+    end
+
+    def merge_additional_properties(variations)
+      values = variations.select { |v| v.key?(:additionalProperties) }.map { |v| v[:additionalProperties] }
+      return nil if values.empty?
+      return true if values.include?(true)
+
+      schemas = values.grep(Hash)
+      schemas.empty? ? false : merge_variations(schemas)
     end
 
     # Merge multiple array schemas by merging their `items` schemas.
