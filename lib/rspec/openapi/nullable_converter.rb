@@ -8,6 +8,7 @@ class << RSpec::OpenAPI::NullableConverter = Object.new
   # rewritten, or a recorded example/default that happens to contain a field
   # named `type` or `nullable` would be silently mangled.
   DATA_KEYS = [:example, :examples, :default, :enum].freeze
+  NULL_VARIANT = { type: 'null' }.freeze
 
   def to_json_schema!(node)
     each_schema(node) { |schema| nullable_to_type_null!(schema) }
@@ -23,6 +24,7 @@ class << RSpec::OpenAPI::NullableConverter = Object.new
 
   def nullable_to_type_null!(schema)
     return unless schema.delete(:nullable)
+    return insert_null_variant!(schema[:oneOf]) if schema[:oneOf]
 
     schema[:type] =
       case (type = schema[:type])
@@ -32,7 +34,14 @@ class << RSpec::OpenAPI::NullableConverter = Object.new
       end
   end
 
+  def insert_null_variant!(variants)
+    index = variants.index { |variant| variant.is_a?(Hash) && variant[:type].to_s > 'null' } || variants.size
+    variants.insert(index, NULL_VARIANT.dup)
+  end
+
   def type_null_to_nullable!(schema)
+    schema[:nullable] = true if schema[:oneOf]&.delete(NULL_VARIANT)
+
     case (type = schema[:type])
     when 'null'
       schema.delete(:type)

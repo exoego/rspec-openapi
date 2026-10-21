@@ -164,14 +164,16 @@
                                 "value": {
                                   "oneOf": [
                                     {
+                                      "type": "null"
+                                    },
+                                    {
                                       "type": "string"
                                     },
                                     {
                                       "type": "array",
                                       "items": {}
                                     }
-                                  ],
-                                  "type": "null"
+                                  ]
                                 },
                                 "options": {
                                   "oneOf": [
@@ -194,6 +196,9 @@
                                       }
                                     },
                                     {
+                                      "type": "null"
+                                    },
+                                    {
                                       "type": "object",
                                       "properties": {
                                         "endpoint": {
@@ -204,8 +209,7 @@
                                         "endpoint"
                                       ]
                                     }
-                                  ],
-                                  "type": "null"
+                                  ]
                                 }
                               },
                               "required": [
@@ -315,6 +319,9 @@
                                     "value": {
                                       "oneOf": [
                                         {
+                                          "type": "null"
+                                        },
+                                        {
                                           "type": "string"
                                         },
                                         {
@@ -326,8 +333,7 @@
                                             "type": "string"
                                           }
                                         }
-                                      ],
-                                      "type": "null"
+                                      ]
                                     }
                                   },
                                   "required": [
