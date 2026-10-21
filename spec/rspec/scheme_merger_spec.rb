@@ -449,6 +449,25 @@ RSpec.describe 'schema merger spec' do
       expect(results).to eq([response_with(oneOf: [{ type: 'boolean' }, { type: 'integer' }, { type: 'string' }])])
     end
 
+    it 'keeps a list item left empty in a hand-written oneOf when a new type is added' do
+      written = response_with(oneOf: [nil, preview_settings])
+
+      result = RSpec::OpenAPI::SchemaMerger.merge!(written, response_with(type: 'boolean'))
+
+      expect(result).to eq(response_with(oneOf: [nil, { type: 'boolean' }, preview_settings]))
+    end
+
+    it 'still replaces a hand-written $ref with a recorded oneOf' do
+      items = ->(schema) { response_with(type: 'array', items: schema) }
+      recorded = { oneOf: [{ type: 'integer' }, { type: 'string' }] }
+
+      written = items.call({ '$ref': '#/components/schemas/Tag' })
+
+      result = RSpec::OpenAPI::SchemaMerger.merge!(written, items.call(recorded))
+
+      expect(result).to eq(items.call(recorded))
+    end
+
     it 'leaves integer and number to the last example, since every integer is also a number' do
       results = merge_in_every_order({ type: 'integer' }, { type: 'number', format: 'float' })
 

@@ -38,8 +38,8 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   #
   # TODO: Should we probably force-merge `summary` regardless of manual modifications?
   def merge_schema!(base, spec, in_schema: false)
-    if (options = base[:oneOf])
-      merge_closest_match!(options, spec, in_schema)
+    if base.key?(:oneOf)
+      merge_one_of!(base, spec)
 
       return base
     end
@@ -96,7 +96,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   def one_of_needed?(base, spec)
     return false if base.key?(:$ref)
 
-    base.key?(:oneOf) || spec.key?(:oneOf) || conflicting_types?(base, spec)
+    spec.key?(:oneOf) || conflicting_types?(base, spec)
   end
 
   def conflicting_types?(base, spec)
@@ -109,7 +109,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
     nullable = base.delete(:nullable) || spec[:nullable]
     base.replace(oneOf: [base.dup].reject(&:empty?)) unless base.key?(:oneOf)
 
-    one_of_variants(spec).each { |variant| merge_closest_match!(base[:oneOf], variant, true) }
+    one_of_variants(spec).each { |variant| merge_closest_match!(base[:oneOf], variant) }
     base[:nullable] = true if nullable
   end
 
@@ -244,7 +244,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
     hash[:examples] = { name => example }
   end
 
-  def merge_closest_match!(options, spec, in_schema)
+  def merge_closest_match!(options, spec)
     score, option = options.map { |option| [similarity(option, spec), option] }.max_by(&:first)
 
     return if option&.key?(:$ref)
@@ -252,7 +252,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
     return if spec[:oneOf]
 
     if score.to_f > SIMILARITY_THRESHOLD
-      merge_schema!(option, spec, in_schema: in_schema)
+      merge_schema!(option, spec, in_schema: true)
     else
       options.push(spec)
       sort_by_type!(options)
