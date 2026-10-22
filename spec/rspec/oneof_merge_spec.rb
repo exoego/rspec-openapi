@@ -19,8 +19,12 @@ RSpec.describe 'oneOf merging across examples' do
     File.write(openapi_path, original) if original
   end
 
+  def response_content(path, status, *keys)
+    committed.dig('paths', path, 'get', 'responses', status, 'content', 'application/json', *keys)
+  end
+
   def response_schema(path, *keys)
-    committed.dig('paths', path, 'get', 'responses', '200', 'content', 'application/json', 'schema', *keys)
+    response_content(path, '200', 'schema', *keys)
   end
 
   it 'records over seed.yaml into the committed openapi.yaml' do
@@ -66,10 +70,14 @@ RSpec.describe 'oneOf merging across examples' do
   end
 
   it 'keeps a component referenced from inside a oneOf variant when only that variant is recorded' do
-    tagged = { 'type' => 'object', 'properties' => { 'tag' => { '$ref' => '#/components/schemas/Tag' } } }
-
-    expect(response_schema('/oneof_merge/tagged', 'oneOf'))
-      .to eq([{ 'type' => 'boolean' }, tagged.merge('required' => ['tag'])])
+    expect(response_schema('/oneof_merge/tagged', 'oneOf')).to eq([
+      { 'type' => 'boolean' },
+      {
+        'type' => 'object',
+        'properties' => { 'tag' => { '$ref' => '#/components/schemas/Tag' } },
+        'required' => ['tag'],
+      },
+    ])
     expect(committed.dig('components', 'schemas', 'Tag')).to eq(
       'type' => 'object', 'properties' => { 'name' => { 'type' => 'string' } }, 'required' => ['name'],
     )
@@ -92,10 +100,7 @@ RSpec.describe 'oneOf merging across examples' do
   end
 
   it 'writes a hand-written type beside a oneOf back as it was' do
-    schema = committed.dig('paths', '/oneof_merge/typed_one_of', 'get', 'responses', '409', 'content',
-                           'application/json', 'schema',)
-
-    expect(schema).to eq(
+    expect(response_content('/oneof_merge/typed_one_of', '409', 'schema')).to eq(
       'type' => ['object', 'null'],
       'oneOf' => [{ 'required' => ['meow'] }, { 'required' => ['bark'] }],
     )
@@ -117,10 +122,8 @@ RSpec.describe 'oneOf merging across examples' do
   end
 
   it 'keeps the last recorded example as it was, even where a field is named like a schema key' do
-    example = committed.dig('paths', '/oneof_merge/schema_field', 'get', 'responses', '200', 'content',
-                            'application/json', 'example',)
-
-    expect(example).to eq('id' => 2, 'schema' => { 'type' => 'integer' }, 'required' => ['name'])
+    expect(response_content('/oneof_merge/schema_field', '200', 'example'))
+      .to eq('id' => 2, 'schema' => { 'type' => 'integer' }, 'required' => ['name'])
   end
 
   it 'records an integer that is also a number as a number, whichever example runs first' do
