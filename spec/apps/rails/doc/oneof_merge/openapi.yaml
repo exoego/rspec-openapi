@@ -138,6 +138,35 @@ paths:
                 values:
                 - 1
                 - 1.5
+  "/oneof_merge/null_variants":
+    get:
+      summary: GET /oneof_merge/null_variants
+      responses:
+        '200':
+          description: records values
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    oneOf:
+                    - description: Cleared by the user
+                      type: 'null'
+                    - type: string
+                  other:
+                    oneOf:
+                    - type:
+                      - string
+                      - 'null'
+                    - type: integer
+                required:
+                - value
+                - other
+              example:
+                value: a
+                other: 1
+      tags: []
   "/oneof_merge/number_then_integer":
     get:
       summary: GET /oneof_merge/number_then_integer

@@ -198,6 +198,7 @@ Rails.application.routes.draw do
     get '/oneof_merge/param' => ok
     get '/oneof_merge/param_from_scratch' => ok
     get '/oneof_merge/typed_one_of' => ok
+    get '/oneof_merge/null_variants' => one_of_merge.call(nulls: '{"value":null,"other":null}', filled: '{"value":"a","other":1}')
     get '/oneof_merge/schema_field' => one_of_merge.call(
       string: '{"id":1,"schema":{"type":"string"},"required":["id"]}',
       integer: '{"id":2,"schema":{"type":"integer"},"required":["name"]}',

@@ -35,10 +35,18 @@ class << RSpec::OpenAPI::NullableConverter = Object.new
   end
 
   def insert_null_variant!(variants)
-    return if variants.any? { |variant| variant.is_a?(Hash) && variant[:type] == 'null' }
+    return if variants.any? { |variant| accepts_null?(variant) }
 
     index = variants.index { |variant| variant.is_a?(Hash) && variant[:type].to_s > 'null' } || variants.size
     variants.insert(index, NULL_VARIANT.dup)
+  end
+
+  # A variant that still has to be converted itself counts too, since the
+  # conversion of this node runs before the ones of its variants.
+  def accepts_null?(variant)
+    return false unless variant.is_a?(Hash)
+
+    variant[:nullable] || variant[:type] == 'null' || (variant[:type].is_a?(Array) && variant[:type].include?('null'))
   end
 
   def type_null_to_nullable!(schema)

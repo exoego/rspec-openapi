@@ -53,6 +53,15 @@ RSpec.describe 'oneOf merging across examples' do
       .to eq('oneOf' => one_of, 'enum' => [1, 'x'])
   end
 
+  it 'adds no second null variant beside a hand-written one' do
+    properties = response_schema('/oneof_merge/null_variants', 'properties')
+
+    expect(properties['value']['oneOf']).to contain_exactly(
+      { 'type' => 'null', 'description' => 'Cleared by the user' }, { 'type' => 'string' },
+    )
+    expect(properties['other']['oneOf']).to contain_exactly({ 'type' => ['string', 'null'] }, { 'type' => 'integer' })
+  end
+
   it 'writes a hand-written type beside a oneOf back as it was' do
     schema = committed.dig('paths', '/oneof_merge/typed_one_of', 'get', 'responses', '409', 'content',
                            'application/json', 'schema',)

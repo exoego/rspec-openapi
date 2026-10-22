@@ -75,6 +75,31 @@ paths:
                   - meow
                 - required:
                   - bark
+  "/oneof_merge/null_variants":
+    get:
+      summary: GET /oneof_merge/null_variants
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    oneOf:
+                    - type: 'null'
+                      description: Cleared by the user
+                    - type: string
+                  other:
+                    oneOf:
+                    - type:
+                      - string
+                      - 'null'
+                    - type: integer
+                required:
+                - value
+                - other
   "/oneof_merge/annotated":
     get:
       summary: GET /oneof_merge/annotated

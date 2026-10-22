@@ -12,7 +12,7 @@ RSpec.describe 'nullable oneOf per OpenAPI version' do
 
   def written_schema(version, schema)
     RSpec::OpenAPI.openapi_version = version
-    response = { content: { 'application/json': { schema: schema } } }
+    response = { content: { 'application/json': { schema: Marshal.load(Marshal.dump(schema)) } } }
     doc = { paths: { '/flags': { get: { responses: { '200': response } } } } }
     RSpec::OpenAPI::ResultRecorder.new({}).send(:cleanup_schema!, Marshal.load(Marshal.dump(doc)), doc)
     doc.dig(:paths, :'/flags', :get, :responses, :'200', :content, :'application/json', :schema)
