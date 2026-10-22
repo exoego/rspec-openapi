@@ -46,8 +46,16 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
 
     prune_stale_object_fields!(base, spec)
 
-    spec.each { |key, value| merge_entry!(base, key, value, schema_context?(in_schema, key)) }
+    spec.each { |key, value| merge_schema_entry!(base, key, value, in_schema) }
     base
+  end
+
+  def merge_schema_entry!(base, key, value, in_schema)
+    if in_schema && key == :properties && base[key].is_a?(Hash) && value.is_a?(Hash)
+      value.each { |name, property| merge_entry!(base[key], name, property, true) }
+    else
+      merge_entry!(base, key, value, schema_context?(in_schema, key))
+    end
   end
 
   def schema_context?(in_schema, key)

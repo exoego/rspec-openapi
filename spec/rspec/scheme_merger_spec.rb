@@ -437,6 +437,16 @@ RSpec.describe 'schema merger spec' do
       expect(results).to eq([response_with(validations.call({ oneOf: [{ type: 'boolean' }, message] }))])
     end
 
+    it 'merges conflicting types of properties named default and enum' do
+      settings = lambda do |value_schema|
+        { type: 'object', properties: { default: value_schema, enum: value_schema }, required: [:default, :enum] }
+      end
+
+      results = merge_in_every_order(settings.call({ type: 'boolean' }), settings.call({ type: 'string' }))
+
+      expect(results).to eq([response_with(settings.call({ oneOf: [{ type: 'boolean' }, { type: 'string' }] }))])
+    end
+
     it 'keeps the oneOf nullable when any example was nullable' do
       results = merge_in_every_order({ type: 'string', nullable: true }, { type: 'integer' })
 
