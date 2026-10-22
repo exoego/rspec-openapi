@@ -38,11 +38,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   #
   # TODO: Should we probably force-merge `summary` regardless of manual modifications?
   def merge_schema!(base, spec, in_schema: false)
-    if base.key?(:oneOf)
-      merge_one_of!(base, spec)
-
-      return base
-    end
+    return merge_one_of!(base, spec) if base[:oneOf]
 
     prune_stale_object_fields!(base, spec)
 
@@ -115,10 +111,16 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
 
   def merge_one_of!(base, spec)
     nullable = base.delete(:nullable) || spec[:nullable]
-    base.replace(oneOf: [base.dup].reject(&:empty?)) unless base.key?(:oneOf)
+    wrap_in_one_of!(base) unless base[:oneOf]
 
     one_of_variants(spec).each { |variant| merge_closest_match!(base[:oneOf], variant) }
     base[:nullable] = true if nullable
+    base
+  end
+
+  def wrap_in_one_of!(base)
+    base.delete(:oneOf)
+    base.replace(oneOf: [base.dup].reject(&:empty?))
   end
 
   def one_of_variants(schema)

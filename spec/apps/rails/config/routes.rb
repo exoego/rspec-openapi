@@ -177,6 +177,15 @@ Rails.application.routes.draw do
       end
     }
 
+    # Routes for the oneOf merge spec. Each picks its body by the X-Variant header.
+    one_of_merge = lambda { |**bodies|
+      lambda { |env|
+        body = bodies.fetch((env['HTTP_X_VARIANT'] || 'first').to_sym)
+        [200, { 'Content-Type' => 'application/json' }, [body]]
+      }
+    }
+    get '/oneof_merge/empty_one_of' => one_of_merge.call(first: '{"value":"a"}', integer: '{"value":1}')
+
     # Test routes for description preservation with example_mode :none
     get '/description_preserve_test' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }
     get '/description_overwrite_test' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }

@@ -1,0 +1,27 @@
+---
+openapi: 3.1.0
+info:
+  title: oneOf merge
+  version: 1.0.0
+servers: []
+paths:
+  "/oneof_merge/empty_one_of":
+    get:
+      summary: GET /oneof_merge/empty_one_of
+      responses:
+        '200':
+          description: records an integer
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    oneOf:
+                    - type: integer
+                    - type: string
+                required:
+                - value
+              example:
+                value: 1
+      tags: []
