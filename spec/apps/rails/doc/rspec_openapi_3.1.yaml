@@ -116,10 +116,10 @@ paths:
                             properties:
                               value:
                                 oneOf:
+                                - type: 'null'
                                 - type: string
                                 - type: array
                                   items: {}
-                                type: 'null'
                               options:
                                 oneOf:
                                 - type: array
@@ -133,13 +133,13 @@ paths:
                                     required:
                                     - label
                                     - value
+                                - type: 'null'
                                 - type: object
                                   properties:
                                     endpoint:
                                       type: string
                                   required:
                                   - endpoint
-                                type: 'null'
                             required:
                             - value
                             - options
@@ -205,12 +205,12 @@ paths:
                                 properties:
                                   value:
                                     oneOf:
+                                    - type: 'null'
                                     - type: string
                                     - type: boolean
                                     - type: array
                                       items:
                                         type: string
-                                    type: 'null'
                                 required:
                                 - value
                           required:

@@ -165,6 +165,18 @@ Rails.application.routes.draw do
     get '/dynamic_keys_test/deeply_nested' => 'dynamic_keys_test#deeply_nested'
     get '/dynamic_keys_test/with_enum' => 'dynamic_keys_test#with_enum'
 
+    sibling_meta = ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"products":[{"meta":{"id":1,"a":1}},{"meta":{"id":2,"b":"x"}}]}']] }
+    get '/sibling_objects/dictionary' => sibling_meta
+    get '/sibling_objects/hybrid' => sibling_meta
+    get '/sibling_objects/empty_override' => sibling_meta
+    get '/sibling_objects/settings' => lambda { |env|
+      if Rack::Request.new(env).params['flags'] == '1'
+        [200, { 'Content-Type' => 'application/json' }, ['{"options":[{"default":true,"enum":true}]}']]
+      else
+        [200, { 'Content-Type' => 'application/json' }, ['{"options":[{"default":"on","enum":"a"},{"default":null,"enum":null}]}']]
+      end
+    }
+
     # Test routes for description preservation with example_mode :none
     get '/description_preserve_test' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }
     get '/description_overwrite_test' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }

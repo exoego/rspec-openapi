@@ -26,6 +26,9 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   end
 
   SIMILARITY_THRESHOLD = 0.5
+  SCHEMA_KEYS = [:schema, :schemas, :itemSchema].freeze
+  DATA_KEYS = [:example, :examples, :default, :enum].freeze
+  NUMERIC_TYPES = ['integer', 'number'].freeze
 
   private
 
@@ -34,17 +37,31 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   # may be an array whose Hash elements have a key name.
   #
   # TODO: Should we probably force-merge `summary` regardless of manual modifications?
-  def merge_schema!(base, spec)
-    if (options = base[:oneOf])
-      merge_closest_match!(options, spec)
+  def merge_schema!(base, spec, in_schema: false)
+    if base.key?(:oneOf)
+      merge_one_of!(base, spec)
 
       return base
     end
 
     prune_stale_object_fields!(base, spec)
 
-    spec.each { |key, value| merge_entry!(base, key, value) }
+    spec.each { |key, value| merge_schema_entry!(base, key, value, in_schema) }
     base
+  end
+
+  def merge_schema_entry!(base, key, value, in_schema)
+    if in_schema && key == :properties && base[key].is_a?(Hash) && value.is_a?(Hash)
+      value.each { |name, property| merge_entry!(base[key], name, property, true) }
+    else
+      merge_entry!(base, key, value, schema_context?(in_schema, key))
+    end
+  end
+
+  def schema_context?(in_schema, key)
+    return false if DATA_KEYS.include?(key)
+
+    in_schema || SCHEMA_KEYS.include?(key)
   end
 
   # When the new spec converts an object to a dictionary (introduces
@@ -60,9 +77,9 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
     base.delete(:required)
   end
 
-  def merge_entry!(base, key, value)
+  def merge_entry!(base, key, value, in_schema)
     if base[key].is_a?(Hash) && value.is_a?(Hash)
-      merge_hash_entry!(base, key, value)
+      merge_hash_entry!(base, key, value, in_schema)
     elsif base[key].is_a?(Array) && value.is_a?(Array)
       # parameters need to be merged as if `name` and `in` were the Hash keys.
       merge_arrays(base, key, value)
@@ -71,16 +88,42 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
     end
   end
 
-  def merge_hash_entry!(base, key, value)
+  def merge_hash_entry!(base, key, value, in_schema)
     # Handle example/examples conflict - convert to examples when mixed
     normalize_example_fields!(base[key], value)
 
-    # If the new value has oneOf, replace the entire value instead of merging
-    if value.key?(:oneOf)
+    if in_schema && one_of_needed?(base[key], value)
+      merge_one_of!(base[key], value)
+    elsif value.key?(:oneOf)
       base[key] = value
     elsif !base[key].key?(:$ref)
-      merge_schema!(base[key], value)
+      merge_schema!(base[key], value, in_schema: in_schema)
     end
+  end
+
+  def one_of_needed?(base, spec)
+    return false if base.key?(:$ref)
+
+    spec.key?(:oneOf) || conflicting_types?(base, spec)
+  end
+
+  def conflicting_types?(base, spec)
+    types = [base[:type], spec[:type]]
+
+    types.all?(String) && types.uniq.size > 1 && !(types - NUMERIC_TYPES).empty?
+  end
+
+  def merge_one_of!(base, spec)
+    nullable = base.delete(:nullable) || spec[:nullable]
+    base.replace(oneOf: [base.dup].reject(&:empty?)) unless base.key?(:oneOf)
+
+    one_of_variants(spec).each { |variant| merge_closest_match!(base[:oneOf], variant) }
+    base[:nullable] = true if nullable
+  end
+
+  def one_of_variants(schema)
+    variants = schema[:oneOf] || [schema.reject { |key, _| key == :nullable }]
+    variants.reject { |variant| variant.is_a?(Hash) && variant.empty? }
   end
 
   # do not ADD `properties` or `required` fields if `additionalProperties` field is present
@@ -217,10 +260,19 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
     return if spec[:oneOf]
 
     if score.to_f > SIMILARITY_THRESHOLD
-      merge_schema!(option, spec)
+      merge_schema!(option, spec, in_schema: true)
     else
       options.push(spec)
+      sort_by_type!(options)
     end
+  end
+
+  def sort_by_type!(options)
+    options.replace(options.sort_by.with_index { |option, index| [type_name(option), index] })
+  end
+
+  def type_name(schema)
+    schema.is_a?(Hash) ? schema[:type].to_s : ''
   end
 
   def similarity(first, second)

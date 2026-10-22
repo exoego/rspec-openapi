@@ -351,4 +351,158 @@ RSpec.describe 'schema merger spec' do
       )
     end
   end
+
+  describe 'conflicting types across examples' do
+    def response_with(schema)
+      { content: { 'application/json': { schema: schema } } }
+    end
+
+    def merge_in_every_order(*schemas)
+      schemas.permutation.map do |ordered|
+        ordered.each_with_object({}) do |schema, doc|
+          RSpec::OpenAPI::SchemaMerger.merge!(doc, Marshal.load(Marshal.dump(response_with(schema))))
+        end
+      end.uniq
+    end
+
+    let(:preview_settings) do
+      {
+        type: 'object',
+        properties: { countryCode: { type: 'string' } },
+        required: [:countryCode],
+      }
+    end
+
+    it 'merges a boolean and an object into a oneOf, whichever example runs first' do
+      results = merge_in_every_order({ type: 'boolean' }, preview_settings)
+
+      expect(results).to eq([response_with(oneOf: [{ type: 'boolean' }, preview_settings])])
+    end
+
+    it 'leaves the oneOf unchanged when the next run merges the same examples into it' do
+      written = merge_in_every_order({ type: 'boolean' }, preview_settings).first
+
+      rerun = Marshal.load(Marshal.dump(written))
+      [{ type: 'boolean' }, preview_settings].each do |schema|
+        RSpec::OpenAPI::SchemaMerger.merge!(rerun, response_with(schema))
+      end
+
+      expect(rerun).to eq(written)
+    end
+
+    it 'keeps merging object properties into the object variant' do
+      with_locale = {
+        type: 'object',
+        properties: { countryCode: { type: 'string' }, locale: { type: 'string' } },
+        required: [:countryCode, :locale],
+      }
+
+      results = merge_in_every_order({ type: 'boolean' }, preview_settings, with_locale)
+
+      expect(results).to eq([
+        response_with(
+          oneOf: [
+            { type: 'boolean' },
+            {
+              type: 'object',
+              properties: { countryCode: { type: 'string' }, locale: { type: 'string' } },
+              required: [:countryCode],
+            },
+          ],
+        ),
+      ])
+    end
+
+    it 'merges an integer and a string recorded for the same array item property' do
+      answer_options = lambda do |value_schema|
+        {
+          type: 'array',
+          items: { type: 'object', properties: { value: value_schema }, required: [:value] },
+        }
+      end
+
+      results = merge_in_every_order(answer_options.call({ type: 'integer' }), answer_options.call({ type: 'string' }))
+
+      expect(results).to eq([response_with(answer_options.call({ oneOf: [{ type: 'integer' }, { type: 'string' }] }))])
+    end
+
+    it 'merges a nested boolean and object into a oneOf' do
+      validations = lambda do |presence_schema|
+        { type: 'object', properties: { presence: presence_schema }, required: [:presence] }
+      end
+      message = { type: 'object', properties: { message: { type: 'string' } }, required: [:message] }
+
+      results = merge_in_every_order(validations.call({ type: 'boolean' }), validations.call(message))
+
+      expect(results).to eq([response_with(validations.call({ oneOf: [{ type: 'boolean' }, message] }))])
+    end
+
+    it 'merges conflicting types of properties named default and enum' do
+      settings = lambda do |value_schema|
+        { type: 'object', properties: { default: value_schema, enum: value_schema }, required: [:default, :enum] }
+      end
+
+      results = merge_in_every_order(settings.call({ type: 'boolean' }), settings.call({ type: 'string' }))
+
+      expect(results).to eq([response_with(settings.call({ oneOf: [{ type: 'boolean' }, { type: 'string' }] }))])
+    end
+
+    it 'keeps the oneOf nullable when any example was nullable' do
+      results = merge_in_every_order({ type: 'string', nullable: true }, { type: 'integer' })
+
+      expect(results).to eq([response_with(oneOf: [{ type: 'integer' }, { type: 'string' }], nullable: true)])
+    end
+
+    it 'combines an existing oneOf with a new type instead of replacing it' do
+      results = merge_in_every_order({ oneOf: [{ type: 'string' }, { type: 'integer' }] }, { type: 'boolean' })
+
+      expect(results).to eq([response_with(oneOf: [{ type: 'boolean' }, { type: 'integer' }, { type: 'string' }])])
+    end
+
+    it 'keeps a list item left empty in a hand-written oneOf when a new type is added' do
+      written = response_with(oneOf: [nil, preview_settings])
+
+      result = RSpec::OpenAPI::SchemaMerger.merge!(written, response_with(type: 'boolean'))
+
+      expect(result).to eq(response_with(oneOf: [nil, { type: 'boolean' }, preview_settings]))
+    end
+
+    it 'still replaces a hand-written $ref with a recorded oneOf' do
+      items = ->(schema) { response_with(type: 'array', items: schema) }
+      recorded = { oneOf: [{ type: 'integer' }, { type: 'string' }] }
+
+      written = items.call({ '$ref': '#/components/schemas/Tag' })
+
+      result = RSpec::OpenAPI::SchemaMerger.merge!(written, items.call(recorded))
+
+      expect(result).to eq(items.call(recorded))
+    end
+
+    it 'leaves integer and number to the last example, since every integer is also a number' do
+      results = merge_in_every_order({ type: 'integer' }, { type: 'number', format: 'float' })
+
+      expect(results.map { |doc| doc.dig(:content, :'application/json', :schema, :type) })
+        .to contain_exactly('integer', 'number')
+    end
+
+    it 'does not treat a `type` field in example data as a schema' do
+      base = { content: { 'application/json': { schema: { type: 'object' }, example: { type: 'admin' } } } }
+      spec = { content: { 'application/json': { schema: { type: 'object' }, example: { type: 'guest' } } } }
+
+      result = RSpec::OpenAPI::SchemaMerger.merge!(base, spec)
+
+      expect(result[:content][:'application/json'][:example]).to eq(type: 'guest')
+    end
+
+    it 'does not treat a security scheme as a schema' do
+      base = { components: { securitySchemes: { Token: { type: 'apiKey', in: 'header', name: 'X-Token' } } } }
+      spec = { components: { securitySchemes: { Token: { type: 'http', scheme: 'bearer' } } } }
+
+      result = RSpec::OpenAPI::SchemaMerger.merge!(base, spec)
+
+      expect(result[:components][:securitySchemes][:Token]).to eq(
+        type: 'http', in: 'header', name: 'X-Token', scheme: 'bearer',
+      )
+    end
+  end
 end
