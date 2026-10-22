@@ -478,11 +478,10 @@ RSpec.describe 'schema merger spec' do
       expect(result).to eq(items.call(recorded))
     end
 
-    it 'leaves integer and number to the last example, since every integer is also a number' do
+    it 'records integer and number as a number, since every integer is also a number' do
       results = merge_in_every_order({ type: 'integer' }, { type: 'number', format: 'float' })
 
-      expect(results.map { |doc| doc.dig(:content, :'application/json', :schema, :type) })
-        .to contain_exactly('integer', 'number')
+      expect(results).to eq([response_with(type: 'number', format: 'float')])
     end
 
     it 'does not treat a `type` field in example data as a schema' do

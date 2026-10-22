@@ -45,9 +45,23 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
     return merge_one_of!(base, spec) if base[:oneOf]
 
     prune_stale_object_fields!(base, spec)
+    spec = widen_to_number!(base, spec) if in_schema
 
     spec.each { |key, value| merge_schema_entry!(base, key, value, in_schema) }
     base
+  end
+
+  # Every integer is a number, so a value seen as both is a number. The format
+  # of the integer side would be wrong on a number, so only the number's stays.
+  def widen_to_number!(base, spec)
+    types = [base[:type], spec[:type]]
+    return spec unless types.all?(String) && types.sort == NUMERIC_TYPES
+
+    format = (base[:type] == 'number' ? base : spec)[:format]
+    base.delete(:format)
+    base[:type] = 'number'
+    base[:format] = format if format
+    spec.reject { |key, _| [:type, :format].include?(key) }
   end
 
   def merge_schema_entry!(base, key, value, in_schema)
@@ -108,9 +122,11 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   end
 
   def conflicting_types?(base, spec)
-    types = [base[:type], spec[:type]]
+    base[:type].is_a?(String) && spec[:type].is_a?(String) && !same_type?(base[:type], spec[:type])
+  end
 
-    types.all?(String) && types.uniq.size > 1 && !(types - NUMERIC_TYPES).empty?
+  def same_type?(first, second)
+    first == second || (NUMERIC_TYPES.include?(first) && NUMERIC_TYPES.include?(second))
   end
 
   def merge_one_of!(base, spec)
@@ -285,7 +301,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   # shape is a new variant there. Anywhere else a value could match two variants
   # of one type, so those always merge, into the closest when there are several.
   def same_type_option(options, spec)
-    same_type = options.select { |option| option.is_a?(Hash) && option[:type] == spec[:type] }
+    same_type = options.select { |option| option.is_a?(Hash) && same_type?(option[:type], spec[:type]) }
     same_type.max_by { |option| similarity(option, spec) }
   end
 

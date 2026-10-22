@@ -96,6 +96,88 @@ paths:
               example:
                 value: 1
       tags: []
+  "/oneof_merge/integer_then_number":
+    get:
+      summary: GET /oneof_merge/integer_then_number
+      tags: []
+      responses:
+        '200':
+          description: records a number
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    type: number
+                    format: float
+                required:
+                - value
+              example:
+                value: 1.5
+  "/oneof_merge/mixed_numbers":
+    get:
+      summary: GET /oneof_merge/mixed_numbers
+      tags: []
+      responses:
+        '200':
+          description: records both
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  values:
+                    type: array
+                    items:
+                      type: number
+                      format: float
+                required:
+                - values
+              example:
+                values:
+                - 1
+                - 1.5
+  "/oneof_merge/number_then_integer":
+    get:
+      summary: GET /oneof_merge/number_then_integer
+      tags: []
+      responses:
+        '200':
+          description: records an integer
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    type: number
+                    format: float
+                required:
+                - value
+              example:
+                value: 1
+  "/oneof_merge/numbers_then_string":
+    get:
+      summary: GET /oneof_merge/numbers_then_string
+      tags: []
+      responses:
+        '200':
+          description: records a string
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    oneOf:
+                    - type: number
+                      format: float
+                    - type: string
+                required:
+                - value
+              example:
+                value: a
   "/oneof_merge/objects_then_boolean":
     get:
       summary: GET /oneof_merge/objects_then_boolean

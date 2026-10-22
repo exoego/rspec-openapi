@@ -184,9 +184,13 @@ Rails.application.routes.draw do
         [200, { 'Content-Type' => 'application/json' }, [body]]
       }
     }
-    value = one_of_merge.call(string: '{"value":"a"}', integer: '{"value":1}')
+    value = one_of_merge.call(string: '{"value":"a"}', integer: '{"value":1}', float: '{"value":1.5}')
     get '/oneof_merge/empty_one_of' => value
     get '/oneof_merge/annotated' => value
+    get '/oneof_merge/integer_then_number' => value
+    get '/oneof_merge/number_then_integer' => value
+    get '/oneof_merge/numbers_then_string' => value
+    get '/oneof_merge/mixed_numbers' => one_of_merge.call(mixed: '{"values":[1,1.5]}')
     mixed_items = one_of_merge.call(mixed: '{"values":[1,"x"]}')
     get '/oneof_merge/typeless' => mixed_items
     get '/oneof_merge/typeless_enum' => mixed_items

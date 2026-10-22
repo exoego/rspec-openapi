@@ -37,6 +37,26 @@ RSpec.describe 'oneOf merging across examples', type: :request do
     it('records items of two types') { record '/oneof_merge/typeless_enum', 'mixed' }
   end
 
+  describe 'an integer, then a number' do
+    it('records an integer') { record '/oneof_merge/integer_then_number', 'integer' }
+    it('records a number') { record '/oneof_merge/integer_then_number', 'float' }
+  end
+
+  describe 'a number, then an integer' do
+    it('records a number') { record '/oneof_merge/number_then_integer', 'float' }
+    it('records an integer') { record '/oneof_merge/number_then_integer', 'integer' }
+  end
+
+  describe 'an integer, a number, then a string' do
+    it('records an integer') { record '/oneof_merge/numbers_then_string', 'integer' }
+    it('records a number') { record '/oneof_merge/numbers_then_string', 'float' }
+    it('records a string') { record '/oneof_merge/numbers_then_string', 'string' }
+  end
+
+  describe 'an integer beside a number in one array' do
+    it('records both') { record '/oneof_merge/mixed_numbers', 'mixed' }
+  end
+
   describe 'objects that share no key, then a boolean' do
     it('records the first object') { record '/oneof_merge/objects_then_boolean', 'object_a' }
     it('records the second object') { record '/oneof_merge/objects_then_boolean', 'object_b' }

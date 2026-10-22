@@ -12,7 +12,7 @@ class << RSpec::OpenAPI::SchemaBuilder
       # Drop empty `{}` schemas (e.g. items of an empty array) — they carry no
       # type info and would otherwise spuriously mark every property of their
       # populated siblings as nullable via the missing-key nullable rule.
-      non_empty = variations.reject(&:empty?)
+      non_empty = widen_integers(variations.reject(&:empty?))
       return {} if non_empty.empty?
       return non_empty.first if non_empty.size == 1
 
@@ -124,6 +124,7 @@ class << RSpec::OpenAPI::SchemaBuilder
     def merge_multi(prop_variations)
       return { oneOf: flatten_one_of(prop_variations) } if prop_variations.any? { |p| p.key?(:oneOf) }
 
+      prop_variations = widen_integers(prop_variations)
       prop_types = prop_variations.map { |p| p[:type] }.compact.uniq
       return one_of_schema(prop_variations) if prop_types.size > 1
 
@@ -132,6 +133,13 @@ class << RSpec::OpenAPI::SchemaBuilder
       when 'object' then merge_variations(prop_variations)
       else prop_variations.first.dup
       end
+    end
+
+    # Every integer is a number, so integers seen beside numbers are numbers.
+    def widen_integers(variations)
+      return variations unless variations.any? { |v| v[:type] == 'number' }
+
+      variations.reject { |v| v[:type] == 'integer' }
     end
 
     def flatten_one_of(prop_variations)

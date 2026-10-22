@@ -53,6 +53,16 @@ RSpec.describe 'oneOf merging across examples' do
       .to eq('oneOf' => one_of, 'enum' => [1, 'x'])
   end
 
+  it 'records an integer that is also a number as a number, whichever example runs first' do
+    number = { 'type' => 'number', 'format' => 'float' }
+
+    expect(response_schema('/oneof_merge/integer_then_number', 'properties', 'value')).to eq(number)
+    expect(response_schema('/oneof_merge/number_then_integer', 'properties', 'value')).to eq(number)
+    expect(response_schema('/oneof_merge/numbers_then_string', 'properties', 'value'))
+      .to eq('oneOf' => [number, { 'type' => 'string' }])
+    expect(response_schema('/oneof_merge/mixed_numbers', 'properties', 'values', 'items')).to eq(number)
+  end
+
   it 'merges objects that share no key into one object variant, whichever example runs first' do
     flag = {
       'oneOf' => [
