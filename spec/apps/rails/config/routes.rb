@@ -191,6 +191,9 @@ Rails.application.routes.draw do
     get '/oneof_merge/number_then_integer' => value
     get '/oneof_merge/numbers_then_string' => value
     get '/oneof_merge/mixed_numbers' => one_of_merge.call(mixed: '{"values":[1,1.5]}')
+    tags = one_of_merge.call(mixed: '{"tags":["a",1]}', integers: '{"tags":[1]}')
+    get '/oneof_merge/tags_mixed_then_integers' => tags
+    get '/oneof_merge/tags_integers_then_mixed' => tags
     ok = one_of_merge.call(ok: '{"ok":true}')
     get '/oneof_merge/param' => ok
     get '/oneof_merge/param_from_scratch' => ok

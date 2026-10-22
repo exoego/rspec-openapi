@@ -50,7 +50,7 @@ RSpec.describe 'schema builder spec' do
 
     it 'merges differing schemas the way any other variations merge' do
       expect(merged_additional_properties({ type: 'string' }, { type: 'integer' }))
-        .to eq(oneOf: [{ type: 'string' }, { type: 'integer' }])
+        .to eq(oneOf: [{ type: 'integer' }, { type: 'string' }])
     end
 
     it 'keeps false when that is the only value recorded' do

@@ -68,6 +68,16 @@ RSpec.describe 'oneOf merging across examples', type: :request do
     it('records a string') { record '/oneof_merge/numbers_then_string', 'string' }
   end
 
+  describe 'an array of two types, then an array of one of them' do
+    it('records both types') { record '/oneof_merge/tags_mixed_then_integers', 'mixed' }
+    it('records integers') { record '/oneof_merge/tags_mixed_then_integers', 'integers' }
+  end
+
+  describe 'an array of one type, then an array of two types' do
+    it('records integers') { record '/oneof_merge/tags_integers_then_mixed', 'integers' }
+    it('records both types') { record '/oneof_merge/tags_integers_then_mixed', 'mixed' }
+  end
+
   describe 'an integer beside a number in one array' do
     it('records both') { record '/oneof_merge/mixed_numbers', 'mixed' }
   end

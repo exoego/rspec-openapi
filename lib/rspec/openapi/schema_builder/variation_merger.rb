@@ -143,14 +143,15 @@ class << RSpec::OpenAPI::SchemaBuilder
     end
 
     def flatten_one_of(prop_variations)
-      prop_variations.each_with_object([]) do |prop, options|
+      options = prop_variations.each_with_object([]) do |prop, acc|
         clean = without_nullable(prop)
         if clean.key?(:oneOf)
-          options.concat(clean[:oneOf])
+          acc.concat(clean[:oneOf])
         elsif !clean.empty?
-          options << clean
+          acc << clean
         end
-      end.uniq
+      end
+      sort_by_type(options.uniq)
     end
 
     def without_nullable(prop)
@@ -158,7 +159,13 @@ class << RSpec::OpenAPI::SchemaBuilder
     end
 
     def one_of_schema(variations)
-      { oneOf: variations.map { |p| without_nullable(p) }.uniq }
+      { oneOf: sort_by_type(variations.map { |p| without_nullable(p) }.uniq) }
+    end
+
+    # The same order the merger keeps, so the document does not depend on which
+    # example ran first.
+    def sort_by_type(options)
+      options.sort_by.with_index { |option, index| [option[:type].to_s, index] }
     end
   end
 

@@ -294,6 +294,53 @@ paths:
                   type: integer
                 required:
                 - name
+  "/oneof_merge/tags_integers_then_mixed":
+    get:
+      summary: GET /oneof_merge/tags_integers_then_mixed
+      tags: []
+      responses:
+        '200':
+          description: records both types
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tags:
+                    type: array
+                    items:
+                      oneOf:
+                      - type: integer
+                      - type: string
+                required:
+                - tags
+              example:
+                tags:
+                - a
+                - 1
+  "/oneof_merge/tags_mixed_then_integers":
+    get:
+      summary: GET /oneof_merge/tags_mixed_then_integers
+      tags: []
+      responses:
+        '200':
+          description: records integers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tags:
+                    type: array
+                    items:
+                      oneOf:
+                      - type: integer
+                      - type: string
+                required:
+                - tags
+              example:
+                tags:
+                - 1
   "/oneof_merge/typeless":
     get:
       summary: GET /oneof_merge/typeless

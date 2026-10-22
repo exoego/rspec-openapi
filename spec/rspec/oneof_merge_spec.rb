@@ -97,6 +97,13 @@ RSpec.describe 'oneOf merging across examples' do
     expect(response_schema('/oneof_merge/boolean_then_objects', 'properties', 'flag')).to eq(flag)
   end
 
+  it 'orders the variants by type, whichever example runs first' do
+    items = { 'oneOf' => [{ 'type' => 'integer' }, { 'type' => 'string' }] }
+
+    expect(response_schema('/oneof_merge/tags_mixed_then_integers', 'properties', 'tags', 'items')).to eq(items)
+    expect(response_schema('/oneof_merge/tags_integers_then_mixed', 'properties', 'tags', 'items')).to eq(items)
+  end
+
   it 'merges an empty array and a typed array into one array variant' do
     expect(response_schema('/oneof_merge/arrays_then_string', 'properties', 'tags')).to eq(
       'oneOf' => [{ 'type' => 'array', 'items' => { 'type' => 'integer' } }, { 'type' => 'string' }],
