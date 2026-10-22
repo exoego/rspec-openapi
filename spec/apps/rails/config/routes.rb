@@ -191,6 +191,10 @@ Rails.application.routes.draw do
     get '/oneof_merge/number_then_integer' => value
     get '/oneof_merge/numbers_then_string' => value
     get '/oneof_merge/mixed_numbers' => one_of_merge.call(mixed: '{"values":[1,1.5]}')
+    get '/oneof_merge/schema_field' => one_of_merge.call(
+      string: '{"id":1,"schema":{"type":"string"},"required":["id"]}',
+      integer: '{"id":2,"schema":{"type":"integer"},"required":["name"]}',
+    )
     mixed_items = one_of_merge.call(mixed: '{"values":[1,"x"]}')
     get '/oneof_merge/typeless' => mixed_items
     get '/oneof_merge/typeless_enum' => mixed_items

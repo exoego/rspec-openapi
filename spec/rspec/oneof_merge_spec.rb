@@ -53,6 +53,13 @@ RSpec.describe 'oneOf merging across examples' do
       .to eq('oneOf' => one_of, 'enum' => [1, 'x'])
   end
 
+  it 'keeps the last recorded example as it was, even where a field is named like a schema key' do
+    example = committed.dig('paths', '/oneof_merge/schema_field', 'get', 'responses', '200', 'content',
+                            'application/json', 'example',)
+
+    expect(example).to eq('id' => 2, 'schema' => { 'type' => 'integer' }, 'required' => ['name'])
+  end
+
   it 'records an integer that is also a number as a number, whichever example runs first' do
     number = { 'type' => 'number', 'format' => 'float' }
 

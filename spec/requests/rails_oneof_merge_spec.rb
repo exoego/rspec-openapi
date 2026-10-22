@@ -37,6 +37,11 @@ RSpec.describe 'oneOf merging across examples', type: :request do
     it('records items of two types') { record '/oneof_merge/typeless_enum', 'mixed' }
   end
 
+  describe 'fields named schema and required in the body' do
+    it('records the first body') { record '/oneof_merge/schema_field', 'string' }
+    it('records the second body') { record '/oneof_merge/schema_field', 'integer' }
+  end
+
   describe 'an integer, then a number' do
     it('records an integer') { record '/oneof_merge/integer_then_number', 'integer' }
     it('records a number') { record '/oneof_merge/integer_then_number', 'float' }

@@ -41,13 +41,18 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   # may be an array whose Hash elements have a key name.
   #
   # TODO: Should we probably force-merge `summary` regardless of manual modifications?
-  def merge_schema!(base, spec, in_schema: false)
-    return merge_one_of!(base, spec) if base[:oneOf]
+  # The context is :schema under a schema key, :data under a data key, and
+  # :document elsewhere. Recorded data stays data however it is shaped, so a
+  # field named like a schema key never gets merged as one.
+  def merge_schema!(base, spec, context: :document)
+    if context != :data
+      return merge_one_of!(base, spec) if base[:oneOf]
 
-    prune_stale_object_fields!(base, spec)
-    spec = widen_to_number!(base, spec) if in_schema
+      prune_stale_object_fields!(base, spec)
+    end
+    spec = widen_to_number!(base, spec) if context == :schema
 
-    spec.each { |key, value| merge_schema_entry!(base, key, value, in_schema) }
+    spec.each { |key, value| merge_schema_entry!(base, key, value, context) }
     base
   end
 
@@ -64,18 +69,19 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
     spec.reject { |key, _| [:type, :format].include?(key) }
   end
 
-  def merge_schema_entry!(base, key, value, in_schema)
-    if in_schema && key == :properties && base[key].is_a?(Hash) && value.is_a?(Hash)
-      value.each { |name, property| merge_entry!(base[key], name, property, true) }
+  def merge_schema_entry!(base, key, value, context)
+    if context == :schema && key == :properties && base[key].is_a?(Hash) && value.is_a?(Hash)
+      value.each { |name, property| merge_entry!(base[key], name, property, :schema) }
     else
-      merge_entry!(base, key, value, schema_context?(in_schema, key))
+      merge_entry!(base, key, value, child_context(context, key))
     end
   end
 
-  def schema_context?(in_schema, key)
-    return false if DATA_KEYS.include?(key)
+  def child_context(context, key)
+    return :data if context == :data || DATA_KEYS.include?(key)
+    return :schema if context == :schema || SCHEMA_KEYS.include?(key)
 
-    in_schema || SCHEMA_KEYS.include?(key)
+    :document
   end
 
   # When the new spec converts an object to a dictionary (introduces
@@ -91,27 +97,29 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
     base.delete(:required)
   end
 
-  def merge_entry!(base, key, value, in_schema)
+  def merge_entry!(base, key, value, context)
     if base[key].is_a?(Hash) && value.is_a?(Hash)
-      merge_hash_entry!(base, key, value, in_schema)
-    elsif base[key].is_a?(Array) && value.is_a?(Array)
+      merge_hash_entry!(base, key, value, context)
+    elsif context != :data && base[key].is_a?(Array) && value.is_a?(Array)
       # parameters need to be merged as if `name` and `in` were the Hash keys.
       merge_arrays(base, key, value)
-    elsif !skip_due_to_additional_properties?(base, key)
+    elsif context == :data || !skip_due_to_additional_properties?(base, key)
       base[key] = value
     end
   end
 
-  def merge_hash_entry!(base, key, value, in_schema)
+  def merge_hash_entry!(base, key, value, context)
+    return merge_schema!(base[key], value, context: :data) if context == :data
+
     # Handle example/examples conflict - convert to examples when mixed
     normalize_example_fields!(base[key], value)
 
-    if in_schema && one_of_needed?(base[key], value)
+    if context == :schema && one_of_needed?(base[key], value)
       merge_one_of!(base[key], value)
     elsif value.key?(:oneOf)
       base[key] = value
     elsif !base[key].key?(:$ref)
-      merge_schema!(base[key], value, in_schema: in_schema)
+      merge_schema!(base[key], value, context: context)
     end
   end
 
@@ -290,7 +298,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
 
     option = base.key?(:discriminator) ? closest_option(options, spec) : same_type_option(options, spec)
     if option
-      merge_schema!(option, spec, in_schema: true)
+      merge_schema!(option, spec, context: :schema)
     else
       options.push(spec)
       sort_by_type!(options)

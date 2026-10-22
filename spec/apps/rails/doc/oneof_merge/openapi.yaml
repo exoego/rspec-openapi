@@ -203,6 +203,41 @@ paths:
                 - flag
               example:
                 flag: true
+  "/oneof_merge/schema_field":
+    get:
+      summary: GET /oneof_merge/schema_field
+      tags: []
+      responses:
+        '200':
+          description: records the second body
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  schema:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                    required:
+                    - type
+                  required:
+                    type: array
+                    items:
+                      type: string
+                required:
+                - id
+                - schema
+                - required
+              example:
+                id: 2
+                schema:
+                  type: integer
+                required:
+                - name
   "/oneof_merge/typeless":
     get:
       summary: GET /oneof_merge/typeless
