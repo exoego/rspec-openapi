@@ -68,7 +68,13 @@ class << RSpec::OpenAPI::NullableConverter = Object.new
     case node
     when Hash
       yield node
-      node.each { |key, value| each_schema(value, &block) unless DATA_KEYS.include?(key) }
+      node.each do |key, value|
+        if key == :properties && value.is_a?(Hash)
+          value.each_value { |property| each_schema(property, &block) }
+        elsif !DATA_KEYS.include?(key)
+          each_schema(value, &block)
+        end
+      end
     when Array
       node.each { |value| each_schema(value, &block) }
     end
