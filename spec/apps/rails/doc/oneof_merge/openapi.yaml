@@ -5,6 +5,55 @@ info:
   version: 1.0.0
 servers: []
 paths:
+  "/oneof_merge/arrays_then_string":
+    get:
+      summary: GET /oneof_merge/arrays_then_string
+      tags: []
+      responses:
+        '200':
+          description: records the string
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tags:
+                    oneOf:
+                    - type: array
+                      items:
+                        type: integer
+                    - type: string
+                required:
+                - tags
+              example:
+                tags: a
+  "/oneof_merge/boolean_then_objects":
+    get:
+      summary: GET /oneof_merge/boolean_then_objects
+      tags: []
+      responses:
+        '200':
+          description: records the second object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  flag:
+                    oneOf:
+                    - type: boolean
+                    - type: object
+                      properties:
+                        a:
+                          type: integer
+                        b:
+                          type: string
+                required:
+                - flag
+              example:
+                flag:
+                  a: 1
+                  b: x
   "/oneof_merge/empty_one_of":
     get:
       summary: GET /oneof_merge/empty_one_of
@@ -25,3 +74,28 @@ paths:
               example:
                 value: 1
       tags: []
+  "/oneof_merge/objects_then_boolean":
+    get:
+      summary: GET /oneof_merge/objects_then_boolean
+      tags: []
+      responses:
+        '200':
+          description: records the boolean
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  flag:
+                    oneOf:
+                    - type: boolean
+                    - type: object
+                      properties:
+                        a:
+                          type: integer
+                        b:
+                          type: string
+                required:
+                - flag
+              example:
+                flag: true

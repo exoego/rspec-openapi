@@ -113,7 +113,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
     nullable = base.delete(:nullable) || spec[:nullable]
     wrap_in_one_of!(base) unless base[:oneOf]
 
-    one_of_variants(spec).each { |variant| merge_closest_match!(base[:oneOf], variant) }
+    one_of_variants(spec).each { |variant| merge_variant!(base, variant) }
     base[:nullable] = true if nullable
     base
   end
@@ -254,19 +254,31 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
     hash[:examples] = { name => example }
   end
 
-  def merge_closest_match!(options, spec)
-    score, option = options.map { |option| [similarity(option, spec), option] }.max_by(&:first)
+  def merge_variant!(base, spec)
+    options = base[:oneOf]
+    return if spec[:oneOf] || options.include?(spec)
+    return if options.any? { |option| option.is_a?(Hash) && option.key?(:$ref) }
 
-    return if option&.key?(:$ref)
-
-    return if spec[:oneOf]
-
-    if score.to_f > SIMILARITY_THRESHOLD
+    option = base.key?(:discriminator) ? closest_option(options, spec) : same_type_option(options, spec)
+    if option
       merge_schema!(option, spec, in_schema: true)
     else
       options.push(spec)
       sort_by_type!(options)
     end
+  end
+
+  # A discriminator tells the variants apart by a property, so an object of a new
+  # shape is a new variant there. Anywhere else a value could match two variants
+  # of one type, so those always merge, into the closest when there are several.
+  def same_type_option(options, spec)
+    same_type = options.select { |option| option.is_a?(Hash) && option[:type] == spec[:type] }
+    same_type.max_by { |option| similarity(option, spec) }
+  end
+
+  def closest_option(options, spec)
+    score, option = options.map { |option| [similarity(option, spec), option] }.max_by(&:first)
+    option if score.to_f > SIMILARITY_THRESHOLD
   end
 
   def sort_by_type!(options)

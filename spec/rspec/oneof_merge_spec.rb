@@ -35,4 +35,22 @@ RSpec.describe 'oneOf merging across examples' do
     expect(response_schema('/oneof_merge/empty_one_of', 'properties', 'value'))
       .to eq('oneOf' => [{ 'type' => 'integer' }, { 'type' => 'string' }])
   end
+
+  it 'merges objects that share no key into one object variant, whichever example runs first' do
+    flag = {
+      'oneOf' => [
+        { 'type' => 'boolean' },
+        { 'type' => 'object', 'properties' => { 'a' => { 'type' => 'integer' }, 'b' => { 'type' => 'string' } } },
+      ],
+    }
+
+    expect(response_schema('/oneof_merge/objects_then_boolean', 'properties', 'flag')).to eq(flag)
+    expect(response_schema('/oneof_merge/boolean_then_objects', 'properties', 'flag')).to eq(flag)
+  end
+
+  it 'merges an empty array and a typed array into one array variant' do
+    expect(response_schema('/oneof_merge/arrays_then_string', 'properties', 'tags')).to eq(
+      'oneOf' => [{ 'type' => 'array', 'items' => { 'type' => 'integer' } }, { 'type' => 'string' }],
+    )
+  end
 end
