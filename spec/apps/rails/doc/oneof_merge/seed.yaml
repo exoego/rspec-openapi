@@ -23,3 +23,58 @@ paths:
                     oneOf:
                 required:
                 - value
+  "/oneof_merge/annotated":
+    get:
+      summary: GET /oneof_merge/annotated
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    type: string
+                    description: The display name
+                    deprecated: true
+                required:
+                - value
+  "/oneof_merge/typeless":
+    get:
+      summary: GET /oneof_merge/typeless
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  values:
+                    type: array
+                    items:
+                      type: 'null'
+                      description: Set once the user picks one
+                required:
+                - values
+  "/oneof_merge/typeless_enum":
+    get:
+      summary: GET /oneof_merge/typeless_enum
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  values:
+                    type: array
+                    items:
+                      type: 'null'
+                      enum:
+                      - 1
+                      - x
+                required:
+                - values

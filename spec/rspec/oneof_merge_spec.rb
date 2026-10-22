@@ -36,6 +36,23 @@ RSpec.describe 'oneOf merging across examples' do
       .to eq('oneOf' => [{ 'type' => 'integer' }, { 'type' => 'string' }])
   end
 
+  it 'keeps a hand-written description beside the oneOf' do
+    expect(response_schema('/oneof_merge/annotated', 'properties', 'value')).to eq(
+      'oneOf' => [{ 'type' => 'integer' }, { 'type' => 'string' }],
+      'description' => 'The display name',
+      'deprecated' => true,
+    )
+  end
+
+  it 'keeps what a hand-written null schema says beside the oneOf instead of as a variant' do
+    one_of = [{ 'type' => 'integer' }, { 'type' => 'null' }, { 'type' => 'string' }]
+
+    expect(response_schema('/oneof_merge/typeless', 'properties', 'values', 'items'))
+      .to eq('oneOf' => one_of, 'description' => 'Set once the user picks one')
+    expect(response_schema('/oneof_merge/typeless_enum', 'properties', 'values', 'items'))
+      .to eq('oneOf' => one_of, 'enum' => [1, 'x'])
+  end
+
   it 'merges objects that share no key into one object variant, whichever example runs first' do
     flag = {
       'oneOf' => [

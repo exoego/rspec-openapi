@@ -25,6 +25,18 @@ RSpec.describe 'oneOf merging across examples', type: :request do
     it('records an integer') { record '/oneof_merge/empty_one_of', 'integer' }
   end
 
+  describe 'a hand-written description on a string' do
+    it('records an integer') { record '/oneof_merge/annotated', 'integer' }
+  end
+
+  describe 'hand-written null items with a description' do
+    it('records items of two types') { record '/oneof_merge/typeless', 'mixed' }
+  end
+
+  describe 'hand-written null items with an enum' do
+    it('records items of two types') { record '/oneof_merge/typeless_enum', 'mixed' }
+  end
+
   describe 'objects that share no key, then a boolean' do
     it('records the first object') { record '/oneof_merge/objects_then_boolean', 'object_a' }
     it('records the second object') { record '/oneof_merge/objects_then_boolean', 'object_b' }

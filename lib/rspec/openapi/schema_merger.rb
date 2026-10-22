@@ -29,6 +29,10 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   SCHEMA_KEYS = [:schema, :schemas, :itemSchema].freeze
   DATA_KEYS = [:example, :examples, :default, :enum].freeze
   NUMERIC_TYPES = ['integer', 'number'].freeze
+  ANNOTATION_KEYS = [
+    :title, :description, :deprecated, :readOnly, :writeOnly, :example, :examples, :default, :externalDocs, :xml,
+    :discriminator,
+  ].freeze
 
   private
 
@@ -118,9 +122,18 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
     base
   end
 
+  # Annotations describe the whole value, so they stay beside the oneOf. A schema
+  # without a type constrains every variant too, and a variant made of it would
+  # match every other type, so all of it stays beside the oneOf.
   def wrap_in_one_of!(base)
     base.delete(:oneOf)
-    base.replace(oneOf: [base.dup].reject(&:empty?))
+    variant = base[:type] ? base.reject { |key, _| annotation?(key) } : {}
+    rest = base.reject { |key, _| variant.key?(key) }
+    base.replace({ oneOf: [variant].reject(&:empty?) }.merge(rest))
+  end
+
+  def annotation?(key)
+    ANNOTATION_KEYS.include?(key) || key.start_with?('x-')
   end
 
   def one_of_variants(schema)
