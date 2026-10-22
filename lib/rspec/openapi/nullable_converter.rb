@@ -9,6 +9,7 @@ class << RSpec::OpenAPI::NullableConverter = Object.new
   # named `type` or `nullable` would be silently mangled.
   DATA_KEYS = [:example, :examples, :default, :enum].freeze
   NULL_VARIANT = { type: 'null' }.freeze
+  NULLABLE_VARIANT = { nullable: true }.freeze
 
   def to_json_schema!(node)
     each_schema(node) { |schema| nullable_to_type_null!(schema) }
@@ -41,16 +42,12 @@ class << RSpec::OpenAPI::NullableConverter = Object.new
     variants.insert(index, NULL_VARIANT.dup)
   end
 
-  # A variant that still has to be converted itself counts too, since the
-  # conversion of this node runs before the ones of its variants.
   def accepts_null?(variant)
-    return false unless variant.is_a?(Hash)
-
-    variant[:nullable] || variant[:type] == 'null' || (variant[:type].is_a?(Array) && variant[:type].include?('null'))
+    variant.is_a?(Hash) && Array(variant[:type]).include?('null')
   end
 
   def type_null_to_nullable!(schema)
-    schema[:nullable] = true if schema[:oneOf]&.delete(NULL_VARIANT)
+    schema[:nullable] = true if schema[:oneOf]&.delete(NULLABLE_VARIANT)
 
     case (type = schema[:type])
     when 'null'
@@ -69,13 +66,11 @@ class << RSpec::OpenAPI::NullableConverter = Object.new
     end
   end
 
-  # Yield every schema Hash in the tree, skipping the data subtrees in DATA_KEYS. Each
-  # transform mutates only its own node's keys, so the following each still
-  # iterates a stable Hash.
+  # Yield every schema Hash in the tree, skipping the data subtrees in DATA_KEYS.
+  # Variants come before their oneOf, so a oneOf sees its variants converted.
   def each_schema(node, &block)
     case node
     when Hash
-      yield node
       node.each do |key, value|
         if key == :properties && value.is_a?(Hash)
           value.each_value { |property| each_schema(property, &block) }
@@ -83,6 +78,7 @@ class << RSpec::OpenAPI::NullableConverter = Object.new
           each_schema(value, &block)
         end
       end
+      yield node
     when Array
       node.each { |value| each_schema(value, &block) }
     end
