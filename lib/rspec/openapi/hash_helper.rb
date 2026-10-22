@@ -27,6 +27,12 @@ class << RSpec::OpenAPI::HashHelper = Object.new
     end
   end
 
+  # The variant of a schema that has the type, where a schema without a oneOf
+  # is its only variant.
+  def variant_of_type(schema, type)
+    (schema[:oneOf] || [schema]).find { |variant| variant.is_a?(Hash) && variant[:type] == type }
+  end
+
   private
 
   def collect_matches(obj, selector_parts, depth, prefix, matches)

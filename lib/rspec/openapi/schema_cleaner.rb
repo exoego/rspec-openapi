@@ -154,16 +154,12 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
   # not hold.
   def cleanup_variant_properties!(variant, variants, fresh)
     return unless variant.is_a?(Hash) && variant[:properties].is_a?(Hash)
-    return unless variants.one? { |other| type_of(other) == variant[:type] }
+    return unless variants.one? { |other| other.is_a?(Hash) && other[:type] == variant[:type] }
 
-    counterpart = (fresh[:oneOf] || [fresh]).find { |candidate| type_of(candidate) == variant[:type] }
+    counterpart = RSpec::OpenAPI::HashHelper.variant_of_type(fresh, variant[:type])
     return unless counterpart
 
     variant[:properties].delete_if { |name, _| counterpart.dig(:properties, name).nil? }
-  end
-
-  def type_of(schema)
-    schema[:type] if schema.is_a?(Hash)
   end
 
   # Every selector above names at least two segments, so a matched path always

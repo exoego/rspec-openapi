@@ -66,8 +66,7 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
     node = fresh
     paths.each_with_index do |step, index|
       node = if index.positive? && paths[index - 1] == :oneOf
-               variant_type = base.dig(*paths.take(index + 1), :type)
-               (node[:oneOf] || [node]).find { |variant| variant.is_a?(Hash) && variant[:type] == variant_type }
+               RSpec::OpenAPI::HashHelper.variant_of_type(node, base.dig(*paths.take(index + 1), :type))
              elsif step != :oneOf
                node[step]
              else
