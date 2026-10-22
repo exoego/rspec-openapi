@@ -100,6 +100,46 @@ paths:
                 required:
                 - value
                 - other
+  "/oneof_merge/flag_boolean":
+    get:
+      summary: GET /oneof_merge/flag_boolean
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/FlagSetting"
+  "/oneof_merge/flag_object":
+    get:
+      summary: GET /oneof_merge/flag_object
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/FlagSetting"
+  "/oneof_merge/pref_object":
+    get:
+      summary: GET /oneof_merge/pref_object
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/PrefSetting"
+  "/oneof_merge/pref_boolean":
+    get:
+      summary: GET /oneof_merge/pref_boolean
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/PrefSetting"
   "/oneof_merge/annotated":
     get:
       summary: GET /oneof_merge/annotated
@@ -155,3 +195,19 @@ paths:
                       - x
                 required:
                 - values
+components:
+  schemas:
+    FlagSetting:
+      type: object
+      properties:
+        value:
+          type: boolean
+      required:
+      - value
+    PrefSetting:
+      type: object
+      properties:
+        value:
+          type: boolean
+      required:
+      - value

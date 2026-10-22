@@ -60,19 +60,24 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
   end
 
   def merge_fresh_schema!(fresh_schemas, base, paths, nested_schema)
-    schema_name = extract_schema_name(base.dig(*paths)).to_sym
-    fresh_schemas[schema_name] ||= {}
-    RSpec::OpenAPI::SchemaMerger.merge_normalized!(fresh_schemas[schema_name], nested_schema)
+    schema_name = extract_schema_name(base.dig(*paths))
+    merge_schema!(fresh_schemas, schema_name, nested_schema)
   end
 
   def build_fresh_schemas(references, base, fresh)
-    references.inject({}) do |acc, paths|
+    references.each_with_object({}) do |paths, fresh_schemas|
       ref_link = dig_schema(base, paths)[:$ref]
       schema_name = extract_schema_name(ref_link)
       schema_body = dig_schema(fresh, paths.grep_v(Integer))
 
-      RSpec::OpenAPI::SchemaMerger.merge_normalized!(acc, { schema_name => schema_body })
+      merge_schema!(fresh_schemas, schema_name, schema_body)
     end
+  end
+
+  # Under a `schemas` key the merger knows it merges schemas, so two shapes of
+  # one component become a oneOf like they would inline.
+  def merge_schema!(fresh_schemas, schema_name, schema)
+    RSpec::OpenAPI::SchemaMerger.merge_normalized!({ schemas: fresh_schemas }, { schemas: { schema_name => schema } })
   end
 
   def dig_schema(obj, paths)

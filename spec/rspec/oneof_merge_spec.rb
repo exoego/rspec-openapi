@@ -53,6 +53,18 @@ RSpec.describe 'oneOf merging across examples' do
       .to eq('oneOf' => one_of, 'enum' => [1, 'x'])
   end
 
+  it 'merges the two shapes of a shared component into a oneOf, whichever endpoint comes first' do
+    value = {
+      'oneOf' => [
+        { 'type' => 'boolean' },
+        { 'type' => 'object', 'properties' => { 'x' => { 'type' => 'string' } }, 'required' => ['x'] },
+      ],
+    }
+
+    expect(committed.dig('components', 'schemas', 'FlagSetting', 'properties', 'value')).to eq(value)
+    expect(committed.dig('components', 'schemas', 'PrefSetting', 'properties', 'value')).to eq(value)
+  end
+
   it 'adds no second null variant beside a hand-written one' do
     properties = response_schema('/oneof_merge/null_variants', 'properties')
 

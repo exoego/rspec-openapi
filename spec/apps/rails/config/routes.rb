@@ -198,6 +198,11 @@ Rails.application.routes.draw do
     get '/oneof_merge/param' => ok
     get '/oneof_merge/param_from_scratch' => ok
     get '/oneof_merge/typed_one_of' => ok
+    setting = one_of_merge.call(boolean: '{"value":true}', object: '{"value":{"x":"1"}}')
+    get '/oneof_merge/flag_boolean' => setting
+    get '/oneof_merge/flag_object' => setting
+    get '/oneof_merge/pref_object' => setting
+    get '/oneof_merge/pref_boolean' => setting
     get '/oneof_merge/null_variants' => one_of_merge.call(nulls: '{"value":null,"other":null}', filled: '{"value":"a","other":1}')
     get '/oneof_merge/schema_field' => one_of_merge.call(
       string: '{"id":1,"schema":{"type":"string"},"required":["id"]}',

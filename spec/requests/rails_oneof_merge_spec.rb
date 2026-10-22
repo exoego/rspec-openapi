@@ -24,6 +24,13 @@ RSpec.describe 'oneOf merging across examples', type: :request do
     it('records the 200') { record '/oneof_merge/typed_one_of', 'ok' }
   end
 
+  describe 'a component shared by two endpoints' do
+    it('records a boolean through the first') { record '/oneof_merge/flag_boolean', 'boolean' }
+    it('records an object through the second') { record '/oneof_merge/flag_object', 'object' }
+    it('records an object through the first') { record '/oneof_merge/pref_object', 'object' }
+    it('records a boolean through the second') { record '/oneof_merge/pref_boolean', 'boolean' }
+  end
+
   describe 'hand-written null variants' do
     it('records nulls') { record '/oneof_merge/null_variants', 'nulls' }
     it('records values') { record '/oneof_merge/null_variants', 'filled' }

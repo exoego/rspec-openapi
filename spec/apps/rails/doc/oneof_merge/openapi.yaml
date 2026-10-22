@@ -96,6 +96,33 @@ paths:
               example:
                 value: 1
       tags: []
+  "/oneof_merge/flag_boolean":
+    get:
+      summary: GET /oneof_merge/flag_boolean
+      responses:
+        '200':
+          description: records a boolean through the first
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/FlagSetting"
+              example:
+                value: true
+      tags: []
+  "/oneof_merge/flag_object":
+    get:
+      summary: GET /oneof_merge/flag_object
+      responses:
+        '200':
+          description: records an object through the second
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/FlagSetting"
+              example:
+                value:
+                  x: '1'
+      tags: []
   "/oneof_merge/integer_then_number":
     get:
       summary: GET /oneof_merge/integer_then_number
@@ -288,6 +315,33 @@ paths:
                 - ok
               example:
                 ok: true
+  "/oneof_merge/pref_boolean":
+    get:
+      summary: GET /oneof_merge/pref_boolean
+      responses:
+        '200':
+          description: records a boolean through the second
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/PrefSetting"
+              example:
+                value: true
+      tags: []
+  "/oneof_merge/pref_object":
+    get:
+      summary: GET /oneof_merge/pref_object
+      responses:
+        '200':
+          description: records an object through the first
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/PrefSetting"
+              example:
+                value:
+                  x: '1'
+      tags: []
   "/oneof_merge/schema_field":
     get:
       summary: GET /oneof_merge/schema_field
@@ -455,3 +509,33 @@ paths:
                 - 1
                 - x
       tags: []
+components:
+  schemas:
+    FlagSetting:
+      type: object
+      properties:
+        value:
+          oneOf:
+          - type: boolean
+          - type: object
+            properties:
+              x:
+                type: string
+            required:
+            - x
+      required:
+      - value
+    PrefSetting:
+      type: object
+      properties:
+        value:
+          oneOf:
+          - type: boolean
+          - type: object
+            properties:
+              x:
+                type: string
+            required:
+            - x
+      required:
+      - value
