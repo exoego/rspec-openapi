@@ -53,6 +53,16 @@ RSpec.describe 'oneOf merging across examples' do
       .to eq('oneOf' => one_of, 'enum' => [1, 'x'])
   end
 
+  it 'writes a hand-written type beside a oneOf back as it was' do
+    schema = committed.dig('paths', '/oneof_merge/typed_one_of', 'get', 'responses', '409', 'content',
+                           'application/json', 'schema',)
+
+    expect(schema).to eq(
+      'type' => ['object', 'null'],
+      'oneOf' => [{ 'required' => ['meow'] }, { 'required' => ['bark'] }],
+    )
+  end
+
   describe 'a query parameter that may be null' do
     let(:nullable_one_of) { { 'oneOf' => [{ 'type' => 'integer' }, { 'type' => 'null' }, { 'type' => 'string' }] } }
 

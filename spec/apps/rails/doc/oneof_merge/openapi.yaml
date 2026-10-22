@@ -341,6 +341,37 @@ paths:
               example:
                 tags:
                 - 1
+  "/oneof_merge/typed_one_of":
+    get:
+      summary: GET /oneof_merge/typed_one_of
+      responses:
+        '200':
+          description: records the 200
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                required:
+                - ok
+              example:
+                ok: true
+        '409':
+          description: written by hand, a type beside the oneOf
+          content:
+            application/json:
+              schema:
+                type:
+                - object
+                - 'null'
+                oneOf:
+                - required:
+                  - meow
+                - required:
+                  - bark
+      tags: []
   "/oneof_merge/typeless":
     get:
       summary: GET /oneof_merge/typeless

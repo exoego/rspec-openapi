@@ -24,7 +24,7 @@ class << RSpec::OpenAPI::NullableConverter = Object.new
 
   def nullable_to_type_null!(schema)
     return unless schema.delete(:nullable)
-    return insert_null_variant!(schema[:oneOf]) if schema[:oneOf]
+    return insert_null_variant!(schema[:oneOf]) if schema[:oneOf] && !schema.key?(:type)
 
     schema[:type] =
       case (type = schema[:type])

@@ -47,6 +47,34 @@ paths:
                     type: boolean
                 required:
                 - ok
+  "/oneof_merge/typed_one_of":
+    get:
+      summary: GET /oneof_merge/typed_one_of
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                required:
+                - ok
+        '409':
+          description: written by hand, a type beside the oneOf
+          content:
+            application/json:
+              schema:
+                type:
+                - object
+                - 'null'
+                oneOf:
+                - required:
+                  - meow
+                - required:
+                  - bark
   "/oneof_merge/annotated":
     get:
       summary: GET /oneof_merge/annotated
