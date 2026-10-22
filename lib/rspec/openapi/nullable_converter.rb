@@ -35,6 +35,8 @@ class << RSpec::OpenAPI::NullableConverter = Object.new
   end
 
   def insert_null_variant!(variants)
+    return if variants.any? { |variant| variant.is_a?(Hash) && variant[:type] == 'null' }
+
     index = variants.index { |variant| variant.is_a?(Hash) && variant[:type].to_s > 'null' } || variants.size
     variants.insert(index, NULL_VARIANT.dup)
   end

@@ -29,6 +29,13 @@ RSpec.describe 'nullable oneOf per OpenAPI version' do
       .to eq(oneOf: [{ type: 'boolean' }, { type: 'null' }, { type: 'string' }])
   end
 
+  it 'does not add a second null variant beside a hand-written one' do
+    annotated_null = { type: 'null', description: 'Cleared by the user' }
+
+    expect(written_schema('3.1.0', oneOf: [annotated_null, { type: 'string' }], nullable: true))
+      .to eq(oneOf: [annotated_null, { type: 'string' }])
+  end
+
   it 'reads a null variant back as nullable so the next run merges it as before' do
     written = written_schema('3.2.0', nullable_one_of)
 
