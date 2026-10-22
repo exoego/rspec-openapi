@@ -23,6 +23,30 @@ paths:
                     oneOf:
                 required:
                 - value
+  "/oneof_merge/param":
+    get:
+      summary: GET /oneof_merge/param
+      parameters:
+      - name: q
+        in: query
+        required: false
+        schema:
+          oneOf:
+          - type: integer
+          - type: string
+          - type: 'null'
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                required:
+                - ok
   "/oneof_merge/annotated":
     get:
       summary: GET /oneof_merge/annotated

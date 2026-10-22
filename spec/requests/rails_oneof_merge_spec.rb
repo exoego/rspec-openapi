@@ -15,9 +15,19 @@ RSpec::OpenAPI.openapi_version = '3.1.0'
 RSpec::OpenAPI.path = File.expand_path('../apps/rails/doc/oneof_merge/openapi.yaml', __dir__)
 
 RSpec.describe 'oneOf merging across examples', type: :request do
-  def record(path, variant)
-    get path, headers: { 'X-Variant' => variant }
+  def record(path, variant, query: nil)
+    get [path, query].compact.join('?'), headers: { 'X-Variant' => variant }
     expect(response).to have_http_status(:ok)
+  end
+
+  describe 'a hand-written query parameter that may be null' do
+    it('records a string') { record '/oneof_merge/param', 'ok', query: 'q=foo' }
+  end
+
+  describe 'a query parameter given empty, as a string and as an integer' do
+    it('records it empty') { record '/oneof_merge/param_from_scratch', 'ok', query: 'q' }
+    it('records a string') { record '/oneof_merge/param_from_scratch', 'ok', query: 'q=foo' }
+    it('records an integer') { record '/oneof_merge/param_from_scratch', 'ok', query: 'q=1' }
   end
 
   describe 'a hand-written oneOf left empty' do

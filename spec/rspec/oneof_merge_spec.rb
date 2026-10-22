@@ -53,6 +53,21 @@ RSpec.describe 'oneOf merging across examples' do
       .to eq('oneOf' => one_of, 'enum' => [1, 'x'])
   end
 
+  describe 'a query parameter that may be null' do
+    let(:nullable_one_of) { { 'oneOf' => [{ 'type' => 'integer' }, { 'type' => 'null' }, { 'type' => 'string' }] } }
+
+    it 'keeps the null variant written by hand' do
+      expect(committed.dig('paths', '/oneof_merge/param', 'get', 'parameters')).to eq([
+        { 'name' => 'q', 'in' => 'query', 'required' => false, 'schema' => nullable_one_of, 'example' => 'foo' },
+      ])
+    end
+
+    it 'records the parameter given empty as the null variant' do
+      expect(committed.dig('paths', '/oneof_merge/param_from_scratch', 'get', 'parameters', 0, 'schema'))
+        .to eq(nullable_one_of)
+    end
+  end
+
   it 'keeps the last recorded example as it was, even where a field is named like a schema key' do
     example = committed.dig('paths', '/oneof_merge/schema_field', 'get', 'responses', '200', 'content',
                             'application/json', 'example',)

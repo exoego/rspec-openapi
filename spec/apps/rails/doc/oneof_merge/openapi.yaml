@@ -203,6 +203,62 @@ paths:
                 - flag
               example:
                 flag: true
+  "/oneof_merge/param":
+    get:
+      summary: GET /oneof_merge/param
+      parameters:
+      - name: q
+        in: query
+        required: false
+        schema:
+          oneOf:
+          - type: integer
+          - type: 'null'
+          - type: string
+        example: foo
+      responses:
+        '200':
+          description: records a string
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                required:
+                - ok
+              example:
+                ok: true
+      tags: []
+  "/oneof_merge/param_from_scratch":
+    get:
+      summary: GET /oneof_merge/param_from_scratch
+      tags: []
+      parameters:
+      - name: q
+        in: query
+        required: false
+        schema:
+          oneOf:
+          - type: integer
+          - type: 'null'
+          - type: string
+        example: 1
+      responses:
+        '200':
+          description: records an integer
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                required:
+                - ok
+              example:
+                ok: true
   "/oneof_merge/schema_field":
     get:
       summary: GET /oneof_merge/schema_field
