@@ -65,6 +65,16 @@ RSpec.describe 'oneOf merging across examples' do
     expect(committed.dig('components', 'schemas', 'PrefSetting', 'properties', 'value')).to eq(value)
   end
 
+  it 'keeps a component referenced from inside a oneOf variant when only that variant is recorded' do
+    tagged = { 'type' => 'object', 'properties' => { 'tag' => { '$ref' => '#/components/schemas/Tag' } } }
+
+    expect(response_schema('/oneof_merge/tagged', 'oneOf'))
+      .to eq([{ 'type' => 'boolean' }, tagged.merge('required' => ['tag'])])
+    expect(committed.dig('components', 'schemas', 'Tag')).to eq(
+      'type' => 'object', 'properties' => { 'name' => { 'type' => 'string' } }, 'required' => ['name'],
+    )
+  end
+
   it 'adds no second null variant beside a hand-written one' do
     properties = response_schema('/oneof_merge/null_variants', 'properties')
 

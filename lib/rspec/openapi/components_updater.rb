@@ -52,11 +52,30 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
   # relative path in the raw document instead.
   def apply_inline_nested_refs!(fresh_schemas, base, fresh)
     find_inline_nested_refs(base, fresh_schemas.keys).each do |paths|
-      nested_schema = fresh.dig(*paths[0..-2])
+      nested_schema = dig_like(fresh, base, paths[0..-2])
       next if nested_schema.nil?
 
       merge_fresh_schema!(fresh_schemas, base, paths, nested_schema)
     end
+  end
+
+  # Digs fresh along a path of base. This run may have recorded one shape of a
+  # oneOf only, or its variants in another order, so at a variant index the step
+  # picks the fresh variant of the type base has there.
+  def dig_like(fresh, base, paths)
+    node = fresh
+    paths.each_with_index do |step, index|
+      node = if index.positive? && paths[index - 1] == :oneOf
+               variant_type = base.dig(*paths.take(index + 1), :type)
+               (node[:oneOf] || [node]).find { |variant| variant.is_a?(Hash) && variant[:type] == variant_type }
+             elsif step != :oneOf
+               node[step]
+             else
+               node
+             end
+      return nil unless node.is_a?(Hash)
+    end
+    node
   end
 
   def merge_fresh_schema!(fresh_schemas, base, paths, nested_schema)

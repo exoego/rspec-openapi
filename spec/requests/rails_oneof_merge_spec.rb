@@ -31,6 +31,10 @@ RSpec.describe 'oneOf merging across examples', type: :request do
     it('records a boolean through the second') { record '/oneof_merge/pref_boolean', 'boolean' }
   end
 
+  describe 'a $ref inside one variant of a hand-written oneOf' do
+    it('records only that variant') { record '/oneof_merge/tagged', 'object' }
+  end
+
   describe 'hand-written null variants' do
     it('records nulls') { record '/oneof_merge/null_variants', 'nulls' }
     it('records values') { record '/oneof_merge/null_variants', 'filled' }

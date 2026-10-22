@@ -140,6 +140,23 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/PrefSetting"
+  "/oneof_merge/tagged":
+    get:
+      summary: GET /oneof_merge/tagged
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: boolean
+                - type: object
+                  properties:
+                    tag:
+                      "$ref": "#/components/schemas/Tag"
+                  required:
+                  - tag
   "/oneof_merge/annotated":
     get:
       summary: GET /oneof_merge/annotated
@@ -211,3 +228,10 @@ components:
           type: boolean
       required:
       - value
+    Tag:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+      - name

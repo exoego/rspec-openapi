@@ -377,6 +377,27 @@ paths:
                   type: integer
                 required:
                 - name
+  "/oneof_merge/tagged":
+    get:
+      summary: GET /oneof_merge/tagged
+      responses:
+        '200':
+          description: records only that variant
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: boolean
+                - type: object
+                  properties:
+                    tag:
+                      "$ref": "#/components/schemas/Tag"
+                  required:
+                  - tag
+              example:
+                tag:
+                  name: x
+      tags: []
   "/oneof_merge/tags_integers_then_mixed":
     get:
       summary: GET /oneof_merge/tags_integers_then_mixed
@@ -539,3 +560,10 @@ components:
             - x
       required:
       - value
+    Tag:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+      - name
