@@ -157,6 +157,23 @@ paths:
                       "$ref": "#/components/schemas/Tag"
                   required:
                   - tag
+  "/oneof_merge/untagged":
+    get:
+      summary: GET /oneof_merge/untagged
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: boolean
+                - type: object
+                  properties:
+                    tag:
+                      "$ref": "#/components/schemas/Tag"
+                  required:
+                  - tag
   "/oneof_merge/pruned":
     get:
       summary: GET /oneof_merge/pruned

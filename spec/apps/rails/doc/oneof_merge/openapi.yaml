@@ -552,6 +552,25 @@ paths:
                 - 1
                 - x
       tags: []
+  "/oneof_merge/untagged":
+    get:
+      summary: GET /oneof_merge/untagged
+      responses:
+        '200':
+          description: records boolean on untagged
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: boolean
+                - type: object
+                  properties:
+                    tag:
+                      "$ref": "#/components/schemas/Tag"
+                  required:
+                  - tag
+              example: true
+      tags: []
 components:
   schemas:
     FlagSetting:

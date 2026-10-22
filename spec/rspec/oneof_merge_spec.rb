@@ -90,6 +90,10 @@ RSpec.describe 'oneOf merging across examples' do
     ])
   end
 
+  it 'leaves a variant alone, $ref and all, when this run recorded only the other one' do
+    expect(response_schema('/oneof_merge/untagged', 'oneOf')).to eq(response_schema('/oneof_merge/tagged', 'oneOf'))
+  end
+
   it 'adds no second null variant beside a hand-written one' do
     properties = response_schema('/oneof_merge/null_variants', 'properties')
 

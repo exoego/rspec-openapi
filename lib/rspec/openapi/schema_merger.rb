@@ -209,7 +209,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   end
 
   def merge_parameter_with_schema(base_param, new_param)
-    merge_entry!(base_param, :schema, new_param[:schema], true) if new_param.key?(:schema)
+    merge_entry!(base_param, :schema, new_param[:schema], true)
     merged = base_param.merge(new_param.reject { |key, _| key == :schema })
 
     # Once a parameter has been seen missing in any earlier test case, keep it optional

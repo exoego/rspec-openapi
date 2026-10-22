@@ -34,6 +34,7 @@ RSpec.describe 'oneOf merging across examples', type: :request do
     'pref_object' => ['object'],
     'pref_boolean' => ['boolean'],
     'tagged' => ['object'],
+    'untagged' => ['boolean'],
     'pruned' => ['array', 'object'],
     'schema_field' => ['string', 'integer'],
     'integer_then_number' => ['integer', 'float'],
