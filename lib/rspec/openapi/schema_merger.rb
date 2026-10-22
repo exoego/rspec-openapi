@@ -59,8 +59,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   # Every integer is a number, so a value seen as both is a number. The format
   # of the integer side would be wrong on a number, so only the number's stays.
   def widen_to_number!(base, spec)
-    types = [base[:type], spec[:type]]
-    return spec unless types.all?(String) && types.sort == NUMERIC_TYPES
+    return spec if base[:type] == spec[:type] || !same_type?(base[:type], spec[:type])
 
     format = (base[:type] == 'number' ? base : spec)[:format]
     base.delete(:format)
@@ -271,6 +270,8 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   # of one type, so those always merge, into the closest when there are several.
   def same_type_option(options, spec)
     same_type = options.select { |option| option.is_a?(Hash) && same_type?(option[:type], spec[:type]) }
+    return same_type.first if same_type.size <= 1
+
     same_type.max_by { |option| similarity(option, spec) }
   end
 
@@ -295,7 +296,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
       when [Array, Array]
         (first & second).size / [first.size, second.size].max.to_f
       when [Hash, Hash]
-        return 1 if first.merge(second).key?(:$ref)
+        return 1 if first.key?(:$ref) || second.key?(:$ref)
 
         intersection = first.keys & second.keys
         total_size = [first.size, second.size].max.to_f
