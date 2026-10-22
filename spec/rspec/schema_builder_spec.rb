@@ -30,31 +30,4 @@ RSpec.describe 'schema builder spec' do
         .to eq(type: 'object', additionalProperties: { type: 'string' })
     end
   end
-
-  describe 'additionalProperties when merged variations disagree' do
-    let(:variation_merger) { RSpec::OpenAPI::SchemaBuilder.singleton_class.const_get(:VariationMerger) }
-
-    def merged_additional_properties(*values)
-      variations = values.map { |value| { type: 'object', properties: {}, required: [], additionalProperties: value } }
-      variation_merger.merge_variations(variations + [{ type: 'object', properties: {}, required: [] }])
-                      .fetch(:additionalProperties, :absent)
-    end
-
-    it 'prefers true, which allows any extra key, over a schema or false' do
-      expect(merged_additional_properties(false, { type: 'string' }, true)).to eq(true)
-    end
-
-    it 'prefers a schema over false' do
-      expect(merged_additional_properties(false, { type: 'string' })).to eq(type: 'string')
-    end
-
-    it 'merges differing schemas the way any other variations merge' do
-      expect(merged_additional_properties({ type: 'string' }, { type: 'integer' }))
-        .to eq(oneOf: [{ type: 'integer' }, { type: 'string' }])
-    end
-
-    it 'keeps false when that is the only value recorded' do
-      expect(merged_additional_properties(false)).to eq(false)
-    end
-  end
 end

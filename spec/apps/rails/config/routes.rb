@@ -169,6 +169,7 @@ Rails.application.routes.draw do
     get '/sibling_objects/dictionary' => sibling_meta
     get '/sibling_objects/hybrid' => sibling_meta
     get '/sibling_objects/empty_override' => sibling_meta
+    get '/sibling_objects/described' => sibling_meta
     get '/sibling_objects/settings' => lambda { |env|
       if Rack::Request.new(env).params['flags'] == '1'
         [200, { 'Content-Type' => 'application/json' }, ['{"options":[{"default":true,"enum":true}]}']]
