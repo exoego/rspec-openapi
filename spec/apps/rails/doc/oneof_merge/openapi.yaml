@@ -342,6 +342,28 @@ paths:
                 value:
                   x: '1'
       tags: []
+  "/oneof_merge/pruned":
+    get:
+      summary: GET /oneof_merge/pruned
+      responses:
+        '200':
+          description: records an object without one of the hand-written properties
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: array
+                  items:
+                    type: integer
+                - type: object
+                  properties:
+                    a:
+                      type: integer
+                  required:
+                  - a
+              example:
+                a: 1
+      tags: []
   "/oneof_merge/schema_field":
     get:
       summary: GET /oneof_merge/schema_field

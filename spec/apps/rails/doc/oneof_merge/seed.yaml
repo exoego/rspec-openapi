@@ -157,6 +157,24 @@ paths:
                       "$ref": "#/components/schemas/Tag"
                   required:
                   - tag
+  "/oneof_merge/pruned":
+    get:
+      summary: GET /oneof_merge/pruned
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  a:
+                    type: integer
+                  gone:
+                    type: string
+                required:
+                - a
+                - gone
   "/oneof_merge/annotated":
     get:
       summary: GET /oneof_merge/annotated

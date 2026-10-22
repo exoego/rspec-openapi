@@ -35,6 +35,11 @@ RSpec.describe 'oneOf merging across examples', type: :request do
     it('records only that variant') { record '/oneof_merge/tagged', 'object' }
   end
 
+  describe 'a hand-written object that is also recorded as an array' do
+    it('records an array') { record '/oneof_merge/pruned', 'array' }
+    it('records an object without one of the hand-written properties') { record '/oneof_merge/pruned', 'object' }
+  end
+
   describe 'hand-written null variants' do
     it('records nulls') { record '/oneof_merge/null_variants', 'nulls' }
     it('records values') { record '/oneof_merge/null_variants', 'filled' }

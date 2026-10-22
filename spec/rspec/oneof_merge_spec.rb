@@ -75,6 +75,13 @@ RSpec.describe 'oneOf merging across examples' do
     )
   end
 
+  it 'drops a property the API stopped returning from the variant it sits in' do
+    expect(response_schema('/oneof_merge/pruned', 'oneOf')).to eq([
+      { 'type' => 'array', 'items' => { 'type' => 'integer' } },
+      { 'type' => 'object', 'properties' => { 'a' => { 'type' => 'integer' } }, 'required' => ['a'] },
+    ])
+  end
+
   it 'adds no second null variant beside a hand-written one' do
     properties = response_schema('/oneof_merge/null_variants', 'properties')
 
