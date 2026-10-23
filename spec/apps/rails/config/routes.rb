@@ -220,6 +220,12 @@ Rails.application.routes.draw do
     get '/oneof_merge/boolean_then_objects' => flag
     get '/oneof_merge/arrays_then_string' => one_of_merge.call(empty: '{"tags":[]}', integers: '{"tags":[1]}', string: '{"tags":"a"}')
 
+    # Bodies whose fields are named like OpenAPI keywords, for the keyword fields
+    # spec. `meta` is an empty object, so its schema gets an empty `required`
+    # that the cleanup must drop while leaving the example alone.
+    get '/keyword_fields/security' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"security":"guest","parameters":[]}']] }
+    get '/keyword_fields/required' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"properties":{"a":1},"required":[],"meta":{}}']] }
+
     # Test routes for description preservation with example_mode :none
     get '/description_preserve_test' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }
     get '/description_overwrite_test' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }
