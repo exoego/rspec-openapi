@@ -37,8 +37,9 @@ class << RSpec::OpenAPI::SchemaSorter = Object.new
     end
   end
 
+  # Re-inserting a key moves it to the end, so re-inserting every key in sorted
+  # order sorts the hash in place.
   def deep_sort_hash!(hash)
-    sorted = hash.entries.sort_by { |k, _| k.to_s }.to_h.transform_keys(&:to_sym)
-    hash.replace(sorted)
+    hash.keys.sort_by(&:to_s).each { |key| hash[key.to_sym] = hash.delete(key) }
   end
 end
