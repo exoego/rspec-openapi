@@ -38,4 +38,22 @@ RSpec.describe 'fields named like OpenAPI keywords' do
     values = json['examples'].values.map { |example| example['value'] }
     expect(values).to eq([{ 'properties' => { 'a' => 1 }, 'required' => [], 'meta' => {} }])
   end
+
+  # The security cleanup is the first pass over `paths` after reading, so it
+  # meets whatever a hand-edited document holds there. Both entries are
+  # un-recorded and dropped from the output, like any other.
+  it 'skips a non-object path item and a path item field' do
+    original_source = File.read(openapi_path)
+    begin
+      seeded = YAML.safe_load(original_source)
+      seeded['paths']['/weird_non_hash'] = 'just a string, not a path item object'
+      seeded['paths']['/keyword_fields/security']['summary'] = 'hand written'
+      File.write(openapi_path, YAML.dump(seeded))
+
+      rspec 'spec/requests/rails_keyword_fields_spec.rb', openapi: true, output: :yaml
+      expect(YAML.safe_load(File.read(openapi_path))).to eq YAML.safe_load(original_source)
+    ensure
+      File.write(openapi_path, original_source)
+    end
+  end
 end
