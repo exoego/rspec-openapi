@@ -51,8 +51,9 @@ class RSpec::OpenAPI::ResultRecorder
       RSpec::OpenAPI::OperationConverter.normalize!(spec)
       schema = RSpec::OpenAPI::DefaultSchema.build(title)
       schema[:info].merge!(RSpec::OpenAPI.info)
-      # Normalize the document once here rather than on every merge below.
-      RSpec::OpenAPI::SchemaMerger.merge!(spec, schema)
+      # SchemaFile#read already symbolized the document, so no merge here needs
+      # to normalize it again.
+      RSpec::OpenAPI::SchemaMerger.merge_normalized!(spec, schema)
       new_from_zero = {}
       records.each do |record|
         record_schema = RSpec::OpenAPI::SchemaBuilder.build(record)

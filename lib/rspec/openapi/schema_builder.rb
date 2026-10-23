@@ -5,6 +5,17 @@ require_relative 'schema_builder/build_context'
 require_relative 'schema_builder/variation_merger'
 
 class << RSpec::OpenAPI::SchemaBuilder
+  # Record members holding the per-context lookup maps, by context (and kind).
+  ENUM_MEMBERS = { request: :request_enum, response: :response_enum }.freeze
+  OVERRIDE_MEMBERS = {
+    additional_properties: {
+      request: :request_additional_properties, response: :response_additional_properties,
+    },
+    hybrid_additional_properties: {
+      request: :request_hybrid_additional_properties, response: :response_hybrid_additional_properties,
+    },
+  }.freeze
+
   # @param [RSpec::OpenAPI::Record] record
   # @return [Hash]
   def build(record)
@@ -56,7 +67,7 @@ class << RSpec::OpenAPI::SchemaBuilder
   def build_content(record)
     disposition = normalize_content_disposition(record.response_content_disposition)
     content_type = normalize_content_type(record.response_content_type)
-    ctx = BuildContext.new(record: record, context: :response)
+    ctx = BuildContext.new(record, :response)
 
     if RSpec::OpenAPI.supports_item_schema? && RSpec::OpenAPI.sequential_media_type?(content_type)
       item_schema = build_stream_item_schema(record.response_body, content_type, ctx)
@@ -141,7 +152,7 @@ class << RSpec::OpenAPI::SchemaBuilder
     is_query = location == 'query'
     required = is_query ? record.required_request_params.include?(key) : true
     cast = try_cast(value)
-    ctx = BuildContext.new(record: record, context: :request, key: key, path: key.to_s)
+    ctx = BuildContext.new(record, :request, key.to_s, key)
     {
       name: key.to_s,
       in: location,
@@ -153,7 +164,7 @@ class << RSpec::OpenAPI::SchemaBuilder
 
   def build_response_headers(record)
     record.response_headers.to_h do |key, value|
-      ctx = BuildContext.new(record: record, context: :response, key: key, path: key.to_s)
+      ctx = BuildContext.new(record, :response, key.to_s, key)
       [key, { schema: build_property(try_cast(value), ctx) }]
     end
   end
@@ -175,7 +186,7 @@ class << RSpec::OpenAPI::SchemaBuilder
     return nil if record.status >= 400 && record.request_example_mode != :multiple
 
     content_type = normalize_content_type(record.request_content_type)
-    ctx = BuildContext.new(record: record, context: :request)
+    ctx = BuildContext.new(record, :request)
     schema = build_property(record.request_params, ctx)
     example = example_enabled?(record) ? build_example(record.request_params) : nil
 
@@ -207,10 +218,10 @@ class << RSpec::OpenAPI::SchemaBuilder
       return
     end
 
-    property[:properties] = value.to_h do |k, v|
-      [k, build_property(v, ctx.descend(k))]
-    end
-    property[:required] = property[:properties].keys
+    properties = {}
+    value.each { |k, v| properties[k] = build_property(v, ctx.descend(k)) }
+    property[:properties] = properties
+    property[:required] = properties.keys
     apply_additional_properties(property, override,
                                 infer_override(ctx.path, ctx.record, ctx.context, :hybrid_additional_properties),)
   end
@@ -259,7 +270,7 @@ class << RSpec::OpenAPI::SchemaBuilder
     return nil if !path || !record
 
     # Keys are already normalized to strings by SharedExtractor.normalize_enum
-    record.send("#{context}_enum")&.[](path.to_s)
+    record[ENUM_MEMBERS.fetch(context)]&.[](path.to_s)
   end
 
   # Looks up an override for the current path under one of the per-context
@@ -268,7 +279,7 @@ class << RSpec::OpenAPI::SchemaBuilder
   # distinguishable from "no override"; for :hybrid_additional_properties
   # plain lookup is enough because only Hash values are meaningful.
   def infer_override(path, record, context, kind)
-    overrides = record.send("#{context}_#{kind}")
+    overrides = record[OVERRIDE_MEMBERS.fetch(kind).fetch(context)]
     return nil unless overrides
 
     # path is nil at the body root; nil.to_s == '' lets users target it via { '' => ... }.
@@ -282,9 +293,7 @@ class << RSpec::OpenAPI::SchemaBuilder
     return true if value == 'true'
     return false if value == 'false'
 
-    Integer(value)
-  rescue TypeError, ArgumentError
-    value
+    Integer(value, exception: false) || value
   end
 
   def build_example(value)

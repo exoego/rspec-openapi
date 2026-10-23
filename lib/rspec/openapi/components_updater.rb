@@ -120,11 +120,9 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
   end
 
   def find_non_top_level_nested_refs(base, generated_names)
-    nested_refs = [
-      *RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, 'components.schemas', 'properties.*.$ref'),
-      *RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, 'components.schemas', 'properties.*.items.$ref'),
-      *RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, 'components.schemas', 'oneOf.*.$ref'),
-    ]
+    nested_refs = RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(
+      base, 'components.schemas', 'properties.*.$ref', 'properties.*.items.$ref', 'oneOf.*.$ref',
+    )
     reject_already_generated_refs(nested_refs, base, generated_names)
   end
 
@@ -136,10 +134,7 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
       'paths.*.*.responses.*.content.application/json.schema',
     ]
     nested_refs = roots.flat_map do |root|
-      [
-        *RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, root, 'properties.*.$ref'),
-        *RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, root, 'properties.*.items.$ref'),
-      ]
+      RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, root, 'properties.*.$ref', 'properties.*.items.$ref')
     end
     reject_already_generated_refs(nested_refs, base, generated_names)
   end

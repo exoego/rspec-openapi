@@ -55,30 +55,21 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
 
     return if security_schemes.empty?
 
-    paths_to_security_definitions = RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, 'paths', 'security')
-
-    paths_to_security_definitions.each do |path|
-      parent_path_definition = base.dig(*path.take(path.length - 1))
-
+    RSpec::OpenAPI::HashHelper.each_hash_with_key(base[:paths], :security) do |path_definition|
       security_schemes.each do |security_scheme_name, security_scheme|
         remove_parameters_conflicting_with_security_scheme!(
-          parent_path_definition, security_scheme, security_scheme_name,
+          path_definition, security_scheme, security_scheme_name,
         )
       end
     end
   end
 
   def cleanup_empty_required_array!(base)
-    paths_to_objects = [
-      *RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, 'components.schemas', 'properties'),
-      *RSpec::OpenAPI::HashHelper.matched_paths_deeply_nested(base, 'paths', 'properties'),
-    ]
-    paths_to_objects.each do |path|
-      parent = base.dig(*path.take(path.length - 1))
-      next unless parent
-
-      # "required" array  must not be present if empty
-      parent.delete(:required) if parent[:required] && parent[:required].empty?
+    [base.dig(:components, :schemas), base[:paths]].each do |root|
+      RSpec::OpenAPI::HashHelper.each_hash_with_key(root, :properties) do |object|
+        # "required" array  must not be present if empty
+        object.delete(:required) if object[:required] && object[:required].empty?
+      end
     end
   end
 
@@ -118,20 +109,18 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
   end
 
   def cleanup_array!(base, spec, selector, fields_for_identity)
-    marshal = lambda do |obj|
-      Marshal.dump(obj.slice(*fields_for_identity))
-    end
+    identity = ->(obj) { fields_for_identity.map { |field| obj[field] } }
 
     RSpec::OpenAPI::HashHelper.matched_paths(base, selector).each do |paths|
       target_array = base.dig(*paths)
       spec_array = spec.dig(*paths)
       next unless target_array.is_a?(Array) && spec_array.is_a?(Array)
 
-      spec_identities = Set.new(spec_array.map(&marshal))
-      target_array.select! { |e| spec_identities.include?(marshal.call(e)) }
-      target_array.sort_by! { |param| fields_for_identity.map { |f| param[f] }.join('-') }
+      spec_identities = Set.new(spec_array.map(&identity))
+      target_array.select! { |e| spec_identities.include?(identity.call(e)) }
+      target_array.sort_by! { |param| identity.call(param).join('-') }
       # Keep the last duplicate to produce the result stably
-      deduplicated = target_array.reverse.uniq { |param| param.slice(*fields_for_identity) }.reverse
+      deduplicated = target_array.reverse.uniq(&identity).reverse
       target_array.replace(deduplicated)
     end
     base
