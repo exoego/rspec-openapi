@@ -39,6 +39,32 @@ RSpec.describe 'fields named like OpenAPI keywords' do
     expect(values).to eq([{ 'properties' => { 'a' => 1 }, 'required' => [], 'meta' => {} }])
   end
 
+  # A hand-written `const` holds data. Its fields are named like schema
+  # keywords, so the empty `required` pass and the nullable conversion would
+  # rewrite it if they read it as a schema.
+  it 'keeps a hand-written const object as it is' do
+    original_source = File.read(openapi_path)
+    begin
+      seeded = YAML.safe_load(original_source)
+      meta = seeded.dig('paths', '/keyword_fields/required', 'get', 'responses', '200',
+                        'content', 'application/json', 'schema', 'properties', 'meta',)
+      meta['const'] = { 'properties' => { 'x' => 1 }, 'required' => [], 'nullable' => true }
+      File.write(openapi_path, YAML.dump(seeded))
+
+      rspec 'spec/requests/rails_keyword_fields_spec.rb', openapi: true, output: :yaml
+      new_yaml = YAML.safe_load(File.read(openapi_path))
+      meta = new_yaml.dig('paths', '/keyword_fields/required', 'get', 'responses', '200',
+                          'content', 'application/json', 'schema', 'properties', 'meta',)
+      expect(meta).to eq(
+        'type' => 'object',
+        'properties' => {},
+        'const' => { 'properties' => { 'x' => 1 }, 'required' => [], 'nullable' => true },
+      )
+    ensure
+      File.write(openapi_path, original_source)
+    end
+  end
+
   # The security cleanup is the first pass over `paths` after reading, so it
   # meets whatever a hand-edited document holds there. Both entries are
   # un-recorded and dropped from the output, like any other.

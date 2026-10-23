@@ -32,7 +32,7 @@ class << RSpec::OpenAPI::HashHelper = Object.new
   # Keys whose values hold user data, not schemas. Their contents must never be
   # rewritten, or a recorded example/default that happens to contain a field
   # named `type` or `nullable` would be silently mangled.
-  DATA_KEYS = [:example, :examples, :default, :enum].freeze
+  DATA_KEYS = [:example, :examples, :default, :enum, :const].freeze
 
   # Yields every hash in obj outside the data subtrees in DATA_KEYS, each after
   # its descendants. The entries of a `properties` map are schemas whatever
