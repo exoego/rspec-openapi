@@ -38,26 +38,12 @@ class << RSpec::OpenAPI::KeyTransformer = Object.new
     case value
     when Hash
       result = {}
-      value.each { |k, v| result[key_string(k)] = stringify(v) }
+      value.each { |k, v| result[k.to_s] = stringify(v) }
       result
     when Array
       value.map { |v| stringify(v) }
     else
       value
-    end
-  end
-
-  private
-
-  # Symbol#name hands back the symbol's own frozen string, where to_s copies it
-  # for every key of the document.
-  if Symbol.method_defined?(:name)
-    def key_string(key)
-      key.is_a?(Symbol) ? key.name : key.to_s
-    end
-  else
-    def key_string(key)
-      key.to_s
     end
   end
 end
