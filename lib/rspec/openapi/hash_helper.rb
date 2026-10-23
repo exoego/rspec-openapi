@@ -29,15 +29,27 @@ class << RSpec::OpenAPI::HashHelper = Object.new
     matches.flat_map { |found| found.group_by(&:size).sort_by(&:first).flat_map(&:last) }
   end
 
-  # Yields every hash in obj that holds key, each before its descendants, so a
-  # block may delete from the hash it is given.
-  def each_hash_with_key(obj, key, &block)
+  # Keys whose values hold user data, not schemas. Their contents must never be
+  # rewritten, or a recorded example/default that happens to contain a field
+  # named `type` or `nullable` would be silently mangled.
+  DATA_KEYS = [:example, :examples, :default, :enum].freeze
+
+  # Yields every hash in obj outside the data subtrees in DATA_KEYS, each after
+  # its descendants. The entries of a `properties` map are schemas whatever
+  # their names, so the map itself is skipped and each entry is yielded.
+  def each_schema(obj, &block)
     case obj
     when Hash
-      yield obj if obj.key?(key)
-      obj.each_value { |value| each_hash_with_key(value, key, &block) }
+      obj.each do |key, value|
+        if key == :properties && value.is_a?(Hash)
+          value.each_value { |property| each_schema(property, &block) }
+        elsif !DATA_KEYS.include?(key)
+          each_schema(value, &block)
+        end
+      end
+      yield obj
     when Array
-      obj.each { |value| each_hash_with_key(value, key, &block) }
+      obj.each { |value| each_schema(value, &block) }
     end
   end
 

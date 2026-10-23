@@ -1,23 +1,22 @@
 # frozen_string_literal: true
 
+require_relative 'hash_helper'
+
 # Converts between the internal `nullable: true` form and the 3.1+ JSON Schema
 # null form (`type: [..., 'null']`). The builder and merger only use `nullable`;
 # normalize! runs on read, to_json_schema! on write.
 class << RSpec::OpenAPI::NullableConverter = Object.new
-  # Keys whose values hold user data, not schemas. Their contents must never be
-  # rewritten, or a recorded example/default that happens to contain a field
-  # named `type` or `nullable` would be silently mangled.
-  DATA_KEYS = [:example, :examples, :default, :enum].freeze
   NULL_VARIANT = { type: 'null' }.freeze
   NULLABLE_VARIANT = { nullable: true }.freeze
 
+  # Variants come before their oneOf, so a oneOf sees its variants converted.
   def to_json_schema!(node)
-    each_schema(node) { |schema| nullable_to_type_null!(schema) }
+    RSpec::OpenAPI::HashHelper.each_schema(node) { |schema| nullable_to_type_null!(schema) }
     node
   end
 
   def normalize!(node)
-    each_schema(node) { |schema| type_null_to_nullable!(schema) }
+    RSpec::OpenAPI::HashHelper.each_schema(node) { |schema| type_null_to_nullable!(schema) }
     node
   end
 
@@ -66,24 +65,6 @@ class << RSpec::OpenAPI::NullableConverter = Object.new
         schema[:type] = rest.one? ? rest.first : rest
       end
       schema[:nullable] = true
-    end
-  end
-
-  # Yield every schema Hash in the tree, skipping the data subtrees in DATA_KEYS.
-  # Variants come before their oneOf, so a oneOf sees its variants converted.
-  def each_schema(node, &block)
-    case node
-    when Hash
-      node.each do |key, value|
-        if key == :properties && value.is_a?(Hash)
-          value.each_value { |property| each_schema(property, &block) }
-        elsif !DATA_KEYS.include?(key)
-          each_schema(value, &block)
-        end
-      end
-      yield node
-    when Array
-      node.each { |value| each_schema(value, &block) }
     end
   end
 end

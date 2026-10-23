@@ -55,25 +55,35 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
 
     return if security_schemes.empty?
 
-    RSpec::OpenAPI::HashHelper.each_hash_with_key(base[:paths], :security) do |path_definition|
+    each_operation(base) do |operation|
       security_schemes.each do |security_scheme_name, security_scheme|
-        remove_parameters_conflicting_with_security_scheme!(
-          path_definition, security_scheme, security_scheme_name,
-        )
+        remove_parameters_conflicting_with_security_scheme!(operation, security_scheme, security_scheme_name)
       end
     end
   end
 
+  # A recorded example is data, so a field in it named `required` stays however
+  # it is shaped.
   def cleanup_empty_required_array!(base)
     [base.dig(:components, :schemas), base[:paths]].each do |root|
-      RSpec::OpenAPI::HashHelper.each_hash_with_key(root, :properties) do |object|
+      RSpec::OpenAPI::HashHelper.each_schema(root) do |schema|
         # "required" array  must not be present if empty
-        object.delete(:required) if object[:required] && object[:required].empty?
+        schema.delete(:required) if schema.key?(:properties) && schema[:required] && schema[:required].empty?
       end
     end
   end
 
   private
+
+  # Security sits on operations, the hashes under a path item: a non-standard
+  # method is still inline here and only moves under additionalOperations later.
+  def each_operation(base)
+    base[:paths].each_value do |path_item|
+      next unless path_item.is_a?(Hash)
+
+      path_item.each_value { |operation| yield operation if operation.is_a?(Hash) }
+    end
+  end
 
   # Recursively remove temporary fields like :_example_key and :_example_name from the schema.
   # Every caller has already established that it holds a Hash.
