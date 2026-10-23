@@ -497,6 +497,19 @@ paths:
                   - meow
                 - required:
                   - bark
+        '422':
+          description: written by hand, a null variant beside a type that allows null
+          content:
+            application/json:
+              schema:
+                type:
+                - object
+                - 'null'
+                oneOf:
+                - type: object
+                  required:
+                  - meow
+                - type: 'null'
       tags: []
   "/oneof_merge/typeless":
     get:

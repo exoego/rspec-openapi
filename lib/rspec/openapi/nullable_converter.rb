@@ -46,8 +46,11 @@ class << RSpec::OpenAPI::NullableConverter = Object.new
     variant.is_a?(Hash) && Array(variant[:type]).include?('null')
   end
 
+  # A null variant beside a typed oneOf is written back as a variant, so it
+  # stays one. Beside a typeless oneOf it folds into the wrapper, where the
+  # builder and merger keep nullable.
   def type_null_to_nullable!(schema)
-    schema[:nullable] = true if schema[:oneOf]&.delete(NULLABLE_VARIANT)
+    schema[:nullable] = true if !schema.key?(:type) && schema[:oneOf]&.delete(NULLABLE_VARIANT)
 
     case (type = schema[:type])
     when 'null'

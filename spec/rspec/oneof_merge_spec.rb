@@ -110,6 +110,13 @@ RSpec.describe 'oneOf merging across examples' do
     )
   end
 
+  it 'writes a hand-written null variant beside a type that allows null back as it was' do
+    expect(response_content('/oneof_merge/typed_one_of', '422', 'schema')).to eq(
+      'type' => ['object', 'null'],
+      'oneOf' => [{ 'type' => 'object', 'required' => ['meow'] }, { 'type' => 'null' }],
+    )
+  end
+
   describe 'a query parameter that may be null' do
     let(:nullable_one_of) { { 'oneOf' => [{ 'type' => 'integer' }, { 'type' => 'null' }, { 'type' => 'string' }] } }
 
