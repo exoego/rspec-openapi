@@ -169,6 +169,7 @@ Rails.application.routes.draw do
     get '/sibling_objects/dictionary' => sibling_meta
     get '/sibling_objects/hybrid' => sibling_meta
     get '/sibling_objects/empty_override' => sibling_meta
+    get '/sibling_objects/described' => sibling_meta
     get '/sibling_objects/settings' => lambda { |env|
       if Rack::Request.new(env).params['flags'] == '1'
         [200, { 'Content-Type' => 'application/json' }, ['{"options":[{"default":true,"enum":true}]}']]
@@ -176,6 +177,48 @@ Rails.application.routes.draw do
         [200, { 'Content-Type' => 'application/json' }, ['{"options":[{"default":"on","enum":"a"},{"default":null,"enum":null}]}']]
       end
     }
+
+    # Routes for the oneOf merge spec. Each picks its body by the X-Variant header.
+    one_of_merge = lambda { |**bodies|
+      lambda { |env|
+        body = bodies.fetch(env.fetch('HTTP_X_VARIANT').to_sym)
+        [200, { 'Content-Type' => 'application/json' }, [body]]
+      }
+    }
+    value = one_of_merge.call(string: '{"value":"a"}', integer: '{"value":1}', float: '{"value":1.5}')
+    get '/oneof_merge/empty_one_of' => value
+    get '/oneof_merge/annotated' => value
+    get '/oneof_merge/integer_then_number' => value
+    get '/oneof_merge/number_then_integer' => value
+    get '/oneof_merge/numbers_then_string' => value
+    get '/oneof_merge/mixed_numbers' => one_of_merge.call(mixed: '{"values":[1,1.5]}')
+    tags = one_of_merge.call(mixed: '{"tags":["a",1]}', integers: '{"tags":[1]}')
+    get '/oneof_merge/tags_mixed_then_integers' => tags
+    get '/oneof_merge/tags_integers_then_mixed' => tags
+    ok = one_of_merge.call(ok: '{"ok":true}')
+    get '/oneof_merge/param' => ok
+    get '/oneof_merge/param_from_scratch' => ok
+    get '/oneof_merge/typed_one_of' => ok
+    setting = one_of_merge.call(boolean: '{"value":true}', object: '{"value":{"x":"1"}}')
+    get '/oneof_merge/flag_boolean' => setting
+    get '/oneof_merge/flag_object' => setting
+    get '/oneof_merge/pref_object' => setting
+    get '/oneof_merge/pref_boolean' => setting
+    get '/oneof_merge/tagged' => one_of_merge.call(object: '{"tag":{"name":"x"}}')
+    get '/oneof_merge/untagged' => one_of_merge.call(boolean: 'true')
+    get '/oneof_merge/pruned' => one_of_merge.call(array: '[1]', object: '{"a":1}')
+    get '/oneof_merge/null_variants' => one_of_merge.call(nulls: '{"value":null,"other":null}', filled: '{"value":"a","other":1}')
+    get '/oneof_merge/schema_field' => one_of_merge.call(
+      string: '{"id":1,"schema":{"type":"string"},"required":["id"]}',
+      integer: '{"id":2,"schema":{"type":"integer"},"required":["name"]}',
+    )
+    mixed_items = one_of_merge.call(mixed: '{"values":[1,"x"]}')
+    get '/oneof_merge/typeless' => mixed_items
+    get '/oneof_merge/typeless_enum' => mixed_items
+    flag = one_of_merge.call(object_a: '{"flag":{"a":1}}', object_b: '{"flag":{"b":"x"}}', boolean: '{"flag":true}')
+    get '/oneof_merge/objects_then_boolean' => flag
+    get '/oneof_merge/boolean_then_objects' => flag
+    get '/oneof_merge/arrays_then_string' => one_of_merge.call(empty: '{"tags":[]}', integers: '{"tags":[1]}', string: '{"tags":"a"}')
 
     # Test routes for description preservation with example_mode :none
     get '/description_preserve_test' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"status":"ok"}']] }

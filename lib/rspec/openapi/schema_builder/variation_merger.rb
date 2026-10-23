@@ -12,7 +12,7 @@ class << RSpec::OpenAPI::SchemaBuilder
       # Drop empty `{}` schemas (e.g. items of an empty array) — they carry no
       # type info and would otherwise spuriously mark every property of their
       # populated siblings as nullable via the missing-key nullable rule.
-      non_empty = variations.reject(&:empty?)
+      non_empty = widen_integers(variations.reject(&:empty?))
       return {} if non_empty.empty?
       return non_empty.first if non_empty.size == 1
 
@@ -62,18 +62,10 @@ class << RSpec::OpenAPI::SchemaBuilder
         merged[:properties] = merge_property_variations(variations, allow_recursive_merge: true)
         merged[:required] = variations.map { |v| v[:required] || [] }.reduce(:&) || []
       end
-      additional = merge_additional_properties(variations)
-      merged[:additionalProperties] = additional unless additional.nil?
+      # Every variation sits at one path, so they all carry the same override.
+      additional = variations.find { |v| v.key?(:additionalProperties) }
+      merged[:additionalProperties] = additional[:additionalProperties] if additional
       merged
-    end
-
-    def merge_additional_properties(variations)
-      values = variations.select { |v| v.key?(:additionalProperties) }.map { |v| v[:additionalProperties] }
-      return nil if values.empty?
-      return true if values.include?(true)
-
-      schemas = values.grep(Hash)
-      schemas.empty? ? false : merge_variations(schemas)
     end
 
     # Merge multiple array schemas by merging their `items` schemas.
@@ -124,6 +116,7 @@ class << RSpec::OpenAPI::SchemaBuilder
     def merge_multi(prop_variations)
       return { oneOf: flatten_one_of(prop_variations) } if prop_variations.any? { |p| p.key?(:oneOf) }
 
+      prop_variations = widen_integers(prop_variations)
       prop_types = prop_variations.map { |p| p[:type] }.compact.uniq
       return one_of_schema(prop_variations) if prop_types.size > 1
 
@@ -134,15 +127,23 @@ class << RSpec::OpenAPI::SchemaBuilder
       end
     end
 
+    # Every integer is a number, so integers seen beside numbers are numbers.
+    def widen_integers(variations)
+      return variations unless variations.any? { |v| v[:type] == 'number' }
+
+      variations.reject { |v| v[:type] == 'integer' }
+    end
+
     def flatten_one_of(prop_variations)
-      prop_variations.each_with_object([]) do |prop, options|
+      options = prop_variations.each_with_object([]) do |prop, acc|
         clean = without_nullable(prop)
         if clean.key?(:oneOf)
-          options.concat(clean[:oneOf])
+          acc.concat(clean[:oneOf])
         elsif !clean.empty?
-          options << clean
+          acc << clean
         end
-      end.uniq
+      end
+      sort_by_type(options.uniq)
     end
 
     def without_nullable(prop)
@@ -150,7 +151,13 @@ class << RSpec::OpenAPI::SchemaBuilder
     end
 
     def one_of_schema(variations)
-      { oneOf: variations.map { |p| without_nullable(p) }.uniq }
+      { oneOf: sort_by_type(variations.map { |p| without_nullable(p) }.uniq) }
+    end
+
+    # The same order the merger keeps, so the document does not depend on which
+    # example ran first.
+    def sort_by_type(options)
+      options.sort_by.with_index { |option, index| [option[:type].to_s, index] }
     end
   end
 

@@ -56,6 +56,17 @@ RSpec.describe 'objects merged across sibling array items' do
     )
   end
 
+  it 'keeps every keyword of a dictionary override' do
+    expect(meta_schema('/sibling_objects/described')).to eq(
+      'type' => 'object',
+      'additionalProperties' => {
+        'type' => 'object', 'description' => 'per-locale labels',
+        'properties' => { 'label' => { 'type' => 'string', 'description' => 'shown in the menu' } },
+        'required' => ['label'],
+      },
+    )
+  end
+
   it 'never records an empty additionalProperties schema' do
     expect(meta_schema('/sibling_objects/empty_override')).not_to have_key('additionalProperties')
   end

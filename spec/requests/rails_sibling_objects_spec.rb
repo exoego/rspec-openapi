@@ -26,6 +26,18 @@ RSpec.describe 'objects merged across sibling array items', type: :request do
     expect(response).to have_http_status(:ok)
   end
 
+  it 'keeps every keyword of a dictionary override', openapi: {
+    additional_properties: {
+      'products.meta' => {
+        type: 'object', description: 'per-locale labels',
+        properties: { label: { type: 'string', description: 'shown in the menu' } }, required: ['label'],
+      },
+    },
+  } do
+    get '/sibling_objects/described'
+    expect(response).to have_http_status(:ok)
+  end
+
   it 'ignores an empty additionalProperties override', openapi: {
     additional_properties: { 'products.meta' => {} },
   } do

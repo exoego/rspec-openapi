@@ -13,6 +13,7 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
   def cleanup_components_schemas!(base, spec)
     cleanup_hash!(base, spec, 'components.schemas.*')
     cleanup_hash!(base, spec, 'components.schemas.*.properties.*')
+    cleanup_one_of_properties!(base, spec, 'components.schemas.*')
   end
 
   # Cleanup specific elements that exists in the base but not in the spec
@@ -38,6 +39,10 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
     cleanup_hash!(base, spec, 'paths.*.*.responses.*.content.application/json.schema.properties.*')
     cleanup_hash!(base, spec, 'paths.*.*.responses.*.content.application/json.example.*')
     cleanup_hash!(base, spec, 'paths.*.*.responses.*.content.application/json.examples.*')
+
+    # cleanup properties of each variant once a body became a oneOf
+    cleanup_one_of_properties!(base, spec, 'paths.*.*.requestBody.content.application/json.schema')
+    cleanup_one_of_properties!(base, spec, 'paths.*.*.responses.*.content.application/json.schema')
 
     # cleanup temporary fields used for internal processing
     cleanup_temporary_fields!(base)
@@ -130,6 +135,31 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
       target_array.replace(deduplicated)
     end
     base
+  end
+
+  def cleanup_one_of_properties!(base, spec, selector)
+    RSpec::OpenAPI::HashHelper.matched_paths(base, selector).each do |paths|
+      variants = base.dig(*paths, :oneOf)
+      fresh = spec.dig(*paths)
+      next unless variants.is_a?(Array) && fresh.is_a?(Hash)
+
+      variants.each { |variant| cleanup_variant_properties!(variant, variants, fresh) }
+    end
+    base
+  end
+
+  # Variants are matched by type, since the spec may hold one of them as a bare
+  # schema or in another order. Two variants of one type can not be told apart
+  # that way, so those stay as they are, like a variant of a type the spec does
+  # not hold.
+  def cleanup_variant_properties!(variant, variants, fresh)
+    return unless variant.is_a?(Hash) && variant[:properties].is_a?(Hash)
+    return unless variants.one? { |other| other.is_a?(Hash) && other[:type] == variant[:type] }
+
+    counterpart = RSpec::OpenAPI::HashHelper.variant_of_type(fresh, variant[:type])
+    return unless counterpart
+
+    variant[:properties].delete_if { |name, _| counterpart.dig(:properties, name).nil? }
   end
 
   # Every selector above names at least two segments, so a matched path always

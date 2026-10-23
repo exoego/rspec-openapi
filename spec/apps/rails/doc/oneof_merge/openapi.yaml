@@ -1,0 +1,623 @@
+---
+openapi: 3.1.0
+info:
+  title: oneOf merge
+  version: 1.0.0
+servers: []
+paths:
+  "/oneof_merge/annotated":
+    get:
+      summary: GET /oneof_merge/annotated
+      responses:
+        '200':
+          description: records integer on annotated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    oneOf:
+                    - type: integer
+                    - type: string
+                    description: The display name
+                    deprecated: true
+                required:
+                - value
+              example:
+                value: 1
+      tags: []
+  "/oneof_merge/arrays_then_string":
+    get:
+      summary: GET /oneof_merge/arrays_then_string
+      tags: []
+      responses:
+        '200':
+          description: records string on arrays_then_string
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tags:
+                    oneOf:
+                    - type: array
+                      items:
+                        type: integer
+                    - type: string
+                required:
+                - tags
+              example:
+                tags: a
+  "/oneof_merge/boolean_then_objects":
+    get:
+      summary: GET /oneof_merge/boolean_then_objects
+      tags: []
+      responses:
+        '200':
+          description: records object_b on boolean_then_objects
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  flag:
+                    oneOf:
+                    - type: boolean
+                    - type: object
+                      properties:
+                        a:
+                          type: integer
+                        b:
+                          type: string
+                required:
+                - flag
+              example:
+                flag:
+                  a: 1
+                  b: x
+  "/oneof_merge/empty_one_of":
+    get:
+      summary: GET /oneof_merge/empty_one_of
+      responses:
+        '200':
+          description: records integer on empty_one_of
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    oneOf:
+                    - type: integer
+                    - type: string
+                required:
+                - value
+              example:
+                value: 1
+      tags: []
+  "/oneof_merge/flag_boolean":
+    get:
+      summary: GET /oneof_merge/flag_boolean
+      responses:
+        '200':
+          description: records boolean on flag_boolean
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/FlagSetting"
+              example:
+                value: true
+      tags: []
+  "/oneof_merge/flag_object":
+    get:
+      summary: GET /oneof_merge/flag_object
+      responses:
+        '200':
+          description: records object on flag_object
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/FlagSetting"
+              example:
+                value:
+                  x: '1'
+      tags: []
+  "/oneof_merge/integer_then_number":
+    get:
+      summary: GET /oneof_merge/integer_then_number
+      tags: []
+      responses:
+        '200':
+          description: records float on integer_then_number
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    type: number
+                    format: float
+                required:
+                - value
+              example:
+                value: 1.5
+  "/oneof_merge/mixed_numbers":
+    get:
+      summary: GET /oneof_merge/mixed_numbers
+      tags: []
+      responses:
+        '200':
+          description: records mixed on mixed_numbers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  values:
+                    type: array
+                    items:
+                      type: number
+                      format: float
+                required:
+                - values
+              example:
+                values:
+                - 1
+                - 1.5
+  "/oneof_merge/null_variants":
+    get:
+      summary: GET /oneof_merge/null_variants
+      responses:
+        '200':
+          description: records filled on null_variants
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    oneOf:
+                    - description: Cleared by the user
+                      type: 'null'
+                    - type: string
+                  other:
+                    oneOf:
+                    - type:
+                      - string
+                      - 'null'
+                    - type: integer
+                required:
+                - value
+                - other
+              example:
+                value: a
+                other: 1
+      tags: []
+  "/oneof_merge/number_then_integer":
+    get:
+      summary: GET /oneof_merge/number_then_integer
+      tags: []
+      responses:
+        '200':
+          description: records integer on number_then_integer
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    type: number
+                    format: float
+                required:
+                - value
+              example:
+                value: 1
+  "/oneof_merge/numbers_then_string":
+    get:
+      summary: GET /oneof_merge/numbers_then_string
+      tags: []
+      responses:
+        '200':
+          description: records string on numbers_then_string
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    oneOf:
+                    - type: number
+                      format: float
+                    - type: string
+                required:
+                - value
+              example:
+                value: a
+  "/oneof_merge/objects_then_boolean":
+    get:
+      summary: GET /oneof_merge/objects_then_boolean
+      tags: []
+      responses:
+        '200':
+          description: records boolean on objects_then_boolean
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  flag:
+                    oneOf:
+                    - type: boolean
+                    - type: object
+                      properties:
+                        a:
+                          type: integer
+                        b:
+                          type: string
+                required:
+                - flag
+              example:
+                flag: true
+  "/oneof_merge/param":
+    get:
+      summary: GET /oneof_merge/param
+      parameters:
+      - name: q
+        in: query
+        required: false
+        schema:
+          oneOf:
+          - type: integer
+          - type: 'null'
+          - type: string
+        example: foo
+      responses:
+        '200':
+          description: records a string for a hand-written query parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                required:
+                - ok
+              example:
+                ok: true
+      tags: []
+  "/oneof_merge/param_from_scratch":
+    get:
+      summary: GET /oneof_merge/param_from_scratch
+      tags: []
+      parameters:
+      - name: q
+        in: query
+        required: false
+        schema:
+          oneOf:
+          - type: integer
+          - type: 'null'
+          - type: string
+        example: 1
+      responses:
+        '200':
+          description: records an integer
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                required:
+                - ok
+              example:
+                ok: true
+  "/oneof_merge/pref_boolean":
+    get:
+      summary: GET /oneof_merge/pref_boolean
+      responses:
+        '200':
+          description: records boolean on pref_boolean
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/PrefSetting"
+              example:
+                value: true
+      tags: []
+  "/oneof_merge/pref_object":
+    get:
+      summary: GET /oneof_merge/pref_object
+      responses:
+        '200':
+          description: records object on pref_object
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/PrefSetting"
+              example:
+                value:
+                  x: '1'
+      tags: []
+  "/oneof_merge/pruned":
+    get:
+      summary: GET /oneof_merge/pruned
+      responses:
+        '200':
+          description: records object on pruned
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: array
+                  items:
+                    type: integer
+                - type: object
+                  properties:
+                    a:
+                      type: integer
+                  required:
+                  - a
+              example:
+                a: 1
+      tags: []
+  "/oneof_merge/schema_field":
+    get:
+      summary: GET /oneof_merge/schema_field
+      tags: []
+      responses:
+        '200':
+          description: records integer on schema_field
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  schema:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                    required:
+                    - type
+                  required:
+                    type: array
+                    items:
+                      type: string
+                required:
+                - id
+                - schema
+                - required
+              example:
+                id: 2
+                schema:
+                  type: integer
+                required:
+                - name
+  "/oneof_merge/tagged":
+    get:
+      summary: GET /oneof_merge/tagged
+      responses:
+        '200':
+          description: records object on tagged
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: boolean
+                - type: object
+                  properties:
+                    tag:
+                      "$ref": "#/components/schemas/Tag"
+                  required:
+                  - tag
+              example:
+                tag:
+                  name: x
+      tags: []
+  "/oneof_merge/tags_integers_then_mixed":
+    get:
+      summary: GET /oneof_merge/tags_integers_then_mixed
+      tags: []
+      responses:
+        '200':
+          description: records mixed on tags_integers_then_mixed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tags:
+                    type: array
+                    items:
+                      oneOf:
+                      - type: integer
+                      - type: string
+                required:
+                - tags
+              example:
+                tags:
+                - a
+                - 1
+  "/oneof_merge/tags_mixed_then_integers":
+    get:
+      summary: GET /oneof_merge/tags_mixed_then_integers
+      tags: []
+      responses:
+        '200':
+          description: records integers on tags_mixed_then_integers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tags:
+                    type: array
+                    items:
+                      oneOf:
+                      - type: integer
+                      - type: string
+                required:
+                - tags
+              example:
+                tags:
+                - 1
+  "/oneof_merge/typed_one_of":
+    get:
+      summary: GET /oneof_merge/typed_one_of
+      responses:
+        '200':
+          description: records ok on typed_one_of
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                required:
+                - ok
+              example:
+                ok: true
+        '409':
+          description: written by hand, a type beside the oneOf
+          content:
+            application/json:
+              schema:
+                type:
+                - object
+                - 'null'
+                oneOf:
+                - required:
+                  - meow
+                - required:
+                  - bark
+        '422':
+          description: written by hand, a null variant beside a type that allows null
+          content:
+            application/json:
+              schema:
+                type:
+                - object
+                - 'null'
+                oneOf:
+                - type: object
+                  required:
+                  - meow
+                - type: 'null'
+      tags: []
+  "/oneof_merge/typeless":
+    get:
+      summary: GET /oneof_merge/typeless
+      responses:
+        '200':
+          description: records mixed on typeless
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  values:
+                    type: array
+                    items:
+                      oneOf:
+                      - type: integer
+                      - type: 'null'
+                      - type: string
+                      description: Set once the user picks one
+                required:
+                - values
+              example:
+                values:
+                - 1
+                - x
+      tags: []
+  "/oneof_merge/typeless_enum":
+    get:
+      summary: GET /oneof_merge/typeless_enum
+      responses:
+        '200':
+          description: records mixed on typeless_enum
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  values:
+                    type: array
+                    items:
+                      oneOf:
+                      - type: integer
+                      - type: 'null'
+                      - type: string
+                      enum:
+                      - 1
+                      - x
+                required:
+                - values
+              example:
+                values:
+                - 1
+                - x
+      tags: []
+  "/oneof_merge/untagged":
+    get:
+      summary: GET /oneof_merge/untagged
+      responses:
+        '200':
+          description: records boolean on untagged
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: boolean
+                - type: object
+                  properties:
+                    tag:
+                      "$ref": "#/components/schemas/Tag"
+                  required:
+                  - tag
+              example: true
+      tags: []
+components:
+  schemas:
+    FlagSetting:
+      type: object
+      properties:
+        value:
+          oneOf:
+          - type: boolean
+          - type: object
+            properties:
+              x:
+                type: string
+            required:
+            - x
+      required:
+      - value
+    PrefSetting:
+      type: object
+      properties:
+        value:
+          oneOf:
+          - type: boolean
+          - type: object
+            properties:
+              x:
+                type: string
+            required:
+            - x
+      required:
+      - value
+    Tag:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+      - name

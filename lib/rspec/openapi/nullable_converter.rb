@@ -9,6 +9,7 @@ class << RSpec::OpenAPI::NullableConverter = Object.new
   # named `type` or `nullable` would be silently mangled.
   DATA_KEYS = [:example, :examples, :default, :enum].freeze
   NULL_VARIANT = { type: 'null' }.freeze
+  NULLABLE_VARIANT = { nullable: true }.freeze
 
   def to_json_schema!(node)
     each_schema(node) { |schema| nullable_to_type_null!(schema) }
@@ -24,7 +25,7 @@ class << RSpec::OpenAPI::NullableConverter = Object.new
 
   def nullable_to_type_null!(schema)
     return unless schema.delete(:nullable)
-    return insert_null_variant!(schema[:oneOf]) if schema[:oneOf]
+    return insert_null_variant!(schema[:oneOf]) if schema[:oneOf] && !schema.key?(:type)
 
     schema[:type] =
       case (type = schema[:type])
@@ -35,14 +36,21 @@ class << RSpec::OpenAPI::NullableConverter = Object.new
   end
 
   def insert_null_variant!(variants)
-    return if variants.any? { |variant| variant.is_a?(Hash) && variant[:type] == 'null' }
+    return if variants.any? { |variant| accepts_null?(variant) }
 
     index = variants.index { |variant| variant.is_a?(Hash) && variant[:type].to_s > 'null' } || variants.size
     variants.insert(index, NULL_VARIANT.dup)
   end
 
+  def accepts_null?(variant)
+    variant.is_a?(Hash) && Array(variant[:type]).include?('null')
+  end
+
+  # A null variant beside a typed oneOf is written back as a variant, so it
+  # stays one. Beside a typeless oneOf it folds into the wrapper, where the
+  # builder and merger keep nullable.
   def type_null_to_nullable!(schema)
-    schema[:nullable] = true if schema[:oneOf]&.delete(NULL_VARIANT)
+    schema[:nullable] = true if !schema.key?(:type) && schema[:oneOf]&.delete(NULLABLE_VARIANT)
 
     case (type = schema[:type])
     when 'null'
@@ -61,13 +69,11 @@ class << RSpec::OpenAPI::NullableConverter = Object.new
     end
   end
 
-  # Yield every schema Hash in the tree, skipping the data subtrees in DATA_KEYS. Each
-  # transform mutates only its own node's keys, so the following each still
-  # iterates a stable Hash.
+  # Yield every schema Hash in the tree, skipping the data subtrees in DATA_KEYS.
+  # Variants come before their oneOf, so a oneOf sees its variants converted.
   def each_schema(node, &block)
     case node
     when Hash
-      yield node
       node.each do |key, value|
         if key == :properties && value.is_a?(Hash)
           value.each_value { |property| each_schema(property, &block) }
@@ -75,6 +81,7 @@ class << RSpec::OpenAPI::NullableConverter = Object.new
           each_schema(value, &block)
         end
       end
+      yield node
     when Array
       node.each { |value| each_schema(value, &block) }
     end

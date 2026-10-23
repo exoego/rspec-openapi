@@ -5,6 +5,46 @@ info:
   version: 1.0.0
 servers: []
 paths:
+  "/sibling_objects/described":
+    get:
+      summary: GET /sibling_objects/described
+      tags: []
+      responses:
+        '200':
+          description: keeps every keyword of a dictionary override
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  products:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        meta:
+                          type: object
+                          additionalProperties:
+                            type: object
+                            description: per-locale labels
+                            properties:
+                              label:
+                                type: string
+                                description: shown in the menu
+                            required:
+                            - label
+                      required:
+                      - meta
+                required:
+                - products
+              example:
+                products:
+                - meta:
+                    id: 1
+                    a: 1
+                - meta:
+                    id: 2
+                    b: x
   "/sibling_objects/dictionary":
     get:
       summary: GET /sibling_objects/dictionary

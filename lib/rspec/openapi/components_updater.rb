@@ -52,27 +52,50 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
   # relative path in the raw document instead.
   def apply_inline_nested_refs!(fresh_schemas, base, fresh)
     find_inline_nested_refs(base, fresh_schemas.keys).each do |paths|
-      nested_schema = fresh.dig(*paths[0..-2])
+      nested_schema = dig_like(fresh, base, paths[0..-2])
       next if nested_schema.nil?
 
       merge_fresh_schema!(fresh_schemas, base, paths, nested_schema)
     end
   end
 
+  # Digs fresh along a path of base. This run may have recorded one shape of a
+  # oneOf only, or its variants in another order, so at a variant index the step
+  # picks the fresh variant of the type base has there.
+  def dig_like(fresh, base, paths)
+    node = fresh
+    paths.each_with_index do |step, index|
+      node = if index.positive? && paths[index - 1] == :oneOf
+               RSpec::OpenAPI::HashHelper.variant_of_type(node, base.dig(*paths.take(index + 1), :type))
+             elsif step != :oneOf
+               node[step]
+             else
+               node
+             end
+      return nil unless node.is_a?(Hash)
+    end
+    node
+  end
+
   def merge_fresh_schema!(fresh_schemas, base, paths, nested_schema)
-    schema_name = extract_schema_name(base.dig(*paths)).to_sym
-    fresh_schemas[schema_name] ||= {}
-    RSpec::OpenAPI::SchemaMerger.merge_normalized!(fresh_schemas[schema_name], nested_schema)
+    schema_name = extract_schema_name(base.dig(*paths))
+    merge_schema!(fresh_schemas, schema_name, nested_schema)
   end
 
   def build_fresh_schemas(references, base, fresh)
-    references.inject({}) do |acc, paths|
+    references.each_with_object({}) do |paths, fresh_schemas|
       ref_link = dig_schema(base, paths)[:$ref]
       schema_name = extract_schema_name(ref_link)
       schema_body = dig_schema(fresh, paths.grep_v(Integer))
 
-      RSpec::OpenAPI::SchemaMerger.merge_normalized!(acc, { schema_name => schema_body })
+      merge_schema!(fresh_schemas, schema_name, schema_body)
     end
+  end
+
+  # Under a `schemas` key the merger knows it merges schemas, so two shapes of
+  # one component become a oneOf like they would inline.
+  def merge_schema!(fresh_schemas, schema_name, schema)
+    RSpec::OpenAPI::SchemaMerger.merge_normalized!({ schemas: fresh_schemas }, { schemas: { schema_name => schema } })
   end
 
   def dig_schema(obj, paths)

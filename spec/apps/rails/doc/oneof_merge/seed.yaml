@@ -1,0 +1,285 @@
+---
+# Hand-written document the oneOf merge spec records over. The outer spec
+# copies it to openapi.yaml, runs the recording, and compares the result with
+# the committed openapi.yaml.
+openapi: 3.1.0
+info:
+  title: oneOf merge
+  version: 1.0.0
+servers: []
+paths:
+  "/oneof_merge/empty_one_of":
+    get:
+      summary: GET /oneof_merge/empty_one_of
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    oneOf:
+                required:
+                - value
+  "/oneof_merge/param":
+    get:
+      summary: GET /oneof_merge/param
+      parameters:
+      - name: q
+        in: query
+        required: false
+        schema:
+          oneOf:
+          - type: integer
+          - type: string
+          - type: 'null'
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                required:
+                - ok
+  "/oneof_merge/typed_one_of":
+    get:
+      summary: GET /oneof_merge/typed_one_of
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                required:
+                - ok
+        '409':
+          description: written by hand, a type beside the oneOf
+          content:
+            application/json:
+              schema:
+                type:
+                - object
+                - 'null'
+                oneOf:
+                - required:
+                  - meow
+                - required:
+                  - bark
+        '422':
+          description: written by hand, a null variant beside a type that allows null
+          content:
+            application/json:
+              schema:
+                type:
+                - object
+                - 'null'
+                oneOf:
+                - type: object
+                  required:
+                  - meow
+                - type: 'null'
+  "/oneof_merge/null_variants":
+    get:
+      summary: GET /oneof_merge/null_variants
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    oneOf:
+                    - type: 'null'
+                      description: Cleared by the user
+                    - type: string
+                  other:
+                    oneOf:
+                    - type:
+                      - string
+                      - 'null'
+                    - type: integer
+                required:
+                - value
+                - other
+  "/oneof_merge/flag_boolean":
+    get:
+      summary: GET /oneof_merge/flag_boolean
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/FlagSetting"
+  "/oneof_merge/flag_object":
+    get:
+      summary: GET /oneof_merge/flag_object
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/FlagSetting"
+  "/oneof_merge/pref_object":
+    get:
+      summary: GET /oneof_merge/pref_object
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/PrefSetting"
+  "/oneof_merge/pref_boolean":
+    get:
+      summary: GET /oneof_merge/pref_boolean
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/PrefSetting"
+  "/oneof_merge/tagged":
+    get:
+      summary: GET /oneof_merge/tagged
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: boolean
+                - type: object
+                  properties:
+                    tag:
+                      "$ref": "#/components/schemas/Tag"
+                  required:
+                  - tag
+  "/oneof_merge/untagged":
+    get:
+      summary: GET /oneof_merge/untagged
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: boolean
+                - type: object
+                  properties:
+                    tag:
+                      "$ref": "#/components/schemas/Tag"
+                  required:
+                  - tag
+  "/oneof_merge/pruned":
+    get:
+      summary: GET /oneof_merge/pruned
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  a:
+                    type: integer
+                  gone:
+                    type: string
+                required:
+                - a
+                - gone
+  "/oneof_merge/annotated":
+    get:
+      summary: GET /oneof_merge/annotated
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    type: string
+                    description: The display name
+                    deprecated: true
+                required:
+                - value
+  "/oneof_merge/typeless":
+    get:
+      summary: GET /oneof_merge/typeless
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  values:
+                    type: array
+                    items:
+                      type: 'null'
+                      description: Set once the user picks one
+                required:
+                - values
+  "/oneof_merge/typeless_enum":
+    get:
+      summary: GET /oneof_merge/typeless_enum
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  values:
+                    type: array
+                    items:
+                      type: 'null'
+                      enum:
+                      - 1
+                      - x
+                required:
+                - values
+components:
+  schemas:
+    FlagSetting:
+      type: object
+      properties:
+        value:
+          type: boolean
+      required:
+      - value
+    PrefSetting:
+      type: object
+      properties:
+        value:
+          type: boolean
+      required:
+      - value
+    Tag:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+      - name
