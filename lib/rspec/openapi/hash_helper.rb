@@ -7,23 +7,37 @@ class << RSpec::OpenAPI::HashHelper = Object.new
   # document and filtering. A document built from a large suite holds tens of
   # thousands of nodes and these selectors run dozens of times per build.
   def matched_paths(obj, selector)
-    selector_parts = selector.split('.').map(&:to_sym)
     matches = []
-    collect_matches(obj, selector_parts, 0, [], matches)
+    collect_matches(obj, split_selector(selector), 0, [], matches)
     matches
   end
 
-  def matched_paths_deeply_nested(obj, begin_selector, end_selector)
-    begin_depth = begin_selector.to_s.count('.')
-    end_depth = end_selector.to_s.count('.')
+  # Paths that start with a match of begin_selector and end with a match of an
+  # end selector, with any number of keys in between: the matches of the first
+  # end selector sorted by length, then those of the next, each length in
+  # document order.
+  #
+  # The subtree under a begin match is walked once for all the end selectors,
+  # checking the tail of every path against each. Walking it once per possible
+  # length instead makes this cost the depth of the document times its size.
+  def matched_paths_deeply_nested(obj, begin_selector, *end_selectors)
+    end_parts = end_selectors.map { |selector| split_selector(selector) }
+    matches = end_parts.map { [] }
+    matched_paths(obj, begin_selector).each do |prefix|
+      collect_suffix_matches(obj.dig(*prefix), end_parts, prefix.dup, prefix.size, matches)
+    end
+    matches.flat_map { |found| found.group_by(&:size).sort_by(&:first).flat_map(&:last) }
+  end
 
-    # Every path in obj has all of its prefixes in obj too, so the depths that
-    # occur are exactly 1 up to the deepest one.
-    (1..max_depth(obj)).flat_map do |depth|
-      gap = depth - begin_depth - end_depth
-      next [] if gap.negative?
-
-      matched_paths(obj, "#{begin_selector}.#{'*.' * gap}#{end_selector}")
+  # Yields every hash in obj that holds key, each before its descendants, so a
+  # block may delete from the hash it is given.
+  def each_hash_with_key(obj, key, &block)
+    case obj
+    when Hash
+      yield obj if obj.key?(key)
+      obj.each_value { |value| each_hash_with_key(value, key, &block) }
+    when Array
+      obj.each { |value| each_hash_with_key(value, key, &block) }
     end
   end
 
@@ -35,34 +49,67 @@ class << RSpec::OpenAPI::HashHelper = Object.new
 
   private
 
-  def collect_matches(obj, selector_parts, depth, prefix, matches)
+  def split_selector(selector)
+    selector.split('.').map(&:to_sym)
+  end
+
+  # `path` is the stack of keys from the root to obj, pushed and popped in
+  # place, so a path is only ever copied for a match.
+  def collect_matches(obj, selector_parts, depth, path, matches)
     part = selector_parts[depth]
     last = depth == selector_parts.size - 1
 
     each_child(obj) do |key, value|
       next unless part == :* || part == key
 
-      path = [*prefix, key]
+      path.push(key)
       if last
-        matches << path
+        matches << path.dup
       else
         collect_matches(value, selector_parts, depth + 1, path, matches)
       end
+      path.pop
     end
+  end
+
+  # The loops below run once per node of the document, so they index by hand:
+  # each_with_index and Integer#times allocate per call.
+  def collect_suffix_matches(obj, end_parts, path, prefix_size, matches)
+    each_child(obj) do |key, value|
+      path.push(key)
+      index = 0
+      while index < end_parts.size
+        parts = end_parts[index]
+        matches[index] << path.dup if path.size >= prefix_size + parts.size && suffix_matches?(path, parts)
+        index += 1
+      end
+      collect_suffix_matches(value, end_parts, path, prefix_size, matches)
+      path.pop
+    end
+  end
+
+  def suffix_matches?(path, parts)
+    offset = path.size - parts.size
+    index = 0
+    while index < parts.size
+      part = parts[index]
+      return false unless part == :* || part == path[offset + index]
+
+      index += 1
+    end
+    true
   end
 
   def each_child(obj)
     case obj
-    when Hash then obj.each { |key, value| yield key.to_sym, value }
-    when Array then obj.each_with_index { |value, index| yield index, value }
-    end
-  end
-
-  def max_depth(obj)
-    case obj
-    when Hash then obj.empty? ? 0 : 1 + obj.each_value.map { |value| max_depth(value) }.max
-    when Array then obj.empty? ? 0 : 1 + obj.map { |value| max_depth(value) }.max
-    else 0
+    when Hash
+      obj.each { |key, value| yield key.to_sym, value }
+    when Array
+      index = 0
+      obj.each do |value|
+        yield index, value
+        index += 1
+      end
     end
   end
 end
