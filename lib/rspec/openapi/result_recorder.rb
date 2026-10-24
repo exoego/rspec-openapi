@@ -68,7 +68,12 @@ class RSpec::OpenAPI::ResultRecorder
   end
 
   def execute_post_process_hook(path, records, spec)
-    RSpec::OpenAPI.post_process_hook.call(path, records, spec) if RSpec::OpenAPI.post_process_hook.is_a?(Proc)
+    return unless RSpec::OpenAPI.post_process_hook.is_a?(Proc)
+
+    RSpec::OpenAPI.post_process_hook.call(path, records, spec)
+    # The hook may add string keys beside the symbol ones, and the files are
+    # written from the keys as they are. Folding them keeps one entry per name.
+    spec.replace(RSpec::OpenAPI::KeyTransformer.symbolize(spec))
   end
 
   def cleanup_schema!(new_from_zero, spec)
