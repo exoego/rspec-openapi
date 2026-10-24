@@ -323,8 +323,7 @@ class << RSpec::OpenAPI::SchemaBuilder
     end
   end
 
-  # Returns the path as it is when there is nothing to rewrite, as gsub copies
-  # it either way.
+  # gsub copies the path even when nothing matches.
   def normalize_path(path)
     return path unless path.include?(':')
 

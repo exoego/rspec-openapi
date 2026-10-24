@@ -16,13 +16,16 @@ class RSpec::OpenAPI::SchemaFile
 
   # Reads the existing spec, lets the block mutate it, writes the result back
   # and returns the (symbolized) spec so it can be mirrored to other files.
+  # A document that does not load is left as it is.
   # @return [Hash]
-  def edit(&block)
+  def edit
     spec = read
-    block.call(spec)
+    begin
+      yield spec
+    ensure
+      write(spec)
+    end
     spec
-  ensure
-    write(spec)
   end
 
   # Writes an already-built spec to this file, choosing the format from the

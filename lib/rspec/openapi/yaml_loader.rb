@@ -9,14 +9,14 @@ require 'date'
 # The names of examples are normalized on the way, as that copy did.
 #
 # Anchors, tags and merge keys are left to YAML.safe_load, which accepts or
-# rejects them as it always did. An alias follows its anchor, so it never gets
-# this far.
+# rejects them as it always did. A valid alias follows its anchor, so only a
+# dangling one gets this far, and it is handed off as well.
 class RSpec::OpenAPI::YAMLLoader < Psych::Handler
   class Unsupported < StandardError; end
   private_constant :Unsupported
 
   PERMITTED_CLASSES = [Date, Time].freeze
-  # Marks a mapping waiting for its next key, as the key itself may be nil.
+  # Marks a mapping waiting for its next key.
   NONE = Object.new.freeze
   private_constant :NONE
 
@@ -71,6 +71,10 @@ class RSpec::OpenAPI::YAMLLoader < Psych::Handler
     @containers.pop
     @pending_keys.pop
     @examples_maps.pop
+  end
+
+  def alias(_anchor)
+    raise Unsupported
   end
 
   private
