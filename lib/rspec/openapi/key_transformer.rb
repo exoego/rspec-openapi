@@ -34,16 +34,26 @@ class << RSpec::OpenAPI::KeyTransformer = Object.new
     result
   end
 
-  def stringify(value)
+  # Normalizes the names of examples in place, for a document that already
+  # holds symbol keys.
+  def normalize_example_names!(value)
     case value
     when Hash
-      result = {}
-      value.each { |k, v| result[k.to_s] = stringify(v) }
-      result
+      value.each do |k, v|
+        rename_examples!(v) if k == :examples && v.is_a?(Hash)
+        normalize_example_names!(v)
+      end
     when Array
-      value.map { |v| stringify(v) }
-    else
-      value
+      value.each { |v| normalize_example_names!(v) }
     end
+    value
+  end
+
+  private
+
+  def rename_examples!(examples)
+    renamed = {}
+    examples.each { |name, example| renamed[RSpec::OpenAPI::ExampleKey.normalize(name).to_sym] = example }
+    examples.replace(renamed)
   end
 end

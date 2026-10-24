@@ -1,0 +1,12 @@
+---
+openapi: 3.0.3
+info:
+  title: Dangling alias
+  version: 1.0.0
+paths:
+  "/example_mode_single":
+    get:
+      summary: *missing
+      responses:
+        '200':
+          description: refers to an anchor this document never defines

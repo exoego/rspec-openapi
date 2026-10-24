@@ -24,7 +24,8 @@ paths:
   # reader normalizes: multi-type-with-null, null-only, and multi-type-no-null.
   "/legacy":
     get:
-      summary: legacy endpoint kept verbatim
+      # An anchor. The reader hands a document holding one to YAML.safe_load.
+      summary: &legacy legacy endpoint kept verbatim
       responses:
         '200':
           description: legacy

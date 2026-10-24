@@ -27,11 +27,10 @@ class << RSpec::OpenAPI::SchemaBuilder
     end
 
     def merge_non_object_item_variations(schemas)
-      nullable_only = ->(schema) { schema.keys == [:nullable] }
-      typed = schemas.reject(&nullable_only)
+      typed = schemas.reject { |schema| nullable_only?(schema) }
 
       merged = typed.size == 1 ? typed.first.dup : merge_multi(typed)
-      merged[:nullable] = true if schemas.any?(&nullable_only) && merged.is_a?(Hash)
+      merged[:nullable] = true if schemas.any? { |schema| nullable_only?(schema) } && merged.is_a?(Hash)
       merged
     end
 
@@ -43,7 +42,7 @@ class << RSpec::OpenAPI::SchemaBuilder
     def merge_property_variations(variations, allow_recursive_merge:)
       property_keys(variations).each_with_object({}) do |key, merged_props|
         all = variations.map { |v| v[:properties]&.[](key) }
-        prop_variations = all.reject { |p| p.nil? || p.keys == [:nullable] }
+        prop_variations = all.reject { |p| p.nil? || nullable_only?(p) }
         has_nullable = nullable_present?(all, recursive: allow_recursive_merge)
 
         next if prop_variations.empty? && !has_nullable
@@ -74,7 +73,10 @@ class << RSpec::OpenAPI::SchemaBuilder
     end
 
     def property_keys(variations)
-      variations.flat_map { |v| v[:properties]&.keys || [] }.uniq
+      keys = []
+      variations.each { |v| v[:properties]&.each_key { |key| keys << key } }
+      keys.uniq!
+      keys
     end
 
     # `recursive` mirrors merge_variations' original rule that also treats
@@ -82,8 +84,12 @@ class << RSpec::OpenAPI::SchemaBuilder
     # looks at outright nil or `{ nullable: true }` markers.
     def nullable_present?(all_props, recursive:)
       all_props.any? do |p|
-        p.nil? || (p.is_a?(Hash) && (p.keys == [:nullable] || (recursive && p[:nullable] == true)))
+        p.nil? || (p.is_a?(Hash) && (nullable_only?(p) || (recursive && p[:nullable] == true)))
       end
+    end
+
+    def nullable_only?(schema)
+      schema.size == 1 && schema.key?(:nullable)
     end
 
     def merge_single_property(prop_variations, has_nullable, variations_total:, allow_recursive_merge:)

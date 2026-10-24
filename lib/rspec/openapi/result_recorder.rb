@@ -45,6 +45,10 @@ class RSpec::OpenAPI::ResultRecorder
   def build_spec(primary, records)
     title = records.first.title
     RSpec::OpenAPI::SchemaFile.new(primary).edit do |spec|
+      # The cleanup compares the document with one built from this run alone.
+      # Without an existing document nothing can be stale, so the document is
+      # that one and the records are merged once.
+      new_from_zero = spec.empty? ? spec : {}
       # Normalize an existing file back to the internal form so merge/cleanup is
       # version-agnostic; cleanup_schema! re-applies the target form.
       RSpec::OpenAPI::NullableConverter.normalize!(spec)
@@ -54,11 +58,10 @@ class RSpec::OpenAPI::ResultRecorder
       # SchemaFile#read already symbolized the document, so no merge here needs
       # to normalize it again.
       RSpec::OpenAPI::SchemaMerger.merge_normalized!(spec, schema)
-      new_from_zero = {}
       records.each do |record|
         record_schema = RSpec::OpenAPI::SchemaBuilder.build(record)
         RSpec::OpenAPI::SchemaMerger.merge_normalized!(spec, record_schema)
-        RSpec::OpenAPI::SchemaMerger.merge_normalized!(new_from_zero, record_schema)
+        RSpec::OpenAPI::SchemaMerger.merge_normalized!(new_from_zero, record_schema) unless new_from_zero.equal?(spec)
       rescue StandardError, NotImplementedError => e # e.g. SchemaBuilder raises a NotImplementedError
         @error_records[e] = record # Avoid failing the build
       end
@@ -68,7 +71,12 @@ class RSpec::OpenAPI::ResultRecorder
   end
 
   def execute_post_process_hook(path, records, spec)
-    RSpec::OpenAPI.post_process_hook.call(path, records, spec) if RSpec::OpenAPI.post_process_hook.is_a?(Proc)
+    return unless RSpec::OpenAPI.post_process_hook.is_a?(Proc)
+
+    RSpec::OpenAPI.post_process_hook.call(path, records, spec)
+    # The hook may add string keys beside the symbol ones, and the files are
+    # written from the keys as they are. Folding them keeps one entry per name.
+    spec.replace(RSpec::OpenAPI::KeyTransformer.symbolize(spec))
   end
 
   def cleanup_schema!(new_from_zero, spec)
