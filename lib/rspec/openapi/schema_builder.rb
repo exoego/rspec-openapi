@@ -16,13 +16,17 @@ class << RSpec::OpenAPI::SchemaBuilder
     },
   }.freeze
 
+  # GET and DELETE never have a request body in OpenAPI.
+  BODYLESS_METHODS = ['delete', 'get'].freeze
+
   # @param [RSpec::OpenAPI::Record] record
   # @return [Hash]
   def build(record)
+    http_method = record.http_method.downcase
     {
       paths: {
         normalize_path(record.path) => {
-          record.http_method.downcase => build_operation(record),
+          http_method => build_operation(record, http_method),
         },
       },
     }
@@ -30,20 +34,19 @@ class << RSpec::OpenAPI::SchemaBuilder
 
   private
 
-  def build_operation(record)
-    http_method = record.http_method.downcase
-    # GET and DELETE never have a request body in OpenAPI.
-    request_body = ['delete', 'get'].include?(http_method) ? nil : build_request_body(record)
-    {
+  def build_operation(record, http_method)
+    operation = {
       summary: record.summary,
       tags: record.tags,
       operationId: record.operation_id,
       security: record.security,
       deprecated: record.deprecated ? true : nil,
       parameters: build_parameters(record),
-      requestBody: request_body,
+      requestBody: BODYLESS_METHODS.include?(http_method) ? nil : build_request_body(record),
       responses: { record.status.to_s => build_response(record) },
-    }.compact
+    }
+    operation.compact!
+    operation
   end
 
   def build_response(record)
@@ -100,7 +103,14 @@ class << RSpec::OpenAPI::SchemaBuilder
     else
       # :single (default)
       # :single may emit nil example or nil _example_summary; compact strips them.
-      { schema: schema, example: example, **example_metadata(record) }.compact
+      body = {
+        schema: schema,
+        example: example,
+        _example_key: record.example_key,
+        _example_summary: example_summary(record),
+      }
+      body.compact!
+      body
     end
   end
 
@@ -113,10 +123,6 @@ class << RSpec::OpenAPI::SchemaBuilder
   def build_named_example(record, value)
     summary = example_summary(record)
     summary ? { summary: summary, value: value } : { value: value }
-  end
-
-  def example_metadata(record)
-    { _example_key: record.example_key, _example_summary: example_summary(record) }
   end
 
   def example_summary(record)
@@ -134,15 +140,12 @@ class << RSpec::OpenAPI::SchemaBuilder
     parameters = record.path_params.map do |key, value|
       build_parameter(key, value, location: 'path', record: record)
     end
-
-    parameters += flatten_query_params(record.query_params).map do |key, value|
-      build_parameter(key, value, location: 'query', record: record)
+    flatten_query_params(record.query_params).each do |key, value|
+      parameters << build_parameter(key, value, location: 'query', record: record)
     end
-
-    parameters += record.request_headers.map do |key, value|
-      build_parameter(key, value, location: 'header', record: record)
+    record.request_headers.each do |key, value|
+      parameters << build_parameter(key, value, location: 'header', record: record)
     end
-
     parameters.empty? ? nil : parameters
   end
 
@@ -152,21 +155,26 @@ class << RSpec::OpenAPI::SchemaBuilder
     is_query = location == 'query'
     required = is_query ? record.required_request_params.include?(key) : true
     cast = try_cast(value)
-    ctx = BuildContext.new(record, :request, key.to_s, key)
-    {
-      name: key.to_s,
+    name = key.to_s
+    ctx = BuildContext.new(record, :request, name, key)
+    parameter = {
+      name: name,
       in: location,
       required: required,
       schema: build_property(cast, ctx),
       example: (cast if example_enabled?(record)),
-    }.compact
+    }
+    parameter.compact!
+    parameter
   end
 
   def build_response_headers(record)
-    record.response_headers.to_h do |key, value|
+    headers = {}
+    record.response_headers.each do |key, value|
       ctx = BuildContext.new(record, :response, key.to_s, key)
-      [key, { schema: build_property(try_cast(value), ctx) }]
+      headers[key] = { schema: build_property(try_cast(value), ctx) }
     end
+    headers
   end
 
   def flatten_query_params(params, parent_key = nil)
@@ -315,7 +323,11 @@ class << RSpec::OpenAPI::SchemaBuilder
     end
   end
 
+  # Returns the path as it is when there is nothing to rewrite, as gsub copies
+  # it either way.
   def normalize_path(path)
+    return path unless path.include?(':')
+
     path.gsub(%r{/:([^:/]+)}, '/{\1}')
   end
 

@@ -98,14 +98,12 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
     RSpec::OpenAPI::SchemaMerger.merge_normalized!({ schemas: fresh_schemas }, { schemas: { schema_name => schema } })
   end
 
+  # The paths come from matched_paths, so their segments are symbols and the
+  # indexes of oneOf variants.
   def dig_schema(obj, paths)
-    # Response code can be an integer
-    paths = paths.map { |path| path.is_a?(Integer) ? path : path.to_sym }
-    item_schema = obj.dig(*paths, :schema, :items)
-    object_schema = obj.dig(*paths, :schema)
-    one_of_schema = obj.dig(*paths.take(paths.size - 1), :schema, :oneOf, paths.last)
-
-    item_schema || object_schema || one_of_schema
+    obj.dig(*paths, :schema, :items) ||
+      obj.dig(*paths, :schema) ||
+      obj.dig(*paths[0...-1], :schema, :oneOf, paths.last)
   end
 
   def paths_to_top_level_refs(base)
