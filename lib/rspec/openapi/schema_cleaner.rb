@@ -16,6 +16,12 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
     cleanup_one_of_properties!(base, spec, 'components.schemas.*')
   end
 
+  # The request and response bodies, where most of the cleanup happens.
+  MEDIA_TYPE_SELECTORS = [
+    'paths.*.*.requestBody.content.application/json',
+    'paths.*.*.responses.*.content.application/json',
+  ].freeze
+
   # Cleanup specific elements that exists in the base but not in the spec
   #
   # @param [Hash] base
@@ -30,19 +36,12 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
     # cleanup parameters
     cleanup_array!(base, spec, 'paths.*.*.parameters', [:name, :in])
 
-    # cleanup requestBody
-    cleanup_hash!(base, spec, 'paths.*.*.requestBody.content.application/json.schema.properties.*')
-    cleanup_hash!(base, spec, 'paths.*.*.requestBody.content.application/json.example.*')
-    cleanup_hash!(base, spec, 'paths.*.*.requestBody.content.application/json.examples.*')
-
-    # cleanup responses
-    cleanup_hash!(base, spec, 'paths.*.*.responses.*.content.application/json.schema.properties.*')
-    cleanup_hash!(base, spec, 'paths.*.*.responses.*.content.application/json.example.*')
-    cleanup_hash!(base, spec, 'paths.*.*.responses.*.content.application/json.examples.*')
-
-    # cleanup properties of each variant once a body became a oneOf
-    cleanup_one_of_properties!(base, spec, 'paths.*.*.requestBody.content.application/json.schema')
-    cleanup_one_of_properties!(base, spec, 'paths.*.*.responses.*.content.application/json.schema')
+    # cleanup request and response bodies, each walked down to once
+    MEDIA_TYPE_SELECTORS.each do |selector|
+      RSpec::OpenAPI::HashHelper.each_matched(base, spec, selector) do |_parent, _key, media_type, fresh|
+        cleanup_media_type!(media_type, fresh)
+      end
+    end
 
     # cleanup temporary fields used for internal processing
     cleanup_temporary_fields!(base)
@@ -74,6 +73,17 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
   end
 
   private
+
+  # The selectors are relative to the media type. A media type the spec does
+  # not hold has no fresh counterpart, and all of its entries are stale.
+  def cleanup_media_type!(media_type, fresh)
+    cleanup_hash!(media_type, fresh, 'schema.properties.*')
+    cleanup_hash!(media_type, fresh, 'example.*')
+    cleanup_hash!(media_type, fresh, 'examples.*')
+
+    # cleanup properties of each variant once a body became a oneOf
+    cleanup_one_of_properties!(media_type, fresh, 'schema')
+  end
 
   # Security sits on operations, the hashes under a path item: a non-standard
   # method is still inline here and only moves under additionalOperations later.
@@ -121,9 +131,7 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
   def cleanup_array!(base, spec, selector, fields_for_identity)
     identity = ->(obj) { fields_for_identity.map { |field| obj[field] } }
 
-    RSpec::OpenAPI::HashHelper.matched_paths(base, selector).each do |paths|
-      target_array = base.dig(*paths)
-      spec_array = spec.dig(*paths)
+    RSpec::OpenAPI::HashHelper.each_matched(base, spec, selector) do |_parent, _key, target_array, spec_array|
       next unless target_array.is_a?(Array) && spec_array.is_a?(Array)
 
       spec_identities = Set.new(spec_array.map(&identity))
@@ -137,10 +145,11 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
   end
 
   def cleanup_one_of_properties!(base, spec, selector)
-    RSpec::OpenAPI::HashHelper.matched_paths(base, selector).each do |paths|
-      variants = base.dig(*paths, :oneOf)
-      fresh = spec.dig(*paths)
-      next unless variants.is_a?(Array) && fresh.is_a?(Hash)
+    RSpec::OpenAPI::HashHelper.each_matched(base, spec, selector) do |_parent, _key, schema, fresh|
+      next unless schema.is_a?(Hash) && fresh.is_a?(Hash)
+
+      variants = schema[:oneOf]
+      next unless variants.is_a?(Array)
 
       variants.each { |variant| cleanup_variant_properties!(variant, variants, fresh) }
     end
@@ -161,14 +170,13 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
     variant[:properties].delete_if { |name, _| counterpart.dig(:properties, name).nil? }
   end
 
-  # Every selector above names at least two segments, so a matched path always
-  # has a parent to delete the entry from.
+  # The stale entries are deleted after the walk, which iterates their parents.
   def cleanup_hash!(base, spec, selector)
-    RSpec::OpenAPI::HashHelper.matched_paths(base, selector).each do |paths|
-      exist_in_base = !base.dig(*paths).nil?
-      not_in_spec = spec.dig(*paths).nil?
-      base.dig(*paths[0..-2]).delete(paths.last) if exist_in_base && not_in_spec
+    stale = nil
+    RSpec::OpenAPI::HashHelper.each_matched(base, spec, selector) do |parent, key, value, counterpart|
+      (stale ||= []) << [parent, key] if !value.nil? && counterpart.nil?
     end
+    stale&.each { |parent, key| parent.delete(key) }
     base
   end
 end

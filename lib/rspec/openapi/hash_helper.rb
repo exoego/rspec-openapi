@@ -12,6 +12,15 @@ class << RSpec::OpenAPI::HashHelper = Object.new
     matches
   end
 
+  # Yields each match of selector in obj as its parent, the matching key and
+  # the value, with the value at the same path in other (nil when other has
+  # none). Callers that only edit the matched nodes, or compare them with a
+  # fresh document, get them without a path to dig back up from the root for
+  # every match.
+  def each_matched(obj, other, selector, &block)
+    walk_matched(obj, other, split_selector(selector), 0, &block)
+  end
+
   # Paths that start with a match of begin_selector and end with a match of an
   # end selector, with any number of keys in between: the matches of the first
   # end selector sorted by length, then those of the next, each length in
@@ -59,10 +68,15 @@ class << RSpec::OpenAPI::HashHelper = Object.new
     (schema[:oneOf] || [schema]).find { |variant| variant.is_a?(Hash) && variant[:type] == type }
   end
 
+  # The selectors are a fixed set of literals, some of them matched once per
+  # media type of the document, so each is split once.
+  SELECTOR_PARTS = Hash.new { |cache, selector| cache[selector] = selector.split('.').map(&:to_sym).freeze }
+  private_constant :SELECTOR_PARTS
+
   private
 
   def split_selector(selector)
-    selector.split('.').map(&:to_sym)
+    SELECTOR_PARTS[selector]
   end
 
   # `path` is the stack of keys from the root to obj, pushed and popped in
@@ -84,15 +98,40 @@ class << RSpec::OpenAPI::HashHelper = Object.new
     end
   end
 
+  def walk_matched(obj, other, selector_parts, depth, &block)
+    part = selector_parts[depth]
+    last = depth == selector_parts.size - 1
+
+    each_child(obj) do |key, value|
+      next unless part == :* || part == key
+
+      if last
+        yield obj, key, value, child_of(other, key)
+      else
+        walk_matched(value, child_of(other, key), selector_parts, depth + 1, &block)
+      end
+    end
+  end
+
+  def child_of(obj, key)
+    case obj
+    when Hash, Array then obj[key]
+    end
+  end
+
   # The loops below run once per node of the document, so they index by hand:
-  # each_with_index and Integer#times allocate per call.
+  # each_with_index and Integer#times allocate per call. Most nodes fail on
+  # their own key, which is checked before the rest of the suffix.
   def collect_suffix_matches(obj, end_parts, path, prefix_size, matches)
     each_child(obj) do |key, value|
       path.push(key)
       index = 0
       while index < end_parts.size
         parts = end_parts[index]
-        matches[index] << path.dup if path.size >= prefix_size + parts.size && suffix_matches?(path, parts)
+        last = parts[-1]
+        if (last == :* || last == key) && path.size >= prefix_size + parts.size && suffix_matches?(path, parts)
+          matches[index] << path.dup
+        end
         index += 1
       end
       collect_suffix_matches(value, end_parts, path, prefix_size, matches)

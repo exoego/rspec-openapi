@@ -32,14 +32,20 @@ class << RSpec::OpenAPI::SchemaSorter = Object.new
   # @param [Hash] base
   # @param [String] selector
   def deep_sort_by_selector!(base, selector)
-    RSpec::OpenAPI::HashHelper.matched_paths(base, selector).each do |paths|
-      deep_sort_hash!(base.dig(*paths))
+    RSpec::OpenAPI::HashHelper.each_matched(base, nil, selector) do |_parent, _key, hash, _counterpart|
+      deep_sort_hash!(hash)
     end
   end
 
   # Re-inserting a key moves it to the end, so re-inserting every key in sorted
-  # order sorts the hash in place.
+  # order sorts the hash in place. A document read back from a file is sorted
+  # already, so a hash whose keys are in order is left alone. The keys are all
+  # symbols, which sort as their names do.
   def deep_sort_hash!(hash)
-    hash.keys.sort_by(&:to_s).each { |key| hash[key.to_sym] = hash.delete(key) }
+    keys = hash.keys
+    sorted = keys.sort
+    return if sorted == keys
+
+    sorted.each { |key| hash[key] = hash.delete(key) }
   end
 end
