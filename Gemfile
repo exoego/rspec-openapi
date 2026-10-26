@@ -5,7 +5,7 @@ source 'https://rubygems.org'
 # Specify your gem's dependencies in rspec-openapi.gemspec
 gemspec
 
-gem 'rails', ENV['RAILS_VERSION'] || '6.0.6.1'
+gem 'rails', ENV['RAILS_VERSION'] || '8.1.4'
 
 # json 3 rejects the quirks_mode option Rails passes to it
 gem 'json', '< 3'
