@@ -22,7 +22,7 @@ defaults:
 jobs:
   test:
     name: test
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 15
     permissions:
       contents: read
@@ -68,7 +68,7 @@ jobs:
   # The repository ruleset requires a check named test-gate. Keep the job name.
   test-gate:
     name: test-gate
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 5
     needs: test
     if: ${{ always() }}
