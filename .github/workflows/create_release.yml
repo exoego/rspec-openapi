@@ -9,20 +9,28 @@ on:
 
 permissions: {}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ inputs.version }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
 jobs:
   push:
     name: Prepare release PR
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
+    environment: release
     permissions:
-      contents: write
-      pull-requests: write
+      contents: read
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-          token: ${{ secrets.PREPARE_RELEASE_PAT }}
+          persist-credentials: false
 
       - name: Bump version.rb
         env:
@@ -84,19 +92,22 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git commit -am "Bump version to ${version}"
-          git push origin "HEAD:${release_branch}"
 
-      - name: Open release PR
-        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
-        with:
-          token: ${{ secrets.PREPARE_RELEASE_PAT }}
-          add-paths: |
-            lib/rspec/openapi/version.rb
-            .github/workflows/create_release.yml
-          branch: ${{ env.RELEASE_BRANCH }}
-          title: Release v${{ env.VERSION_NO_V }}
-          commit-message: Bump version to ${{ env.VERSION_NO_V }}
-          body: |
-            Automated release PR created by workflow_dispatch.
-            - Version: v${{ env.VERSION_NO_V }}
-            - Triggered by: ${{ github.actor }}
+      # The PAT is needed so that the push starts the CI workflows on the release PR.
+      - name: Push branch and open release PR
+        env:
+          GH_TOKEN: ${{ secrets.PREPARE_RELEASE_PAT }}
+        run: |
+          set -euo pipefail
+          gh auth setup-git
+          git push origin "HEAD:${RELEASE_BRANCH}"
+
+          body=$(printf '%s\n' \
+            "Automated release PR created by workflow_dispatch." \
+            "- Version: v${VERSION_NO_V}" \
+            "- Triggered by: ${GITHUB_ACTOR}")
+          gh pr create \
+            --base master \
+            --head "$RELEASE_BRANCH" \
+            --title "Release v${VERSION_NO_V}" \
+            --body "$body"

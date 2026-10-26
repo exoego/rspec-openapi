@@ -15,9 +15,14 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   test:
-    runs-on: ubuntu-latest
+    name: test
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     permissions:
       contents: read
@@ -54,16 +59,20 @@ jobs:
         name: codecov-action@v4 workaround
       - name: Upload coverage reports
         uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
-        if: matrix.coverage == 'coverage'
+        if: ${{ matrix.coverage == 'coverage' }}
         with:
           fail_ci_if_error: true
           files: ./coverage/coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
 
+  # The repository ruleset requires a check named test-gate. Keep the job name.
   test-gate:
-    runs-on: ubuntu-latest
+    name: test-gate
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     needs: test
-    if: always()
+    if: ${{ always() }}
     steps:
-      - run: ${{ needs.test.result == 'success' }}
+      - env:
+          TEST_RESULT: ${{ needs.test.result }}
+        run: test "$TEST_RESULT" = success

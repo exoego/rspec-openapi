@@ -12,13 +12,18 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   rubocop:
-    runs-on: ubuntu-latest
+    name: rubocop
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
       contents: read
-      security-events: write
+      security-events: write # upload-sarif publishes the RuboCop findings to code scanning
     strategy:
       fail-fast: false
 
