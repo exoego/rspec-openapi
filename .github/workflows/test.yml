@@ -9,27 +9,34 @@ on:
       - synchronize
       - reopened
 
-permissions:
-  contents: read
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
     container: ${{ matrix.ruby }}
     strategy:
       fail-fast: false
       matrix:
+        # Image digests are updated by Renovate. See the custom manager in renovate.json.
         include:
-          - ruby: ruby:2.7
-          - ruby: ruby:3.0
-          - ruby: ruby:3.1
-          - ruby: ruby:3.1
+          - ruby: ruby:2.7@sha256:2347de892e419c7160fc21dec721d5952736909f8c3fbb7f84cb4a07aaf9ce7d
+          - ruby: ruby:3.0@sha256:dcb8a8a6ee981f949da505cb9f4f15cde696e7bcb088955bc1f92f23a4cd7a72
+          - ruby: ruby:3.1@sha256:91627f55e8969006aab67d15c92fb930500ff73948803da1330b8a853fecebb5
+          - ruby: ruby:3.1@sha256:91627f55e8969006aab67d15c92fb930500ff73948803da1330b8a853fecebb5
             rails: 7.0.10
-          - ruby: ruby:3.3
+          - ruby: ruby:3.3@sha256:feb86cb7e42c69ae2804ed5fc0a29e7f6b4ec0eaa78bb056a03321891544aa25
             rails: 7.1.6
-          - ruby: ruby:3.4
+          - ruby: ruby:3.4@sha256:48ecc7a76bacf6fc0da5f6c7a5b43f96461bac68fa571213a8afcf79c461c7b7
             rails: 8.0.5.1
-          - ruby: ruby:4.0
+          - ruby: ruby:4.0@sha256:e7e33621dd8ac85cdfa472b9c13ac1ec03cedf9e15b79c696891cf11226980c6
             rails: 8.1.4
             coverage: coverage
     env:
@@ -37,8 +44,10 @@ jobs:
       COVERAGE: ${{ matrix.coverage || '' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: bundle install
-        run: bundle install -j$(nproc) --retry 3
+        run: bundle install --jobs "$(nproc)" --retry 3
       - run: bundle exec scripts/parallel_rspec
         timeout-minutes: 2
       - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
@@ -53,6 +62,7 @@ jobs:
 
   test-gate:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: test
     if: always()
     steps:

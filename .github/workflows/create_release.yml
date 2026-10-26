@@ -7,14 +7,16 @@ on:
         description: 'Version to release (e.g. 0.35.1 or 0.36.0)'
         required: true
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
 
 jobs:
   push:
     name: Prepare release PR
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -23,10 +25,11 @@ jobs:
           token: ${{ secrets.PREPARE_RELEASE_PAT }}
 
       - name: Bump version.rb
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
         run: |
           set -euo pipefail
-          version="${{ github.event.inputs.version }}"
-          version="${version#v}"
+          version="${INPUT_VERSION#v}"
 
           echo "VERSION_NO_V=$version" >> "$GITHUB_ENV"
           echo "VERSION_TAG=v$version" >> "$GITHUB_ENV"
