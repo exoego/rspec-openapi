@@ -20,9 +20,35 @@
         "# renovate: datasource=(?<datasource>[a-z-]+) depName=(?<depName>\\S+)(?: versioning=(?<versioning>\\S+))?\\s+.*@(?<currentValue>[^\\s@]+)"
       ],
       "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}npm{{/if}}"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        ".github/workflows/test.yml"
+      ],
+      "matchStrings": [
+        "- ruby: (?<depName>ruby):(?<currentValue>[^@\\s]+)@(?<currentDigest>sha256:[0-9a-f]{64})"
+      ],
+      "datasourceTemplate": "docker"
     }
   ],
   "packageRules": [
+    {
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchDepNames": [
+        "ruby"
+      ],
+      "matchUpdateTypes": [
+        "major",
+        "minor"
+      ],
+      "enabled": false
+    },
     {
       "enabled": false,
       "matchPackageNames": [

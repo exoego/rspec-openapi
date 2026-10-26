@@ -5,10 +5,17 @@ on:
     tags:
       - 'v*'
 
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   publish:
     name: Publish gem and GitHub release
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     permissions:
       id-token: write   # for RubyGems trusted publishing
@@ -18,12 +25,16 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@651ff0d62c5c79bed6d53ec518387aae20e72c1a # v1.329.0
         with:
-          bundler-cache: true
           ruby-version: '4.0.7'
+
+      # No bundler cache here. A poisoned cache must not reach the published gem.
+      - name: bundle install
+        run: bundle install --jobs 4 --retry 3
 
       - name: Verify tag matches version.rb
         run: |
@@ -39,8 +50,7 @@ jobs:
       - uses: rubygems/release-gem@7f9650160c1a4e7989fdc9855807bdbd421d8b6b # v1.4.1
 
       - name: Create GitHub release
-        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: ${{ github.ref_name }}
-          generate_release_notes: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh release create "$GITHUB_REF_NAME" --verify-tag --title "$GITHUB_REF_NAME" --generate-notes
