@@ -1,0 +1,6 @@
+profile: pedantic
+
+rules:
+  secrets-outside-env:
+    # CODECOV_TOKEN only uploads coverage reports. An environment on every test job is not worth it.
+    allow: [CODECOV_TOKEN]

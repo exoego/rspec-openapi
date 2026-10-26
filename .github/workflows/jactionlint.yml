@@ -18,7 +18,8 @@ concurrency:
 
 jobs:
   jactionlint:
-    runs-on: ubuntu-latest
+    name: jactionlint
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
       contents: read
@@ -26,4 +27,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      # The profile is set in .github/jactionlint.yaml
       - uses: jdx/jactionlint@a65ab044e916760429068fe5794b8306abdfcbb9 # v2.3.0
+        with:
+          strict-exit: true

@@ -18,12 +18,12 @@ concurrency:
 jobs:
   analyze:
     name: Analyze
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
-      actions: read
+      actions: read # codeql-action reads the workflow run for private repositories
       contents: read
-      security-events: write
+      security-events: write # codeql-action uploads the analysis results
 
     strategy:
       fail-fast: false
