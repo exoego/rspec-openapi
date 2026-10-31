@@ -224,14 +224,14 @@
                   ]
                 },
                 "examples": {
-                  "inherits_multiple_from_parent": {
-                    "summary": "inherits multiple from parent",
+                  "also_inherits_multiple_from_parent": {
+                    "summary": "also inherits multiple from parent",
                     "value": {
                       "status": "inherit"
                     }
                   },
-                  "also_inherits_multiple_from_parent": {
-                    "summary": "also inherits multiple from parent",
+                  "inherits_multiple_from_parent": {
+                    "summary": "inherits multiple from parent",
                     "value": {
                       "status": "inherit"
                     }

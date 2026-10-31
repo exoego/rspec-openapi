@@ -421,7 +421,7 @@ end
 
 ### How can I keep the generated file stable across runs?
 
-rspec-openapi sorts `paths`, HTTP methods, response status codes and content types.
+rspec-openapi sorts `paths`, HTTP methods, response status codes, content types and the names of `examples`.
 So the structure of the file does not depend on the order in which RSpec runs your tests.
 
 The values inside `example` are different. They are copied from the real requests and responses
