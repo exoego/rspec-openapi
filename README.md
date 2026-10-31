@@ -419,6 +419,44 @@ RSpec.describe '/resources', type: :request do
 end
 ```
 
+### How can I keep the generated file stable across runs?
+
+rspec-openapi sorts `paths`, HTTP methods, response status codes and content types.
+So the structure of the file does not depend on the order in which RSpec runs your tests.
+
+The values inside `example` are different. They are copied from the real requests and responses
+in your tests. Anything random in your app or test data shows up as a diff on every run.
+Common sources are Faker, `SecureRandom`, `Time.now` and auto-increment IDs.
+
+One option is to make the values stable in your test setup. This is plain RSpec configuration
+and is not specific to rspec-openapi. For example:
+
+```rb
+if ENV['OPENAPI']
+  seed = ENV.fetch('OPENAPI_SEED', 1234).to_i
+  srand(seed)
+  Faker::Config.random = Random.new(seed) if defined?(Faker)
+
+  RSpec.configure do |config|
+    config.include ActiveSupport::Testing::TimeHelpers
+
+    config.around do |example|
+      travel_to(Time.zone.local(2024, 1, 1, 12, 0, 0)) { example.run }
+    end
+  end
+end
+```
+
+The other option is to keep the random values out of the file. Set `RSpec::OpenAPI.enable_example = false`
+to drop `example` everywhere, use `example_mode: :none` on the noisy tests only, or rewrite the values
+in `RSpec::OpenAPI.post_process_hook`. See [Configuration](#configuration) for both.
+
+One more thing to know. When several tests hit the same endpoint in the default `:single` mode,
+the `example` comes from the test that ran last. With `config.order = :random` the winner changes
+from run to run. Run with `--order defined` while generating the file, or switch those tests to
+`example_mode: :multiple` so that each test writes its own named example.
+See [Multiple Examples Mode](#multiple-examples-mode).
+
 ## Customizations
 
 Some examples' attributes can be overwritten via RSpec metadata options. Example:
