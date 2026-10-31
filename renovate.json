@@ -4,6 +4,7 @@
     "config:recommended"
   ],
   "minimumReleaseAge": "7 days",
+  "automergeStrategy": "merge-commit",
   "labels": [
     "dependencies"
   ],
@@ -33,6 +34,16 @@
     }
   ],
   "packageRules": [
+    {
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "pinDigest",
+        "digest"
+      ],
+      "automerge": true
+    },
     {
       "matchManagers": [
         "custom.regex"
