@@ -1424,12 +1424,12 @@ paths:
                 required:
                 - status
               examples:
-                inherits_multiple_from_parent:
-                  summary: inherits multiple from parent
-                  value:
-                    status: inherit
                 also_inherits_multiple_from_parent:
                   summary: also inherits multiple from parent
+                  value:
+                    status: inherit
+                inherits_multiple_from_parent:
+                  summary: inherits multiple from parent
                   value:
                     status: inherit
   "/example_mode_mixed":
@@ -1503,17 +1503,17 @@ paths:
               required:
               - auth_type
             examples:
-              with_otp_signin:
-                summary: with otp signin
-                value:
-                  auth_type: otp
-                  otp: '123456'
               with_email_password_signin:
                 summary: with email password signin
                 value:
                   auth_type: email
                   email: a@b.c
                   password: pw
+              with_otp_signin:
+                summary: with otp signin
+                value:
+                  auth_type: otp
+                  otp: '123456'
               with_validation_error:
                 summary: with validation error
                 value:
@@ -1531,12 +1531,12 @@ paths:
                 required:
                 - status
               examples:
-                with_otp_signin:
-                  summary: with otp signin
-                  value:
-                    status: ok
                 with_email_password_signin:
                   summary: with email password signin
+                  value:
+                    status: ok
+                with_otp_signin:
+                  summary: with otp signin
                   value:
                     status: ok
         '400':

@@ -855,12 +855,12 @@ paths:
                 required:
                 - status
               examples:
-                inherits_multiple_from_parent:
-                  summary: inherits multiple from parent
-                  value:
-                    status: inherit
                 also_inherits_multiple_from_parent:
                   summary: also inherits multiple from parent
+                  value:
+                    status: inherit
+                inherits_multiple_from_parent:
+                  summary: inherits multiple from parent
                   value:
                     status: inherit
   "/example_mode_mixed":
@@ -1200,12 +1200,12 @@ paths:
               schema:
                 type: string
               examples:
-                returns_some_content_from_the_engine:
-                  summary: returns some content from the engine
+                also_inherits_multiple_example_mode:
                   value: ANOTHER TEST
                 inherits_multiple_example_mode:
                   value: ANOTHER TEST
-                also_inherits_multiple_example_mode:
+                returns_some_content_from_the_engine:
+                  summary: returns some content from the engine
                   value: ANOTHER TEST
   "/nested_arrays_test":
     get:
@@ -1443,19 +1443,6 @@ paths:
                   - created_at
                   - updated_at
               examples:
-                with_flat_query_parameters:
-                  summary: with flat query parameters
-                  value:
-                  - id: 1
-                    name: access
-                    description: logs
-                    database:
-                      id: 2
-                      name: production
-                    null_sample:
-                    storage_size: 12.3
-                    created_at: '2020-07-17T00:00:00+00:00'
-                    updated_at: '2020-07-17T00:00:00+00:00'
                 with_deep_query_parameters:
                   summary: with deep query parameters
                   value:
@@ -1471,6 +1458,19 @@ paths:
                     updated_at: '2020-07-17T00:00:00+00:00'
                 with_different_deep_query_parameters:
                   summary: with different deep query parameters
+                  value:
+                  - id: 1
+                    name: access
+                    description: logs
+                    database:
+                      id: 2
+                      name: production
+                    null_sample:
+                    storage_size: 12.3
+                    created_at: '2020-07-17T00:00:00+00:00'
+                    updated_at: '2020-07-17T00:00:00+00:00'
+                with_flat_query_parameters:
+                  summary: with flat query parameters
                   value:
                   - id: 1
                     name: access

@@ -23,7 +23,12 @@ class << RSpec::OpenAPI::SchemaSorter = Object.new
       deep_sort_by_selector!(spec, "#{operation}.responses")
 
       # content-type
+      deep_sort_by_selector!(spec, "#{operation}.requestBody.content")
       deep_sort_by_selector!(spec, "#{operation}.responses.*.content")
+
+      # named examples (keyed by test description)
+      deep_sort_by_selector!(spec, "#{operation}.requestBody.content.*.examples")
+      deep_sort_by_selector!(spec, "#{operation}.responses.*.content.*.examples")
     end
   end
 
