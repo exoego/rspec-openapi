@@ -89,8 +89,9 @@ class RSpec::OpenAPI::ResultRecorder
       RSpec::OpenAPI::SchemaCleaner.cleanup!(spec, new_from_zero)
     end
     RSpec::OpenAPI::ComponentsUpdater.update!(spec, new_from_zero, partial: @partial)
-    RSpec::OpenAPI::SchemaCleaner.cleanup_false_read_only!(spec)
-    RSpec::OpenAPI::SchemaCleaner.cleanup_empty_required_array!(spec)
+    # After the update, which reads the request side's readOnly: false from
+    # new_from_zero, the very spec when there was no document yet.
+    RSpec::OpenAPI::SchemaCleaner.cleanup_schemas!(spec)
     RSpec::OpenAPI::OperationConverter.to_additional_operations!(spec) if RSpec::OpenAPI.supports_additional_operations?
     RSpec::OpenAPI::SchemaSorter.deep_sort!(spec)
     RSpec::OpenAPI::NullableConverter.to_json_schema!(spec) if RSpec::OpenAPI.json_schema_based?

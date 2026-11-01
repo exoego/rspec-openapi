@@ -98,14 +98,18 @@ paths:
             schema:
               type: object
               properties:
+                uuid:
+                  type: string
                 title:
                   type: string
                 author_id:
                   type: integer
               required:
+              - uuid
               - title
               - author_id
             example:
+              uuid: 0b9d
               title: Hello
               author_id: 7
   "/read_only/articles/{id}":

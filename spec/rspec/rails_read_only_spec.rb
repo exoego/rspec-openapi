@@ -26,6 +26,11 @@ RSpec.describe 'rails request spec, readOnly' do
   it 'marks server-assigned properties readOnly unless a request sends them' do
     rspec request_spec, openapi: true, output: :yaml
     expect(document).to eq YAML.safe_load(File.read(expected_path))
+
+    # A full run decides anew. Once no request sends the id any more, the
+    # component stops holding it at false.
+    rspec request_spec, '-e', 'GET /read_only/articles/{id}', openapi: true, output: :yaml
+    expect(document.dig('components', 'schemas', 'Article', 'properties', 'id', 'readOnly')).to eq(true)
   end
 
   # parallel_tests workers are partial runs in no fixed order, so a run that
@@ -40,14 +45,5 @@ RSpec.describe 'rails request spec, readOnly' do
       expect(article.dig('id', 'readOnly')).to eq(false)
       expect(article.dig('uuid', 'readOnly')).to eq(true)
     end
-  end
-
-  # A full run decides readOnly anew. Once no request sends the id any more,
-  # the component stops holding it at false.
-  it 'lifts a false in a full run once no request sends the property' do
-    rspec request_spec, openapi: true, output: :yaml
-    rspec request_spec, '-e', 'GET /read_only/articles/{id}', openapi: true, output: :yaml
-    article = document.dig('components', 'schemas', 'Article', 'properties')
-    expect(article.dig('id', 'readOnly')).to eq(true)
   end
 end

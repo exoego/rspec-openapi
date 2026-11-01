@@ -77,7 +77,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   # A property only responses hold is readOnly, one a request sends is not. So
   # false wins, and a side without an opinion leaves the other's.
   def merge_read_only!(base, value)
-    base[:readOnly] = base.key?(:readOnly) ? base[:readOnly] && value : value
+    base[:readOnly] = value && base.fetch(:readOnly, true)
   end
 
   # Recorded data stays data however it is shaped, so a field named like a

@@ -6,23 +6,17 @@ require 'yaml'
 RSpec.describe 'rails request spec, configuration errors' do
   include SpecHelper
 
-  describe 'an invalid example_mode' do
-    it 'aborts the example naming both the value and the example' do
-      out, err, status = rspec_capture 'spec/requests/rails_invalid_example_mode_spec.rb', openapi: true, output: :yaml
+  describe 'invalid metadata' do
+    it 'aborts each example naming both the value and the example' do
+      out, err, status = rspec_capture 'spec/requests/rails_invalid_metadata_spec.rb', openapi: true, output: :yaml
       expect(status.success?).to eq(false)
       message = 'example_mode must be a Symbol/String in [:none, :single, :multiple] or a Hash with ' \
-                ':request/:response keys, got 42 (example: invalid example_mode '
+                ':request/:response keys, got 42 (example: invalid metadata '
       expect(out + err).to include("#{message}aborts on a bare value that is not a mode)")
       expect(out + err).to include("#{message}aborts on a per-side value that is not a mode)")
-    end
-  end
-
-  describe 'an invalid read_only' do
-    it 'aborts the example naming both the value and the example' do
-      out, err, status = rspec_capture 'spec/requests/rails_invalid_read_only_spec.rb', openapi: true, output: :yaml
-      expect(status.success?).to eq(false)
-      expect(out + err).to include('read_only must be true, false, or property names as Strings, Symbols or ' \
-                                   'Regexps, got 42 (example: invalid read_only aborts on a value that is not a name)')
+      message = 'read_only must be true, false, or property names as Strings, Symbols or Regexps, got 42 ' \
+                '(example: invalid metadata aborts on a read_only value that is not a name)'
+      expect(out + err).to include(message)
     end
   end
 

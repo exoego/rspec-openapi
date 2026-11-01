@@ -42,7 +42,7 @@ class << RSpec::OpenAPI::SchemaBuilder
     def merge_property_variations(variations, allow_recursive_merge:)
       property_keys(variations).each_with_object({}) do |key, merged_props|
         all = variations.map { |v| v[:properties]&.[](key) }
-        all, read_only = lift_read_only(all)
+        read_only = lift_read_only!(all)
         prop_variations = all.reject { |p| p.nil? || nullable_only?(p) }
         has_nullable = nullable_present?(all, recursive: allow_recursive_merge)
 
@@ -51,7 +51,7 @@ class << RSpec::OpenAPI::SchemaBuilder
         merged = merge_single_property(prop_variations, has_nullable,
                                        variations_total: variations.size,
                                        allow_recursive_merge: allow_recursive_merge,)
-        merged[:readOnly] = read_only if !read_only.nil? && merged.is_a?(Hash)
+        merged[:readOnly] = read_only unless read_only.nil?
         merged_props[key] = merged
       end
     end
@@ -60,12 +60,12 @@ class << RSpec::OpenAPI::SchemaBuilder
 
     # The variations of one property come from one side of one exchange, so
     # they agree on readOnly. The merge rebuilds the schema, so the caller puts
-    # it back on the result, beside a oneOf like nullable.
-    def lift_read_only(all)
+    # it back on the result, beside a oneOf like nullable. The schemas are the
+    # builder's own, so the flag comes off them in place.
+    def lift_read_only!(all)
       read_only = all.find { |p| p.is_a?(Hash) && p.key?(:readOnly) }&.[](:readOnly)
-      return [all, nil] if read_only.nil?
-
-      [all.map { |p| p&.reject { |name, _| name == :readOnly } }, read_only]
+      all.each { |p| p&.delete(:readOnly) } unless read_only.nil?
+      read_only
     end
 
     def merge_object_variations(variations)
