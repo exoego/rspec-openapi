@@ -51,3 +51,9 @@ paths:
                     examples:
                     - a string
                     - 42
+              # A named example under a media type, whose name is normalized
+              # on reading like the ones a run records.
+              examples:
+                Legacy Example:
+                  value:
+                    multi_with_null: 1

@@ -62,8 +62,9 @@ class RSpec::OpenAPI::ResultRecorder
       RSpec::OpenAPI::SchemaMerger.merge_normalized!(spec, schema)
       records.each do |record|
         record_schema = RSpec::OpenAPI::SchemaBuilder.build(record)
-        RSpec::OpenAPI::SchemaMerger.merge_normalized!(spec, record_schema)
+        # The document takes the schema over, so the fresh one gets a copy.
         RSpec::OpenAPI::SchemaMerger.merge_normalized!(new_from_zero, record_schema) unless new_from_zero.equal?(spec)
+        RSpec::OpenAPI::SchemaMerger.merge_built!(spec, record_schema)
       rescue StandardError, NotImplementedError => e # e.g. SchemaBuilder raises a NotImplementedError
         @error_records[e] = record # Avoid failing the build
       end

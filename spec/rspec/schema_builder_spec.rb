@@ -12,7 +12,7 @@ RSpec.describe 'schema builder spec' do
         response_additional_properties: additional_properties,
       )
       schema = RSpec::OpenAPI::SchemaBuilder.build(record)
-      schema.dig(:paths, '/products', 'get', :responses, '200', :content, 'application/json', :schema,
+      schema.dig(:paths, :'/products', :get, :responses, :'200', :content, :'application/json', :schema,
                  :properties, :products, :items, :properties, :meta,)
     end
 

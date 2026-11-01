@@ -20,14 +20,17 @@ class << RSpec::OpenAPI::SchemaBuilder
   # GET and DELETE never have a request body in OpenAPI.
   BODYLESS_METHODS = ['delete', 'get'].freeze
 
+  # The schema holds symbol keys like the document, and nothing of the record:
+  # the data it carries is copied, so the merger can take the schema over.
+  #
   # @param [RSpec::OpenAPI::Record] record
   # @return [Hash]
   def build(record)
     http_method = record.http_method.downcase
     {
       paths: {
-        normalize_path(record.path) => {
-          http_method => build_operation(record, http_method),
+        normalize_path(record.path).to_sym => {
+          http_method.to_sym => build_operation(record, http_method),
         },
       },
     }
@@ -38,13 +41,13 @@ class << RSpec::OpenAPI::SchemaBuilder
   def build_operation(record, http_method)
     operation = {
       summary: record.summary,
-      tags: record.tags,
+      tags: copy(record.tags),
       operationId: record.operation_id,
-      security: record.security,
+      security: copy(record.security),
       deprecated: record.deprecated ? true : nil,
       parameters: build_parameters(record),
       requestBody: BODYLESS_METHODS.include?(http_method) ? nil : build_request_body(record),
-      responses: { record.status.to_s => build_response(record) },
+      responses: { record.status.to_s.to_sym => build_response(record) },
     }
     operation.compact!
     operation
@@ -71,18 +74,18 @@ class << RSpec::OpenAPI::SchemaBuilder
   def build_content(record)
     disposition = normalize_content_disposition(record.response_content_disposition)
     content_type = normalize_content_type(record.response_content_type)
-    ctx = BuildContext.new(record, :response)
+    ctx = BuildContext.root(record, :response)
 
     if RSpec::OpenAPI.supports_item_schema? && RSpec::OpenAPI.sequential_media_type?(content_type)
       item_schema = build_stream_item_schema(record.response_body, content_type, ctx)
-      return { content_type => { itemSchema: item_schema } } if item_schema
+      return { content_type.to_sym => { itemSchema: item_schema } } if item_schema
     end
 
     schema = build_property(record.response_body, ctx, disposition: disposition)
     example = response_example(record, disposition: disposition)
 
     body = build_example_body(schema, record, mode: record.response_example_mode, example: example)
-    { content_type => body }
+    { content_type.to_sym => body }
   end
 
   def build_stream_item_schema(raw, content_type, ctx)
@@ -100,7 +103,7 @@ class << RSpec::OpenAPI::SchemaBuilder
 
     case mode
     when :multiple
-      { schema: schema, examples: { record.example_key => build_named_example(record, example) } }
+      { schema: schema, examples: { example_name(record) => build_named_example(record, example) } }
     else
       # :single (default)
       # :single may emit nil example or nil _example_summary; compact strips them.
@@ -116,9 +119,14 @@ class << RSpec::OpenAPI::SchemaBuilder
   end
 
   def response_example(record, disposition:)
-    return nil if !example_enabled?(record) || disposition
+    return nil if !example_enabled?(record) || disposition || record.response_example_mode == :none
 
-    record.response_body
+    build_example(record.response_body)
+  end
+
+  # Named like the loader names the examples it reads back.
+  def example_name(record)
+    RSpec::OpenAPI::ExampleKey.normalize(record.example_key).to_sym
   end
 
   def build_named_example(record, value)
@@ -157,7 +165,7 @@ class << RSpec::OpenAPI::SchemaBuilder
     required = is_query ? record.required_request_params.include?(key) : true
     cast = try_cast(value)
     name = key.to_s
-    ctx = BuildContext.new(record, :request, name, key)
+    ctx = BuildContext.root(record, :request, name, key)
     parameter = {
       name: name,
       in: location,
@@ -172,8 +180,8 @@ class << RSpec::OpenAPI::SchemaBuilder
   def build_response_headers(record)
     headers = {}
     record.response_headers.each do |key, value|
-      ctx = BuildContext.new(record, :response, key.to_s, key)
-      headers[key] = { schema: build_property(try_cast(value), ctx) }
+      ctx = BuildContext.root(record, :response, key.to_s, key)
+      headers[key.to_sym] = { schema: build_property(try_cast(value), ctx) }
     end
     headers
   end
@@ -195,12 +203,12 @@ class << RSpec::OpenAPI::SchemaBuilder
     return nil if record.status >= 400 && record.request_example_mode != :multiple
 
     content_type = normalize_content_type(record.request_content_type)
-    ctx = BuildContext.new(record, :request)
+    ctx = BuildContext.root(record, :request)
     schema = build_property(record.request_params, ctx)
-    example = example_enabled?(record) ? build_example(record.request_params) : nil
+    example = build_example(record.request_params) if example_enabled?(record) && record.request_example_mode != :none
 
     body = build_example_body(schema, record, mode: record.request_example_mode, example: example)
-    { content: { content_type => body } }
+    { content: { content_type.to_sym => body } }
   end
 
   def build_property(value, ctx, disposition: nil)
@@ -223,7 +231,7 @@ class << RSpec::OpenAPI::SchemaBuilder
     if override.is_a?(Hash) && !override.empty?
       # Schema override: the object's keys are dynamic — replace captured
       # `properties` / `required` with the supplied dictionary value schema.
-      property[:additionalProperties] = override
+      property[:additionalProperties] = copy(override)
       return
     end
 
@@ -232,13 +240,16 @@ class << RSpec::OpenAPI::SchemaBuilder
     # SchemaMerger).
     read_only = ctx.record[READ_ONLY_MEMBERS.fetch(ctx.context)]
     properties = {}
+    required = []
     value.each do |k, v|
       child = build_property(v, ctx.descend(k))
-      child[:readOnly] = ctx.context == :response if read_only&.[](k.to_s)
-      properties[k] = child
+      name = k.to_s
+      child[:readOnly] = ctx.context == :response if read_only&.[](name)
+      properties[name.to_sym] = child
+      required << name
     end
     property[:properties] = properties
-    property[:required] = properties.keys
+    property[:required] = required
     apply_additional_properties(property, override,
                                 infer_override(ctx.path, ctx.record, ctx.context, :hybrid_additional_properties),)
   end
@@ -252,7 +263,7 @@ class << RSpec::OpenAPI::SchemaBuilder
     if [true, false].include?(override)
       property[:additionalProperties] = override
     elsif hybrid_override.is_a?(Hash) && !hybrid_override.empty?
-      property[:additionalProperties] = hybrid_override
+      property[:additionalProperties] = copy(hybrid_override)
     end
   end
 
@@ -273,7 +284,7 @@ class << RSpec::OpenAPI::SchemaBuilder
                end
              end
 
-    result[:enum] = enum if enum
+    result[:enum] = copy(enum) if enum
     result
   end
 
@@ -313,23 +324,22 @@ class << RSpec::OpenAPI::SchemaBuilder
     Integer(value, exception: false) || value
   end
 
+  # A copy of a recorded value with symbol keys, and the filename of an upload.
   def build_example(value)
-    return nil if value.nil?
-
-    adjust_value(value.dup)
-  end
-
-  def adjust_params(hash)
-    hash.transform_values! { |v| adjust_value(v) }
-  end
-
-  def adjust_value(value)
     case value
+    when Hash
+      example = {}
+      value.each { |key, item| example[key.to_sym] = build_example(item) }
+      example
+    when Array then value.map { |item| build_example(item) }
     when ActionDispatch::Http::UploadedFile then value.original_filename
-    when Hash then adjust_params(value)
-    when Array then value.map { |item| adjust_value(item) }
     else value
     end
+  end
+
+  # A record may hold what the metadata of a whole example group holds.
+  def copy(value)
+    RSpec::OpenAPI::KeyTransformer.symbolize(value)
   end
 
   # gsub copies the path even when nothing matches.
@@ -339,8 +349,11 @@ class << RSpec::OpenAPI::SchemaBuilder
     path.gsub(%r{/:([^:/]+)}, '/{\1}')
   end
 
+  # sub copies the content type even when it carries no parameters.
   def normalize_content_type(content_type)
-    content_type&.sub(/;.+\z/, '')
+    return content_type unless content_type&.include?(';')
+
+    content_type.sub(/;.+\z/, '')
   end
 
   # Same logic as normalize_content_type – strips header parameters after ';'

@@ -34,6 +34,6 @@ class ImagesController < ApplicationController
   def send_image
     png = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAADklEQVQIW2P4DwUMlDEA98A/wTjP
     QBoAAAAASUVORK5CYII='.unpack('m').first
-    send_data png, type: 'image/png', disposition: 'inline'
+    send_data png, type: 'image/png', disposition: 'inline', filename: 'test.png'
   end
 end

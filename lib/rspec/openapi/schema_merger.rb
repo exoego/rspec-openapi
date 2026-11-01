@@ -25,6 +25,16 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
     merge_schema!(base, RSpec::OpenAPI::KeyTransformer.symbolize(spec))
   end
 
+  # Same, for a spec built for this merge alone, like the schema of a record.
+  # Its keys are symbols already, and its hashes and arrays become part of base
+  # rather than being copied, so the caller must not use them afterwards.
+  #
+  # @param [Hash] base
+  # @param [Hash] spec
+  def merge_built!(base, spec)
+    merge_schema!(base, spec)
+  end
+
   SCHEMA_KEYS = [:schema, :schemas, :itemSchema].freeze
   DATA_KEYS = [:example, :examples, :default, :enum].freeze
   NUMERIC_TYPES = ['integer', 'number'].freeze

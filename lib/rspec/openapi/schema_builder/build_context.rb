@@ -6,14 +6,28 @@ class << RSpec::OpenAPI::SchemaBuilder
   # a value at a given path under a record's request/response side.
   #
   # Positional members: one is built per property of every body, and
-  # keyword_init would add a keyword hash to each.
-  BuildContext = Struct.new(:record, :context, :path, :key) do
+  # keyword_init would add a keyword hash to each. The path is only ever looked
+  # up in the enum and additionalProperties maps of the record, so it is built
+  # for a side of a record that holds one.
+  BuildContext = Struct.new(:record, :context, :path, :key, :lookups) do
+    def self.root(record, context, path = nil, key = nil)
+      lookups = record[ENUM_MEMBERS.fetch(context)] ||
+                OVERRIDE_MEMBERS.any? { |_kind, members| record[members.fetch(context)] }
+      new(record, context, path, key, lookups)
+    end
+
     def descend(child_key)
-      self.class.new(record, context, path ? "#{path}.#{child_key}" : child_key.to_s, child_key)
+      self.class.new(record, context, child_path(child_key), child_key, lookups)
+    end
+
+    def child_path(child_key)
+      return nil unless lookups
+
+      path ? "#{path}.#{child_key}" : child_key.to_s
     end
 
     def for_array_items
-      self.class.new(record, context, path, nil)
+      self.class.new(record, context, path, nil, lookups)
     end
   end
   private_constant :BuildContext
