@@ -7,6 +7,7 @@ require_relative 'schema_builder/variation_merger'
 class << RSpec::OpenAPI::SchemaBuilder
   # Record members holding the per-context lookup maps, by context (and kind).
   ENUM_MEMBERS = { request: :request_enum, response: :response_enum }.freeze
+  READ_ONLY_MEMBERS = { request: :request_read_only, response: :response_read_only }.freeze
   OVERRIDE_MEMBERS = {
     additional_properties: {
       request: :request_additional_properties, response: :response_additional_properties,
@@ -254,7 +255,7 @@ class << RSpec::OpenAPI::SchemaBuilder
   # says false, which wins where the two sides meet in one schema (see
   # SchemaMerger).
   def annotate_read_only!(property, key, ctx)
-    return unless ctx.record.read_only&.[](key)
+    return unless ctx.record[READ_ONLY_MEMBERS.fetch(ctx.context)]&.[](key)
 
     property[:readOnly] = ctx.context == :response
   end

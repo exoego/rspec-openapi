@@ -425,6 +425,7 @@ end
 A property the builder picks gets `readOnly: true` in response schemas. Keep in mind what that
 means. A client should not send the property (OpenAPI 3.0), or the server may ignore or reject it
 (3.1 and later). So a request that sends the property says the opposite, and the request wins.
+That holds under `read_only: false` too, which only stops an example from marking.
 In a schema shared by a request and a response through `$ref`, the component then keeps
 `readOnly: false`. That explicit `false` lets partial runs (see "Can I run a subset of specs?"
 below), such as `parallel_tests` workers, agree whichever order they run in. A full run decides

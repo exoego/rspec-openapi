@@ -13,7 +13,8 @@ RSpec::OpenAPI::Record = Struct.new(
   :summary,               # @param [String]  - "v1/statuses #show"
   :tags,                  # @param [Array]   - ["Status"]
   :formats,               # @param [Proc]    - ->(key) { key.end_with?('_at') ? 'date-time' : nil }
-  :read_only,             # @param [Proc]    - ->(key) { key == 'id' }
+  :response_read_only,    # @param [Proc]    - ->(key) { key == 'id' }, what a response marks readOnly
+  :request_read_only,     # @param [Proc]    - ->(key) { key == 'id' }, what a request may cancel
   :operation_id,          # @param [String]   - "request-1234"
   :description,           # @param [String]  - "returns a status"
   :example_key,           # @param [String]  - "with_flat_query_parameters"

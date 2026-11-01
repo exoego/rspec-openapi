@@ -46,7 +46,9 @@ RSpec.describe 'Articles', type: :request do
     end
   end
 
-  describe 'PUT /read_only/articles/{id}' do
+  # `read_only: false` stops this example from marking anything. Its request
+  # still sends the id, which counts against the shared Article all the same.
+  describe 'PUT /read_only/articles/{id}', openapi: { read_only: false } do
     it 'updates an article, sending its id and the ids of its sections' do
       put '/read_only/articles/1', headers: { 'Content-Type': 'application/json' }, params: {
         id: 1, title: 'Hello', sections_attributes: [{ id: 5, body: 'Intro' }],

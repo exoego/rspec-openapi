@@ -30,7 +30,7 @@ class SharedExtractor
       summary: metadata[:summary] || RSpec::OpenAPI.summary_builder.call(example),
       tags: metadata[:tags] || RSpec::OpenAPI.tags_builder.call(example),
       formats: resolve_formats(metadata, example),
-      read_only: resolve_read_only(metadata, example),
+      **read_only_lookups(metadata, example),
       operation_id: metadata[:operation_id],
       required_request_params: metadata[:required_request_params] || [],
       security: metadata[:security],
@@ -79,13 +79,15 @@ class SharedExtractor
     metadata[:formats] || RSpec::OpenAPI.formats_builder.curry.call(example)
   end
 
-  # The metadata wins over the builder. `false` turns it off for the example,
-  # and `true` hands it back to the builder, for a group that turned it off.
-  def self.resolve_read_only(metadata, example)
+  # The metadata wins over the builder for what a response marks. `false` marks
+  # nothing, and `true` hands it back to the builder, for a group that turned it
+  # off. A request that sends a property is evidence either way, so its side
+  # falls back to the builder's candidates.
+  def self.read_only_lookups(metadata, example)
     value = metadata.fetch(:read_only, true)
-    return RSpec::OpenAPI.read_only_builder&.curry&.call(example) if value == true
-
-    normalize_read_only(value, example)
+    builder = RSpec::OpenAPI.read_only_builder&.curry&.call(example)
+    lookup = value == true ? builder : normalize_read_only(value, example)
+    { response_read_only: lookup, request_read_only: lookup || builder }
   end
 
   READ_ONLY_PATTERN_CLASSES = [String, Symbol, Regexp].freeze
