@@ -1,9 +1,8 @@
 name: Publish to RubyGems
 
 on:
-  push:
-    tags:
-      - 'v*'
+  release:
+    types: [published]
 
 permissions: {}
 
@@ -17,14 +16,14 @@ defaults:
 
 jobs:
   publish:
-    name: Publish gem and GitHub release
+    name: Publish gem
     runs-on: ubuntu-26.04
     timeout-minutes: 15
     environment: release
 
     permissions:
       id-token: write   # for RubyGems trusted publishing
-      contents: write   # to create GitHub release
+      contents: read
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -53,9 +52,3 @@ jobs:
           fi
 
       - uses: rubygems/release-gem@7f9650160c1a4e7989fdc9855807bdbd421d8b6b # v1.4.1
-
-      - name: Create GitHub release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-        run: gh release create "$GITHUB_REF_NAME" --verify-tag --title "$GITHUB_REF_NAME" --generate-notes

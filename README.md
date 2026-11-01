@@ -1115,9 +1115,10 @@ Existing RSpec plugins which have OpenAPI integration:
 2. In GitHub Actions, run the `prepare release` workflow manually. It bumps `lib/rspec/openapi/version.rb`, pushes
    `release/v<version>` to origin, and opens a PR.
 3. Review and merge the release PR into the default branch.
-4. Create and push a tag `v<version>` on the merged commit (via the GitHub UI or
-   `git tag v<version>; git push origin v<version>`). Tag creation triggers the `Publish to RubyGems` workflow, which
-   publishes the gem and creates the GitHub release notes automatically.
+4. In the GitHub UI, create a release with a new tag `v<version>` on the merged commit. Use "Generate release notes"
+   for the body. Publishing the release triggers the `Publish to RubyGems` workflow, which publishes the gem.
+5. If the workflow fails after the gem is pushed, do not delete and recreate the release or the tag. RubyGems rejects
+   a second push of the same version.
 
 ## License
 
