@@ -72,6 +72,26 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
     end
   end
 
+  # Recursively remove temporary fields like :_example_key and :_example_name from the schema.
+  # Every caller has already established that it holds a Hash.
+  def cleanup_temporary_fields!(hash)
+    hash.delete(:_example_key)
+    hash.delete(:_example_summary)
+    hash.delete(:_example_name)
+    if (fallback = hash.delete(:_fallback_description))
+      hash[:description] ||= fallback
+    end
+
+    hash.each_value do |value|
+      case value
+      when Hash
+        cleanup_temporary_fields!(value)
+      when Array
+        value.each { |item| cleanup_temporary_fields!(item) if item.is_a?(Hash) }
+      end
+    end
+  end
+
   private
 
   # The selectors are relative to the media type. A media type the spec does
@@ -92,26 +112,6 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
       next unless path_item.is_a?(Hash)
 
       path_item.each_value { |operation| yield operation if operation.is_a?(Hash) }
-    end
-  end
-
-  # Recursively remove temporary fields like :_example_key and :_example_name from the schema.
-  # Every caller has already established that it holds a Hash.
-  def cleanup_temporary_fields!(hash)
-    hash.delete(:_example_key)
-    hash.delete(:_example_summary)
-    hash.delete(:_example_name)
-    if (fallback = hash.delete(:_fallback_description))
-      hash[:description] ||= fallback
-    end
-
-    hash.each_value do |value|
-      case value
-      when Hash
-        cleanup_temporary_fields!(value)
-      when Array
-        value.each { |item| cleanup_temporary_fields!(item) if item.is_a?(Hash) }
-      end
     end
   end
 

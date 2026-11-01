@@ -53,7 +53,9 @@ if ENV['OPENAPI']
 
   Minitest.after_run do
     RSpec::OpenAPI::ParallelRecords.merge!
-    result_recorder = RSpec::OpenAPI::ResultRecorder.new(RSpec::OpenAPI.path_records)
+    # Minitest gives no signal to decide from, so only the option counts.
+    partial = RSpec::OpenAPI.partial_update == true
+    result_recorder = RSpec::OpenAPI::ResultRecorder.new(RSpec::OpenAPI.path_records, partial: partial)
     result_recorder.record_results!
     puts result_recorder.error_message if result_recorder.errors?
   end

@@ -10,16 +10,24 @@ RSpec.configuration.after(:each) do |example|
   if RSpec::OpenAPI.example_types.include?(example.metadata[:type]) && example.metadata[:openapi] != false
     path = RSpec::OpenAPI.path.then { |p| p.is_a?(Proc) ? p.call(example) : p }
     record = RSpec::OpenAPI::RecordBuilder.build(self, example: example, extractor: SharedHooks.find_extractor)
-    RSpec::OpenAPI.path_records[path] << record if record
+    if record
+      RSpec::OpenAPI.path_records[path] << record
+      RSpec::OpenAPI::PartialRun.record_file(example.metadata[:absolute_file_path])
+    end
   end
 end
 
 RSpec.configuration.after(:suite) do
-  result_recorder = RSpec::OpenAPI::ResultRecorder.new(RSpec::OpenAPI.path_records)
+  partial = RSpec::OpenAPI::PartialRun.rspec?
+  result_recorder = RSpec::OpenAPI::ResultRecorder.new(RSpec::OpenAPI.path_records, partial: partial)
   result_recorder.record_results!
+  reporter = RSpec.configuration.reporter
+  if (notice = RSpec::OpenAPI::PartialRun.notice(partial))
+    reporter.message notice
+  end
   if result_recorder.errors?
     error_message = result_recorder.error_message
     colorizer = RSpec::Core::Formatters::ConsoleCodes
-    RSpec.configuration.reporter.message colorizer.wrap(error_message, :failure)
+    reporter.message colorizer.wrap(error_message, :failure)
   end
 end

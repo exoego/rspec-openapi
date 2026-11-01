@@ -7,7 +7,8 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
 
   # @param [Hash] base
   # @param [Hash] fresh
-  def update!(base, fresh)
+  # @param [Boolean] partial add to the schemas without removing anything
+  def update!(base, fresh, partial: false)
     # Top-level schema: Used as the body of request or response
     top_level_refs = paths_to_top_level_refs(base)
     fresh_schemas = build_fresh_schemas(top_level_refs, base, fresh)
@@ -22,8 +23,9 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
 
     return if fresh_schemas.empty?
 
-    RSpec::OpenAPI::SchemaMerger.merge_normalized!(base, { components: { schemas: fresh_schemas } })
-    RSpec::OpenAPI::SchemaCleaner.cleanup_components_schemas!(base, { components: { schemas: fresh_schemas } })
+    fresh_components = { components: { schemas: fresh_schemas } }
+    RSpec::OpenAPI::SchemaMerger.merge_normalized!(base, fresh_components)
+    RSpec::OpenAPI::SchemaCleaner.cleanup_components_schemas!(base, fresh_components) unless partial
   end
 
   private
@@ -87,6 +89,10 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
       ref_link = dig_schema(base, paths)[:$ref]
       schema_name = extract_schema_name(ref_link)
       schema_body = dig_schema(fresh, paths.grep_v(Integer))
+      # Nothing was recorded for this body, so there is nothing to fill the
+      # schema from. A partial run leaves such operations in base, and so does
+      # a status code no example produces any more.
+      next if schema_body.nil?
 
       merge_schema!(fresh_schemas, schema_name, schema_body)
     end

@@ -1,0 +1,69 @@
+---
+openapi: 3.2.0
+info:
+  title: Partial update
+  version: 1.0.0
+servers: []
+paths:
+  "/description_preserve_test":
+    get:
+      summary: GET /description_preserve_test
+      tags: []
+      responses:
+        '200':
+          description: returns status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+  "/roundtrip":
+    get:
+      summary: GET /roundtrip
+      tags: []
+      parameters:
+      - name: stale
+        in: query
+        schema:
+          type: string
+        required: false
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: returns ok
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Ok"
+  "/stale":
+    get:
+      summary: hand-written
+      tags: []
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Stale"
+components:
+  schemas:
+    Ok:
+      type: object
+      properties:
+        stale:
+          type: string
+        ok:
+          type: boolean
+      required:
+      - ok
+    Stale:
+      type: object
