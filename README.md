@@ -229,8 +229,8 @@ RSpec::OpenAPI.tags_builder = -> (example) { example.metadata.dig(:example_group
 RSpec::OpenAPI.formats_builder = ->(_example, key) { key.end_with?('_at') ? 'date-time' : nil }
 
 # Mark server-assigned properties as `readOnly`. Off by default.
-# The builder gets the RSpec example and a property name. See "Can I mark `id` and timestamps as `readOnly`?" below.
-RSpec::OpenAPI.read_only_builder = ->(_example, key) { RSpec::OpenAPI::DEFAULT_READ_ONLY_KEYS.include?(key) }
+# A builder of your own gets the RSpec example and a property name. See "Can I mark `id` and timestamps as `readOnly`?" below.
+RSpec::OpenAPI.read_only_builder = RSpec::OpenAPI::DEFAULT_READ_ONLY_BUILDER
 
 # Change the example type(s) that will generate schema
 RSpec::OpenAPI.example_types = %i[request]
@@ -409,12 +409,13 @@ If you find a room for improvement, open an issue.
 Yes, with `read_only_builder`. It is off by default.
 
 ```rb
-RSpec::OpenAPI.read_only_builder = ->(_example, key) { RSpec::OpenAPI::DEFAULT_READ_ONLY_KEYS.include?(key) }
+RSpec::OpenAPI.read_only_builder = RSpec::OpenAPI::DEFAULT_READ_ONLY_BUILDER
 ```
 
-`DEFAULT_READ_ONLY_KEYS` holds `id`, `uuid`, `created_at` and `updated_at`. Foreign keys such as
-`user_id` are not in it, since clients usually send them. The builder may return `true` for any
-property name. The names can also be listed per example, as whole names or patterns.
+`DEFAULT_READ_ONLY_BUILDER` picks the names in `DEFAULT_READ_ONLY_KEYS`: `id`, `uuid`, `created_at`
+and `updated_at`. Foreign keys such as `user_id` are not in it, since clients usually send them. A
+builder of your own gets the RSpec example and a property name, and may return `true` for any name.
+The names can also be listed per example, as whole names or patterns.
 
 ```rb
 describe 'GET /posts', openapi: { read_only: ['id', /_count\z/] } do

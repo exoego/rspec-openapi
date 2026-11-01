@@ -38,6 +38,7 @@ module RSpec::OpenAPI
   # Properties a server assigns by convention, for read_only_builder. Foreign
   # keys such as `user_id` are left out, since clients send them.
   DEFAULT_READ_ONLY_KEYS = ['id', 'uuid', 'created_at', 'updated_at'].freeze
+  DEFAULT_READ_ONLY_BUILDER = ->(_example, key) { DEFAULT_READ_ONLY_KEYS.include?(key) }
 
   class Config
     class << self

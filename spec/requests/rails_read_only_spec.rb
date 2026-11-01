@@ -10,7 +10,7 @@ require 'rspec/rails'
 RSpec::OpenAPI.path = File.expand_path(
   "../apps/rails/doc/read_only/openapi.#{ENV.fetch('OPENAPI_OUTPUT', nil)}", __dir__,
 )
-RSpec::OpenAPI.read_only_builder = ->(_example, key) { RSpec::OpenAPI::DEFAULT_READ_ONLY_KEYS.include?(key) }
+RSpec::OpenAPI.read_only_builder = RSpec::OpenAPI::DEFAULT_READ_ONLY_BUILDER
 
 # openapi.yaml shares Article and Comment between a request and a response
 # through $refs written by hand. The PUT sends an article's id, so Article.id
@@ -38,10 +38,13 @@ RSpec.describe 'Articles', type: :request do
     end
   end
 
+  # The create sends a uuid the client made. Its request schema is inline, so
+  # it carries no readOnly, and it reaches no component, so Article.uuid keeps
+  # the readOnly the GET gives it.
   describe 'POST /read_only/articles' do
     it 'creates an article' do
       post '/read_only/articles', headers: { 'Content-Type': 'application/json' },
-                                  params: { title: 'Hello', author_id: 7 }.to_json
+                                  params: { uuid: '0b9d', title: 'Hello', author_id: 7 }.to_json
       expect(response.status).to eq(201)
     end
   end
