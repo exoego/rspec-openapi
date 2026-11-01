@@ -30,8 +30,11 @@ gem 'rails-dom-testing', '~> 2.2'
 gem 'rspec-rails', '>= 5.0'
 
 group :test do
-  gem 'simplecov', git: 'https://github.com/exoego/simplecov.git', branch: 'branch-fix'
-  gem 'simplecov-cobertura'
+  # simplecov 1.3 needs Ruby 3.3. Only the coverage job in CI loads it.
+  if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('3.3.0')
+    gem 'simplecov', '>= 1.3'
+    gem 'simplecov-cobertura', '>= 4.0'
+  end
   gem 'super_diff'
 end
 

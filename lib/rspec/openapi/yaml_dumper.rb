@@ -93,11 +93,11 @@ class RSpec::OpenAPI::YAMLDumper < Psych::Visitors::YAMLTree
     @emitter = emitter
   end
 
-  # :nocov:
+  # simplecov:disable
   # Reached by values other than hashes, arrays and plain scalars, such as the
   # dates of a hand-written document, which the suite does not hold.
   def register(_target, yaml_obj)
     yaml_obj
   end
-  # :nocov:
+  # simplecov:enable
 end
