@@ -41,7 +41,8 @@ class << RSpec::OpenAPI::SchemaBuilder
     # become oneOf without recursive descent.
     def merge_property_variations(variations, allow_recursive_merge:)
       property_keys(variations).each_with_object({}) do |key, merged_props|
-        all, read_only = lift_read_only(variations.map { |v| v[:properties]&.[](key) })
+        all = variations.map { |v| v[:properties]&.[](key) }
+        all, read_only = lift_read_only(all)
         prop_variations = all.reject { |p| p.nil? || nullable_only?(p) }
         has_nullable = nullable_present?(all, recursive: allow_recursive_merge)
 
