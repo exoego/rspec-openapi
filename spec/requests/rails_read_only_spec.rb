@@ -75,10 +75,23 @@ RSpec.describe 'Comments', type: :request do
 end
 
 RSpec.describe 'Overrides', type: :request do
-  describe 'GET /read_only/tagged/{id}', openapi: { read_only: ['title', /_id\z/] } do
-    it 'marks the listed properties instead of the default ones' do
-      get '/read_only/tagged/1'
-      expect(response.status).to eq(200)
+  # openapi.yaml shares Tagged between the GET response and the PUT. The list
+  # marks title and author_id. The PUT also sends the id, a builder candidate
+  # the list does not name, and that counts as a write all the same.
+  describe '/read_only/tagged/{id}', openapi: { read_only: ['title', /_id\z/] } do
+    describe 'GET' do
+      it 'marks the listed properties instead of the default ones' do
+        get '/read_only/tagged/1'
+        expect(response.status).to eq(200)
+      end
+    end
+
+    describe 'PUT' do
+      it 'sends the id, which the list leaves to the builder' do
+        put '/read_only/tagged/1', headers: { 'Content-Type': 'application/json' },
+                                   params: { id: 1, title: 'Hello' }.to_json
+        expect(response.status).to eq(200)
+      end
     end
   end
 

@@ -310,42 +310,13 @@ paths:
     get:
       summary: GET /read_only/tagged/:id
       tags: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-        example: 1
       responses:
         '200':
           description: marks the listed properties instead of the default ones
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  uuid:
-                    type: string
-                  title:
-                    type: string
-                    readOnly: true
-                  author_id:
-                    type: integer
-                    readOnly: true
-                  created_at:
-                    type: string
-                  updated_at:
-                    type: string
-                required:
-                - id
-                - uuid
-                - title
-                - author_id
-                - created_at
-                - updated_at
+                "$ref": "#/components/schemas/Tagged"
               example:
                 id: 1
                 uuid: 0b9d
@@ -353,6 +324,45 @@ paths:
                 author_id: 7
                 created_at: '2020-07-17T00:00:00Z'
                 updated_at: '2020-07-17T00:00:00Z'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
+    put:
+      summary: PUT /read_only/tagged/:id
+      tags: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/Tagged"
+            example:
+              id: 1
+              title: Hello
+      responses:
+        '200':
+          description: sends the id, which the list leaves to the builder
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Tagged"
+              example:
+                id: 1
+                uuid: 0b9d
+                title: Hello
+                author_id: 7
+                created_at: '2020-07-17T00:00:00Z'
+                updated_at: '2020-07-17T00:00:00Z'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
 components:
   schemas:
     Article:
@@ -402,3 +412,24 @@ components:
           readOnly: true
       required:
       - body
+    Tagged:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: false
+        title:
+          type: string
+          readOnly: false
+        uuid:
+          type: string
+        author_id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+        updated_at:
+          type: string
+      required:
+      - id
+      - title

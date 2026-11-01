@@ -81,13 +81,19 @@ class SharedExtractor
 
   # The metadata wins over the builder for what a response marks. `false` marks
   # nothing, and `true` hands it back to the builder, for a group that turned it
-  # off. A request that sends a property is evidence either way, so its side
-  # falls back to the builder's candidates.
+  # off. A request that sends a property is evidence whatever its example
+  # marks, so its side takes the builder's candidates as well.
   def self.read_only_lookups(metadata, example)
     value = metadata.fetch(:read_only, true)
     builder = RSpec::OpenAPI.read_only_builder&.curry&.call(example)
     lookup = value == true ? builder : normalize_read_only(value, example)
-    { response_read_only: lookup, request_read_only: lookup || builder }
+    { response_read_only: lookup, request_read_only: either_lookup(lookup, builder) }
+  end
+
+  def self.either_lookup(first, second)
+    return first || second if first.nil? || second.nil? || first.equal?(second)
+
+    ->(key) { first[key] || second[key] }
   end
 
   READ_ONLY_PATTERN_CLASSES = [String, Symbol, Regexp].freeze

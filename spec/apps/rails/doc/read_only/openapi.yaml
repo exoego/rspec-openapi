@@ -69,3 +69,29 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/Comment"
+  "/read_only/tagged/{id}":
+    get:
+      summary: GET /read_only/tagged/:id
+      tags: []
+      responses:
+        '200':
+          description: marks the listed properties instead of the default ones
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Tagged"
+    put:
+      summary: PUT /read_only/tagged/:id
+      tags: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/Tagged"
+      responses:
+        '200':
+          description: sends the id, which the list leaves to the builder
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Tagged"

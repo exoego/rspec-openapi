@@ -278,6 +278,7 @@ Rails.application.routes.draw do
     put '/read_only/articles/:id' => read_only_article
     post '/read_only/articles' => read_only_article
     get '/read_only/tagged/:id' => read_only_article
+    put '/read_only/tagged/:id' => read_only_article
     get '/read_only/plain/:id' => read_only_article
     get '/read_only/restored/:id' => read_only_article
     # Two items whose properties differ in type, null and shape, one of them
