@@ -45,7 +45,7 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
 
     # A full run decides readOnly anew, so a property no request sends any
     # more stops being held at false.
-    strip_false_read_only!(base.dig(:components, :schemas))
+    RSpec::OpenAPI::HashHelper.each_schema(base.dig(:components, :schemas)) { |schema| delete_false_read_only!(schema) }
 
     # cleanup temporary fields used for internal processing
     cleanup_temporary_fields!(base)
@@ -65,22 +65,16 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
     end
   end
 
-  # `readOnly: false` is how a request says it sends a candidate property. A
-  # component shared by a request and a response keeps it, or a later partial
-  # run that sees only the response would flip it back to true. Inline under
-  # paths each side has its own schema, so there it says nothing.
-  def cleanup_false_read_only!(base)
-    strip_false_read_only!(base[:paths])
-  end
-
-  # A recorded example is data, so a field in it named `required` stays however
-  # it is shaped.
-  def cleanup_empty_required_array!(base)
-    [base.dig(:components, :schemas), base[:paths]].each do |root|
-      RSpec::OpenAPI::HashHelper.each_schema(root) do |schema|
-        # "required" array  must not be present if empty
-        schema.delete(:required) if schema.key?(:properties) && schema[:required] && schema[:required].empty?
-      end
+  # One walk over the schemas once the components are updated. `readOnly: false`
+  # is how a request says it sends a candidate property. A component shared by a
+  # request and a response keeps it, or a later partial run that sees only the
+  # response would flip it back to true. Inline under paths each side has its
+  # own schema, so there it says nothing.
+  def cleanup_schemas!(base)
+    RSpec::OpenAPI::HashHelper.each_schema(base.dig(:components, :schemas)) { |schema| delete_empty_required!(schema) }
+    RSpec::OpenAPI::HashHelper.each_schema(base[:paths]) do |schema|
+      delete_empty_required!(schema)
+      delete_false_read_only!(schema)
     end
   end
 
@@ -106,10 +100,14 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
 
   private
 
-  def strip_false_read_only!(root)
-    RSpec::OpenAPI::HashHelper.each_schema(root) do |schema|
-      schema.delete(:readOnly) if schema[:readOnly] == false
-    end
+  # A recorded example is data, so a field in it named `required` stays however
+  # it is shaped. An empty `required` must not be present.
+  def delete_empty_required!(schema)
+    schema.delete(:required) if schema.key?(:properties) && schema[:required] && schema[:required].empty?
+  end
+
+  def delete_false_read_only!(schema)
+    schema.delete(:readOnly) if schema[:readOnly] == false
   end
 
   # The selectors are relative to the media type. A media type the spec does

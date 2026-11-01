@@ -227,10 +227,15 @@ class << RSpec::OpenAPI::SchemaBuilder
       return
     end
 
+    # Only an object property can be readOnly. A request that sends a candidate
+    # says false, which wins where the two sides meet in one schema (see
+    # SchemaMerger).
+    read_only = ctx.record[READ_ONLY_MEMBERS.fetch(ctx.context)]
     properties = {}
     value.each do |k, v|
-      properties[k] = build_property(v, ctx.descend(k))
-      annotate_read_only!(properties[k], k.to_s, ctx)
+      child = build_property(v, ctx.descend(k))
+      child[:readOnly] = ctx.context == :response if read_only&.[](k.to_s)
+      properties[k] = child
     end
     property[:properties] = properties
     property[:required] = properties.keys
@@ -249,15 +254,6 @@ class << RSpec::OpenAPI::SchemaBuilder
     elsif hybrid_override.is_a?(Hash) && !hybrid_override.empty?
       property[:additionalProperties] = hybrid_override
     end
-  end
-
-  # Only an object property can be readOnly. A request that sends a candidate
-  # says false, which wins where the two sides meet in one schema (see
-  # SchemaMerger).
-  def annotate_read_only!(property, key, ctx)
-    return unless ctx.record[READ_ONLY_MEMBERS.fetch(ctx.context)]&.[](key)
-
-    property[:readOnly] = ctx.context == :response
   end
 
   def build_type(value, format: nil, enum: nil)

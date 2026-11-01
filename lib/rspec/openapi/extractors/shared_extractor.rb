@@ -29,7 +29,7 @@ class SharedExtractor
     {
       summary: metadata[:summary] || RSpec::OpenAPI.summary_builder.call(example),
       tags: metadata[:tags] || RSpec::OpenAPI.tags_builder.call(example),
-      formats: resolve_formats(metadata, example),
+      formats: metadata[:formats] || RSpec::OpenAPI.formats_builder.curry.call(example),
       **read_only_lookups(metadata, example),
       operation_id: metadata[:operation_id],
       required_request_params: metadata[:required_request_params] || [],
@@ -75,31 +75,24 @@ class SharedExtractor
     { request_example_mode: request_example_mode, response_example_mode: response_example_mode }
   end
 
-  def self.resolve_formats(metadata, example)
-    metadata[:formats] || RSpec::OpenAPI.formats_builder.curry.call(example)
-  end
-
   # The metadata wins over the builder for what a response marks. `false` marks
   # nothing, and `true` hands it back to the builder, for a group that turned it
   # off. A request that sends a property is evidence whatever its example
   # marks, so its side takes the builder's candidates as well.
   def self.read_only_lookups(metadata, example)
-    value = metadata.fetch(:read_only, true)
     builder = RSpec::OpenAPI.read_only_builder&.curry&.call(example)
-    lookup = value == true ? builder : normalize_read_only(value, example)
-    { response_read_only: lookup, request_read_only: either_lookup(lookup, builder) }
-  end
+    value = metadata.fetch(:read_only, true)
+    return { response_read_only: builder, request_read_only: builder } if value == true
 
-  def self.either_lookup(first, second)
-    return first || second if first.nil? || second.nil? || first.equal?(second)
-
-    ->(key) { first[key] || second[key] }
+    listed = normalize_read_only(value, example)
+    request = listed && builder ? ->(key) { listed[key] || builder[key] } : listed || builder
+    { response_read_only: listed, request_read_only: request }
   end
 
   READ_ONLY_PATTERN_CLASSES = [String, Symbol, Regexp].freeze
 
-  def self.normalize_read_only(value, example = nil)
-    return nil if value.nil? || value == false
+  def self.normalize_read_only(value, example)
+    return nil unless value
 
     patterns = Array(value)
     unless patterns.all? { |pattern| READ_ONLY_PATTERN_CLASSES.any? { |klass| pattern.is_a?(klass) } }
@@ -107,7 +100,8 @@ class SharedExtractor
                            "got #{value.inspect}#{example_context(example)}"
     end
 
-    ->(key) { patterns.any? { |pattern| pattern.is_a?(Regexp) ? pattern.match?(key) : pattern.to_s == key } }
+    patterns = patterns.map { |pattern| pattern.is_a?(Regexp) ? pattern : pattern.to_s }
+    ->(key) { patterns.any? { |pattern| pattern.is_a?(Regexp) ? pattern.match?(key) : pattern == key } }
   end
 
   def self.normalize_enum(enum_hash)
