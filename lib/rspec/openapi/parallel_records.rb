@@ -30,6 +30,9 @@ module RSpec::OpenAPI::ParallelRecords
   # its content, so the file itself does not need to survive the trip.
   UPLOADED_FILE_MARKER = '__rspec_openapi_uploaded_file'
 
+  # Members that hold a builder's lookup, a Proc when a builder is set.
+  LOOKUP_MEMBERS = [:formats].freeze
+
   class << self
     def worker?
       Process.pid != MAIN_PID
@@ -52,7 +55,7 @@ module RSpec::OpenAPI::ParallelRecords
 
       FileUtils.mkdir_p(dump_dir, mode: 0o700)
       encoded = RSpec::OpenAPI.path_records.transform_values do |records|
-        records.map { |record| transform_record(record) { |value| encode(value) } }
+        records.map { |record| transform_record(answer_lookups(record)) { |value| encode(value) } }
       end
       File.write(File.join(dump_dir, "#{Process.pid}.yaml"), YAML.dump(encoded))
     end
@@ -85,6 +88,24 @@ module RSpec::OpenAPI::ParallelRecords
 
     def transform_record(record, &block)
       RSpec::OpenAPI::Record.new(**record.to_h.transform_values(&block))
+    end
+
+    # No serializer can carry a Proc. Building the schema here asks each lookup
+    # about every key the main process will ask about, and the answers travel
+    # as a Hash, which the builder reads the same way.
+    def answer_lookups(record)
+      lookups = LOOKUP_MEMBERS.select { |member| record[member].is_a?(Proc) }
+      return record if lookups.empty?
+
+      answers = lookups.to_h { |member| [member, {}] }
+      probe = record.dup
+      lookups.each { |member| probe[member] = ->(key) { answers[member][key] = record[member].call(key) } }
+      begin
+        RSpec::OpenAPI::SchemaBuilder.build(probe)
+      rescue StandardError, NotImplementedError
+        # The main process builds this record again and reports the error itself.
+      end
+      record.dup.tap { |answered| answers.each { |member, hash| answered[member] = hash } }
     end
 
     # Uploads hold an open Tempfile, which no serializer can represent, so

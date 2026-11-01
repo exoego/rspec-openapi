@@ -15,6 +15,8 @@ RSpec::OpenAPI.title = 'OpenAPI Documentation'
 output = ENV.fetch('OPENAPI_OUTPUT', nil)
 RSpec::OpenAPI.path = File.expand_path("../apps/rails/doc/minitest_parallel_openapi.#{output}", __dir__)
 RSpec::OpenAPI.servers = [{ url: 'http://localhost:3000' }]
+# A builder's lookup is a Proc, which the workers cannot hand to the main process as-is.
+RSpec::OpenAPI.formats_builder = ->(_example, key) { key.end_with?('_at') ? 'date-time' : nil }
 
 # Each test writes its pid here so the outer spec can verify the tests really
 # ran in forked workers rather than in the main process.
