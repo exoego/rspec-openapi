@@ -41,9 +41,11 @@ module SpecHelper
   private
 
   # @param options [Hash] :openapi enables generation, :output picks yaml/json/both,
-  #   :openapi_version pins the document version, :debug turns on rspec-openapi's
-  #   own diagnostics. All of them are read while the child boots, which is why
-  #   they travel as environment rather than as configuration in the spec.
+  #   :openapi_version pins the document version, :partial forces a partial (true)
+  #   or full (false, the default) update or lets the run decide (:auto), :debug
+  #   turns on rspec-openapi's own diagnostics, :env adds variables of its own.
+  #   All of them are read while the child boots, which is why they travel as
+  #   environment rather than as configuration in the spec.
   #
   # The child runs the current Ruby directly rather than through `bundle exec`,
   # which would boot a whole extra Ruby process per spawn just to set up an
@@ -56,11 +58,26 @@ module SpecHelper
       'OPENAPI_VERSION' => options[:openapi_version],
       'DEBUG' => ('1' if options[:debug]),
     }.compact
+    # nil unsets the variable in the child, so a value exported in the shell
+    # cannot force a mode on a run that should decide for itself.
+    env['OPENAPI_PARTIAL_UPDATE'] = partial_update_env(options[:partial])
+    env.merge!(options.fetch(:env, {}))
     argv = command == 'ruby' ? ['-rbundler/setup'] : [command]
     Bundler.public_send(Bundler.respond_to?(:with_unbundled_env) ? :with_unbundled_env : :with_clean_env) do
       Dir.chdir(repo_root) do
         yield [env, RbConfig.ruby, *argv, '-r./.simplecov_spawn', *args]
       end
+    end
+  end
+
+  # A child names its spec file and leaves the other files of spec/requests
+  # out, which alone makes its run partial. So a full update is forced unless
+  # a spec asks for the run's own decision.
+  def partial_update_env(partial)
+    case partial
+    when :auto then nil
+    when true then '1'
+    else '0'
     end
   end
 end

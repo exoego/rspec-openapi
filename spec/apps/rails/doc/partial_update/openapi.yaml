@@ -1,0 +1,72 @@
+---
+openapi: 3.2.0
+info:
+  title: Partial update
+  version: 1.0.0
+servers: []
+paths:
+  # Recorded by rails_partial_update_sibling_spec.rb. A run without that file
+  # keeps it as it is.
+  "/description_preserve_test":
+    get:
+      summary: GET /description_preserve_test
+      tags: []
+      responses:
+        '200':
+          description: returns status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                required:
+                - status
+  # Recorded by rails_partial_update_spec.rb. Every run updates it.
+  "/roundtrip":
+    get:
+      summary: GET /roundtrip
+      tags: []
+      parameters:
+      # Sent by no run. A partial run keeps it, a full run removes it.
+      - name: stale
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: returns ok
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Ok"
+  # Recorded by nothing. A partial run keeps it, a full run removes it.
+  "/stale":
+    get:
+      summary: hand-written
+      tags: []
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Stale"
+components:
+  schemas:
+    # Filled from the response of /roundtrip by every run.
+    Ok:
+      type: object
+      properties:
+        # Not in the response. A partial run keeps it, a full run removes it.
+        stale:
+          type: string
+        ok:
+          type: boolean
+      required:
+      - ok
+    # Referred to by /stale only. A partial run keeps it, a full run removes it
+    # along with /stale.
+    Stale:
+      type: object

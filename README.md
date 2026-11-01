@@ -242,6 +242,10 @@ RSpec::OpenAPI.ignored_path_params = %i[controller action format]
 # String or Regexp is acceptable.
 RSpec::OpenAPI.ignored_paths = ["/admin/full/path/", Regexp.new("^/_internal/")]
 
+# Whether a run adds and updates without removing anything. `nil` (default) lets each run decide,
+# see "Can I run a subset of specs?" below. `true` or `false` forces it, as does `OPENAPI_PARTIAL_UPDATE=1` or `=0`.
+RSpec::OpenAPI.partial_update = nil
+
 # Your custom post-processing hook (like unrandomizing IDs)
 RSpec::OpenAPI.post_process_hook = -> (path, records, spec) do
   RSpec::OpenAPI::HashHelper.matched_paths(spec, 'paths.*.*.responses.*.content.*.*.*.id').each do |paths|
@@ -400,6 +404,33 @@ If you find a room for improvement, open an issue.
 
 rspec-openapi tries to preserve manual modifications as much as possible when generating specs.
 You can directly edit `doc/openapi.yaml` as you like without spoiling the automatic generation capability.
+
+### Can I run a subset of specs?
+
+Yes. A run over part of the suite adds and updates what it records and removes nothing.
+It prints a notice when it updates the file this way.
+
+```bash
+$ OPENAPI=1 bundle exec rspec spec/requests/tables_spec.rb
+```
+
+A run counts as partial in two cases.
+
+- The examples are narrowed, by `-e`, `--tag`, a line number, `--only-failures` or a leftover `fit`.
+  An exclusion such as `--tag ~slow` does not count.
+- A spec file next to one that recorded a request was left out. So `rspec spec/requests/tables_spec.rb`
+  is partial, while `rspec spec/requests` and `rspec spec/requests/*_spec.rb` are not.
+
+Every other run also removes the paths, operations, parameters and properties it did not record.
+This is how removed endpoints disappear from the file, so run all specs for that.
+
+A `parallel_tests` worker sees only part of the files, so it never removes anything, whichever files it got.
+rspec-openapi knows a worker by the `TEST_ENV_NUMBER` variable that `parallel_tests` sets.
+Run the suite in one process when stale entries should go.
+
+Set `RSpec::OpenAPI.partial_update` to `true` or `false`, or `OPENAPI_PARTIAL_UPDATE=1` or `=0`, to force one mode.
+Minitest has no run information to decide from. It removes nothing in a `parallel_tests` worker or when the
+option is `true`, and removes stale entries otherwise.
 
 ### Can I exclude specific specs from OpenAPI generation?
 
