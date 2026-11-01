@@ -35,6 +35,10 @@ module RSpec::OpenAPI
     'text/event-stream',
   ].freeze
 
+  # Properties a server assigns by convention, for read_only_builder. Foreign
+  # keys such as `user_id` are left out, since clients send them.
+  DEFAULT_READ_ONLY_KEYS = ['id', 'uuid', 'created_at', 'updated_at'].freeze
+
   class Config
     class << self
       attr_accessor :debug_enabled
@@ -55,6 +59,7 @@ module RSpec::OpenAPI
   @summary_builder = ->(example) { example.metadata[:summary] }
   @tags_builder = ->(example) { example.metadata[:tags] }
   @formats_builder = ->(example) { example.metadata[:formats] }
+  @read_only_builder = nil
   @info = {}
   @application_version = '1.0.0'
   @openapi_version = '3.2.0'
@@ -85,6 +90,7 @@ module RSpec::OpenAPI
                   :summary_builder,
                   :tags_builder,
                   :formats_builder,
+                  :read_only_builder,
                   :info,
                   :application_version,
                   :request_headers,

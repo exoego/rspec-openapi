@@ -89,6 +89,7 @@ class RSpec::OpenAPI::ResultRecorder
       RSpec::OpenAPI::SchemaCleaner.cleanup!(spec, new_from_zero)
     end
     RSpec::OpenAPI::ComponentsUpdater.update!(spec, new_from_zero, partial: @partial)
+    RSpec::OpenAPI::SchemaCleaner.cleanup_false_read_only!(spec)
     RSpec::OpenAPI::SchemaCleaner.cleanup_empty_required_array!(spec)
     RSpec::OpenAPI::OperationConverter.to_additional_operations!(spec) if RSpec::OpenAPI.supports_additional_operations?
     RSpec::OpenAPI::SchemaSorter.deep_sort!(spec)

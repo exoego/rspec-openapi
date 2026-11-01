@@ -20,7 +20,6 @@ class SharedExtractor
 
   def self.attributes(example)
     metadata = merge_openapi_metadata(example.metadata)
-    request_example_mode, response_example_mode = normalize_example_mode(metadata[:example_mode], example)
     response_additional_properties, request_additional_properties = resolve_additional_properties(metadata)
     response_hybrid_additional_properties, request_hybrid_additional_properties =
       resolve_hybrid_additional_properties(metadata)
@@ -30,14 +29,14 @@ class SharedExtractor
     {
       summary: metadata[:summary] || RSpec::OpenAPI.summary_builder.call(example),
       tags: metadata[:tags] || RSpec::OpenAPI.tags_builder.call(example),
-      formats: metadata[:formats] || RSpec::OpenAPI.formats_builder.curry.call(example),
+      formats: resolve_formats(metadata, example),
+      **read_only_lookups(metadata, example),
       operation_id: metadata[:operation_id],
       required_request_params: metadata[:required_request_params] || [],
       security: metadata[:security],
       description: metadata[:description] || RSpec::OpenAPI.description_builder.call(example),
       deprecated: metadata[:deprecated],
-      request_example_mode: request_example_mode,
-      response_example_mode: response_example_mode,
+      **example_modes(metadata, example),
       example_key: resolve_example_key(metadata, example),
       example_name: metadata[:example_name] || RSpec::OpenAPI.example_name_builder.call(example),
       response_enum: normalize_enum(metadata[:response_enum]) || base_enum,
@@ -69,6 +68,46 @@ class SharedExtractor
     response = normalize_additional_properties(metadata[:response_hybrid_additional_properties]) || base
     request = normalize_additional_properties(metadata[:request_hybrid_additional_properties]) || base
     [response, request]
+  end
+
+  def self.example_modes(metadata, example)
+    request_example_mode, response_example_mode = normalize_example_mode(metadata[:example_mode], example)
+    { request_example_mode: request_example_mode, response_example_mode: response_example_mode }
+  end
+
+  def self.resolve_formats(metadata, example)
+    metadata[:formats] || RSpec::OpenAPI.formats_builder.curry.call(example)
+  end
+
+  # The metadata wins over the builder for what a response marks. `false` marks
+  # nothing, and `true` hands it back to the builder, for a group that turned it
+  # off. A request that sends a property is evidence whatever its example
+  # marks, so its side takes the builder's candidates as well.
+  def self.read_only_lookups(metadata, example)
+    value = metadata.fetch(:read_only, true)
+    builder = RSpec::OpenAPI.read_only_builder&.curry&.call(example)
+    lookup = value == true ? builder : normalize_read_only(value, example)
+    { response_read_only: lookup, request_read_only: either_lookup(lookup, builder) }
+  end
+
+  def self.either_lookup(first, second)
+    return first || second if first.nil? || second.nil? || first.equal?(second)
+
+    ->(key) { first[key] || second[key] }
+  end
+
+  READ_ONLY_PATTERN_CLASSES = [String, Symbol, Regexp].freeze
+
+  def self.normalize_read_only(value, example = nil)
+    return nil if value.nil? || value == false
+
+    patterns = Array(value)
+    unless patterns.all? { |pattern| READ_ONLY_PATTERN_CLASSES.any? { |klass| pattern.is_a?(klass) } }
+      raise ArgumentError, 'read_only must be true, false, or property names as Strings, Symbols or Regexps, ' \
+                           "got #{value.inspect}#{example_context(example)}"
+    end
+
+    ->(key) { patterns.any? { |pattern| pattern.is_a?(Regexp) ? pattern.match?(key) : pattern.to_s == key } }
   end
 
   def self.normalize_enum(enum_hash)
@@ -153,9 +192,12 @@ class SharedExtractor
   end
 
   def self.example_mode_error(value, example)
-    context = example&.full_description
-    context = " (example: #{context})" if context
     "example_mode must be a Symbol/String in #{VALID_EXAMPLE_MODES.inspect} " \
-      "or a Hash with :request/:response keys, got #{value.inspect}#{context}"
+      "or a Hash with :request/:response keys, got #{value.inspect}#{example_context(example)}"
+  end
+
+  def self.example_context(example)
+    context = example&.full_description
+    context ? " (example: #{context})" : ''
   end
 end

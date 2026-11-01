@@ -7,6 +7,7 @@ require_relative 'schema_builder/variation_merger'
 class << RSpec::OpenAPI::SchemaBuilder
   # Record members holding the per-context lookup maps, by context (and kind).
   ENUM_MEMBERS = { request: :request_enum, response: :response_enum }.freeze
+  READ_ONLY_MEMBERS = { request: :request_read_only, response: :response_read_only }.freeze
   OVERRIDE_MEMBERS = {
     additional_properties: {
       request: :request_additional_properties, response: :response_additional_properties,
@@ -227,7 +228,10 @@ class << RSpec::OpenAPI::SchemaBuilder
     end
 
     properties = {}
-    value.each { |k, v| properties[k] = build_property(v, ctx.descend(k)) }
+    value.each do |k, v|
+      properties[k] = build_property(v, ctx.descend(k))
+      annotate_read_only!(properties[k], k.to_s, ctx)
+    end
     property[:properties] = properties
     property[:required] = properties.keys
     apply_additional_properties(property, override,
@@ -245,6 +249,15 @@ class << RSpec::OpenAPI::SchemaBuilder
     elsif hybrid_override.is_a?(Hash) && !hybrid_override.empty?
       property[:additionalProperties] = hybrid_override
     end
+  end
+
+  # Only an object property can be readOnly. A request that sends a candidate
+  # says false, which wins where the two sides meet in one schema (see
+  # SchemaMerger).
+  def annotate_read_only!(property, key, ctx)
+    return unless ctx.record[READ_ONLY_MEMBERS.fetch(ctx.context)]&.[](key)
+
+    property[:readOnly] = ctx.context == :response
   end
 
   def build_type(value, format: nil, enum: nil)

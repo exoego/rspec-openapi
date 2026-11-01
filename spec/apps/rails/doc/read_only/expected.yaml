@@ -1,0 +1,435 @@
+---
+openapi: 3.2.0
+info:
+  title: rspec-openapi
+  version: 1.0.0
+servers: []
+paths:
+  "/read_only/articles":
+    get:
+      summary: GET /read_only/articles
+      tags: []
+      responses:
+        '200':
+          description: lists articles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      oneOf:
+                      - type: integer
+                      - type: string
+                      readOnly: true
+                    uuid:
+                      type:
+                      - string
+                      - 'null'
+                      readOnly: true
+                    updated_at:
+                      type:
+                      - string
+                      - 'null'
+                      readOnly: true
+                    sections:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            readOnly: true
+                        required:
+                        - id
+                      readOnly: true
+                    stats:
+                      type: object
+                      properties:
+                        views:
+                          type:
+                          - integer
+                          - 'null'
+                        likes:
+                          type:
+                          - integer
+                          - 'null'
+                      readOnly: true
+                  required:
+                  - id
+                  - updated_at
+                  - sections
+                  - stats
+              example:
+              - id: 1
+                uuid: 0b9d
+                updated_at:
+                sections:
+                - id: 5
+                stats:
+                  views: 1
+              - id: a2
+                updated_at: '2020-07-18T00:00:00Z'
+                sections: []
+                stats:
+                  likes: 2
+    post:
+      summary: POST /read_only/articles
+      tags: []
+      responses:
+        '201':
+          description: creates an article
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Article"
+              example:
+                id: 1
+                uuid: 0b9d
+                title: Hello
+                author_id: 7
+                created_at: '2020-07-17T00:00:00Z'
+                updated_at: '2020-07-17T00:00:00Z'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                author_id:
+                  type: integer
+              required:
+              - title
+              - author_id
+            example:
+              title: Hello
+              author_id: 7
+  "/read_only/articles/{id}":
+    get:
+      summary: GET /read_only/articles/:id
+      tags: []
+      responses:
+        '200':
+          description: returns an article with a string id
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Article"
+              example:
+                id: a1
+                uuid: 0b9d
+                title: Hello
+                author_id: 7
+                created_at: '2020-07-17T00:00:00Z'
+                updated_at: '2020-07-17T00:00:00Z'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          oneOf:
+          - type: integer
+          - type: string
+        example: a1
+    put:
+      summary: PUT /read_only/articles/:id
+      tags: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/Article"
+            example:
+              id: 1
+              title: Hello
+              sections_attributes:
+              - id: 5
+                body: Intro
+      responses:
+        '200':
+          description: updates an article, sending its id and the ids of its sections
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Article"
+              example:
+                id: 1
+                uuid: 0b9d
+                title: Hello
+                author_id: 7
+                created_at: '2020-07-17T00:00:00Z'
+                updated_at: '2020-07-17T00:00:00Z'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
+  "/read_only/comments":
+    post:
+      summary: POST /read_only/comments
+      tags: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/Comment"
+            example:
+              body: nice
+      responses:
+        '201':
+          description: creates a comment
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Comment"
+              example:
+                id: 3
+                body: nice
+  "/read_only/comments/{id}":
+    get:
+      summary: GET /read_only/comments/:id
+      tags: []
+      responses:
+        '200':
+          description: returns a comment
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Comment"
+              example:
+                id: 3
+                body: nice
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 3
+  "/read_only/plain/{id}":
+    get:
+      summary: GET /read_only/plain/:id
+      tags: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
+      responses:
+        '200':
+          description: marks nothing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  uuid:
+                    type: string
+                  title:
+                    type: string
+                  author_id:
+                    type: integer
+                  created_at:
+                    type: string
+                  updated_at:
+                    type: string
+                required:
+                - id
+                - uuid
+                - title
+                - author_id
+                - created_at
+                - updated_at
+              example:
+                id: 1
+                uuid: 0b9d
+                title: Hello
+                author_id: 7
+                created_at: '2020-07-17T00:00:00Z'
+                updated_at: '2020-07-17T00:00:00Z'
+  "/read_only/restored/{id}":
+    get:
+      summary: GET /read_only/restored/:id
+      tags: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
+      responses:
+        '200':
+          description: marks the default properties again
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    readOnly: true
+                  uuid:
+                    type: string
+                    readOnly: true
+                  title:
+                    type: string
+                  author_id:
+                    type: integer
+                  created_at:
+                    type: string
+                    readOnly: true
+                  updated_at:
+                    type: string
+                    readOnly: true
+                required:
+                - id
+                - uuid
+                - title
+                - author_id
+                - created_at
+                - updated_at
+              example:
+                id: 1
+                uuid: 0b9d
+                title: Hello
+                author_id: 7
+                created_at: '2020-07-17T00:00:00Z'
+                updated_at: '2020-07-17T00:00:00Z'
+  "/read_only/tagged/{id}":
+    get:
+      summary: GET /read_only/tagged/:id
+      tags: []
+      responses:
+        '200':
+          description: marks the listed properties instead of the default ones
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Tagged"
+              example:
+                id: 1
+                uuid: 0b9d
+                title: Hello
+                author_id: 7
+                created_at: '2020-07-17T00:00:00Z'
+                updated_at: '2020-07-17T00:00:00Z'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
+    put:
+      summary: PUT /read_only/tagged/:id
+      tags: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/Tagged"
+            example:
+              id: 1
+              title: Hello
+      responses:
+        '200':
+          description: sends the id, which the list leaves to the builder
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Tagged"
+              example:
+                id: 1
+                uuid: 0b9d
+                title: Hello
+                author_id: 7
+                created_at: '2020-07-17T00:00:00Z'
+                updated_at: '2020-07-17T00:00:00Z'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
+components:
+  schemas:
+    Article:
+      type: object
+      properties:
+        id:
+          oneOf:
+          - type: integer
+          - type: string
+          readOnly: false
+        title:
+          type: string
+        sections_attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                readOnly: false
+              body:
+                type: string
+            required:
+            - id
+            - body
+        uuid:
+          type: string
+          readOnly: true
+        author_id:
+          type: integer
+        created_at:
+          type: string
+          readOnly: true
+        updated_at:
+          type: string
+          readOnly: true
+      required:
+      - id
+      - title
+    Comment:
+      type: object
+      properties:
+        body:
+          type: string
+        id:
+          type: integer
+          readOnly: true
+      required:
+      - body
+    Tagged:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: false
+        title:
+          type: string
+          readOnly: false
+        uuid:
+          type: string
+        author_id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+        updated_at:
+          type: string
+      required:
+      - id
+      - title

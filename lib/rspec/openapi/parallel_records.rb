@@ -31,7 +31,7 @@ module RSpec::OpenAPI::ParallelRecords
   UPLOADED_FILE_MARKER = '__rspec_openapi_uploaded_file'
 
   # Members that hold a builder's lookup, a Proc when a builder is set.
-  LOOKUP_MEMBERS = [:formats].freeze
+  LOOKUP_MEMBERS = [:formats, :response_read_only, :request_read_only].freeze
 
   # Tags an error a lookup raised in a worker. It travels in place of the
   # answers as [LOOKUP_ERROR_MARKER, message], a shape no answer Hash can take.

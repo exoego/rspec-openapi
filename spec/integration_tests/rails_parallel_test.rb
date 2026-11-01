@@ -22,6 +22,7 @@ RSpec::OpenAPI.formats_builder = lambda { |_example, key|
 
   key.end_with?('_at') ? 'date-time' : nil
 }
+RSpec::OpenAPI.read_only_builder = ->(_example, key) { RSpec::OpenAPI::DEFAULT_READ_ONLY_KEYS.include?(key) }
 
 # Each test writes its pid here so the outer spec can verify the tests really
 # ran in forked workers rather than in the main process.

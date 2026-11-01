@@ -265,5 +265,33 @@ Rails.application.routes.draw do
       end
     }
     delete '/orgs/:org_id/members/:user_id' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"removed":true}']] }
+
+    # Routes for the readOnly spec. An article's id is an integer, or a string
+    # when the X-Variant header says so, which gives a shared component a oneOf.
+    read_only_article = lambda { |env|
+      id = env['HTTP_X_VARIANT'] == 'string' ? '"a1"' : '1'
+      body = %({"id":#{id},"uuid":"0b9d","title":"Hello","author_id":7,) +
+             %("created_at":"2020-07-17T00:00:00Z","updated_at":"2020-07-17T00:00:00Z"})
+      [env['REQUEST_METHOD'] == 'POST' ? 201 : 200, { 'Content-Type' => 'application/json' }, [body]]
+    }
+    get '/read_only/articles/:id' => read_only_article
+    put '/read_only/articles/:id' => read_only_article
+    post '/read_only/articles' => read_only_article
+    get '/read_only/tagged/:id' => read_only_article
+    put '/read_only/tagged/:id' => read_only_article
+    get '/read_only/plain/:id' => read_only_article
+    get '/read_only/restored/:id' => read_only_article
+    # Two items whose properties differ in type, null and shape, one of them
+    # only in the first item, which the builder merges into one item schema.
+    get '/read_only/articles' => lambda { |_env|
+      body = %([{"id":1,"uuid":"0b9d","updated_at":null,"sections":[{"id":5}],"stats":{"views":1}},) +
+             %({"id":"a2","updated_at":"2020-07-18T00:00:00Z","sections":[],"stats":{"likes":2}}])
+      [200, { 'Content-Type' => 'application/json' }, [body]]
+    }
+    read_only_comment = lambda { |env|
+      [env['REQUEST_METHOD'] == 'POST' ? 201 : 200, { 'Content-Type' => 'application/json' }, ['{"id":3,"body":"nice"}']]
+    }
+    get '/read_only/comments/:id' => read_only_comment
+    post '/read_only/comments' => read_only_comment
   end
 end

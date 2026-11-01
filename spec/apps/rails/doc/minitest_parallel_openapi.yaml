@@ -132,6 +132,7 @@ paths:
                   properties:
                     id:
                       type: integer
+                      readOnly: true
                     name:
                       type: string
                     description:
@@ -141,6 +142,7 @@ paths:
                       properties:
                         id:
                           type: integer
+                          readOnly: true
                         name:
                           type: string
                       required:
@@ -154,9 +156,11 @@ paths:
                     created_at:
                       type: string
                       format: date-time
+                      readOnly: true
                     updated_at:
                       type: string
                       format: date-time
+                      readOnly: true
                   required:
                   - id
                   - name
@@ -199,6 +203,7 @@ paths:
                 properties:
                   id:
                     type: integer
+                    readOnly: true
                   name:
                     type: string
                   description:
@@ -208,6 +213,7 @@ paths:
                     properties:
                       id:
                         type: integer
+                        readOnly: true
                       name:
                         type: string
                     required:
@@ -221,9 +227,11 @@ paths:
                   created_at:
                     type: string
                     format: date-time
+                    readOnly: true
                   updated_at:
                     type: string
                     format: date-time
+                    readOnly: true
                 required:
                 - id
                 - name

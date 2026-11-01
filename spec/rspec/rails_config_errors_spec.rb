@@ -17,6 +17,15 @@ RSpec.describe 'rails request spec, configuration errors' do
     end
   end
 
+  describe 'an invalid read_only' do
+    it 'aborts the example naming both the value and the example' do
+      out, err, status = rspec_capture 'spec/requests/rails_invalid_read_only_spec.rb', openapi: true, output: :yaml
+      expect(status.success?).to eq(false)
+      expect(out + err).to include('read_only must be true, false, or property names as Strings, Symbols or ' \
+                                   'Regexps, got 42 (example: invalid read_only aborts on a value that is not a name)')
+    end
+  end
+
   describe 'a per-directory config file that raises' do
     let(:openapi_path) do
       File.expand_path('spec/apps/rails/doc/broken_config/openapi.yaml', repo_root)

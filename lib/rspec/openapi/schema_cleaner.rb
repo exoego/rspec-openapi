@@ -43,6 +43,10 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
       end
     end
 
+    # A full run decides readOnly anew, so a property no request sends any
+    # more stops being held at false.
+    strip_false_read_only!(base.dig(:components, :schemas))
+
     # cleanup temporary fields used for internal processing
     cleanup_temporary_fields!(base)
 
@@ -59,6 +63,14 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
         remove_parameters_conflicting_with_security_scheme!(operation, security_scheme, security_scheme_name)
       end
     end
+  end
+
+  # `readOnly: false` is how a request says it sends a candidate property. A
+  # component shared by a request and a response keeps it, or a later partial
+  # run that sees only the response would flip it back to true. Inline under
+  # paths each side has its own schema, so there it says nothing.
+  def cleanup_false_read_only!(base)
+    strip_false_read_only!(base[:paths])
   end
 
   # A recorded example is data, so a field in it named `required` stays however
@@ -93,6 +105,12 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
   end
 
   private
+
+  def strip_false_read_only!(root)
+    RSpec::OpenAPI::HashHelper.each_schema(root) do |schema|
+      schema.delete(:readOnly) if schema[:readOnly] == false
+    end
+  end
 
   # The selectors are relative to the media type. A media type the spec does
   # not hold has no fresh counterpart, and all of its entries are stale.

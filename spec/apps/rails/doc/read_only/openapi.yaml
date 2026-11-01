@@ -1,0 +1,97 @@
+---
+openapi: 3.2.0
+info:
+  title: rspec-openapi
+  version: 1.0.0
+servers: []
+paths:
+  "/read_only/articles":
+    post:
+      summary: POST /read_only/articles
+      tags: []
+      responses:
+        '201':
+          description: creates an article
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Article"
+  "/read_only/articles/{id}":
+    get:
+      summary: GET /read_only/articles/:id
+      tags: []
+      responses:
+        '200':
+          description: returns an article
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Article"
+    put:
+      summary: PUT /read_only/articles/:id
+      tags: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/Article"
+      responses:
+        '200':
+          description: updates an article, sending its id and the ids of its sections
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Article"
+  "/read_only/comments":
+    post:
+      summary: POST /read_only/comments
+      tags: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/Comment"
+      responses:
+        '201':
+          description: creates a comment
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Comment"
+  "/read_only/comments/{id}":
+    get:
+      summary: GET /read_only/comments/:id
+      tags: []
+      responses:
+        '200':
+          description: returns a comment
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Comment"
+  "/read_only/tagged/{id}":
+    get:
+      summary: GET /read_only/tagged/:id
+      tags: []
+      responses:
+        '200':
+          description: marks the listed properties instead of the default ones
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Tagged"
+    put:
+      summary: PUT /read_only/tagged/:id
+      tags: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/Tagged"
+      responses:
+        '200':
+          description: sends the id, which the list leaves to the builder
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Tagged"
