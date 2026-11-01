@@ -19,7 +19,14 @@ module RSpec::OpenAPI::PartialRun
       configured = RSpec::OpenAPI.partial_update
       return configured unless configured.nil?
 
-      filtered? || files_left_out?
+      parallel_worker? || filtered? || files_left_out?
+    end
+
+    # Minitest tells nothing about the run, so only the option and the
+    # parallel_tests marker count.
+    def minitest?
+      configured = RSpec::OpenAPI.partial_update
+      configured == true || (configured.nil? && parallel_worker?)
     end
 
     # Printed when the run decided on its own, since the user may expect the
@@ -35,6 +42,13 @@ module RSpec::OpenAPI::PartialRun
 
     def recorded_files
       @recorded_files ||= Set.new
+    end
+
+    # parallel_tests marks each worker with TEST_ENV_NUMBER, an empty string
+    # for the first one. A worker sees part of the files, whichever files it
+    # got, so the directory check below cannot tell it from a full run.
+    def parallel_worker?
+      ENV.key?('TEST_ENV_NUMBER')
     end
 
     # -e, --tag, a line number, --only-failures, and a `fit` once an example

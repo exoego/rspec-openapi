@@ -59,9 +59,21 @@ RSpec.describe 'rails request spec, partial update' do
     expect(out).not_to include(notice)
   end
 
+  # parallel_tests marks each worker with TEST_ENV_NUMBER, an empty string for
+  # the first one. This worker got every file of the directory, which would
+  # otherwise count as a full run.
+  it 'removes nothing in a parallel_tests worker, whatever files it got' do
+    out, = rspec recording_spec, sibling_spec, openapi: true, partial: :auto, env: { 'TEST_ENV_NUMBER' => '' }
+    expect(generated).to eq expected('expected_partial')
+    expect(out).to include(notice)
+  end
+
   it 'removes stale entries when partial_update is false, whatever the run' do
     out, = rspec recording_spec, openapi: true, partial: false
     expect(generated['paths'].keys).to eq(['/roundtrip'])
+    operation = generated.dig('paths', '/roundtrip', 'get')
+    expect(operation['parameters'].map { |parameter| parameter['name'] }).to eq(['page'])
+    expect(generated.dig('components', 'schemas', 'Ok', 'properties').keys).to eq(['ok'])
     expect(out).not_to include(notice)
   end
 

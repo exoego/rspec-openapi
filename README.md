@@ -423,10 +423,14 @@ A run counts as partial in two cases.
 
 Every other run also removes the paths, operations, parameters and properties it did not record.
 This is how removed endpoints disappear from the file, so run all specs for that.
-Each process of `parallel_tests` sees only part of the files, so those runs never remove anything.
+
+A `parallel_tests` worker sees only part of the files, so it never removes anything, whichever files it got.
+rspec-openapi knows a worker by the `TEST_ENV_NUMBER` variable that `parallel_tests` sets.
+Run the suite in one process when stale entries should go.
 
 Set `RSpec::OpenAPI.partial_update` to `true` or `false`, or `OPENAPI_PARTIAL_UPDATE=1` or `=0`, to force one mode.
-Minitest has no signal to decide from, so it removes stale entries unless the option is `true`.
+Minitest has no run information to decide from. It removes nothing in a `parallel_tests` worker or when the
+option is `true`, and removes stale entries otherwise.
 
 ### Can I exclude specific specs from OpenAPI generation?
 
