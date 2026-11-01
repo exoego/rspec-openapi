@@ -102,10 +102,21 @@ RSpec.describe RSpec::OpenAPI::ParallelRecords do
       expect(RSpec::OpenAPI::SchemaBuilder.build(restored)).to eq(RSpec::OpenAPI::SchemaBuilder.build(record))
     end
 
+    # NotImplementedError is not a StandardError, and a lookup may raise it too.
     it 'raises an error the lookup raised in the worker when the record is built again' do
-      restored = round_trip(json_record(formats: ->(key) { raise ArgumentError, "no format for #{key}" }))
+      restored = round_trip(json_record(formats: ->(key) { raise NotImplementedError, "no format for #{key}" }))
       expect { RSpec::OpenAPI::SchemaBuilder.build(restored) }
-        .to raise_error(described_class::LookupError, 'formats lookup raised ArgumentError: no format for id')
+        .to raise_error(described_class::LookupError, 'formats lookup raised NotImplementedError: no format for id')
+    end
+
+    it 'tells a lookup error from data and answers that only hold the marker as a key' do
+      marker = described_class::LOOKUP_ERROR_MARKER
+      record = RSpec::OpenAPI::Record.new(
+        **json_record(formats: ->(_key) { 'date-time' }).to_h, response_body: { marker => 1 },
+      )
+      restored = round_trip(record)
+      expect(restored.response_body).to eq(marker => 1)
+      expect(restored.formats).to eq(marker => 'date-time')
     end
   end
 end
