@@ -44,13 +44,22 @@ class << RSpec::OpenAPI::SchemaSorter = Object.new
 
   # Re-inserting a key moves it to the end, so re-inserting every key in sorted
   # order sorts the hash in place. A document read back from a file is sorted
-  # already, so a hash whose keys are in order is left alone. The keys are all
-  # symbols, which sort as their names do.
+  # already, so a hash whose keys are in order is left alone, without the two
+  # arrays of keys a sort would build. The keys are all symbols, which sort as
+  # their names do.
   def deep_sort_hash!(hash)
-    keys = hash.keys
-    sorted = keys.sort
-    return if sorted == keys
+    return if sorted?(hash)
 
-    sorted.each { |key| hash[key] = hash.delete(key) }
+    hash.keys.sort.each { |key| hash[key] = hash.delete(key) }
+  end
+
+  def sorted?(hash)
+    previous = nil
+    hash.each_key do |key|
+      return false if previous && previous > key
+
+      previous = key
+    end
+    true
   end
 end

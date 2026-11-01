@@ -8,6 +8,10 @@ require 'date'
 # which KeyTransformer.symbolize then converted in a copy of the whole document.
 # The names of examples are normalized on the way, as that copy did.
 #
+# A key names an entry, so it is a string however it reads: `200:` is the name
+# of a response, not a number. Resolving it as YAML.safe_load does would give
+# a key with no name to take.
+#
 # Anchors, tags and merge keys are left to YAML.safe_load, which accepts or
 # rejects them as it always did. A valid alias follows its anchor, so only a
 # dangling one gets this far, and it is handed off as well.
@@ -48,7 +52,8 @@ class RSpec::OpenAPI::YAMLLoader < Psych::Handler
 
   def scalar(value, anchor, tag, _plain, quoted, _style) # rubocop:disable Metrics/ParameterLists
     supported!(anchor, tag, value)
-    add(quoted ? value : @scanner.tokenize(value))
+    value = @scanner.tokenize(value) unless quoted || key_next?
+    add(value)
   end
 
   def start_sequence(anchor, tag, _implicit, _style)
@@ -82,6 +87,12 @@ class RSpec::OpenAPI::YAMLLoader < Psych::Handler
   # A `<<` key merges its value into the mapping, so it is handed off too.
   def supported!(anchor, tag, value = nil)
     raise Unsupported if anchor || tag || value == '<<'
+  end
+
+  # A sequence inside a mapping pushes no pending key, so the mapping's NONE
+  # shows through it and the container is checked as well.
+  def key_next?
+    @pending_keys.last.equal?(NONE) && @containers.last.is_a?(Hash)
   end
 
   # Values arrive in document order: onto the open sequence, or as the key and

@@ -83,11 +83,7 @@ class RSpec::OpenAPI::ResultRecorder
 
   def cleanup_schema!(new_from_zero, spec)
     RSpec::OpenAPI::SchemaCleaner.cleanup_conflicting_security_parameters!(spec)
-    if @partial
-      RSpec::OpenAPI::SchemaCleaner.cleanup_temporary_fields!(spec)
-    else
-      RSpec::OpenAPI::SchemaCleaner.cleanup!(spec, new_from_zero)
-    end
+    RSpec::OpenAPI::SchemaCleaner.cleanup!(spec, new_from_zero) unless @partial
     RSpec::OpenAPI::ComponentsUpdater.update!(spec, new_from_zero, partial: @partial)
     # After the update, which reads the request side's readOnly: false from
     # new_from_zero, the very spec when there was no document yet.
