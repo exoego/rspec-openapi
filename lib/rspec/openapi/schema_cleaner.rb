@@ -47,9 +47,6 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
     # more stops being held at false.
     RSpec::OpenAPI::HashHelper.each_schema(base.dig(:components, :schemas)) { |schema| delete_false_read_only!(schema) }
 
-    # cleanup temporary fields used for internal processing
-    cleanup_temporary_fields!(base)
-
     base
   end
 
@@ -65,40 +62,36 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
     end
   end
 
-  # One walk over the schemas once the components are updated. `readOnly: false`
-  # is how a request says it sends a candidate property. A component shared by a
-  # request and a response keeps it, or a later partial run that sees only the
-  # response would flip it back to true. Inline under paths each side has its
-  # own schema, so there it says nothing.
+  # One walk over the schemas once the components are updated, which also drops
+  # the fields the builder left for the merge. `readOnly: false` is how a
+  # request says it sends a candidate property. A component shared by a request
+  # and a response keeps it, or a later partial run that sees only the response
+  # would flip it back to true. Inline under paths each side has its own
+  # schema, so there it says nothing.
   def cleanup_schemas!(base)
-    RSpec::OpenAPI::HashHelper.each_schema(base.dig(:components, :schemas)) { |schema| delete_empty_required!(schema) }
+    RSpec::OpenAPI::HashHelper.each_schema(base.dig(:components, :schemas)) do |schema|
+      delete_temporary_fields!(schema)
+      delete_empty_required!(schema)
+    end
     RSpec::OpenAPI::HashHelper.each_schema(base[:paths]) do |schema|
+      delete_temporary_fields!(schema)
       delete_empty_required!(schema)
       delete_false_read_only!(schema)
     end
   end
 
-  # Recursively remove temporary fields like :_example_key and :_example_name from the schema.
-  # Every caller has already established that it holds a Hash.
-  def cleanup_temporary_fields!(hash)
-    hash.delete(:_example_key)
-    hash.delete(:_example_summary)
-    hash.delete(:_example_name)
-    if (fallback = hash.delete(:_fallback_description))
-      hash[:description] ||= fallback
-    end
-
-    hash.each_value do |value|
-      case value
-      when Hash
-        cleanup_temporary_fields!(value)
-      when Array
-        value.each { |item| cleanup_temporary_fields!(item) if item.is_a?(Hash) }
-      end
-    end
-  end
-
   private
+
+  # The description of a response whose example is not recorded is provisional,
+  # so it stays only where no documented test set one.
+  def delete_temporary_fields!(schema)
+    schema.delete(:_example_key)
+    schema.delete(:_example_summary)
+    schema.delete(:_example_name)
+    return unless (fallback = schema.delete(:_fallback_description))
+
+    schema[:description] ||= fallback
+  end
 
   # A recorded example is data, so a field in it named `required` stays however
   # it is shaped. An empty `required` must not be present.

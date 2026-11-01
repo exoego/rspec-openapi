@@ -105,11 +105,14 @@ class << RSpec::OpenAPI::ComponentsUpdater = Object.new
   end
 
   # The paths come from matched_paths, so their segments are symbols and the
-  # indexes of oneOf variants.
+  # indexes of oneOf variants. A path to a media type ends in the content
+  # type, one to a variant in its index under the oneOf of the schema.
   def dig_schema(obj, paths)
-    obj.dig(*paths, :schema, :items) ||
-      obj.dig(*paths, :schema) ||
-      obj.dig(*paths[0...-1], :schema, :oneOf, paths.last)
+    media_type = obj.dig(*paths)
+    return obj.dig(*paths[0...-1], :schema, :oneOf, paths.last) unless media_type.is_a?(Hash)
+
+    schema = media_type[:schema]
+    (schema.is_a?(Hash) && schema[:items]) || schema
   end
 
   def paths_to_top_level_refs(base)
