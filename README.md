@@ -427,8 +427,8 @@ means. A client should not send the property (OpenAPI 3.0), or the server may ig
 (3.1 and later). So a request that sends the property says the opposite, and the request wins.
 In a schema shared by a request and a response through `$ref`, the component then keeps
 `readOnly: false`. That explicit `false` lets partial runs (see "Can I run a subset of specs?"
-below), such as `parallel_tests` workers, agree whichever order they run in. Inline request
-schemas never carry `readOnly`.
+below), such as `parallel_tests` workers, agree whichever order they run in. A full run decides
+it anew. Inline request schemas never carry `readOnly`.
 
 ### How can I add information which can't be generated from RSpec?
 

@@ -41,4 +41,13 @@ RSpec.describe 'rails request spec, readOnly' do
       expect(article.dig('uuid', 'readOnly')).to eq(true)
     end
   end
+
+  # A full run decides readOnly anew. Once no request sends the id any more,
+  # the component stops holding it at false.
+  it 'lifts a false in a full run once no request sends the property' do
+    rspec request_spec, openapi: true, output: :yaml
+    rspec request_spec, '-e', 'GET /read_only/articles/{id}', openapi: true, output: :yaml
+    article = document.dig('components', 'schemas', 'Article', 'properties')
+    expect(article.dig('id', 'readOnly')).to eq(true)
+  end
 end
