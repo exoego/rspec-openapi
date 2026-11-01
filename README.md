@@ -418,7 +418,7 @@ property name. The names can also be listed per example, as whole names or patte
 
 ```rb
 describe 'GET /posts', openapi: { read_only: ['id', /_count\z/] } do
-  # `read_only: false` turns it off for an example.
+  # `read_only: false` turns it off for an example, and `read_only: true` hands it back to the builder.
 end
 ```
 

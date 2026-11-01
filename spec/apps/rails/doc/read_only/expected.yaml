@@ -6,6 +6,75 @@ info:
 servers: []
 paths:
   "/read_only/articles":
+    get:
+      summary: GET /read_only/articles
+      tags: []
+      responses:
+        '200':
+          description: lists articles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      oneOf:
+                      - type: integer
+                      - type: string
+                      readOnly: true
+                    uuid:
+                      type:
+                      - string
+                      - 'null'
+                      readOnly: true
+                    updated_at:
+                      type:
+                      - string
+                      - 'null'
+                      readOnly: true
+                    sections:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            readOnly: true
+                        required:
+                        - id
+                      readOnly: true
+                    stats:
+                      type: object
+                      properties:
+                        views:
+                          type:
+                          - integer
+                          - 'null'
+                        likes:
+                          type:
+                          - integer
+                          - 'null'
+                      readOnly: true
+                  required:
+                  - id
+                  - updated_at
+                  - sections
+                  - stats
+              example:
+              - id: 1
+                uuid: 0b9d
+                updated_at:
+                sections:
+                - id: 5
+                stats:
+                  views: 1
+              - id: a2
+                updated_at: '2020-07-18T00:00:00Z'
+                sections: []
+                stats:
+                  likes: 2
     post:
       summary: POST /read_only/articles
       tags: []
@@ -174,6 +243,55 @@ paths:
                     type: string
                   updated_at:
                     type: string
+                required:
+                - id
+                - uuid
+                - title
+                - author_id
+                - created_at
+                - updated_at
+              example:
+                id: 1
+                uuid: 0b9d
+                title: Hello
+                author_id: 7
+                created_at: '2020-07-17T00:00:00Z'
+                updated_at: '2020-07-17T00:00:00Z'
+  "/read_only/restored/{id}":
+    get:
+      summary: GET /read_only/restored/:id
+      tags: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
+      responses:
+        '200':
+          description: marks the default properties again
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    readOnly: true
+                  uuid:
+                    type: string
+                    readOnly: true
+                  title:
+                    type: string
+                  author_id:
+                    type: integer
+                  created_at:
+                    type: string
+                    readOnly: true
+                  updated_at:
+                    type: string
+                    readOnly: true
                 required:
                 - id
                 - uuid

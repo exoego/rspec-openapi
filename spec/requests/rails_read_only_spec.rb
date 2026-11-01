@@ -28,6 +28,16 @@ RSpec.describe 'Articles', type: :request do
     end
   end
 
+  describe 'GET /read_only/articles' do
+    # The two items differ on every listed property, so readOnly has to survive
+    # the merge of a null with a string, of two types, of two arrays, of two
+    # objects, and of a property only one item has.
+    it 'lists articles', openapi: { read_only: ['id', 'uuid', 'updated_at', 'sections', 'stats'] } do
+      get '/read_only/articles'
+      expect(response.status).to eq(200)
+    end
+  end
+
   describe 'POST /read_only/articles' do
     it 'creates an article' do
       post '/read_only/articles', headers: { 'Content-Type': 'application/json' },
@@ -74,6 +84,13 @@ RSpec.describe 'Overrides', type: :request do
     it 'marks nothing' do
       get '/read_only/plain/1'
       expect(response.status).to eq(200)
+    end
+
+    describe 'GET /read_only/restored/{id}', openapi: { read_only: true } do
+      it 'marks the default properties again' do
+        get '/read_only/restored/1'
+        expect(response.status).to eq(200)
+      end
     end
   end
 end

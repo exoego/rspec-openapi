@@ -279,6 +279,14 @@ Rails.application.routes.draw do
     post '/read_only/articles' => read_only_article
     get '/read_only/tagged/:id' => read_only_article
     get '/read_only/plain/:id' => read_only_article
+    get '/read_only/restored/:id' => read_only_article
+    # Two items whose properties differ in type, null and shape, one of them
+    # only in the first item, which the builder merges into one item schema.
+    get '/read_only/articles' => lambda { |_env|
+      body = %([{"id":1,"uuid":"0b9d","updated_at":null,"sections":[{"id":5}],"stats":{"views":1}},) +
+             %({"id":"a2","updated_at":"2020-07-18T00:00:00Z","sections":[],"stats":{"likes":2}}])
+      [200, { 'Content-Type' => 'application/json' }, [body]]
+    }
     read_only_comment = lambda { |env|
       [env['REQUEST_METHOD'] == 'POST' ? 201 : 200, { 'Content-Type' => 'application/json' }, ['{"id":3,"body":"nice"}']]
     }

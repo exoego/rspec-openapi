@@ -79,18 +79,26 @@ class SharedExtractor
     metadata[:formats] || RSpec::OpenAPI.formats_builder.curry.call(example)
   end
 
-  # The metadata wins over the builder, and `false` turns it off for the example.
+  # The metadata wins over the builder. `false` turns it off for the example,
+  # and `true` hands it back to the builder, for a group that turned it off.
   def self.resolve_read_only(metadata, example)
-    return normalize_read_only(metadata[:read_only]) if metadata.key?(:read_only)
+    value = metadata.fetch(:read_only, true)
+    return RSpec::OpenAPI.read_only_builder&.curry&.call(example) if value == true
 
-    RSpec::OpenAPI.read_only_builder&.curry&.call(example)
+    normalize_read_only(value, example)
   end
 
-  # Names are matched whole, a Regexp by pattern.
-  def self.normalize_read_only(value)
+  READ_ONLY_PATTERN_CLASSES = [String, Symbol, Regexp].freeze
+
+  def self.normalize_read_only(value, example = nil)
     return nil if value.nil? || value == false
 
     patterns = Array(value)
+    unless patterns.all? { |pattern| READ_ONLY_PATTERN_CLASSES.any? { |klass| pattern.is_a?(klass) } }
+      raise ArgumentError, 'read_only must be true, false, or property names as Strings, Symbols or Regexps, ' \
+                           "got #{value.inspect}#{example_context(example)}"
+    end
+
     ->(key) { patterns.any? { |pattern| pattern.is_a?(Regexp) ? pattern.match?(key) : pattern.to_s == key } }
   end
 
@@ -176,9 +184,12 @@ class SharedExtractor
   end
 
   def self.example_mode_error(value, example)
-    context = example&.full_description
-    context = " (example: #{context})" if context
     "example_mode must be a Symbol/String in #{VALID_EXAMPLE_MODES.inspect} " \
-      "or a Hash with :request/:response keys, got #{value.inspect}#{context}"
+      "or a Hash with :request/:response keys, got #{value.inspect}#{example_context(example)}"
+  end
+
+  def self.example_context(example)
+    context = example&.full_description
+    context ? " (example: #{context})" : ''
   end
 end
