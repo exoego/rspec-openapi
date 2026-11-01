@@ -265,5 +265,24 @@ Rails.application.routes.draw do
       end
     }
     delete '/orgs/:org_id/members/:user_id' => ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"removed":true}']] }
+
+    # Routes for the readOnly spec. An article's id is an integer, or a string
+    # when the X-Variant header says so, which gives a shared component a oneOf.
+    read_only_article = lambda { |env|
+      id = env['HTTP_X_VARIANT'] == 'string' ? '"a1"' : '1'
+      body = %({"id":#{id},"uuid":"0b9d","title":"Hello","author_id":7,) +
+             %("created_at":"2020-07-17T00:00:00Z","updated_at":"2020-07-17T00:00:00Z"})
+      [env['REQUEST_METHOD'] == 'POST' ? 201 : 200, { 'Content-Type' => 'application/json' }, [body]]
+    }
+    get '/read_only/articles/:id' => read_only_article
+    put '/read_only/articles/:id' => read_only_article
+    post '/read_only/articles' => read_only_article
+    get '/read_only/tagged/:id' => read_only_article
+    get '/read_only/plain/:id' => read_only_article
+    read_only_comment = lambda { |env|
+      [env['REQUEST_METHOD'] == 'POST' ? 201 : 200, { 'Content-Type' => 'application/json' }, ['{"id":3,"body":"nice"}']]
+    }
+    get '/read_only/comments/:id' => read_only_comment
+    post '/read_only/comments' => read_only_comment
   end
 end

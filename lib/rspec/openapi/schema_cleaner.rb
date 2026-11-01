@@ -61,6 +61,16 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
     end
   end
 
+  # `readOnly: false` is how a request says it sends a candidate property. A
+  # component shared by a request and a response keeps it, or a later partial
+  # run that sees only the response would flip it back to true. Inline under
+  # paths each side has its own schema, so there it says nothing.
+  def cleanup_false_read_only!(base)
+    RSpec::OpenAPI::HashHelper.each_schema(base[:paths]) do |schema|
+      schema.delete(:readOnly) if schema[:readOnly] == false
+    end
+  end
+
   # A recorded example is data, so a field in it named `required` stays however
   # it is shaped.
   def cleanup_empty_required_array!(base)

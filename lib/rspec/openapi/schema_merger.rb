@@ -32,6 +32,8 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
     :title, :description, :deprecated, :readOnly, :writeOnly, :example, :examples, :default, :externalDocs, :xml,
     :discriminator,
   ].freeze
+  # Like nullable, readOnly describes the whole value, so it stays beside a oneOf.
+  ONE_OF_WRAPPER_KEYS = [:nullable, :readOnly].freeze
 
   private
 
@@ -63,11 +65,19 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   def merge_schema_entry!(base, key, value, in_schema)
     if in_schema && key == :properties && base[key].is_a?(Hash) && value.is_a?(Hash)
       value.each { |name, property| merge_entry!(base[key], name, property, true) }
+    elsif in_schema && key == :readOnly
+      merge_read_only!(base, value)
     elsif DATA_KEYS.include?(key)
       merge_data!(base, key, value)
     else
       merge_entry!(base, key, value, in_schema || SCHEMA_KEYS.include?(key))
     end
+  end
+
+  # A property only responses hold is readOnly, one a request sends is not. So
+  # false wins, and a side without an opinion leaves the other's.
+  def merge_read_only!(base, value)
+    base[:readOnly] = base.key?(:readOnly) ? base[:readOnly] && value : value
   end
 
   # Recorded data stays data however it is shaped, so a field named like a
@@ -137,6 +147,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
 
     one_of_variants(spec).each { |variant| merge_variant!(base, variant) }
     base[:nullable] = true if nullable
+    merge_read_only!(base, spec[:readOnly]) if spec.key?(:readOnly)
     base
   end
 
@@ -156,7 +167,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   end
 
   def one_of_variants(schema)
-    variants = schema[:oneOf] || [schema.reject { |key, _| key == :nullable }]
+    variants = schema[:oneOf] || [schema.reject { |key, _| ONE_OF_WRAPPER_KEYS.include?(key) }]
     variants.reject { |variant| variant.is_a?(Hash) && variant.empty? }
   end
 

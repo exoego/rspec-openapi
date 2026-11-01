@@ -228,6 +228,10 @@ RSpec::OpenAPI.tags_builder = -> (example) { example.metadata.dig(:example_group
 # This example assigns 'date-time' format to properties with names ending in '_at'
 RSpec::OpenAPI.formats_builder = ->(_example, key) { key.end_with?('_at') ? 'date-time' : nil }
 
+# Mark server-assigned properties as `readOnly`. Off by default.
+# The builder gets the RSpec example and a property name. See "Can I mark `id` and timestamps as `readOnly`?" below.
+RSpec::OpenAPI.read_only_builder = ->(_example, key) { RSpec::OpenAPI::DEFAULT_READ_ONLY_KEYS.include?(key) }
+
 # Change the example type(s) that will generate schema
 RSpec::OpenAPI.example_types = %i[request]
 
@@ -399,6 +403,32 @@ components:
 
 Note that automatic `schemas` update feature is still new and may not work in complex scenario.
 If you find a room for improvement, open an issue.
+
+### Can I mark `id` and timestamps as `readOnly`?
+
+Yes, with `read_only_builder`. It is off by default.
+
+```rb
+RSpec::OpenAPI.read_only_builder = ->(_example, key) { RSpec::OpenAPI::DEFAULT_READ_ONLY_KEYS.include?(key) }
+```
+
+`DEFAULT_READ_ONLY_KEYS` holds `id`, `uuid`, `created_at` and `updated_at`. Foreign keys such as
+`user_id` are not in it, since clients usually send them. The builder may return `true` for any
+property name. The names can also be listed per example, as whole names or patterns.
+
+```rb
+describe 'GET /posts', openapi: { read_only: ['id', /_count\z/] } do
+  # `read_only: false` turns it off for an example.
+end
+```
+
+A property the builder picks gets `readOnly: true` in response schemas. Keep in mind what that
+means. A client should not send the property (OpenAPI 3.0), or the server may ignore or reject it
+(3.1 and later). So a request that sends the property says the opposite, and the request wins.
+In a schema shared by a request and a response through `$ref`, the component then keeps
+`readOnly: false`. That explicit `false` lets partial runs (see "Can I run a subset of specs?"
+below), such as `parallel_tests` workers, agree whichever order they run in. Inline request
+schemas never carry `readOnly`.
 
 ### How can I add information which can't be generated from RSpec?
 
