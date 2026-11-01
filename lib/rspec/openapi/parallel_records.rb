@@ -33,6 +33,12 @@ module RSpec::OpenAPI::ParallelRecords
   # Members that hold a builder's lookup, a Proc when a builder is set.
   LOOKUP_MEMBERS = [:formats].freeze
 
+  # Marks an error a lookup raised in a worker, in place of its answers.
+  LOOKUP_ERROR_MARKER = '__rspec_openapi_lookup_error'
+
+  # Raised in the main process for an error a lookup raised in a worker.
+  class LookupError < StandardError; end
+
   class << self
     def worker?
       Process.pid != MAIN_PID
@@ -99,13 +105,25 @@ module RSpec::OpenAPI::ParallelRecords
 
       answers = lookups.to_h { |member| [member, {}] }
       probe = record.dup
-      lookups.each { |member| probe[member] = ->(key) { answers[member][key] = record[member].call(key) } }
+      lookups.each { |member| probe[member] = recording_lookup(member, record[member], answers[member]) }
       begin
         RSpec::OpenAPI::SchemaBuilder.build(probe)
       rescue StandardError, NotImplementedError
-        # The main process builds this record again and reports the error itself.
+        # A value the builder cannot type, or a lookup error kept below. The
+        # main process builds this record again and reports the error itself.
       end
       record.dup.tap { |answered| answers.each { |member, hash| answered[member] = hash } }
+    end
+
+    # The main process cannot call the lookup again, so an error it raises
+    # travels in place of its answers, and decode raises it there.
+    def recording_lookup(member, lookup, answers)
+      lambda do |key|
+        answers[key] = lookup.call(key)
+      rescue StandardError => e
+        answers.replace(LOOKUP_ERROR_MARKER => "#{member} lookup raised #{e.class}: #{e.message}")
+        raise
+      end
     end
 
     # Uploads hold an open Tempfile, which no serializer can represent, so
@@ -120,17 +138,22 @@ module RSpec::OpenAPI::ParallelRecords
       end
     end
 
-    # Rebuilds a real UploadedFile so the schema builder's class checks match,
-    # backed by an empty StringIO in place of the worker's Tempfile.
     def decode(value)
       return value unless value.is_a?(Array) || value.is_a?(Hash)
       return value.map { |item| decode(item) } if value.is_a?(Array)
 
-      meta = value[UPLOADED_FILE_MARKER]
-      if meta && value.size == 1 && defined?(ActionDispatch::Http::UploadedFile)
+      decode_marker(value) || value.transform_values { |item| decode(item) }
+    end
+
+    # Rebuilds a real UploadedFile so the schema builder's class checks match,
+    # backed by an empty StringIO in place of the worker's Tempfile.
+    def decode_marker(value)
+      return nil unless value.size == 1
+
+      if (meta = value[UPLOADED_FILE_MARKER]) && defined?(ActionDispatch::Http::UploadedFile)
         ActionDispatch::Http::UploadedFile.new(tempfile: StringIO.new, filename: meta['filename'], type: meta['type'])
-      else
-        value.transform_values { |item| decode(item) }
+      elsif (message = value[LOOKUP_ERROR_MARKER])
+        ->(*) { raise LookupError, message }
       end
     end
   end

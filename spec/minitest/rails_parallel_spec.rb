@@ -18,7 +18,7 @@ RSpec.describe 'rails integration minitest with parallelize' do
   it 'collects records from forked workers into spec/apps/rails/doc/minitest_parallel_openapi.yaml' do
     FileUtils.rm_rf(pid_dir)
     org_yaml = YAML.safe_load(File.read(openapi_path))
-    minitest 'spec/integration_tests/rails_parallel_test.rb', openapi: true, output: :yaml
+    out, err, = minitest 'spec/integration_tests/rails_parallel_test.rb', openapi: true, output: :yaml
     new_yaml = YAML.safe_load(File.read(openapi_path))
 
     main_pid = File.read(File.join(pid_dir, 'main.pid'))
@@ -27,6 +27,11 @@ RSpec.describe 'rails integration minitest with parallelize' do
     expect(worker_pids).not_to include(main_pid)
 
     expect(new_yaml).to eq org_yaml
+
+    # The rooms summary's lookup raised in a worker, so it is reported and not written.
+    expect(out + err).to include('RSpec::OpenAPI got errors building 1 requests')
+    expect(out + err).to include('formats lookup raised ArgumentError: no format for area')
+    expect(new_yaml['paths']).not_to have_key('/room_summaries')
   ensure
     FileUtils.rm_rf(pid_dir)
   end

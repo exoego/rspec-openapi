@@ -16,7 +16,12 @@ output = ENV.fetch('OPENAPI_OUTPUT', nil)
 RSpec::OpenAPI.path = File.expand_path("../apps/rails/doc/minitest_parallel_openapi.#{output}", __dir__)
 RSpec::OpenAPI.servers = [{ url: 'http://localhost:3000' }]
 # A builder's lookup is a Proc, which the workers cannot hand to the main process as-is.
-RSpec::OpenAPI.formats_builder = ->(_example, key) { key.end_with?('_at') ? 'date-time' : nil }
+# It raises on `area`, a key only the rooms summary has, so that one record fails.
+RSpec::OpenAPI.formats_builder = lambda { |_example, key|
+  raise ArgumentError, "no format for #{key}" if key == 'area'
+
+  key.end_with?('_at') ? 'date-time' : nil
+}
 
 # Each test writes its pid here so the outer spec can verify the tests really
 # ran in forked workers rather than in the main process.
@@ -99,6 +104,18 @@ module RailsParallelIntegrationTests
     test 'returns additional properties' do
       record_pid
       get '/additional_properties'
+      assert_response 200
+    end
+  end
+
+  # The lookup raises for this record in its worker. The main process has to
+  # report that, rather than write a schema without the format.
+  class RoomsSummaryTest < ParallelTestCase
+    openapi!
+
+    test 'returns rooms whose lookup raises' do
+      record_pid
+      get '/room_summaries', headers: { authorization: 'k0kubun' }
       assert_response 200
     end
   end
