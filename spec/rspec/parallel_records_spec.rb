@@ -74,5 +74,49 @@ RSpec.describe RSpec::OpenAPI::ParallelRecords do
         expect(file.content_type).to eq('image/png')
       end
     end
+
+    # A builder's lookup is a Proc, which no serializer can carry. The worker
+    # asks it about every key of the record and dumps the answers instead.
+    def json_record(formats:)
+      RSpec::OpenAPI::Record.new(
+        http_method: 'GET', path: '/example', status: 200, path_params: {}, query_params: {},
+        request_headers: [], response_headers: [], response_content_type: 'application/json',
+        response_body: { 'id' => 1, 'created_at' => '2020-07-17T00:00:00Z' },
+        formats: formats,
+      )
+    end
+
+    def round_trip(record)
+      RSpec::OpenAPI.path_records['doc/openapi.yaml'] << record
+      described_class.dump!
+      RSpec::OpenAPI.path_records.clear
+
+      described_class.merge!
+      RSpec::OpenAPI.path_records['doc/openapi.yaml'].first
+    end
+
+    it 'dumps the answers of a lookup Proc for the keys of the record' do
+      record = json_record(formats: ->(key) { key.end_with?('_at') ? 'date-time' : nil })
+      restored = round_trip(record)
+      expect(restored.formats).to eq('id' => nil, 'created_at' => 'date-time')
+      expect(RSpec::OpenAPI::SchemaBuilder.build(restored)).to eq(RSpec::OpenAPI::SchemaBuilder.build(record))
+    end
+
+    # NotImplementedError is not a StandardError, and a lookup may raise it too.
+    it 'raises an error the lookup raised in the worker when the record is built again' do
+      restored = round_trip(json_record(formats: ->(key) { raise NotImplementedError, "no format for #{key}" }))
+      expect { RSpec::OpenAPI::SchemaBuilder.build(restored) }
+        .to raise_error(described_class::LookupError, 'formats lookup raised NotImplementedError: no format for id')
+    end
+
+    it 'tells a lookup error from data and answers that only hold the marker as a key' do
+      marker = described_class::LOOKUP_ERROR_MARKER
+      record = RSpec::OpenAPI::Record.new(
+        **json_record(formats: ->(_key) { 'date-time' }).to_h, response_body: { marker => 1 },
+      )
+      restored = round_trip(record)
+      expect(restored.response_body).to eq(marker => 1)
+      expect(restored.formats).to eq(marker => 'date-time')
+    end
   end
 end
