@@ -66,7 +66,9 @@
         "rails",
         "rspec-rails",
         "hanami",
-        "dry-logger"
+        "dry-logger",
+        "json",
+        "prism"
       ]
     }
   ]
