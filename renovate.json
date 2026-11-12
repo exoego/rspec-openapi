@@ -66,8 +66,26 @@
         "rails",
         "rspec-rails",
         "hanami",
-        "dry-logger",
-        "json",
+        "dry-logger"
+      ]
+    },
+    {
+      "description": [
+        "The Gemfile caps json below 3. json 3 raises ArgumentError on the quirks_mode option that Rails 8.0 and older pass.",
+        "Remove this rule and the cap when the oldest Rails in the test matrix is 8.1 or later."
+      ],
+      "enabled": false,
+      "matchPackageNames": [
+        "json"
+      ]
+    },
+    {
+      "description": [
+        "The Gemfile caps prism below 2 on Ruby older than 3.0. Bundler 2.1 in the ruby:2.7 image picks the native prism 2 gem, which needs Ruby 3.3.",
+        "Remove this rule and the cap when Ruby 2.7 leaves the test matrix."
+      ],
+      "enabled": false,
+      "matchPackageNames": [
         "prism"
       ]
     }
