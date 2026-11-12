@@ -11,7 +11,7 @@ gem 'rails', ENV['RAILS_VERSION'] || '8.1.4'
 gem 'json', '< 3'
 
 # Bundler 2.1 on Ruby 2.7 picks the native prism 2 gem, which needs Ruby 3.3.
-gem 'prism', '< 2' if Gem::Version.new(RUBY_VERSION) < Gem::Version.new('3.0.0')
+gem 'prism', '< 3' if Gem::Version.new(RUBY_VERSION) < Gem::Version.new('3.0.0')
 
 if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('3.0.0')
   if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('4.0.0')
