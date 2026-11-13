@@ -39,7 +39,7 @@ jobs:
             rails: 7.0.10
           - ruby: ruby:3.3@sha256:35460b769ba5f033ccf5525d04acea2612ad471d4ca9c84ace8e9347839d421d
             rails: 7.1.6
-          - ruby: ruby:3.4@sha256:1e780a5d685488264025a4cadaf366fb2c5dca9847f1a3b1d438fcaa69d8950d
+          - ruby: ruby:3.4@sha256:3acb7705baee45c4815270dbedf953e95c34e25d5440babadf5ae451a706d012
             rails: 8.0.5.1
           - ruby: ruby:4.0@sha256:dd87233ce44e8362fed00a1fd590c01e3dd8f8eb0001ea4a2c8a071388e9185b
             rails: 8.1.4
