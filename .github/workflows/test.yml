@@ -41,7 +41,7 @@ jobs:
             rails: 7.1.6
           - ruby: ruby:3.4@sha256:3acb7705baee45c4815270dbedf953e95c34e25d5440babadf5ae451a706d012
             rails: 8.0.5.1
-          - ruby: ruby:4.0@sha256:dd87233ce44e8362fed00a1fd590c01e3dd8f8eb0001ea4a2c8a071388e9185b
+          - ruby: ruby:4.0@sha256:a69f361db050bb2c65ec66ef75411bfc4ce2e1d993ba1179fac4e4ba6ecfe91f
             rails: 8.1.4
             coverage: coverage
     env:
