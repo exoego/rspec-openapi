@@ -213,7 +213,8 @@ class << RSpec::OpenAPI::SchemaBuilder
 
   def build_property(value, ctx, disposition: nil)
     format = disposition ? 'binary' : infer_format(ctx.key, ctx.record)
-    enum = infer_enum(ctx.path, ctx.record, ctx.context) unless value.is_a?(Array)
+    enum = infer_enum(ctx.path, ctx.record, ctx.context)
+    enum = nil if enum && value.is_a?(Array) != enum.all?(Array)
     property = build_type(value, format: format, enum: enum)
 
     case value

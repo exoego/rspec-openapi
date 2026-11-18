@@ -54,5 +54,12 @@ RSpec.describe 'schema builder spec' do
       expect(operation.dig(:responses, :'200', :content, :'application/json', :schema, :properties, :tags))
         .to eq(type: 'array', items: { type: 'string', enum: ['new', 'sale'] })
     end
+
+    it 'keeps an enum of whole arrays on the array, not its items' do
+      operation = build(response_body: { tags: ['new'] }, response_enum: { 'tags' => [[], ['new']] })
+
+      expect(operation.dig(:responses, :'200', :content, :'application/json', :schema, :properties, :tags))
+        .to eq(type: 'array', enum: [[], ['new']], items: { type: 'string' })
+    end
   end
 end
