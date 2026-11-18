@@ -655,6 +655,21 @@ it 'returns items with status', openapi: {
 end
 ```
 
+For an array of strings, use the array's own name. The enum is applied to its items, so this also works for a
+repeated query parameter such as `sort[]`, which Rack parses into a `sort` array:
+
+```rb
+it 'sorts tasks', openapi: {
+  request_enum: {
+    'sort' => %w[name -name created_at -created_at],
+  },
+} do
+  get '/tasks', params: { sort: ['-created_at'] }
+  # Parameter schema: { type: array, items: { type: string, enum: [name, -name, created_at, -created_at] } }
+  expect(response.status).to eq(200)
+end
+```
+
 #### Request vs Response Enums
 
 By default, `enum` applies to both request and response bodies. If you need different enum values for request and
