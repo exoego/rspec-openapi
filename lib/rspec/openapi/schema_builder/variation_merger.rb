@@ -12,21 +12,31 @@ class << RSpec::OpenAPI::SchemaBuilder
       # Drop empty `{}` schemas (e.g. items of an empty array) — they carry no
       # type info and would otherwise spuriously mark every property of their
       # populated siblings as nullable via the missing-key nullable rule.
-      non_empty = widen_integers(variations.reject(&:empty?))
+      non_empty = variations.reject(&:empty?)
       return {} if non_empty.empty?
-      return non_empty.first if non_empty.size == 1
-      if non_empty.any? { |v| v.key?(:oneOf) }
-        return merge_one_of_variations(non_empty, nullable: variations.any? { |v| v[:nullable] })
-      end
 
-      types = non_empty.map { |v| v[:type] }.compact.uniq
-      return one_of_schema(non_empty) if types.size > 1
+      typed = non_empty.reject { |v| nullable_only?(v) }
+      return { nullable: true } if typed.empty?
+
+      with_nullable_from(non_empty, merge_typed_variations(widen_integers(typed)))
+    end
+
+    def merge_typed_variations(variations)
+      return variations.first if variations.size == 1
+      return merge_one_of_variations(variations) if variations.any? { |v| v.key?(:oneOf) }
+
+      types = variations.map { |v| v[:type] }.compact.uniq
+      return one_of_schema(variations) if types.size > 1
 
       case types.first
-      when 'object' then merge_object_variations(non_empty)
-      when 'array' then merge_array_item_variations(non_empty)
-      else non_empty.first
+      when 'object' then merge_object_variations(variations)
+      when 'array' then merge_array_item_variations(variations)
+      else variations.first
       end
+    end
+
+    def with_nullable_from(variations, merged)
+      variations.any? { |v| v[:nullable] } ? merged.merge(nullable: true) : merged
     end
 
     def merge_non_object_item_variations(schemas)
@@ -136,7 +146,9 @@ class << RSpec::OpenAPI::SchemaBuilder
     # entries, recurse into objects and arrays, and combine divergent types into
     # oneOf. Scalar variations of a single type collapse to the first schema.
     def merge_multi(prop_variations)
-      return { oneOf: flatten_one_of(prop_variations) } if prop_variations.any? { |p| p.key?(:oneOf) }
+      if prop_variations.any? { |p| p.key?(:oneOf) }
+        return with_nullable_from(prop_variations, merge_one_of_variations(prop_variations))
+      end
 
       prop_variations = widen_integers(prop_variations)
       prop_types = prop_variations.map { |p| p[:type] }.compact.uniq
@@ -149,11 +161,9 @@ class << RSpec::OpenAPI::SchemaBuilder
       end
     end
 
-    def merge_one_of_variations(variations, nullable:)
+    def merge_one_of_variations(variations)
       alternatives = merge_structured_alternatives(widen_integers(flatten_one_of(variations)))
-      merged = alternatives.size == 1 ? alternatives.first.dup : { oneOf: alternatives }
-      merged[:nullable] = true if nullable
-      merged
+      alternatives.size == 1 ? alternatives.first.dup : { oneOf: alternatives }
     end
 
     def merge_structured_alternatives(alternatives)
