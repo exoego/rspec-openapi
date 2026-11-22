@@ -15,7 +15,9 @@ class << RSpec::OpenAPI::SchemaBuilder
       non_empty = widen_integers(variations.reject(&:empty?))
       return {} if non_empty.empty?
       return non_empty.first if non_empty.size == 1
-      return merge_one_of_variations(non_empty) if non_empty.any? { |v| v.key?(:oneOf) }
+      if non_empty.any? { |v| v.key?(:oneOf) }
+        return merge_one_of_variations(non_empty, nullable: variations.any? { |v| v[:nullable] })
+      end
 
       types = non_empty.map { |v| v[:type] }.compact.uniq
       return one_of_schema(non_empty) if types.size > 1
@@ -147,10 +149,10 @@ class << RSpec::OpenAPI::SchemaBuilder
       end
     end
 
-    def merge_one_of_variations(variations)
+    def merge_one_of_variations(variations, nullable:)
       alternatives = merge_structured_alternatives(widen_integers(flatten_one_of(variations)))
       merged = alternatives.size == 1 ? alternatives.first.dup : { oneOf: alternatives }
-      merged[:nullable] = true if variations.any? { |v| v[:nullable] }
+      merged[:nullable] = true if nullable
       merged
     end
 

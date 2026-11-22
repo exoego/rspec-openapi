@@ -58,6 +58,24 @@ RSpec.describe 'schema builder spec' do
         .to eq(oneOf: [{ type: 'boolean' }, { type: 'string' }], nullable: true)
     end
 
+    it 'keeps nullable carried only by an integer variation that a number widens away' do
+      expect(path_items_schema([[1, nil], [2.5], ['a', true]]))
+        .to eq(oneOf: [{ type: 'boolean' }, { type: 'number', format: 'float' }, { type: 'string' }], nullable: true)
+    end
+
+    it 'merges object alternatives into one' do
+      expect(path_items_schema([[{ a: 1 }, true], [{ b: 'x' }]])).to eq(
+        oneOf: [
+          { type: 'boolean' },
+          {
+            type: 'object',
+            properties: { a: { type: 'integer', nullable: true }, b: { type: 'string', nullable: true } },
+            required: [],
+          },
+        ],
+      )
+    end
+
     it 'merges array alternatives into one so a recorded array matches exactly one' do
       expect(path_items_schema([[[1], true], [[2.5]]]))
         .to eq(oneOf: [{ type: 'array', items: { type: 'number', format: 'float' } }, { type: 'boolean' }])
