@@ -57,5 +57,10 @@ RSpec.describe 'schema builder spec' do
       expect(path_items_schema([['user', nil], ['billing', true]]))
         .to eq(oneOf: [{ type: 'boolean' }, { type: 'string' }], nullable: true)
     end
+
+    it 'merges array alternatives into one so a recorded array matches exactly one' do
+      expect(path_items_schema([[[1], true], [[2.5]]]))
+        .to eq(oneOf: [{ type: 'array', items: { type: 'number', format: 'float' } }, { type: 'boolean' }])
+    end
   end
 end

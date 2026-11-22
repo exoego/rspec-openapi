@@ -148,9 +148,16 @@ class << RSpec::OpenAPI::SchemaBuilder
     end
 
     def merge_one_of_variations(variations)
-      merged = { oneOf: widen_integers(flatten_one_of(variations)) }
+      alternatives = merge_structured_alternatives(widen_integers(flatten_one_of(variations)))
+      merged = alternatives.size == 1 ? alternatives.first.dup : { oneOf: alternatives }
       merged[:nullable] = true if variations.any? { |v| v[:nullable] }
       merged
+    end
+
+    def merge_structured_alternatives(alternatives)
+      alternatives.group_by { |alternative| alternative[:type] }.flat_map do |type, group|
+        ['array', 'object'].include?(type) && group.size > 1 ? [merge_variations(group)] : group
+      end
     end
 
     # Every integer is a number, so integers seen beside numbers are numbers.
