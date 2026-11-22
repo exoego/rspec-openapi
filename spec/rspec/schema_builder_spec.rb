@@ -30,4 +30,32 @@ RSpec.describe 'schema builder spec' do
         .to eq(type: 'object', additionalProperties: { type: 'string' })
     end
   end
+
+  describe 'scalar arrays merged across sibling array items when one already has a oneOf' do
+    def path_items_schema(paths)
+      record = RSpec::OpenAPI::Record.new(
+        http_method: 'GET', path: '/nodes', path_params: {}, query_params: {}, request_headers: [],
+        status: 200, response_body: { nodes: paths.map { |path| { path: path } } }, response_headers: [],
+        response_content_type: 'application/json', response_example_mode: :none,
+      )
+      schema = RSpec::OpenAPI::SchemaBuilder.build(record)
+      schema.dig(:paths, :'/nodes', :get, :responses, :'200', :content, :'application/json', :schema,
+                 :properties, :nodes, :items, :properties, :path, :items,)
+    end
+
+    it 'keeps the oneOf instead of taking the first variation' do
+      expect(path_items_schema([['user', 'details'], ['billing', true]]))
+        .to eq(oneOf: [{ type: 'boolean' }, { type: 'string' }])
+    end
+
+    it 'widens integer alternatives when a number alternative is present' do
+      expect(path_items_schema([[1, 'x'], [2.5]]))
+        .to eq(oneOf: [{ type: 'number', format: 'float' }, { type: 'string' }])
+    end
+
+    it 'keeps nullable when a merged variation is nullable' do
+      expect(path_items_schema([['user', nil], ['billing', true]]))
+        .to eq(oneOf: [{ type: 'boolean' }, { type: 'string' }], nullable: true)
+    end
+  end
 end

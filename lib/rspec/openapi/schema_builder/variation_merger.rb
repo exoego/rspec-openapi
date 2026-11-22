@@ -15,7 +15,7 @@ class << RSpec::OpenAPI::SchemaBuilder
       non_empty = widen_integers(variations.reject(&:empty?))
       return {} if non_empty.empty?
       return non_empty.first if non_empty.size == 1
-      return { oneOf: flatten_one_of(non_empty) } if non_empty.any? { |v| v.key?(:oneOf) }
+      return merge_one_of_variations(non_empty) if non_empty.any? { |v| v.key?(:oneOf) }
 
       types = non_empty.map { |v| v[:type] }.compact.uniq
       return one_of_schema(non_empty) if types.size > 1
@@ -145,6 +145,12 @@ class << RSpec::OpenAPI::SchemaBuilder
       when 'object' then merge_variations(prop_variations)
       else prop_variations.first.dup
       end
+    end
+
+    def merge_one_of_variations(variations)
+      merged = { oneOf: widen_integers(flatten_one_of(variations)) }
+      merged[:nullable] = true if variations.any? { |v| v[:nullable] }
+      merged
     end
 
     # Every integer is a number, so integers seen beside numbers are numbers.
