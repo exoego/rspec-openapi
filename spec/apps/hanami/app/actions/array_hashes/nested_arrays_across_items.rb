@@ -12,6 +12,7 @@ module HanamiTest
               {
                 "label" => "User details",
                 "path" => ["user", "details"],
+                "hints" => [nil],
                 "inputs" => [
                   {
                     "type" => "columns",
@@ -39,6 +40,7 @@ module HanamiTest
               {
                 "label" => "Billing details",
                 "path" => ["billing", true],
+                "hints" => [nil],
                 "inputs" => [
                   {
                     "type" => "columns",

@@ -455,6 +455,10 @@ paths:
                             oneOf:
                             - type: boolean
                             - type: string
+                        hints:
+                          type: array
+                          items:
+                            type: 'null'
                       required:
                       - label
                       - inputs
@@ -466,6 +470,8 @@ paths:
                   path:
                   - user
                   - details
+                  hints:
+                  -
                   inputs:
                   - type: columns
                     columns:
@@ -482,6 +488,8 @@ paths:
                   path:
                   - billing
                   - true
+                  hints:
+                  -
                   inputs:
                   - type: columns
                     columns:

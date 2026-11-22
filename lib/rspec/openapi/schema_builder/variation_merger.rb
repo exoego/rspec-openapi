@@ -162,8 +162,7 @@ class << RSpec::OpenAPI::SchemaBuilder
     end
 
     def merge_one_of_variations(variations)
-      alternatives = merge_structured_alternatives(widen_integers(flatten_one_of(variations)))
-      alternatives.size == 1 ? alternatives.first.dup : { oneOf: alternatives }
+      { oneOf: merge_structured_alternatives(widen_integers(flatten_one_of(variations))) }
     end
 
     def merge_structured_alternatives(alternatives)

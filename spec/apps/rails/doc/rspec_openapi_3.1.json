@@ -776,6 +776,12 @@
                                 }
                               ]
                             }
+                          },
+                          "hints": {
+                            "type": "array",
+                            "items": {
+                              "type": "null"
+                            }
                           }
                         },
                         "required": [
@@ -796,6 +802,9 @@
                       "path": [
                         "user",
                         "details"
+                      ],
+                      "hints": [
+                        null
                       ],
                       "inputs": [
                         {
@@ -826,6 +835,9 @@
                       "path": [
                         "billing",
                         true
+                      ],
+                      "hints": [
+                        null
                       ],
                       "inputs": [
                         {

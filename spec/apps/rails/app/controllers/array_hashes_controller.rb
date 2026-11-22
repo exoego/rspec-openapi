@@ -267,6 +267,7 @@ class ArrayHashesController < ApplicationController
         {
           "label" => "User details",
           "path" => ["user", "details"],
+          "hints" => [nil],
           "inputs" => [
             {
               "type" => "columns",
@@ -294,6 +295,7 @@ class ArrayHashesController < ApplicationController
         {
           "label" => "Billing details",
           "path" => ["billing", true],
+          "hints" => [nil],
           "inputs" => [
             {
               "type" => "columns",
