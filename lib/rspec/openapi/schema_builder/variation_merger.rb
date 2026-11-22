@@ -15,6 +15,7 @@ class << RSpec::OpenAPI::SchemaBuilder
       non_empty = widen_integers(variations.reject(&:empty?))
       return {} if non_empty.empty?
       return non_empty.first if non_empty.size == 1
+      return { oneOf: flatten_one_of(non_empty) } if non_empty.any? { |v| v.key?(:oneOf) }
 
       types = non_empty.map { |v| v[:type] }.compact.uniq
       return one_of_schema(non_empty) if types.size > 1

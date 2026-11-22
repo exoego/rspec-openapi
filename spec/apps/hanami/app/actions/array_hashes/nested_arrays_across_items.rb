@@ -11,6 +11,7 @@ module HanamiTest
             "form" => [
               {
                 "label" => "User details",
+                "path" => ["user", "details"],
                 "inputs" => [
                   {
                     "type" => "columns",
@@ -37,6 +38,7 @@ module HanamiTest
               },
               {
                 "label" => "Billing details",
+                "path" => ["billing", true],
                 "inputs" => [
                   {
                     "type" => "columns",

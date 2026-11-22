@@ -266,6 +266,7 @@ class ArrayHashesController < ApplicationController
       "form" => [
         {
           "label" => "User details",
+          "path" => ["user", "details"],
           "inputs" => [
             {
               "type" => "columns",
@@ -292,6 +293,7 @@ class ArrayHashesController < ApplicationController
         },
         {
           "label" => "Billing details",
+          "path" => ["billing", true],
           "inputs" => [
             {
               "type" => "columns",

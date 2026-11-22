@@ -708,6 +708,19 @@
                                 "type"
                               ]
                             }
+                          },
+                          "path": {
+                            "type": "array",
+                            "items": {
+                              "oneOf": [
+                                {
+                                  "type": "boolean"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            }
                           }
                         },
                         "required": [
@@ -725,6 +738,10 @@
                   "form": [
                     {
                       "label": "User details",
+                      "path": [
+                        "user",
+                        "details"
+                      ],
                       "inputs": [
                         {
                           "type": "columns",
@@ -751,6 +768,10 @@
                     },
                     {
                       "label": "Billing details",
+                      "path": [
+                        "billing",
+                        true
+                      ],
                       "inputs": [
                         {
                           "type": "columns",

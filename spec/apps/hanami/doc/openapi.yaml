@@ -412,6 +412,12 @@ paths:
                                 nullable: true
                             required:
                             - type
+                        path:
+                          type: array
+                          items:
+                            oneOf:
+                            - type: boolean
+                            - type: string
                       required:
                       - label
                       - inputs
@@ -420,6 +426,9 @@ paths:
               example:
                 form:
                 - label: User details
+                  path:
+                  - user
+                  - details
                   inputs:
                   - type: columns
                     columns:
@@ -433,6 +442,9 @@ paths:
                     validations:
                       presence: true
                 - label: Billing details
+                  path:
+                  - billing
+                  - true
                   inputs:
                   - type: columns
                     columns:
