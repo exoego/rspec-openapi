@@ -131,8 +131,6 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
 
     if in_schema && one_of_needed?(base[key], value)
       merge_one_of!(base[key], value)
-    elsif value.key?(:oneOf)
-      base[key] = value
     else
       merge_schema!(base[key], value, in_schema: in_schema)
     end

@@ -128,8 +128,6 @@ class << RSpec::OpenAPI::SchemaBuilder
           merge_multi(prop_variations)
         end
 
-      return merged unless merged.is_a?(Hash)
-
       # In recursive mode, multi-variation merges also flag nullable when the key
       # only appeared in some of the source variations.
       needs_nullable =
