@@ -45,7 +45,7 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
 
     # A full run decides readOnly anew, so a property no request sends any
     # more stops being held at false.
-    RSpec::OpenAPI::HashHelper.each_schema(base.dig(:components, :schemas)) { |schema| delete_false_read_only!(schema) }
+    each_component_schema(base) { |schema| delete_false_read_only!(schema) }
 
     base
   end
@@ -69,20 +69,25 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
   # would flip it back to true. Inline under paths each side has its own
   # schema, so there it says nothing.
   def cleanup_schemas!(base)
-    RSpec::OpenAPI::HashHelper.each_schema(base.dig(:components, :schemas)) do |schema|
+    each_component_schema(base) do |schema, in_list|
       delete_temporary_fields!(schema)
       delete_empty_required!(schema)
-      add_null_to_enum!(schema)
+      add_null_to_enum!(schema) unless in_list
     end
-    RSpec::OpenAPI::HashHelper.each_schema(base[:paths]) do |schema|
+    RSpec::OpenAPI::HashHelper.each_schema(base[:paths]) do |schema, in_list|
       delete_temporary_fields!(schema)
       delete_empty_required!(schema)
       delete_false_read_only!(schema)
-      add_null_to_enum!(schema)
+      add_null_to_enum!(schema) unless in_list
     end
   end
 
   private
+
+  def each_component_schema(base, &block)
+    schemas = base.dig(:components, :schemas)
+    schemas.each_value { |schema| RSpec::OpenAPI::HashHelper.each_schema(schema, &block) } if schemas.is_a?(Hash)
+  end
 
   # The description of a response whose example is not recorded is provisional,
   # so it stays only where no documented test set one.
@@ -106,7 +111,8 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
   end
 
   # nullable does not loosen an enum, so the null it allows must be listed too.
-  # The merge takes the enum from the record, so this runs on every write.
+  # The merge takes the enum from the record, so this runs on every write. A
+  # variant of a oneOf is left alone, since a sibling may be the one for null.
   def add_null_to_enum!(schema)
     return unless schema[:nullable] == true && schema[:enum].is_a?(Array) && !schema[:enum].include?(nil)
 

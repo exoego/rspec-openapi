@@ -32,3 +32,44 @@ paths:
                 - string
                 - integer
                 - 'null'
+        '410':
+          description: hand-written null variant beside an enum
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type:
+                  - string
+                  - 'null'
+                  enum:
+                  - a
+                - type: 'null'
+                  description: Cleared
+        '422':
+          description: component named like a keyword
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/enum"
+        default:
+          description: response named like a keyword
+          content:
+            application/json:
+              schema:
+                type:
+                - string
+                - 'null'
+                enum:
+                - a
+      x-options:
+        nullable: true
+        enum:
+        - a
+components:
+  schemas:
+    enum:
+      type:
+      - string
+      - 'null'
+      enum:
+      - a

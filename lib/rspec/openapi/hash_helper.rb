@@ -43,22 +43,27 @@ class << RSpec::OpenAPI::HashHelper = Object.new
   # named `type` or `nullable` would be silently mangled.
   DATA_KEYS = [:example, :examples, :default, :enum, :const].freeze
 
-  # Yields every hash in obj outside the data subtrees in DATA_KEYS, each after
-  # its descendants. The entries of a `properties` map are schemas whatever
-  # their names, so the map itself is skipped and each entry is yielded.
-  def each_schema(obj, &block)
+  # Keys of maps whose entries the document names, so an entry named `default`
+  # or `nullable` is never taken for a keyword.
+  NAMED_MAP_KEYS = [:properties, :schemas, :responses].freeze
+
+  # Yields every hash in obj outside the data subtrees in DATA_KEYS and the
+  # `x-` extensions, each after its descendants, with whether it is an element
+  # of a list such as a oneOf. The entries of a map in NAMED_MAP_KEYS are
+  # yielded whatever their names, and the map itself is not.
+  def each_schema(obj, in_list: false, &block)
     case obj
     when Hash
       obj.each do |key, value|
-        if key == :properties && value.is_a?(Hash)
-          value.each_value { |property| each_schema(property, &block) }
-        elsif !DATA_KEYS.include?(key)
+        if NAMED_MAP_KEYS.include?(key) && value.is_a?(Hash)
+          value.each_value { |entry| each_schema(entry, &block) }
+        elsif !DATA_KEYS.include?(key) && !key.start_with?('x-')
           each_schema(value, &block)
         end
       end
-      yield obj
+      yield obj, in_list
     when Array
-      obj.each { |value| each_schema(value, &block) }
+      obj.each { |value| each_schema(value, in_list: true, &block) }
     end
   end
 
