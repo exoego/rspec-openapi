@@ -449,6 +449,16 @@ paths:
                                 - presence
                             required:
                             - type
+                        path:
+                          type: array
+                          items:
+                            oneOf:
+                            - type: boolean
+                            - type: string
+                        hints:
+                          type: array
+                          items:
+                            type: 'null'
                       required:
                       - label
                       - inputs
@@ -457,6 +467,11 @@ paths:
               example:
                 form:
                 - label: User details
+                  path:
+                  - user
+                  - details
+                  hints:
+                  -
                   inputs:
                   - type: columns
                     columns:
@@ -470,6 +485,11 @@ paths:
                     validations:
                       presence: true
                 - label: Billing details
+                  path:
+                  - billing
+                  - true
+                  hints:
+                  -
                   inputs:
                   - type: columns
                     columns:

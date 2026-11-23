@@ -708,6 +708,25 @@
                                 "type"
                               ]
                             }
+                          },
+                          "path": {
+                            "type": "array",
+                            "items": {
+                              "oneOf": [
+                                {
+                                  "type": "boolean"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            }
+                          },
+                          "hints": {
+                            "type": "array",
+                            "items": {
+                              "nullable": true
+                            }
                           }
                         },
                         "required": [
@@ -725,6 +744,13 @@
                   "form": [
                     {
                       "label": "User details",
+                      "path": [
+                        "user",
+                        "details"
+                      ],
+                      "hints": [
+                        null
+                      ],
                       "inputs": [
                         {
                           "type": "columns",
@@ -751,6 +777,13 @@
                     },
                     {
                       "label": "Billing details",
+                      "path": [
+                        "billing",
+                        true
+                      ],
+                      "hints": [
+                        null
+                      ],
                       "inputs": [
                         {
                           "type": "columns",
