@@ -116,10 +116,10 @@ paths:
                             properties:
                               value:
                                 oneOf:
-                                - type: 'null'
-                                - type: string
                                 - type: array
                                   items: {}
+                                - type: 'null'
+                                - type: string
                               options:
                                 oneOf:
                                 - type: array
@@ -384,6 +384,16 @@ paths:
                       properties:
                         label:
                           type: string
+                        path:
+                          type: array
+                          items:
+                            oneOf:
+                            - type: boolean
+                            - type: string
+                        hints:
+                          type: array
+                          items:
+                            type: 'null'
                         inputs:
                           type: array
                           items:
@@ -449,18 +459,10 @@ paths:
                                 - presence
                             required:
                             - type
-                        path:
-                          type: array
-                          items:
-                            oneOf:
-                            - type: boolean
-                            - type: string
-                        hints:
-                          type: array
-                          items:
-                            type: 'null'
                       required:
                       - label
+                      - path
+                      - hints
                       - inputs
                 required:
                 - form
