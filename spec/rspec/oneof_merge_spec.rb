@@ -54,7 +54,7 @@ RSpec.describe 'oneOf merging across examples' do
     expect(response_schema('/oneof_merge/typeless', 'properties', 'values', 'items'))
       .to eq('oneOf' => one_of, 'description' => 'Set once the user picks one')
     expect(response_schema('/oneof_merge/typeless_enum', 'properties', 'values', 'items'))
-      .to eq('oneOf' => one_of, 'enum' => [1, 'x'])
+      .to eq('oneOf' => one_of, 'enum' => [1, 'x', nil])
   end
 
   it 'merges the two shapes of a shared component into a oneOf, whichever endpoint comes first' do
@@ -170,5 +170,49 @@ RSpec.describe 'oneOf merging across examples' do
     expect(response_schema('/oneof_merge/arrays_then_string', 'properties', 'tags')).to eq(
       'oneOf' => [{ 'type' => 'array', 'items' => { 'type' => 'integer' } }, { 'type' => 'string' }],
     )
+  end
+
+  it 'merges array items of one example into one array variant' do
+    numbers = { 'type' => 'array', 'items' => { 'type' => 'number', 'format' => 'float' } }
+
+    expect(response_schema('/oneof_merge/overlapping_arrays', 'properties', 'values', 'items'))
+      .to eq('oneOf' => [numbers, { 'type' => 'boolean' }])
+  end
+
+  it 'keeps a hand-written $ref of array items and records the oneOf in its component' do
+    expect(response_schema('/oneof_merge/path_segments', 'properties', 'nodes', 'items', 'properties', 'path', 'items'))
+      .to eq('$ref' => '#/components/schemas/PathSegment')
+    expect(committed.dig('components', 'schemas', 'PathSegment'))
+      .to eq('oneOf' => [{ 'type' => 'boolean' }, { 'type' => 'string' }])
+  end
+
+  it 'gives a nil item under an enum no variant of its own' do
+    enum = ['a', 'b', true]
+    items = ->(path) { response_schema(path, 'properties', 'nodes', 'items', 'properties', 'p', 'items') }
+
+    expect(items.call('/oneof_merge/enum_mixed_items')).to eq('oneOf' => [
+      { 'type' => 'boolean', 'enum' => enum }, { 'type' => 'null' }, { 'type' => 'string', 'enum' => enum },
+    ])
+    expect(items.call('/oneof_merge/enum_nil_first')).to eq('type' => ['string', 'null'], 'enum' => [*enum, nil])
+  end
+
+  it 'lists null in the enum of a property that may be null' do
+    expect(response_schema('/oneof_merge/enum_null_later', 'properties', 's'))
+      .to eq('type' => ['string', 'null'], 'enum' => ['a', 'b', nil])
+  end
+
+  it 'records the items of an array of nils as null' do
+    properties = response_schema('/oneof_merge/null_items', 'properties')
+
+    expect(properties.dig('tags', 'items')).to eq('type' => 'null')
+    expect(properties.dig('nodes', 'items', 'properties', 'a', 'items')).to eq('type' => ['string', 'null'])
+  end
+
+  it 'keeps nullable that only a later sibling or a widened integer carries' do
+    properties = response_schema('/oneof_merge/nullable_siblings', 'properties')
+    items = ->(name) { properties.dig(name, 'items', 'properties', 'path', 'items') }
+
+    expect(items.call('strings')).to eq('type' => ['string', 'null'])
+    expect(items.call('numbers')).to eq('type' => ['number', 'null'], 'format' => 'float')
   end
 end

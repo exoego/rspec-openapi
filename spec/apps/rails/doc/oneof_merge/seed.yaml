@@ -260,6 +260,30 @@ paths:
                       - x
                 required:
                 - values
+  "/oneof_merge/path_segments":
+    get:
+      summary: GET /oneof_merge/path_segments
+      responses:
+        '200':
+          description: seed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nodes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        path:
+                          type: array
+                          items:
+                            "$ref": "#/components/schemas/PathSegment"
+                      required:
+                      - path
+                required:
+                - nodes
 components:
   schemas:
     FlagSetting:
@@ -269,6 +293,8 @@ components:
           type: boolean
       required:
       - value
+    PathSegment:
+      type: string
     PrefSetting:
       type: object
       properties:

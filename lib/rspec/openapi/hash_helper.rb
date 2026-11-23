@@ -43,22 +43,27 @@ class << RSpec::OpenAPI::HashHelper = Object.new
   # named `type` or `nullable` would be silently mangled.
   DATA_KEYS = [:example, :examples, :default, :enum, :const].freeze
 
-  # Yields every hash in obj outside the data subtrees in DATA_KEYS, each after
-  # its descendants. The entries of a `properties` map are schemas whatever
-  # their names, so the map itself is skipped and each entry is yielded.
-  def each_schema(obj, &block)
+  # Keys of maps whose entries the document names, so an entry named like
+  # `default`, `nullable` or `x-mode` is never taken for a keyword.
+  NAMED_MAP_KEYS = [:properties, :schemas, :headers].freeze
+
+  # Yields every hash in obj outside the data subtrees in DATA_KEYS and the
+  # `x-` extensions, each after its descendants, with the key it sits under,
+  # directly or as a list element. The entries of a map in NAMED_MAP_KEYS are
+  # yielded whatever their names, and the map itself is not.
+  def each_schema(obj, under: nil, &block)
     case obj
     when Hash
       obj.each do |key, value|
-        if key == :properties && value.is_a?(Hash)
-          value.each_value { |property| each_schema(property, &block) }
-        elsif !DATA_KEYS.include?(key)
-          each_schema(value, &block)
+        if NAMED_MAP_KEYS.include?(key) && value.is_a?(Hash)
+          value.each_value { |entry| each_schema(entry, &block) }
+        elsif walk?(key, under)
+          each_schema(value, under: key, &block)
         end
       end
-      yield obj
+      yield obj, under
     when Array
-      obj.each { |value| each_schema(value, &block) }
+      obj.each { |value| each_schema(value, under: under, &block) }
     end
   end
 
@@ -74,6 +79,11 @@ class << RSpec::OpenAPI::HashHelper = Object.new
   private_constant :SELECTOR_PARTS
 
   private
+
+  # A response may be named `default`, and the responses may carry extensions.
+  def walk?(key, under)
+    !key.start_with?('x-') && (under == :responses || !DATA_KEYS.include?(key))
+  end
 
   def split_selector(selector)
     SELECTOR_PARTS[selector]

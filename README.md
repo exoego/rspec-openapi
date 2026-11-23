@@ -693,6 +693,9 @@ it 'creates a task', openapi: {
 end
 ```
 
+When a value with an enum is also recorded as `null`, the enum gets `null` too. A null type or `nullable: true`
+does not allow a value the enum leaves out.
+
 ### Dynamic-key Object Support (`additionalProperties`)
 
 When an endpoint returns (or accepts) an object whose keys are not part of its
