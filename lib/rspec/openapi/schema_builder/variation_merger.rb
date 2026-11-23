@@ -42,13 +42,9 @@ class << RSpec::OpenAPI::SchemaBuilder
 
         next if prop_variations.empty? && !has_nullable
 
-        merged = if prop_variations.empty?
-                   agreed_keys(all.compact, [])
-                 else
-                   merge_single_property(prop_variations, has_nullable,
-                                         variations_total: variations.size,
-                                         allow_recursive_merge: allow_recursive_merge,)
-                 end
+        merged = merge_single_property(prop_variations, has_nullable,
+                                       variations_total: variations.size,
+                                       allow_recursive_merge: allow_recursive_merge,)
         merged[:readOnly] = read_only unless read_only.nil?
         merged_props[key] = merged
       end
@@ -85,7 +81,7 @@ class << RSpec::OpenAPI::SchemaBuilder
     end
 
     def merge_object_variations(variations)
-      merged = agreed_keys(variations, [:type, :properties, :required, :additionalProperties])
+      merged = { type: 'object' }
       if variations.any? { |v| v.key?(:properties) }
         merged[:properties] = merge_property_variations(variations, allow_recursive_merge: true)
         merged[:required] = variations.map { |v| v[:required] || [] }.reduce(:&) || []
@@ -96,20 +92,15 @@ class << RSpec::OpenAPI::SchemaBuilder
       merged
     end
 
-    # Merge multiple array schemas by merging their `items` schemas.
+    # Merge multiple array schemas by merging their `items` schemas. A constraint
+    # seen in a single sample must not spread to its siblings.
     def merge_array_item_variations(variations)
-      merged = agreed_keys(variations, [:type, :items])
+      merged = variations.first.select do |key, value|
+        key == :type || key == :items ||
+          variations.all? { |variation| variation.key?(key) && variation[key] == value }
+      end
       merged[:items] = merge_variations(variations.map { |v| v[:items] }.compact)
       merged
-    end
-
-    # A constraint seen in a single sample must not spread to its siblings. The
-    # rebuilt keys stay where the first variation has them, so the key order
-    # matches a single sample.
-    def agreed_keys(variations, rebuilt)
-      variations.first.select do |key, value|
-        rebuilt.include?(key) || variations.all? { |variation| variation.key?(key) && variation[key] == value }
-      end
     end
 
     def property_keys(variations)
@@ -128,13 +119,14 @@ class << RSpec::OpenAPI::SchemaBuilder
       end
     end
 
-    # A nil builds `{ nullable: true }`, plus the enum of its path when that enum
-    # lists arrays.
+    # A nil builds `{ nullable: true }`.
     def nullable_only?(schema)
       schema[:nullable] == true && !schema.key?(:type) && !schema.key?(:oneOf)
     end
 
     def merge_single_property(prop_variations, has_nullable, variations_total:, allow_recursive_merge:)
+      return { nullable: true } if prop_variations.empty?
+
       merged =
         if prop_variations.size == 1
           prop_variations.first.dup

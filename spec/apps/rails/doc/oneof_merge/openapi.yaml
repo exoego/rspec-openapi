@@ -114,33 +114,6 @@ paths:
                 - s
               example:
                 s: a
-  "/oneof_merge/enum_matrix":
-    get:
-      summary: GET /oneof_merge/enum_matrix
-      tags: []
-      responses:
-        '200':
-          description: records an array of arrays
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  matrix:
-                    type: array
-                    enum:
-                    - - - new
-                    - - - new
-                      - - sale
-                    items:
-                      type: array
-                      items:
-                        type: string
-                required:
-                - matrix
-              example:
-                matrix:
-                - - new
   "/oneof_merge/enum_mixed_items":
     get:
       summary: GET /oneof_merge/enum_mixed_items
@@ -247,110 +220,6 @@ paths:
                 - s
               example:
                 s:
-  "/oneof_merge/enum_null_sibling_tags":
-    get:
-      summary: GET /oneof_merge/enum_null_sibling_tags
-      tags: []
-      responses:
-        '200':
-          description: records null in every sibling object
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  groups:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        tags:
-                          enum:
-                          - []
-                          - - new
-                          - - sale
-                          -
-                          type: 'null'
-                      required:
-                      - tags
-                required:
-                - groups
-              example:
-                groups:
-                - tags:
-                - tags:
-  "/oneof_merge/enum_sibling_meta":
-    get:
-      summary: GET /oneof_merge/enum_sibling_meta
-      tags: []
-      responses:
-        '200':
-          description: records objects in sibling objects
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  groups:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        meta:
-                          type: object
-                          enum:
-                          - a: 1
-                          - a: 2
-                          properties:
-                            a:
-                              type: integer
-                          required:
-                          - a
-                      required:
-                      - meta
-                required:
-                - groups
-              example:
-                groups:
-                - meta:
-                    a: 1
-                - meta:
-                    a: 2
-  "/oneof_merge/enum_sibling_tags":
-    get:
-      summary: GET /oneof_merge/enum_sibling_tags
-      tags: []
-      responses:
-        '200':
-          description: records arrays in sibling objects
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  groups:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        tags:
-                          type: array
-                          enum:
-                          - []
-                          - - new
-                          - - sale
-                          items:
-                            type: string
-                      required:
-                      - tags
-                required:
-                - groups
-              example:
-                groups:
-                - tags:
-                  - new
-                - tags:
-                  - sale
   "/oneof_merge/enum_sort":
     get:
       summary: GET /oneof_merge/enum_sort
@@ -410,31 +279,6 @@ paths:
                 - tags
               example:
                 tags:
-  "/oneof_merge/enum_whole_tags":
-    get:
-      summary: GET /oneof_merge/enum_whole_tags
-      tags: []
-      responses:
-        '200':
-          description: records an array
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  tags:
-                    type: array
-                    enum:
-                    -
-                    - []
-                    - - new
-                    items:
-                      type: string
-                required:
-                - tags
-              example:
-                tags:
-                - new
   "/oneof_merge/flag_boolean":
     get:
       summary: GET /oneof_merge/flag_boolean

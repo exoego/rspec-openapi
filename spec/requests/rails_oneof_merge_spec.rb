@@ -71,24 +71,6 @@ RSpec.describe 'oneOf merging across examples', type: :request do
     it('records null') { record '/oneof_merge/enum_tags', 'null' }
   end
 
-  describe 'an array whose path has an enum of whole arrays', openapi: {
-    response_enum: {
-      'tags' => [nil, [], ['new']],
-      'matrix' => [[['new']], [['new'], ['sale']]],
-      'groups.tags' => [[], ['new'], ['sale']],
-    },
-  } do
-    it('records an array') { record '/oneof_merge/enum_whole_tags', 'tags' }
-    it('records an array of arrays') { record '/oneof_merge/enum_matrix', 'matrix' }
-    it('records arrays in sibling objects') { record '/oneof_merge/enum_sibling_tags', 'groups' }
-    it('records null in every sibling object') { record '/oneof_merge/enum_null_sibling_tags', 'groups' }
-  end
-
-  describe 'an object whose path has an enum',
-           openapi: { response_enum: { 'groups.meta' => [{ 'a' => 1 }, { 'a' => 2 }] } } do
-    it('records objects in sibling objects') { record '/oneof_merge/enum_sibling_meta', 'groups' }
-  end
-
   describe 'a repeated query parameter whose name has an enum',
            openapi: { request_enum: { 'sort' => ['name', '-name'] } } do
     it('records it without a value') { record '/oneof_merge/enum_sort', 'ok', query: 'sort' }

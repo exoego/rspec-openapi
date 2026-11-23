@@ -42,77 +42,20 @@ RSpec.describe 'schema builder spec' do
     end
   end
 
-  describe 'array-level keys merged across variations' do
-    let(:merger) { RSpec::OpenAPI::SchemaBuilder.singleton_class.const_get(:VariationMerger) }
-
-    # Fresh objects each time, so an expectation never shares one with the input.
-    def array_enum
-      [[], ['new'], ['sale']]
-    end
-
-    def string_array(**keys)
-      { type: 'array', items: { type: 'string' }, **keys }
-    end
-
-    def response_properties(body, enum = nil)
+  describe 'arrays merged across sibling items' do
+    it 'keeps the type first when a nullable array merges across siblings' do
+      rows = [{ list: [{ c: [1] }, { c: nil }] }, { list: [{ c: [2] }, { c: nil }] }]
       record = RSpec::OpenAPI::Record.new(
         http_method: 'GET', path: '/products', path_params: {}, query_params: {}, request_headers: [],
         status: 200, response_headers: [], response_content_type: 'application/json',
-        response_example_mode: :none, response_body: body, response_enum: enum,
+        response_example_mode: :none, response_body: { rows: rows },
       )
-      RSpec::OpenAPI::SchemaBuilder.build(record).dig(
-        :paths, :'/products', :get, :responses, :'200', :content, :'application/json', :schema, :properties,
+      c = RSpec::OpenAPI::SchemaBuilder.build(record).dig(
+        :paths, :'/products', :get, :responses, :'200', :content, :'application/json', :schema,
+        :properties, :rows, :items, :properties, :list, :items, :properties, :c,
       )
-    end
-
-    def tags_schema(item_count)
-      body = { groups: [{ tags: ['new'] }, { tags: ['sale'] }].first(item_count) }
-      response_properties(body, { 'groups.tags' => array_enum }).dig(:groups, :items, :properties, :tags)
-    end
-
-    it 'keeps the array enum with one or multiple sibling items, after the type' do
-      [1, 2].each do |item_count|
-        expect(tags_schema(item_count)).to eq(string_array(enum: array_enum))
-        expect(tags_schema(item_count).keys).to eq([:type, :enum, :items])
-      end
-    end
-
-    it 'keeps the type first when a nullable array merges across siblings' do
-      rows = [{ list: [{ c: [1] }, { c: nil }] }, { list: [{ c: [2] }, { c: nil }] }]
-      c = response_properties({ rows: rows }).dig(:rows, :items, :properties, :list, :items, :properties, :c)
 
       expect(c.keys).to eq([:type, :items, :nullable])
-    end
-
-    it 'keeps common keywords while merging empty and populated items' do
-      annotated = -> { string_array(enum: array_enum, uniqueItems: false, default: nil) }
-      variations = [annotated.call, annotated.call.merge(items: {})]
-
-      variations.permutation.each do |schemas|
-        expect(merger.merge_variations(schemas)).to eq(annotated.call)
-      end
-    end
-
-    it 'drops conflicting enums in either order' do
-      variations = [
-        string_array.merge(enum: [['new']]),
-        string_array.merge(enum: [['sale']]),
-      ]
-
-      variations.permutation.each do |schemas|
-        expect(merger.merge_variations(schemas)).to eq(string_array)
-      end
-    end
-
-    it 'drops keywords missing from one variation in either order' do
-      variations = [
-        string_array.merge(enum: array_enum, uniqueItems: false, default: nil),
-        string_array,
-      ]
-
-      variations.permutation.each do |schemas|
-        expect(merger.merge_variations(schemas)).to eq(string_array)
-      end
     end
   end
 
@@ -138,13 +81,6 @@ RSpec.describe 'schema builder spec' do
 
       expect(operation.dig(:responses, :'200', :content, :'application/json', :schema, :properties, :tags))
         .to eq(type: 'array', items: { type: 'string', enum: ['new', 'sale'] })
-    end
-
-    it 'keeps an enum of whole arrays on the array, not its items' do
-      operation = build(response_body: { tags: ['new'] }, response_enum: { 'tags' => [[], ['new']] })
-
-      expect(operation.dig(:responses, :'200', :content, :'application/json', :schema, :properties, :tags))
-        .to eq(type: 'array', enum: [[], ['new']], items: { type: 'string' })
     end
   end
 
