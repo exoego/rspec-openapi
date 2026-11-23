@@ -670,6 +670,10 @@ it 'sorts tasks', openapi: {
 end
 ```
 
+The parameter is recorded as `sort`, without the brackets. A client generated from the document sends it the OpenAPI
+default way, `sort=name&sort=-name`, and Rack reads that as the last value alone. Make the client send
+`sort[]=name&sort[]=-name`.
+
 An enum that lists arrays, such as `[[], ['new']]`, stays on the array instead.
 
 rspec-openapi 0.36.0 and earlier put the enum on both the array and its items. Merging keeps keys the new schema doesn't
