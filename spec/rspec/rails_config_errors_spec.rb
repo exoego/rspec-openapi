@@ -18,8 +18,11 @@ RSpec.describe 'rails request spec, configuration errors' do
                 '(example: invalid metadata aborts on a read_only value that is not a name)'
       expect(out + err).to include(message)
       # Hash#inspect changed in Ruby 3.4, so only the parts around it are matched.
-      expect(out + err).to include('response_enum must be a Hash of property paths to Arrays of values, got {')
+      message = 'response_enum must be a Hash of property paths to Arrays of scalar values, got {'
+      expect(out + err).to include(message)
       expect(out + err).to include('"draft"} (example: invalid metadata aborts on an enum that is not an Array)')
+      expect(out + err)
+        .to include('[["draft", 0], ["published", 1]]} (example: invalid metadata aborts on an enum that lists pairs)')
     end
   end
 

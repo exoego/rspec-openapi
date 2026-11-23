@@ -107,13 +107,19 @@ class SharedExtractor
   def self.normalize_enum(metadata, name, example)
     enum_hash = metadata[name]
     return nil if enum_hash.nil? || enum_hash == {}
-    unless enum_hash.is_a?(Hash) && enum_hash.each_value.all?(Array)
-      raise ArgumentError, "#{name} must be a Hash of property paths to Arrays of values, " \
+    unless enum_hash.is_a?(Hash) && enum_hash.each_value.all? { |values| scalars?(values) }
+      raise ArgumentError, "#{name} must be a Hash of property paths to Arrays of scalar values, " \
                            "got #{enum_hash.inspect}#{example_context(example)}"
     end
 
     # Convert all keys to strings for consistent lookup
     enum_hash.transform_keys(&:to_s)
+  end
+
+  # Pairs such as `Order.statuses.to_a` or `pluck(:name, :id)` are a mistake for
+  # the values alone, and would allow nothing.
+  def self.scalars?(values)
+    values.is_a?(Array) && values.none? { |value| value.is_a?(Array) || value.is_a?(Hash) }
   end
 
   def self.normalize_additional_properties(hash)
