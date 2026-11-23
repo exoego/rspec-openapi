@@ -19,6 +19,13 @@ RSpec.describe 'objects merged across sibling array items', type: :request do
     expect(response).to have_http_status(:ok)
   end
 
+  it 'keeps a dictionary schema on array items', openapi: {
+    additional_properties: { 'products' => { type: 'object' } },
+  } do
+    get '/sibling_objects/dictionary_items'
+    expect(response).to have_http_status(:ok)
+  end
+
   it 'keeps the shared required keys of a hybrid object', openapi: {
     hybrid_additional_properties: { 'products.meta' => { type: 'string' } },
   } do

@@ -43,6 +43,11 @@ RSpec.describe 'objects merged across sibling array items' do
     )
   end
 
+  it 'gives dictionary array items no empty properties' do
+    expect(response_schema('/sibling_objects/dictionary_items').dig('properties', 'products', 'items'))
+      .to eq('type' => 'object', 'additionalProperties' => { 'type' => 'object' })
+  end
+
   it 'records required only alongside properties' do
     expect(meta_schema('/sibling_objects/hybrid')).to eq(
       'type' => 'object',

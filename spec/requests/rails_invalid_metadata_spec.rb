@@ -9,7 +9,7 @@ require 'rspec/rails'
 
 # `example_mode` only accepts a Symbol or String naming a mode, or a Hash of
 # :request/:response. `read_only` only accepts true, false, or property names.
-# An enum only maps property paths to Arrays.
+# An enum only maps property paths to Arrays of scalars.
 # Anything else aborts the example with a message naming both the value and
 # the example it came from, rather than recording something the user did not
 # ask for. The document is never written, so this spec points at a path under
@@ -34,6 +34,13 @@ RSpec.describe 'invalid metadata', type: :request do
   end
 
   it 'aborts on an enum that is not an Array', openapi: { response_enum: { 'status' => 'draft' } } do
+    get '/example_mode_single'
+    expect(response).to have_http_status(:ok)
+  end
+
+  it 'aborts on an enum that lists pairs', openapi: {
+    response_enum: { 'status' => [['draft', 0], ['published', 1]] },
+  } do
     get '/example_mode_single'
     expect(response).to have_http_status(:ok)
   end

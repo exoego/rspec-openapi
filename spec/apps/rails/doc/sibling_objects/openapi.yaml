@@ -80,6 +80,34 @@ paths:
                 - meta:
                     id: 2
                     b: x
+  "/sibling_objects/dictionary_items":
+    get:
+      summary: GET /sibling_objects/dictionary_items
+      tags: []
+      responses:
+        '200':
+          description: keeps a dictionary schema on array items
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  products:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties:
+                        type: object
+                required:
+                - products
+              example:
+                products:
+                - meta:
+                    id: 1
+                    a: 1
+                - meta:
+                    id: 2
+                    b: x
   "/sibling_objects/empty_override":
     get:
       summary: GET /sibling_objects/empty_override

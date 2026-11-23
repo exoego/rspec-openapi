@@ -119,7 +119,7 @@ class << RSpec::OpenAPI::SchemaBuilder
       end
     end
 
-    # A nil builds `{ nullable: true }`, plus the enum of its path when it has one.
+    # A nil builds `{ nullable: true }`.
     def nullable_only?(schema)
       schema[:nullable] == true && !schema.key?(:type) && !schema.key?(:oneOf)
     end

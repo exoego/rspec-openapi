@@ -9,7 +9,7 @@ class << RSpec::OpenAPI::SchemaBuilder
   # keyword_init would add a keyword hash to each. The path is only ever looked
   # up in the enum and additionalProperties maps of the record, so it is built
   # for a side of a record that holds one.
-  BuildContext = Struct.new(:record, :context, :path, :key, :lookups, :enum_taken) do
+  BuildContext = Struct.new(:record, :context, :path, :key, :lookups) do
     def self.root(record, context, path = nil, key = nil)
       lookups = record[ENUM_MEMBERS.fetch(context)] ||
                 OVERRIDE_MEMBERS.any? { |_kind, members| record[members.fetch(context)] }
@@ -26,10 +26,9 @@ class << RSpec::OpenAPI::SchemaBuilder
       path ? "#{path}.#{child_key}" : child_key.to_s
     end
 
-    # Items share the path and key of their array. Once an array takes the enum
-    # of that path, nothing inside it does.
-    def for_array_items(enum_taken)
-      self.class.new(record, context, path, key, lookups, enum_taken)
+    # Items take the format and enum of their array, so they share its path and key.
+    def for_array_items
+      self.class.new(record, context, path, key, lookups)
     end
   end
   private_constant :BuildContext
