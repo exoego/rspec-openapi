@@ -113,6 +113,11 @@ Rails.application.routes.draw do
       [200, { 'Content-Type' => 'application/x-ndjson' }, [%(\n\n)]]
     }
 
+    # Items that are JSON false and null.
+    get '/stream_falsy' => ->(_env) {
+      [200, { 'Content-Type' => 'application/x-ndjson' }, [%(false\nnull\n)]]
+    }
+
     # Endpoint for the multi-type nullable schema round-trip spec: the 200 is
     # recorded, the hand-written 409 next to it carries the multi-type nullable
     # schema the run must rewrite flat.
@@ -219,6 +224,14 @@ Rails.application.routes.draw do
     get '/oneof_merge/objects_then_boolean' => flag
     get '/oneof_merge/boolean_then_objects' => flag
     get '/oneof_merge/arrays_then_string' => one_of_merge.call(empty: '{"tags":[]}', integers: '{"tags":[1]}', string: '{"tags":"a"}')
+    get '/oneof_merge/overlapping_arrays' => one_of_merge.call(mixed: '{"values":[[1],[2.5],true]}')
+    get '/oneof_merge/path_segments' => one_of_merge.call(mixed: '{"nodes":[{"path":["user","details"]},{"path":["billing",true]}]}')
+    get '/oneof_merge/enum_mixed_items' => one_of_merge.call(mixed: '{"nodes":[{"p":[null,"a"]},{"p":["b",true]}]}')
+    get '/oneof_merge/enum_nil_first' => one_of_merge.call(mixed: '{"nodes":[{"p":[null]},{"p":["a"]}]}')
+    get '/oneof_merge/null_items' => one_of_merge.call(mixed: '{"tags":[null,null],"nodes":[{"a":[null,null]},{"a":["x"]}]}')
+    get '/oneof_merge/nullable_siblings' => one_of_merge.call(
+      mixed: '{"strings":[{"path":["a"]},{"path":["b",null]}],"numbers":[{"path":[1,null]},{"path":[2.5]}]}',
+    )
 
     # Bodies whose fields are named like OpenAPI keywords, for the keyword fields
     # spec. `meta` is an empty object, so its schema gets an empty `required`

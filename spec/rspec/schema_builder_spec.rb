@@ -42,7 +42,7 @@ RSpec.describe 'schema builder spec' do
     end
   end
 
-  describe 'scalar arrays merged across sibling array items when one already has a oneOf' do
+  describe 'arrays merged across sibling array items when one already has a oneOf' do
     it 'keeps the oneOf instead of taking the first variation' do
       expect(path_items_schema([['user', 'details'], ['billing', true]]))
         .to eq(oneOf: [{ type: 'boolean' }, { type: 'string' }])
