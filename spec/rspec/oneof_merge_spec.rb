@@ -221,6 +221,17 @@ RSpec.describe 'oneOf merging across examples' do
     )
   end
 
+  it 'leaves an empty enum out' do
+    expect(response_schema('/oneof_merge/enum_empty', 'properties', 's')).to eq('type' => 'string')
+  end
+
+  it 'keeps a format beside null, and puts the format of an array on its items' do
+    expect(response_schema('/oneof_merge/format_null', 'properties')).to eq(
+      'deleted_at' => { 'type' => ['string', 'null'], 'format' => 'date-time' },
+      'reminders_at' => { 'type' => ['array', 'null'], 'items' => { 'type' => 'string', 'format' => 'date-time' } },
+    )
+  end
+
   it 'records the items of an array of nils as null' do
     properties = response_schema('/oneof_merge/null_items', 'properties')
 

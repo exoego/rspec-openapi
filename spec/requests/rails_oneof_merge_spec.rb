@@ -84,6 +84,15 @@ RSpec.describe 'oneOf merging across examples', type: :request do
     it('records it twice') { record '/oneof_merge/enum_sort', 'ok', query: 'sort[]=name&sort[]=-name' }
   end
 
+  describe 'a property whose path has an empty enum', openapi: { response_enum: { 's' => [] } } do
+    it('records a string') { record '/oneof_merge/enum_empty', 'string' }
+  end
+
+  describe 'properties with a format', openapi: { formats: ->(key) { key.end_with?('_at') ? 'date-time' : nil } } do
+    it('records a timestamp') { record '/oneof_merge/format_null', 'time' }
+    it('records null') { record '/oneof_merge/format_null', 'null' }
+  end
+
   it('records a string for a hand-written query parameter') { record '/oneof_merge/param', 'ok', query: 'q=foo' }
 
   describe 'a query parameter given empty, as a string and as an integer' do

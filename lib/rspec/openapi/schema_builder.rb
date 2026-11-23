@@ -212,12 +212,8 @@ class << RSpec::OpenAPI::SchemaBuilder
   end
 
   def build_property(value, ctx, disposition: nil)
-    format = disposition ? 'binary' : infer_format(ctx.key, ctx.record)
-    enum = infer_enum(ctx.path, ctx.record, ctx.context) unless ctx.enum_taken
-    # An enum of arrays goes on the array, and any other on its items. A null
-    # may be an array in another example, so it only takes an enum of arrays.
-    enum = nil if enum && lists_arrays?(enum) != (value.nil? || value.is_a?(Array))
-    property = build_type(value, format: format, enum: enum)
+    enum = property_enum(value, ctx)
+    property = build_type(value, format: property_format(value, ctx, disposition), enum: enum)
 
     case value
     when Array
@@ -227,6 +223,26 @@ class << RSpec::OpenAPI::SchemaBuilder
       apply_object_schema(property, value, ctx)
     end
     property
+  end
+
+  # A format is for a string. A null leaves it to another example, and an array
+  # to its items.
+  def property_format(value, ctx, disposition)
+    return nil if value.nil? || value.is_a?(Array) || value.is_a?(Hash)
+
+    disposition ? 'binary' : infer_format(ctx.key, ctx.record)
+  end
+
+  # An enum of arrays goes on the array, and any other on its items. A null may
+  # be an array in another example, so it only takes an enum of arrays. An empty
+  # enum, such as one read from an empty table, would allow nothing.
+  def property_enum(value, ctx)
+    return nil if ctx.enum_taken
+
+    enum = infer_enum(ctx.path, ctx.record, ctx.context)
+    return nil if enum.nil? || enum.empty?
+
+    enum if lists_arrays?(enum) == (value.nil? || value.is_a?(Array))
   end
 
   def apply_object_schema(property, value, ctx)
