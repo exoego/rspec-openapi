@@ -24,7 +24,7 @@ class SharedExtractor
     response_hybrid_additional_properties, request_hybrid_additional_properties =
       resolve_hybrid_additional_properties(metadata)
     # Enum support: response_enum and request_enum can override the general enum
-    base_enum = normalize_enum(metadata[:enum])
+    base_enum = normalize_enum(metadata, :enum, example)
 
     {
       summary: metadata[:summary] || RSpec::OpenAPI.summary_builder.call(example),
@@ -39,8 +39,8 @@ class SharedExtractor
       **example_modes(metadata, example),
       example_key: resolve_example_key(metadata, example),
       example_name: metadata[:example_name] || RSpec::OpenAPI.example_name_builder.call(example),
-      response_enum: normalize_enum(metadata[:response_enum]) || base_enum,
-      request_enum: normalize_enum(metadata[:request_enum]) || base_enum,
+      response_enum: normalize_enum(metadata, :response_enum, example) || base_enum,
+      request_enum: normalize_enum(metadata, :request_enum, example) || base_enum,
       response_additional_properties: response_additional_properties,
       request_additional_properties: request_additional_properties,
       response_hybrid_additional_properties: response_hybrid_additional_properties,
@@ -104,8 +104,13 @@ class SharedExtractor
     ->(key) { patterns.any? { |pattern| pattern.is_a?(Regexp) ? pattern.match?(key) : pattern == key } }
   end
 
-  def self.normalize_enum(enum_hash)
-    return nil if enum_hash.nil? || enum_hash.empty?
+  def self.normalize_enum(metadata, name, example)
+    enum_hash = metadata[name]
+    return nil if enum_hash.nil? || enum_hash == {}
+    unless enum_hash.is_a?(Hash) && enum_hash.each_value.all?(Array)
+      raise ArgumentError, "#{name} must be a Hash of property paths to Arrays of values, " \
+                           "got #{enum_hash.inspect}#{example_context(example)}"
+    end
 
     # Convert all keys to strings for consistent lookup
     enum_hash.transform_keys(&:to_s)

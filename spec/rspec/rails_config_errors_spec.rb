@@ -17,6 +17,9 @@ RSpec.describe 'rails request spec, configuration errors' do
       message = 'read_only must be true, false, or property names as Strings, Symbols or Regexps, got 42 ' \
                 '(example: invalid metadata aborts on a read_only value that is not a name)'
       expect(out + err).to include(message)
+      # Hash#inspect changed in Ruby 3.4, so only the parts around it are matched.
+      expect(out + err).to include('response_enum must be a Hash of property paths to Arrays of values, got {')
+      expect(out + err).to include('"draft"} (example: invalid metadata aborts on an enum that is not an Array)')
     end
   end
 

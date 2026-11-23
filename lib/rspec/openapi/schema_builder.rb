@@ -213,13 +213,16 @@ class << RSpec::OpenAPI::SchemaBuilder
 
   def build_property(value, ctx, disposition: nil)
     format = disposition ? 'binary' : infer_format(ctx.key, ctx.record)
-    enum = infer_enum(ctx.path, ctx.record, ctx.context)
-    enum = nil if enum && value.is_a?(Array) != enum.all?(Array)
+    enum = infer_enum(ctx.path, ctx.record, ctx.context) unless ctx.enum_taken
+    # An enum of arrays goes on the array, and any other on its items. A null
+    # may be an array in another example, so it only takes an enum of arrays.
+    enum = nil if enum && lists_arrays?(enum) != (value.nil? || value.is_a?(Array))
     property = build_type(value, format: format, enum: enum)
 
     case value
     when Array
-      property[:items] = value.empty? ? {} : build_array_items_schema(value, ctx.for_array_items)
+      items_ctx = ctx.for_array_items(ctx.enum_taken || !enum.nil?)
+      property[:items] = value.empty? ? {} : build_array_items_schema(value, items_ctx)
     when Hash
       apply_object_schema(property, value, ctx)
     end
@@ -293,6 +296,11 @@ class << RSpec::OpenAPI::SchemaBuilder
     return nil unless key && record
 
     record.formats&.[](key)
+  end
+
+  def lists_arrays?(enum)
+    members = enum.compact
+    !members.empty? && members.all?(Array)
   end
 
   def infer_enum(path, record, context)

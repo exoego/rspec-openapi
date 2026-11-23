@@ -201,6 +201,26 @@ RSpec.describe 'oneOf merging across examples' do
       .to eq('type' => ['string', 'null'], 'enum' => ['a', 'b', nil])
   end
 
+  it 'puts an enum of strings on the items of an array that may be null' do
+    expect(response_schema('/oneof_merge/enum_tags', 'properties', 'tags'))
+      .to eq('type' => ['array', 'null'], 'items' => { 'type' => 'string', 'enum' => ['new', 'sale'] })
+    expect(committed.dig('paths', '/oneof_merge/enum_sort', 'get', 'parameters', 0, 'schema'))
+      .to eq('type' => ['array', 'null'], 'items' => { 'type' => 'string', 'enum' => ['name', '-name'] })
+  end
+
+  it 'keeps an enum of whole arrays that lists null on the array' do
+    expect(response_schema('/oneof_merge/enum_whole_tags', 'properties', 'tags'))
+      .to eq('type' => 'array', 'enum' => [nil, [], ['new']], 'items' => { 'type' => 'string' })
+  end
+
+  it 'leaves an enum of whole arrays off the items when they are arrays too' do
+    expect(response_schema('/oneof_merge/enum_matrix', 'properties', 'matrix')).to eq(
+      'type' => 'array',
+      'enum' => [[['new']], [['new'], ['sale']]],
+      'items' => { 'type' => 'array', 'items' => { 'type' => 'string' } },
+    )
+  end
+
   it 'records the items of an array of nils as null' do
     properties = response_schema('/oneof_merge/null_items', 'properties')
 
