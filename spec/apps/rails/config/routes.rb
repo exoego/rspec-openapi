@@ -233,6 +233,7 @@ Rails.application.routes.draw do
     get '/oneof_merge/enum_tags' => tags_or_null
     get '/oneof_merge/enum_whole_tags' => tags_or_null
     get '/oneof_merge/enum_matrix' => one_of_merge.call(matrix: '{"matrix":[["new"]]}')
+    get '/oneof_merge/enum_sibling_tags' => one_of_merge.call(groups: '{"groups":[{"tags":["new"]},{"tags":["sale"]}]}')
     get '/oneof_merge/enum_sort' => ok
     get '/oneof_merge/enum_empty' => one_of_merge.call(string: '{"s":"a"}')
     get '/oneof_merge/format_null' => one_of_merge.call(

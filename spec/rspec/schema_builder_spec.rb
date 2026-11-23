@@ -43,37 +43,53 @@ RSpec.describe 'schema builder spec' do
   end
 
   describe 'array-level keys merged across variations' do
-    let(:array_enum) { [[], ['new'], ['sale']] }
-    let(:string_array) { { type: 'array', items: { type: 'string' } } }
     let(:merger) { RSpec::OpenAPI::SchemaBuilder.singleton_class.const_get(:VariationMerger) }
 
-    def tags_schema(item_count)
+    # Fresh objects each time, so an expectation never shares one with the input.
+    def array_enum
+      [[], ['new'], ['sale']]
+    end
+
+    def string_array(**keys)
+      { type: 'array', items: { type: 'string' }, **keys }
+    end
+
+    def response_properties(body, enum = nil)
       record = RSpec::OpenAPI::Record.new(
         http_method: 'GET', path: '/products', path_params: {}, query_params: {}, request_headers: [],
         status: 200, response_headers: [], response_content_type: 'application/json',
-        response_example_mode: :none,
-        response_body: { groups: [{ tags: ['new'] }, { tags: ['sale'] }].first(item_count) },
-        response_enum: { 'groups.tags' => array_enum },
+        response_example_mode: :none, response_body: body, response_enum: enum,
       )
       RSpec::OpenAPI::SchemaBuilder.build(record).dig(
-        :paths, :'/products', :get, :responses, :'200', :content, :'application/json', :schema,
-        :properties, :groups, :items, :properties, :tags,
+        :paths, :'/products', :get, :responses, :'200', :content, :'application/json', :schema, :properties,
       )
     end
 
-    it 'keeps the array enum with one or multiple sibling items' do
+    def tags_schema(item_count)
+      body = { groups: [{ tags: ['new'] }, { tags: ['sale'] }].first(item_count) }
+      response_properties(body, { 'groups.tags' => array_enum }).dig(:groups, :items, :properties, :tags)
+    end
+
+    it 'keeps the array enum with one or multiple sibling items, after the type' do
       [1, 2].each do |item_count|
-        expect(tags_schema(item_count)).to include(type: 'array', enum: array_enum)
-        expect(tags_schema(item_count).dig(:items, :type)).to eq('string')
+        expect(tags_schema(item_count)).to eq(string_array(enum: array_enum))
+        expect(tags_schema(item_count).keys).to eq([:type, :enum, :items])
       end
     end
 
+    it 'keeps the type first when a nullable array merges across siblings' do
+      rows = [{ list: [{ c: [1] }, { c: nil }] }, { list: [{ c: [2] }, { c: nil }] }]
+      c = response_properties({ rows: rows }).dig(:rows, :items, :properties, :list, :items, :properties, :c)
+
+      expect(c.keys).to eq([:type, :items, :nullable])
+    end
+
     it 'keeps common keywords while merging empty and populated items' do
-      annotated = string_array.merge(enum: array_enum, uniqueItems: false, default: nil)
-      variations = [annotated, annotated.merge(items: {})]
+      annotated = -> { string_array(enum: array_enum, uniqueItems: false, default: nil) }
+      variations = [annotated.call, annotated.call.merge(items: {})]
 
       variations.permutation.each do |schemas|
-        expect(merger.merge_variations(schemas)).to eq(annotated)
+        expect(merger.merge_variations(schemas)).to eq(annotated.call)
       end
     end
 
