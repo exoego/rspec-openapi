@@ -72,10 +72,15 @@ RSpec.describe 'oneOf merging across examples', type: :request do
   end
 
   describe 'an array whose path has an enum of whole arrays', openapi: {
-    response_enum: { 'tags' => [nil, [], ['new']], 'matrix' => [[['new']], [['new'], ['sale']]] },
+    response_enum: {
+      'tags' => [nil, [], ['new']],
+      'matrix' => [[['new']], [['new'], ['sale']]],
+      'groups.tags' => [[], ['new'], ['sale']],
+    },
   } do
     it('records an array') { record '/oneof_merge/enum_whole_tags', 'tags' }
     it('records an array of arrays') { record '/oneof_merge/enum_matrix', 'matrix' }
+    it('records arrays in sibling objects') { record '/oneof_merge/enum_sibling_tags', 'groups' }
   end
 
   describe 'a repeated query parameter whose name has an enum',

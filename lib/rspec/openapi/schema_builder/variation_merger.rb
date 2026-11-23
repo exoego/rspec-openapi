@@ -92,9 +92,15 @@ class << RSpec::OpenAPI::SchemaBuilder
       merged
     end
 
-    # Merge multiple array schemas by merging their `items` schemas.
+    # Merge multiple array schemas by merging their `items` schemas. A constraint
+    # seen in a single sample must not spread to its siblings.
     def merge_array_item_variations(variations)
-      { type: 'array', items: merge_variations(variations.map { |v| v[:items] }.compact) }
+      merged = variations.first.select do |key, value|
+        key == :type || key == :items ||
+          variations.all? { |variation| variation.key?(key) && variation[key] == value }
+      end
+      merged[:items] = merge_variations(variations.map { |v| v[:items] }.compact)
+      merged
     end
 
     def property_keys(variations)

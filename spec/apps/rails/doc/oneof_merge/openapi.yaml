@@ -247,6 +247,41 @@ paths:
                 - s
               example:
                 s:
+  "/oneof_merge/enum_sibling_tags":
+    get:
+      summary: GET /oneof_merge/enum_sibling_tags
+      tags: []
+      responses:
+        '200':
+          description: records arrays in sibling objects
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  groups:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        tags:
+                          type: array
+                          enum:
+                          - []
+                          - - new
+                          - - sale
+                          items:
+                            type: string
+                      required:
+                      - tags
+                required:
+                - groups
+              example:
+                groups:
+                - tags:
+                  - new
+                - tags:
+                  - sale
   "/oneof_merge/enum_sort":
     get:
       summary: GET /oneof_merge/enum_sort
