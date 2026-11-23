@@ -69,16 +69,16 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
   # would flip it back to true. Inline under paths each side has its own
   # schema, so there it says nothing.
   def cleanup_schemas!(base)
-    each_component_schema(base) do |schema, in_list|
+    each_component_schema(base) do |schema, under|
       delete_temporary_fields!(schema)
       delete_empty_required!(schema)
-      add_null_to_enum!(schema) unless in_list
+      add_null_to_enum!(schema) unless under == :oneOf
     end
-    RSpec::OpenAPI::HashHelper.each_schema(base[:paths]) do |schema, in_list|
+    RSpec::OpenAPI::HashHelper.each_schema(base[:paths]) do |schema, under|
       delete_temporary_fields!(schema)
       delete_empty_required!(schema)
       delete_false_read_only!(schema)
-      add_null_to_enum!(schema) unless in_list
+      add_null_to_enum!(schema) unless under == :oneOf
     end
   end
 

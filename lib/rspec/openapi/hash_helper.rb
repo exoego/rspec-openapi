@@ -43,27 +43,27 @@ class << RSpec::OpenAPI::HashHelper = Object.new
   # named `type` or `nullable` would be silently mangled.
   DATA_KEYS = [:example, :examples, :default, :enum, :const].freeze
 
-  # Keys of maps whose entries the document names, so an entry named `default`
-  # or `nullable` is never taken for a keyword.
-  NAMED_MAP_KEYS = [:properties, :schemas, :responses].freeze
+  # Keys of maps whose entries the document names, so an entry named like
+  # `default`, `nullable` or `x-mode` is never taken for a keyword.
+  NAMED_MAP_KEYS = [:properties, :schemas, :headers].freeze
 
   # Yields every hash in obj outside the data subtrees in DATA_KEYS and the
-  # `x-` extensions, each after its descendants, with whether it is an element
-  # of a list such as a oneOf. The entries of a map in NAMED_MAP_KEYS are
+  # `x-` extensions, each after its descendants, with the key it sits under,
+  # directly or as a list element. The entries of a map in NAMED_MAP_KEYS are
   # yielded whatever their names, and the map itself is not.
-  def each_schema(obj, in_list: false, &block)
+  def each_schema(obj, under: nil, &block)
     case obj
     when Hash
       obj.each do |key, value|
         if NAMED_MAP_KEYS.include?(key) && value.is_a?(Hash)
           value.each_value { |entry| each_schema(entry, &block) }
-        elsif !DATA_KEYS.include?(key) && !key.start_with?('x-')
-          each_schema(value, &block)
+        elsif walk?(key, under)
+          each_schema(value, under: key, &block)
         end
       end
-      yield obj, in_list
+      yield obj, under
     when Array
-      obj.each { |value| each_schema(value, in_list: true, &block) }
+      obj.each { |value| each_schema(value, under: under, &block) }
     end
   end
 
@@ -79,6 +79,11 @@ class << RSpec::OpenAPI::HashHelper = Object.new
   private_constant :SELECTOR_PARTS
 
   private
+
+  # A response may be named `default`, and the responses may carry extensions.
+  def walk?(key, under)
+    !key.start_with?('x-') && (under == :responses || !DATA_KEYS.include?(key))
+  end
 
   def split_selector(selector)
     SELECTOR_PARTS[selector]

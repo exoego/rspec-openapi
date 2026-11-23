@@ -37,11 +37,13 @@ RSpec.describe 'rails request spec, multi-type nullable schema round-trip' do
       expect(response_schema('200').dig('properties', 'ok', 'type')).to eq('boolean')
     end
 
-    it 'lists null in the enum of a response and a component named like a keyword' do
+    it 'lists null in the enum of a response, a header and a component named like a keyword, and of an allOf member' do
       nullable_enum = { 'type' => ['string', 'null'], 'enum' => ['a', nil] }
 
       expect(response_schema('default')).to eq(nullable_enum)
+      expect(operation.dig('responses', '410', 'headers', 'x-mode', 'schema')).to eq(nullable_enum)
       expect(@recorded.dig('components', 'schemas', 'enum')).to eq(nullable_enum)
+      expect(response_schema('412')).to eq('allOf' => [nullable_enum])
     end
 
     it 'leaves the enum of a oneOf variant alone, since a sibling is the one for null' do

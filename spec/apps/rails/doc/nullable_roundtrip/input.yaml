@@ -34,6 +34,14 @@ paths:
                 - 'null'
         '410':
           description: hand-written null variant beside an enum
+          headers:
+            x-mode:
+              schema:
+                type:
+                - string
+                - 'null'
+                enum:
+                - a
           content:
             application/json:
               schema:
@@ -45,6 +53,17 @@ paths:
                   - a
                 - type: 'null'
                   description: Cleared
+        '412':
+          description: hand-written allOf
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type:
+                  - string
+                  - 'null'
+                  enum:
+                  - a
         '422':
           description: component named like a keyword
           content:
