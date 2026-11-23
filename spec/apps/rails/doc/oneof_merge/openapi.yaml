@@ -96,6 +96,33 @@ paths:
               example:
                 value: 1
       tags: []
+  "/oneof_merge/enum_matrix":
+    get:
+      summary: GET /oneof_merge/enum_matrix
+      tags: []
+      responses:
+        '200':
+          description: records an array of arrays
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  matrix:
+                    type: array
+                    enum:
+                    - - - new
+                    - - - new
+                      - - sale
+                    items:
+                      type: array
+                      items:
+                        type: string
+                required:
+                - matrix
+              example:
+                matrix:
+                - - new
   "/oneof_merge/enum_mixed_items":
     get:
       summary: GET /oneof_merge/enum_mixed_items

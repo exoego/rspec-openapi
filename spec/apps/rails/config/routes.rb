@@ -232,6 +232,7 @@ Rails.application.routes.draw do
     tags_or_null = one_of_merge.call(tags: '{"tags":["new"]}', null: '{"tags":null}')
     get '/oneof_merge/enum_tags' => tags_or_null
     get '/oneof_merge/enum_whole_tags' => tags_or_null
+    get '/oneof_merge/enum_matrix' => one_of_merge.call(matrix: '{"matrix":[["new"]]}')
     get '/oneof_merge/enum_sort' => ok
     get '/oneof_merge/null_items' => one_of_merge.call(mixed: '{"tags":[null,null],"nodes":[{"a":[null,null]},{"a":["x"]}]}')
     get '/oneof_merge/nullable_siblings' => one_of_merge.call(

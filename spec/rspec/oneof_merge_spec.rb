@@ -213,6 +213,14 @@ RSpec.describe 'oneOf merging across examples' do
       .to eq('type' => 'array', 'enum' => [nil, [], ['new']], 'items' => { 'type' => 'string' })
   end
 
+  it 'leaves an enum of whole arrays off the items when they are arrays too' do
+    expect(response_schema('/oneof_merge/enum_matrix', 'properties', 'matrix')).to eq(
+      'type' => 'array',
+      'enum' => [[['new']], [['new'], ['sale']]],
+      'items' => { 'type' => 'array', 'items' => { 'type' => 'string' } },
+    )
+  end
+
   it 'records the items of an array of nils as null' do
     properties = response_schema('/oneof_merge/null_items', 'properties')
 
