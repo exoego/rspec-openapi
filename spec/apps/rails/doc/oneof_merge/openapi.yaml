@@ -167,6 +167,7 @@ paths:
                             - a
                             - b
                             - true
+                            -
                       required:
                       - p
                 required:
@@ -177,6 +178,30 @@ paths:
                   -
                 - p:
                   - a
+  "/oneof_merge/enum_null_later":
+    get:
+      summary: GET /oneof_merge/enum_null_later
+      tags: []
+      responses:
+        '200':
+          description: records null
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  s:
+                    type:
+                    - string
+                    - 'null'
+                    enum:
+                    - a
+                    - b
+                    -
+                required:
+                - s
+              example:
+                s:
   "/oneof_merge/flag_boolean":
     get:
       summary: GET /oneof_merge/flag_boolean
@@ -797,6 +822,7 @@ paths:
                       enum:
                       - 1
                       - x
+                      -
                 required:
                 - values
               example:

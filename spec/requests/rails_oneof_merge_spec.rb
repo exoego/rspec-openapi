@@ -61,6 +61,11 @@ RSpec.describe 'oneOf merging across examples', type: :request do
     it('records nil in the first sibling') { record '/oneof_merge/enum_nil_first', 'mixed' }
   end
 
+  describe 'a property whose path has an enum', openapi: { response_enum: { 's' => ['a', 'b'] } } do
+    it('records a string') { record '/oneof_merge/enum_null_later', 'string' }
+    it('records null') { record '/oneof_merge/enum_null_later', 'null' }
+  end
+
   it('records a string for a hand-written query parameter') { record '/oneof_merge/param', 'ok', query: 'q=foo' }
 
   describe 'a query parameter given empty, as a string and as an integer' do

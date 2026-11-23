@@ -228,6 +228,7 @@ Rails.application.routes.draw do
     get '/oneof_merge/path_segments' => one_of_merge.call(mixed: '{"nodes":[{"path":["user","details"]},{"path":["billing",true]}]}')
     get '/oneof_merge/enum_mixed_items' => one_of_merge.call(mixed: '{"nodes":[{"p":[null,"a"]},{"p":["b",true]}]}')
     get '/oneof_merge/enum_nil_first' => one_of_merge.call(mixed: '{"nodes":[{"p":[null]},{"p":["a"]}]}')
+    get '/oneof_merge/enum_null_later' => one_of_merge.call(string: '{"s":"a"}', null: '{"s":null}')
     get '/oneof_merge/null_items' => one_of_merge.call(mixed: '{"tags":[null,null],"nodes":[{"a":[null,null]},{"a":["x"]}]}')
     get '/oneof_merge/nullable_siblings' => one_of_merge.call(
       mixed: '{"strings":[{"path":["a"]},{"path":["b",null]}],"numbers":[{"path":[1,null]},{"path":[2.5]}]}',

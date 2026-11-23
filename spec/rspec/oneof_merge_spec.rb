@@ -54,7 +54,7 @@ RSpec.describe 'oneOf merging across examples' do
     expect(response_schema('/oneof_merge/typeless', 'properties', 'values', 'items'))
       .to eq('oneOf' => one_of, 'description' => 'Set once the user picks one')
     expect(response_schema('/oneof_merge/typeless_enum', 'properties', 'values', 'items'))
-      .to eq('oneOf' => one_of, 'enum' => [1, 'x'])
+      .to eq('oneOf' => one_of, 'enum' => [1, 'x', nil])
   end
 
   it 'merges the two shapes of a shared component into a oneOf, whichever endpoint comes first' do
@@ -193,7 +193,12 @@ RSpec.describe 'oneOf merging across examples' do
     expect(items.call('/oneof_merge/enum_mixed_items')).to eq('oneOf' => [
       { 'type' => 'boolean', 'enum' => enum }, { 'type' => 'null' }, { 'type' => 'string', 'enum' => enum },
     ])
-    expect(items.call('/oneof_merge/enum_nil_first')).to eq('type' => ['string', 'null'], 'enum' => enum)
+    expect(items.call('/oneof_merge/enum_nil_first')).to eq('type' => ['string', 'null'], 'enum' => [*enum, nil])
+  end
+
+  it 'lists null in the enum of a property that may be null' do
+    expect(response_schema('/oneof_merge/enum_null_later', 'properties', 's'))
+      .to eq('type' => ['string', 'null'], 'enum' => ['a', 'b', nil])
   end
 
   it 'records the items of an array of nils as null' do
