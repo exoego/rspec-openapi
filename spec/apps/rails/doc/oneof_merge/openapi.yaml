@@ -202,6 +202,90 @@ paths:
                 - s
               example:
                 s:
+  "/oneof_merge/enum_sort":
+    get:
+      summary: GET /oneof_merge/enum_sort
+      tags: []
+      parameters:
+      - name: sort
+        in: query
+        required: false
+        schema:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            enum:
+            - name
+            - "-name"
+        example:
+        - name
+        - "-name"
+      responses:
+        '200':
+          description: records it twice
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                required:
+                - ok
+              example:
+                ok: true
+  "/oneof_merge/enum_tags":
+    get:
+      summary: GET /oneof_merge/enum_tags
+      tags: []
+      responses:
+        '200':
+          description: records null
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tags:
+                    type:
+                    - array
+                    - 'null'
+                    items:
+                      type: string
+                      enum:
+                      - new
+                      - sale
+                required:
+                - tags
+              example:
+                tags:
+  "/oneof_merge/enum_whole_tags":
+    get:
+      summary: GET /oneof_merge/enum_whole_tags
+      tags: []
+      responses:
+        '200':
+          description: records an array
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tags:
+                    type: array
+                    enum:
+                    -
+                    - []
+                    - - new
+                    items:
+                      type: string
+                required:
+                - tags
+              example:
+                tags:
+                - new
   "/oneof_merge/flag_boolean":
     get:
       summary: GET /oneof_merge/flag_boolean

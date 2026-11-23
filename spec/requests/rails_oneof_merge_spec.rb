@@ -66,6 +66,22 @@ RSpec.describe 'oneOf merging across examples', type: :request do
     it('records null') { record '/oneof_merge/enum_null_later', 'null' }
   end
 
+  describe 'an array of strings whose path has an enum', openapi: { response_enum: { 'tags' => ['new', 'sale'] } } do
+    it('records an array') { record '/oneof_merge/enum_tags', 'tags' }
+    it('records null') { record '/oneof_merge/enum_tags', 'null' }
+  end
+
+  describe 'an array whose path has an enum of whole arrays',
+           openapi: { response_enum: { 'tags' => [nil, [], ['new']] } } do
+    it('records an array') { record '/oneof_merge/enum_whole_tags', 'tags' }
+  end
+
+  describe 'a repeated query parameter whose name has an enum',
+           openapi: { request_enum: { 'sort' => ['name', '-name'] } } do
+    it('records it without a value') { record '/oneof_merge/enum_sort', 'ok', query: 'sort' }
+    it('records it twice') { record '/oneof_merge/enum_sort', 'ok', query: 'sort[]=name&sort[]=-name' }
+  end
+
   it('records a string for a hand-written query parameter') { record '/oneof_merge/param', 'ok', query: 'q=foo' }
 
   describe 'a query parameter given empty, as a string and as an integer' do
