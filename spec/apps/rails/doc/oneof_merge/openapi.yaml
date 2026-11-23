@@ -96,6 +96,24 @@ paths:
               example:
                 value: 1
       tags: []
+  "/oneof_merge/enum_empty":
+    get:
+      summary: GET /oneof_merge/enum_empty
+      tags: []
+      responses:
+        '200':
+          description: records a string
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  s:
+                    type: string
+                required:
+                - s
+              example:
+                s: a
   "/oneof_merge/enum_matrix":
     get:
       summary: GET /oneof_merge/enum_matrix
@@ -340,6 +358,36 @@ paths:
                 value:
                   x: '1'
       tags: []
+  "/oneof_merge/format_null":
+    get:
+      summary: GET /oneof_merge/format_null
+      tags: []
+      responses:
+        '200':
+          description: records null
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deleted_at:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                  reminders_at:
+                    type:
+                    - array
+                    - 'null'
+                    items:
+                      type: string
+                      format: date-time
+                required:
+                - deleted_at
+                - reminders_at
+              example:
+                deleted_at:
+                reminders_at:
   "/oneof_merge/integer_then_number":
     get:
       summary: GET /oneof_merge/integer_then_number

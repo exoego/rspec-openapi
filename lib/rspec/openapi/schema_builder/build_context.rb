@@ -26,10 +26,10 @@ class << RSpec::OpenAPI::SchemaBuilder
       path ? "#{path}.#{child_key}" : child_key.to_s
     end
 
-    # Items share the path of their array, so once an array takes the enum of
-    # that path, nothing inside it does.
+    # Items share the path and key of their array. Once an array takes the enum
+    # of that path, nothing inside it does.
     def for_array_items(enum_taken)
-      self.class.new(record, context, path, nil, lookups, enum_taken)
+      self.class.new(record, context, path, key, lookups, enum_taken)
     end
   end
   private_constant :BuildContext
