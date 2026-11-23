@@ -218,6 +218,23 @@ RSpec.describe 'oneOf merging across examples' do
       .to eq('type' => 'array', 'enum' => [[], ['new'], ['sale']], 'items' => { 'type' => 'string' })
   end
 
+  it 'keeps an enum of whole arrays when every sibling object records null' do
+    group = response_schema('/oneof_merge/enum_null_sibling_tags', 'properties', 'groups', 'items')
+
+    expect(group.dig('properties', 'tags')).to eq('type' => 'null', 'enum' => [[], ['new'], ['sale'], nil])
+  end
+
+  it 'keeps an enum of whole objects when sibling objects merge' do
+    group = response_schema('/oneof_merge/enum_sibling_meta', 'properties', 'groups', 'items')
+
+    expect(group.dig('properties', 'meta')).to eq(
+      'type' => 'object',
+      'enum' => [{ 'a' => 1 }, { 'a' => 2 }],
+      'properties' => { 'a' => { 'type' => 'integer' } },
+      'required' => ['a'],
+    )
+  end
+
   it 'leaves an enum of whole arrays off the items when they are arrays too' do
     expect(response_schema('/oneof_merge/enum_matrix', 'properties', 'matrix')).to eq(
       'type' => 'array',

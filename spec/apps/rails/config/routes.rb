@@ -172,6 +172,7 @@ Rails.application.routes.draw do
 
     sibling_meta = ->(_env) { [200, { 'Content-Type' => 'application/json' }, ['{"products":[{"meta":{"id":1,"a":1}},{"meta":{"id":2,"b":"x"}}]}']] }
     get '/sibling_objects/dictionary' => sibling_meta
+    get '/sibling_objects/dictionary_items' => sibling_meta
     get '/sibling_objects/hybrid' => sibling_meta
     get '/sibling_objects/empty_override' => sibling_meta
     get '/sibling_objects/described' => sibling_meta
@@ -234,6 +235,8 @@ Rails.application.routes.draw do
     get '/oneof_merge/enum_whole_tags' => tags_or_null
     get '/oneof_merge/enum_matrix' => one_of_merge.call(matrix: '{"matrix":[["new"]]}')
     get '/oneof_merge/enum_sibling_tags' => one_of_merge.call(groups: '{"groups":[{"tags":["new"]},{"tags":["sale"]}]}')
+    get '/oneof_merge/enum_null_sibling_tags' => one_of_merge.call(groups: '{"groups":[{"tags":null},{"tags":null}]}')
+    get '/oneof_merge/enum_sibling_meta' => one_of_merge.call(groups: '{"groups":[{"meta":{"a":1}},{"meta":{"a":2}}]}')
     get '/oneof_merge/enum_sort' => ok
     get '/oneof_merge/enum_empty' => one_of_merge.call(string: '{"s":"a"}')
     get '/oneof_merge/format_null' => one_of_merge.call(

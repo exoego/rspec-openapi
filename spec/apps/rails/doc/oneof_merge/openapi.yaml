@@ -247,6 +247,75 @@ paths:
                 - s
               example:
                 s:
+  "/oneof_merge/enum_null_sibling_tags":
+    get:
+      summary: GET /oneof_merge/enum_null_sibling_tags
+      tags: []
+      responses:
+        '200':
+          description: records null in every sibling object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  groups:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        tags:
+                          enum:
+                          - []
+                          - - new
+                          - - sale
+                          -
+                          type: 'null'
+                      required:
+                      - tags
+                required:
+                - groups
+              example:
+                groups:
+                - tags:
+                - tags:
+  "/oneof_merge/enum_sibling_meta":
+    get:
+      summary: GET /oneof_merge/enum_sibling_meta
+      tags: []
+      responses:
+        '200':
+          description: records objects in sibling objects
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  groups:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        meta:
+                          type: object
+                          enum:
+                          - a: 1
+                          - a: 2
+                          properties:
+                            a:
+                              type: integer
+                          required:
+                          - a
+                      required:
+                      - meta
+                required:
+                - groups
+              example:
+                groups:
+                - meta:
+                    a: 1
+                - meta:
+                    a: 2
   "/oneof_merge/enum_sibling_tags":
     get:
       summary: GET /oneof_merge/enum_sibling_tags

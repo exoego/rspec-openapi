@@ -390,8 +390,10 @@ class << RSpec::OpenAPI::SchemaBuilder
     return VariationMerger.merge_non_object_item_variations(schemas) unless array.all?(Hash)
 
     merged = schemas.first.dup
-    merged[:properties] = VariationMerger.merge_property_variations(schemas, allow_recursive_merge: false)
-    merged[:required] = schemas.map { |s| s[:required] || [] }.reduce(:&) || []
+    if schemas.any? { |s| s.key?(:properties) }
+      merged[:properties] = VariationMerger.merge_property_variations(schemas, allow_recursive_merge: false)
+      merged[:required] = schemas.map { |s| s[:required] || [] }.reduce(:&) || []
+    end
     merged
   end
 end
