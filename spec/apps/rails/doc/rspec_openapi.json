@@ -146,11 +146,11 @@
                                 "value": {
                                   "oneOf": [
                                     {
-                                      "type": "string"
-                                    },
-                                    {
                                       "type": "array",
                                       "items": {}
+                                    },
+                                    {
+                                      "type": "string"
                                     }
                                   ],
                                   "nullable": true
@@ -191,7 +191,8 @@
                                 }
                               },
                               "required": [
-                                "value"
+                                "value",
+                                "options"
                               ]
                             },
                             "nullable": true
@@ -637,6 +638,25 @@
                           "label": {
                             "type": "string"
                           },
+                          "path": {
+                            "type": "array",
+                            "items": {
+                              "oneOf": [
+                                {
+                                  "type": "boolean"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            }
+                          },
+                          "hints": {
+                            "type": "array",
+                            "items": {
+                              "nullable": true
+                            }
+                          },
                           "inputs": {
                             "type": "array",
                             "items": {
@@ -729,6 +749,8 @@
                         },
                         "required": [
                           "label",
+                          "path",
+                          "hints",
                           "inputs"
                         ]
                       }
@@ -742,6 +764,13 @@
                   "form": [
                     {
                       "label": "User details",
+                      "path": [
+                        "user",
+                        "details"
+                      ],
+                      "hints": [
+                        null
+                      ],
                       "inputs": [
                         {
                           "type": "columns",
@@ -768,6 +797,13 @@
                     },
                     {
                       "label": "Billing details",
+                      "path": [
+                        "billing",
+                        true
+                      ],
+                      "hints": [
+                        null
+                      ],
                       "inputs": [
                         {
                           "type": "columns",

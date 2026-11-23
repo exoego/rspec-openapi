@@ -36,4 +36,9 @@ RSpec.describe 'OpenAPI 3.2 streaming media types', type: :request do
     get '/stream_empty'
     expect(response).to have_http_status(:ok)
   end
+
+  it 'records items that are false and null' do
+    get '/stream_falsy'
+    expect(response).to have_http_status(:ok)
+  end
 end

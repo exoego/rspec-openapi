@@ -116,10 +116,10 @@ paths:
                             properties:
                               value:
                                 oneOf:
-                                - type: 'null'
-                                - type: string
                                 - type: array
                                   items: {}
+                                - type: 'null'
+                                - type: string
                               options:
                                 oneOf:
                                 - type: array
@@ -384,6 +384,16 @@ paths:
                       properties:
                         label:
                           type: string
+                        path:
+                          type: array
+                          items:
+                            oneOf:
+                            - type: boolean
+                            - type: string
+                        hints:
+                          type: array
+                          items:
+                            type: 'null'
                         inputs:
                           type: array
                           items:
@@ -451,12 +461,19 @@ paths:
                             - type
                       required:
                       - label
+                      - path
+                      - hints
                       - inputs
                 required:
                 - form
               example:
                 form:
                 - label: User details
+                  path:
+                  - user
+                  - details
+                  hints:
+                  -
                   inputs:
                   - type: columns
                     columns:
@@ -470,6 +487,11 @@ paths:
                     validations:
                       presence: true
                 - label: Billing details
+                  path:
+                  - billing
+                  - true
+                  hints:
+                  -
                   inputs:
                   - type: columns
                     columns:

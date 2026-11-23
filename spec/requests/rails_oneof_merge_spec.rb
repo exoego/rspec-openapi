@@ -46,10 +46,51 @@ RSpec.describe 'oneOf merging across examples', type: :request do
     'objects_then_boolean' => ['object_a', 'object_b', 'boolean'],
     'boolean_then_objects' => ['boolean', 'object_a', 'object_b'],
     'arrays_then_string' => ['empty', 'integers', 'string'],
+    'overlapping_arrays' => ['mixed'],
+    'path_segments' => ['mixed'],
+    'null_items' => ['mixed'],
+    'nullable_siblings' => ['mixed'],
   }.each do |name, variants|
     variants.each do |variant|
       it("records #{variant} on #{name}") { record "/oneof_merge/#{name}", variant }
     end
+  end
+
+  describe 'array items whose path has an enum', openapi: { response_enum: { 'nodes.p' => ['a', 'b', true] } } do
+    it('records nil beside other types') { record '/oneof_merge/enum_mixed_items', 'mixed' }
+    it('records nil in the first sibling') { record '/oneof_merge/enum_nil_first', 'mixed' }
+  end
+
+  describe 'a property whose path has an enum', openapi: { response_enum: { 's' => ['a', 'b'] } } do
+    it('records a string') { record '/oneof_merge/enum_null_later', 'string' }
+    it('records null') { record '/oneof_merge/enum_null_later', 'null' }
+  end
+
+  describe 'an array of strings whose path has an enum', openapi: { response_enum: { 'tags' => ['new', 'sale'] } } do
+    it('records an array') { record '/oneof_merge/enum_tags', 'tags' }
+    it('records null') { record '/oneof_merge/enum_tags', 'null' }
+  end
+
+  describe 'an array whose path has an enum of whole arrays', openapi: {
+    response_enum: { 'tags' => [nil, [], ['new']], 'matrix' => [[['new']], [['new'], ['sale']]] },
+  } do
+    it('records an array') { record '/oneof_merge/enum_whole_tags', 'tags' }
+    it('records an array of arrays') { record '/oneof_merge/enum_matrix', 'matrix' }
+  end
+
+  describe 'a repeated query parameter whose name has an enum',
+           openapi: { request_enum: { 'sort' => ['name', '-name'] } } do
+    it('records it without a value') { record '/oneof_merge/enum_sort', 'ok', query: 'sort' }
+    it('records it twice') { record '/oneof_merge/enum_sort', 'ok', query: 'sort[]=name&sort[]=-name' }
+  end
+
+  describe 'a property whose path has an empty enum', openapi: { response_enum: { 's' => [] } } do
+    it('records a string') { record '/oneof_merge/enum_empty', 'string' }
+  end
+
+  describe 'properties with a format', openapi: { formats: ->(key) { key.end_with?('_at') ? 'date-time' : nil } } do
+    it('records a timestamp') { record '/oneof_merge/format_null', 'time' }
+    it('records null') { record '/oneof_merge/format_null', 'null' }
   end
 
   it('records a string for a hand-written query parameter') { record '/oneof_merge/param', 'ok', query: 'q=foo' }

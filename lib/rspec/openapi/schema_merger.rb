@@ -127,19 +127,16 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   def merge_hash_entry!(base, key, value, in_schema)
     # Handle example/examples conflict - convert to examples when mixed
     normalize_example_fields!(base[key], value)
+    return if base[key].key?(:$ref)
 
     if in_schema && one_of_needed?(base[key], value)
       merge_one_of!(base[key], value)
-    elsif value.key?(:oneOf)
-      base[key] = value
-    elsif !base[key].key?(:$ref)
+    else
       merge_schema!(base[key], value, in_schema: in_schema)
     end
   end
 
   def one_of_needed?(base, spec)
-    return false if base.key?(:$ref)
-
     spec.key?(:oneOf) || conflicting_types?(base, spec)
   end
 

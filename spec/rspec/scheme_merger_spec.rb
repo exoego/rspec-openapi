@@ -467,15 +467,15 @@ RSpec.describe 'schema merger spec' do
       expect(result).to eq(response_with(oneOf: [nil, { type: 'boolean' }, preview_settings]))
     end
 
-    it 'still replaces a hand-written $ref with a recorded oneOf' do
+    it 'keeps a hand-written $ref when a oneOf is recorded' do
       items = ->(schema) { response_with(type: 'array', items: schema) }
-      recorded = { oneOf: [{ type: 'integer' }, { type: 'string' }] }
-
       written = items.call({ '$ref': '#/components/schemas/Tag' })
 
-      result = RSpec::OpenAPI::SchemaMerger.merge!(written, items.call(recorded))
+      result = RSpec::OpenAPI::SchemaMerger.merge!(
+        written, items.call({ oneOf: [{ type: 'integer' }, { type: 'string' }] }),
+      )
 
-      expect(result).to eq(items.call(recorded))
+      expect(result).to eq(items.call({ '$ref': '#/components/schemas/Tag' }))
     end
 
     it 'records integer and number as a number, since every integer is also a number' do

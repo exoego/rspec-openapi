@@ -12,33 +12,27 @@ class << RSpec::OpenAPI::SchemaBuilder
       # Drop empty `{}` schemas (e.g. items of an empty array) — they carry no
       # type info and would otherwise spuriously mark every property of their
       # populated siblings as nullable via the missing-key nullable rule.
-      non_empty = widen_integers(variations.reject(&:empty?))
+      non_empty = variations.reject(&:empty?)
       return {} if non_empty.empty?
-      return non_empty.first if non_empty.size == 1
 
-      types = non_empty.map { |v| v[:type] }.compact.uniq
-      return one_of_schema(non_empty) if types.size > 1
+      typed = non_empty.reject { |v| nullable_only?(v) }
+      return { nullable: true } if typed.empty?
 
-      case types.first
-      when 'object' then merge_object_variations(non_empty)
-      when 'array' then merge_array_item_variations(non_empty)
-      else non_empty.first
-      end
+      with_nullable_from(non_empty, merge_typed_variations(widen_integers(typed)))
     end
 
     def merge_non_object_item_variations(schemas)
       typed = schemas.reject { |schema| nullable_only?(schema) }
+      return { nullable: true } if typed.empty?
 
       merged = typed.size == 1 ? typed.first.dup : merge_multi(typed)
-      merged[:nullable] = true if schemas.any? { |schema| nullable_only?(schema) } && merged.is_a?(Hash)
+      merged[:nullable] = true if typed.size < schemas.size
       merged
     end
 
     # Merge the per-key property schemas of multiple object variations.
-    # When `allow_recursive_merge` is true, objects are recursively merged via
-    # merge_variations and existing oneOf entries are flattened.
-    # When false (callsite: array-items merging), divergent property variations
-    # become oneOf without recursive descent.
+    # `allow_recursive_merge` only decides which signals make a property
+    # nullable. Both modes merge the property schemas themselves alike.
     def merge_property_variations(variations, allow_recursive_merge:)
       property_keys(variations).each_with_object({}) do |key, merged_props|
         all = variations.map { |v| v[:properties]&.[](key) }
@@ -57,6 +51,24 @@ class << RSpec::OpenAPI::SchemaBuilder
     end
 
     private
+
+    def merge_typed_variations(variations)
+      return variations.first if variations.size == 1
+      return merge_one_of_variations(variations) if variations.any? { |v| v.key?(:oneOf) }
+
+      types = variations.map { |v| v[:type] }.compact.uniq
+      return merge_one_of_variations(variations) if types.size > 1
+
+      case types.first
+      when 'object' then merge_object_variations(variations)
+      when 'array' then merge_array_item_variations(variations)
+      else variations.first
+      end
+    end
+
+    def with_nullable_from(variations, merged)
+      variations.any? { |v| v[:nullable] } ? merged.merge(nullable: true) : merged
+    end
 
     # The variations of one property come from one side of one exchange, so
     # they agree on readOnly. The merge rebuilds the schema, so the caller puts
@@ -107,8 +119,9 @@ class << RSpec::OpenAPI::SchemaBuilder
       end
     end
 
+    # A nil builds `{ nullable: true }`, plus the enum of its path when it has one.
     def nullable_only?(schema)
-      schema.size == 1 && schema.key?(:nullable)
+      schema[:nullable] == true && !schema.key?(:type) && !schema.key?(:oneOf)
     end
 
     def merge_single_property(prop_variations, has_nullable, variations_total:, allow_recursive_merge:)
@@ -120,8 +133,6 @@ class << RSpec::OpenAPI::SchemaBuilder
         else
           merge_multi(prop_variations)
         end
-
-      return merged unless merged.is_a?(Hash)
 
       # In recursive mode, multi-variation merges also flag nullable when the key
       # only appeared in some of the source variations.
@@ -139,16 +150,26 @@ class << RSpec::OpenAPI::SchemaBuilder
     # entries, recurse into objects and arrays, and combine divergent types into
     # oneOf. Scalar variations of a single type collapse to the first schema.
     def merge_multi(prop_variations)
-      return { oneOf: flatten_one_of(prop_variations) } if prop_variations.any? { |p| p.key?(:oneOf) }
+      return merge_one_of_variations(prop_variations) if prop_variations.any? { |p| p.key?(:oneOf) }
 
       prop_variations = widen_integers(prop_variations)
       prop_types = prop_variations.map { |p| p[:type] }.compact.uniq
-      return one_of_schema(prop_variations) if prop_types.size > 1
+      return merge_one_of_variations(prop_variations) if prop_types.size > 1
 
       case prop_types.first
       when 'array' then merge_array_item_variations(prop_variations)
       when 'object' then merge_variations(prop_variations)
       else prop_variations.first.dup
+      end
+    end
+
+    def merge_one_of_variations(variations)
+      { oneOf: merge_structured_alternatives(widen_integers(flatten_one_of(variations))) }
+    end
+
+    def merge_structured_alternatives(alternatives)
+      alternatives.group_by { |alternative| alternative[:type] }.flat_map do |type, group|
+        ['array', 'object'].include?(type) && group.size > 1 ? [merge_variations(group)] : group
       end
     end
 
@@ -173,10 +194,6 @@ class << RSpec::OpenAPI::SchemaBuilder
 
     def without_nullable(prop)
       prop.reject { |k, _| k == :nullable }
-    end
-
-    def one_of_schema(variations)
-      { oneOf: sort_by_type(variations.map { |p| without_nullable(p) }.uniq) }
     end
 
     # The same order the merger keeps, so the document does not depend on which
