@@ -72,11 +72,13 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
     RSpec::OpenAPI::HashHelper.each_schema(base.dig(:components, :schemas)) do |schema|
       delete_temporary_fields!(schema)
       delete_empty_required!(schema)
+      add_null_to_enum!(schema)
     end
     RSpec::OpenAPI::HashHelper.each_schema(base[:paths]) do |schema|
       delete_temporary_fields!(schema)
       delete_empty_required!(schema)
       delete_false_read_only!(schema)
+      add_null_to_enum!(schema)
     end
   end
 
@@ -101,6 +103,14 @@ class << RSpec::OpenAPI::SchemaCleaner = Object.new
 
   def delete_false_read_only!(schema)
     schema.delete(:readOnly) if schema[:readOnly] == false
+  end
+
+  # nullable does not loosen an enum, so the null it allows must be listed too.
+  # The merge takes the enum from the record, so this runs on every write.
+  def add_null_to_enum!(schema)
+    return unless schema[:nullable] == true && schema[:enum].is_a?(Array) && !schema[:enum].include?(nil)
+
+    schema[:enum] = [*schema[:enum], nil]
   end
 
   # The selectors are relative to the media type. A media type the spec does
