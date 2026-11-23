@@ -104,9 +104,9 @@ paths:
                             properties:
                               value:
                                 oneOf:
-                                - type: string
                                 - type: array
                                   items: {}
+                                - type: string
                                 nullable: true
                               options:
                                 oneOf:
@@ -130,6 +130,7 @@ paths:
                                 nullable: true
                             required:
                             - value
+                            - options
                           nullable: true
                       required:
                       - id
@@ -368,6 +369,16 @@ paths:
                       properties:
                         label:
                           type: string
+                        path:
+                          type: array
+                          items:
+                            oneOf:
+                            - type: boolean
+                            - type: string
+                        hints:
+                          type: array
+                          items:
+                            nullable: true
                         inputs:
                           type: array
                           items:
@@ -428,18 +439,10 @@ paths:
                                 nullable: true
                             required:
                             - type
-                        path:
-                          type: array
-                          items:
-                            oneOf:
-                            - type: boolean
-                            - type: string
-                        hints:
-                          type: array
-                          items:
-                            nullable: true
                       required:
                       - label
+                      - path
+                      - hints
                       - inputs
                 required:
                 - form

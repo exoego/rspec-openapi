@@ -18,6 +18,19 @@ paths:
               schema:
                 type: string
               example: "\n\n"
+  "/stream_falsy":
+    get:
+      summary: GET /stream_falsy
+      tags: []
+      responses:
+        '200':
+          description: records items that are false and null
+          content:
+            application/x-ndjson:
+              itemSchema:
+                type:
+                - boolean
+                - 'null'
   "/stream_json_seq":
     get:
       summary: GET /stream_json_seq

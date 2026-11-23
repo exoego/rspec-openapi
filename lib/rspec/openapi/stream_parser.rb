@@ -13,16 +13,15 @@ class << RSpec::OpenAPI::StreamParser = Object.new
       else raw.split("\n") # NDJSON / JSON Lines
       end
 
-    chunks.filter_map { |chunk| parse_json(chunk) }
+    chunks.each_with_object([]) { |chunk, items| parse_json(chunk, items) }
   end
 
   private
 
-  def parse_json(chunk)
+  # Appends rather than returns, since null and false are items too.
+  def parse_json(chunk, items)
     text = chunk.to_s.strip
-    return nil if text.empty?
-
-    JSON.parse(text)
+    items << JSON.parse(text) unless text.empty?
   rescue JSON::ParserError
     nil
   end

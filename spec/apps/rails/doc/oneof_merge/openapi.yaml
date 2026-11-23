@@ -96,6 +96,87 @@ paths:
               example:
                 value: 1
       tags: []
+  "/oneof_merge/enum_mixed_items":
+    get:
+      summary: GET /oneof_merge/enum_mixed_items
+      tags: []
+      responses:
+        '200':
+          description: records nil beside other types
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nodes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        p:
+                          type: array
+                          items:
+                            oneOf:
+                            - type: boolean
+                              enum:
+                              - a
+                              - b
+                              - true
+                            - type: 'null'
+                            - type: string
+                              enum:
+                              - a
+                              - b
+                              - true
+                      required:
+                      - p
+                required:
+                - nodes
+              example:
+                nodes:
+                - p:
+                  -
+                  - a
+                - p:
+                  - b
+                  - true
+  "/oneof_merge/enum_nil_first":
+    get:
+      summary: GET /oneof_merge/enum_nil_first
+      tags: []
+      responses:
+        '200':
+          description: records nil in the first sibling
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nodes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        p:
+                          type: array
+                          items:
+                            type:
+                            - string
+                            - 'null'
+                            enum:
+                            - a
+                            - b
+                            - true
+                      required:
+                      - p
+                required:
+                - nodes
+              example:
+                nodes:
+                - p:
+                  -
+                - p:
+                  - a
   "/oneof_merge/flag_boolean":
     get:
       summary: GET /oneof_merge/flag_boolean
@@ -165,6 +246,48 @@ paths:
                 values:
                 - 1
                 - 1.5
+  "/oneof_merge/null_items":
+    get:
+      summary: GET /oneof_merge/null_items
+      tags: []
+      responses:
+        '200':
+          description: records mixed on null_items
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tags:
+                    type: array
+                    items:
+                      type: 'null'
+                  nodes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        a:
+                          type: array
+                          items:
+                            type:
+                            - string
+                            - 'null'
+                      required:
+                      - a
+                required:
+                - tags
+                - nodes
+              example:
+                tags:
+                -
+                -
+                nodes:
+                - a:
+                  -
+                  -
+                - a:
+                  - x
   "/oneof_merge/null_variants":
     get:
       summary: GET /oneof_merge/null_variants
@@ -194,6 +317,61 @@ paths:
                 value: a
                 other: 1
       tags: []
+  "/oneof_merge/nullable_siblings":
+    get:
+      summary: GET /oneof_merge/nullable_siblings
+      tags: []
+      responses:
+        '200':
+          description: records mixed on nullable_siblings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  strings:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        path:
+                          type: array
+                          items:
+                            type:
+                            - string
+                            - 'null'
+                      required:
+                      - path
+                  numbers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        path:
+                          type: array
+                          items:
+                            type:
+                            - number
+                            - 'null'
+                            format: float
+                      required:
+                      - path
+                required:
+                - strings
+                - numbers
+              example:
+                strings:
+                - path:
+                  - a
+                - path:
+                  - b
+                  -
+                numbers:
+                - path:
+                  - 1
+                  -
+                - path:
+                  - 2.5
   "/oneof_merge/number_then_integer":
     get:
       summary: GET /oneof_merge/number_then_integer
@@ -259,6 +437,34 @@ paths:
                 - flag
               example:
                 flag: true
+  "/oneof_merge/overlapping_arrays":
+    get:
+      summary: GET /oneof_merge/overlapping_arrays
+      tags: []
+      responses:
+        '200':
+          description: records mixed on overlapping_arrays
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  values:
+                    type: array
+                    items:
+                      oneOf:
+                      - type: array
+                        items:
+                          type: number
+                          format: float
+                      - type: boolean
+                required:
+                - values
+              example:
+                values:
+                - - 1
+                - - 2.5
+                - true
   "/oneof_merge/param":
     get:
       summary: GET /oneof_merge/param
@@ -315,6 +521,39 @@ paths:
                 - ok
               example:
                 ok: true
+  "/oneof_merge/path_segments":
+    get:
+      summary: GET /oneof_merge/path_segments
+      responses:
+        '200':
+          description: records mixed on path_segments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nodes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        path:
+                          type: array
+                          items:
+                            "$ref": "#/components/schemas/PathSegment"
+                      required:
+                      - path
+                required:
+                - nodes
+              example:
+                nodes:
+                - path:
+                  - user
+                  - details
+                - path:
+                  - billing
+                  - true
+      tags: []
   "/oneof_merge/pref_boolean":
     get:
       summary: GET /oneof_merge/pref_boolean
@@ -600,6 +839,10 @@ components:
             - x
       required:
       - value
+    PathSegment:
+      oneOf:
+      - type: boolean
+      - type: string
     PrefSetting:
       type: object
       properties:

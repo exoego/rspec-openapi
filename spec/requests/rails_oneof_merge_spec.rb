@@ -46,10 +46,19 @@ RSpec.describe 'oneOf merging across examples', type: :request do
     'objects_then_boolean' => ['object_a', 'object_b', 'boolean'],
     'boolean_then_objects' => ['boolean', 'object_a', 'object_b'],
     'arrays_then_string' => ['empty', 'integers', 'string'],
+    'overlapping_arrays' => ['mixed'],
+    'path_segments' => ['mixed'],
+    'null_items' => ['mixed'],
+    'nullable_siblings' => ['mixed'],
   }.each do |name, variants|
     variants.each do |variant|
       it("records #{variant} on #{name}") { record "/oneof_merge/#{name}", variant }
     end
+  end
+
+  describe 'array items whose path has an enum', openapi: { response_enum: { 'nodes.p' => ['a', 'b', true] } } do
+    it('records nil beside other types') { record '/oneof_merge/enum_mixed_items', 'mixed' }
+    it('records nil in the first sibling') { record '/oneof_merge/enum_nil_first', 'mixed' }
   end
 
   it('records a string for a hand-written query parameter') { record '/oneof_merge/param', 'ok', query: 'q=foo' }

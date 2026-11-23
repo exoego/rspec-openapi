@@ -146,11 +146,11 @@
                                 "value": {
                                   "oneOf": [
                                     {
-                                      "type": "string"
-                                    },
-                                    {
                                       "type": "array",
                                       "items": {}
+                                    },
+                                    {
+                                      "type": "string"
                                     }
                                   ],
                                   "nullable": true
@@ -191,7 +191,8 @@
                                 }
                               },
                               "required": [
-                                "value"
+                                "value",
+                                "options"
                               ]
                             },
                             "nullable": true
@@ -637,6 +638,25 @@
                           "label": {
                             "type": "string"
                           },
+                          "path": {
+                            "type": "array",
+                            "items": {
+                              "oneOf": [
+                                {
+                                  "type": "boolean"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            }
+                          },
+                          "hints": {
+                            "type": "array",
+                            "items": {
+                              "nullable": true
+                            }
+                          },
                           "inputs": {
                             "type": "array",
                             "items": {
@@ -725,29 +745,12 @@
                                 "type"
                               ]
                             }
-                          },
-                          "path": {
-                            "type": "array",
-                            "items": {
-                              "oneOf": [
-                                {
-                                  "type": "boolean"
-                                },
-                                {
-                                  "type": "string"
-                                }
-                              ]
-                            }
-                          },
-                          "hints": {
-                            "type": "array",
-                            "items": {
-                              "nullable": true
-                            }
                           }
                         },
                         "required": [
                           "label",
+                          "path",
+                          "hints",
                           "inputs"
                         ]
                       }

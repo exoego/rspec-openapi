@@ -76,14 +76,12 @@ paths:
                             properties:
                               value:
                                 oneOf:
-                                - type: string
-                                - type: array
-                                  items: {}
-                                - type: boolean
                                 - type: array
                                   items:
                                     type: string
+                                - type: boolean
                                 - type: integer
+                                - type: string
                                 nullable: true
                               options:
                                 oneOf:
@@ -111,6 +109,7 @@ paths:
                       required:
                       - id
                       - config
+                      - form
                 required:
                 - items
               example:
@@ -352,6 +351,16 @@ paths:
                       properties:
                         label:
                           type: string
+                        path:
+                          type: array
+                          items:
+                            oneOf:
+                            - type: boolean
+                            - type: string
+                        hints:
+                          type: array
+                          items:
+                            nullable: true
                         inputs:
                           type: array
                           items:
@@ -412,18 +421,10 @@ paths:
                                 nullable: true
                             required:
                             - type
-                        path:
-                          type: array
-                          items:
-                            oneOf:
-                            - type: boolean
-                            - type: string
-                        hints:
-                          type: array
-                          items:
-                            nullable: true
                       required:
                       - label
+                      - path
+                      - hints
                       - inputs
                 required:
                 - form
