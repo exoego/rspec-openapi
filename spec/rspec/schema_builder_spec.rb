@@ -42,6 +42,38 @@ RSpec.describe 'schema builder spec' do
     end
   end
 
+  describe 'enum on an array of scalars' do
+    def build(**attributes)
+      record = RSpec::OpenAPI::Record.new(
+        http_method: 'GET', path: '/products', path_params: {}, query_params: {}, request_headers: [],
+        status: 200, response_body: {}, response_headers: [], required_request_params: [],
+        response_content_type: 'application/json', response_example_mode: :none, **attributes,
+      )
+      RSpec::OpenAPI::SchemaBuilder.build(record).dig(:paths, :'/products', :get)
+    end
+
+    it 'puts a request enum on the items of an array query param, not on the array' do
+      operation = build(query_params: { 'sort' => ['-name'] }, request_enum: { 'sort' => ['name', '-name'] })
+
+      expect(operation[:parameters].first[:schema])
+        .to eq(type: 'array', items: { type: 'string', enum: ['name', '-name'] })
+    end
+
+    it 'puts a response enum on the items of an array property, not on the array' do
+      operation = build(response_body: { tags: ['new'] }, response_enum: { 'tags' => ['new', 'sale'] })
+
+      expect(operation.dig(:responses, :'200', :content, :'application/json', :schema, :properties, :tags))
+        .to eq(type: 'array', items: { type: 'string', enum: ['new', 'sale'] })
+    end
+
+    it 'keeps an enum of whole arrays on the array, not its items' do
+      operation = build(response_body: { tags: ['new'] }, response_enum: { 'tags' => [[], ['new']] })
+
+      expect(operation.dig(:responses, :'200', :content, :'application/json', :schema, :properties, :tags))
+        .to eq(type: 'array', enum: [[], ['new']], items: { type: 'string' })
+    end
+  end
+
   describe 'arrays merged across sibling array items when one already has a oneOf' do
     it 'keeps the oneOf instead of taking the first variation' do
       expect(path_items_schema([['user', 'details'], ['billing', true]]))
