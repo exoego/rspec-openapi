@@ -151,7 +151,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   end
 
   def null_only?(schema)
-    !typed?(schema) && (schema[:nullable] == true || schema[:enum]&.include?(nil))
+    !typed?(schema) && (schema[:nullable] == true || Array(schema[:enum]).include?(nil))
   end
 
   def typed?(schema)
