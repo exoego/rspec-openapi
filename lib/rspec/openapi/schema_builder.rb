@@ -223,8 +223,8 @@ class << RSpec::OpenAPI::SchemaBuilder
     property
   end
 
-  # A format and an enum describe a scalar. A null leaves them to another
-  # example, and an array to its items.
+  # A format and an enum describe a scalar. A null leaves its format to another
+  # example, and an array both to its items.
   def scalar?(value)
     !(value.nil? || value.is_a?(Array) || value.is_a?(Hash))
   end
@@ -237,7 +237,7 @@ class << RSpec::OpenAPI::SchemaBuilder
 
   # An empty enum, such as one read from an empty table, would allow nothing.
   def property_enum(value, ctx)
-    return nil unless scalar?(value)
+    return nil unless value.nil? || scalar?(value)
 
     enum = infer_enum(ctx.path, ctx.record, ctx.context)
     enum unless enum == []

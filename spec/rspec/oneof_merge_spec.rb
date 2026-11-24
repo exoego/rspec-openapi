@@ -201,6 +201,13 @@ RSpec.describe 'oneOf merging across examples' do
       .to eq('type' => ['string', 'null'], 'enum' => ['a', 'b', nil])
   end
 
+  it 'keeps the enum of a property only ever recorded as null' do
+    properties = response_schema('/oneof_merge/enum_null_only', 'properties')
+
+    expect(properties['s']).to eq('enum' => ['a', 'b', nil])
+    expect(properties.dig('nodes', 'items', 'properties', 's')).to eq('enum' => ['a', 'b', nil])
+  end
+
   it 'puts an enum of strings on the items of an array that may be null' do
     expect(response_schema('/oneof_merge/enum_tags', 'properties', 'tags'))
       .to eq('type' => ['array', 'null'], 'items' => { 'type' => 'string', 'enum' => ['new', 'sale'] })

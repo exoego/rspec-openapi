@@ -220,6 +220,43 @@ paths:
                 - s
               example:
                 s:
+  "/oneof_merge/enum_null_only":
+    get:
+      summary: GET /oneof_merge/enum_null_only
+      tags: []
+      responses:
+        '200':
+          description: records null
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  s:
+                    enum:
+                    - a
+                    - b
+                    -
+                  nodes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        s:
+                          enum:
+                          - a
+                          - b
+                          -
+                      required:
+                      - s
+                required:
+                - s
+                - nodes
+              example:
+                s:
+                nodes:
+                - s:
+                - s:
   "/oneof_merge/enum_sort":
     get:
       summary: GET /oneof_merge/enum_sort

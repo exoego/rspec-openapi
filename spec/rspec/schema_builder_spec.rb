@@ -84,6 +84,38 @@ RSpec.describe 'schema builder spec' do
     end
   end
 
+  describe 'enum on a null' do
+    def response_schema(response_body, response_enum)
+      record = RSpec::OpenAPI::Record.new(
+        http_method: 'GET', path: '/products', path_params: {}, query_params: {}, request_headers: [],
+        status: 200, response_body: response_body, response_headers: [], required_request_params: [],
+        response_content_type: 'application/json', response_example_mode: :none, response_enum: response_enum,
+      )
+      RSpec::OpenAPI::SchemaBuilder.build(record).dig(
+        :paths, :'/products', :get, :responses, :'200', :content, :'application/json', :schema, :properties,
+      )
+    end
+
+    it 'keeps the declared enum when the property is null' do
+      expect(response_schema({ color: nil }, { 'color' => ['success', 'error'] })[:color])
+        .to eq(nullable: true, enum: ['success', 'error'])
+    end
+
+    it 'keeps the declared enum when every array item records null' do
+      schema = response_schema({ items: [{ color: nil }, { color: nil }] }, { 'items.color' => ['success', 'error'] })
+
+      expect(schema.dig(:items, :items, :properties, :color)).to eq(nullable: true, enum: ['success', 'error'])
+    end
+
+    it 'takes the enum of the string an array item records beside a null' do
+      schema = response_schema({ items: [{ color: nil }, { color: 'error' }] },
+                               { 'items.color' => ['success', 'error'] })
+
+      expect(schema.dig(:items, :items, :properties, :color))
+        .to eq(type: 'string', enum: ['success', 'error'], nullable: true)
+    end
+  end
+
   describe 'arrays merged across sibling array items when one already has a oneOf' do
     it 'keeps the oneOf instead of taking the first variation' do
       expect(path_items_schema([['user', 'details'], ['billing', true]]))
