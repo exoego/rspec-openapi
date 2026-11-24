@@ -461,12 +461,21 @@ RSpec.describe 'schema merger spec' do
       expect(results).to eq([response_with(**tags, nullable: true)])
     end
 
-    it 'drops the enum a recorded null carries when it merges into a oneOf' do
+    it 'leaves the enum a null carries to a oneOf with an array alternative, whichever example runs first' do
       one_of = { oneOf: [{ type: 'array', items: { type: 'string' } }, { type: 'boolean' }] }
 
-      result = RSpec::OpenAPI::SchemaMerger.merge!(response_with(one_of), response_with(nullable: true, enum: ['a']))
+      results = merge_in_every_order(one_of, { nullable: true, enum: ['a'] })
 
-      expect(result).to eq(response_with(**one_of, nullable: true))
+      expect(results).to eq([response_with(**one_of, nullable: true)])
+    end
+
+    it 'keeps a null enum already written beside a oneOf of scalars' do
+      scalars = [{ type: 'integer' }, { type: 'string' }]
+
+      result = RSpec::OpenAPI::SchemaMerger.merge!(response_with(nullable: true, enum: [1, 'x']),
+                                                   response_with(oneOf: scalars),)
+
+      expect(result).to eq(response_with(oneOf: scalars, nullable: true, enum: [1, 'x']))
     end
 
     it 'keeps the enum of a string merged with a null in another example' do
