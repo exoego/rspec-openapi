@@ -147,7 +147,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
 
   def structured?(schema)
     alternatives = schema[:oneOf] || [schema]
-    alternatives.any? { |alternative| alternative.is_a?(Hash) && STRUCTURED_TYPES.include?(alternative[:type]) }
+    alternatives.any? { |alternative| alternative.is_a?(Hash) && (STRUCTURED_TYPES & Array(alternative[:type])).any? }
   end
 
   def null_only?(schema)

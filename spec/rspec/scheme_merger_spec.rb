@@ -469,6 +469,14 @@ RSpec.describe 'schema merger spec' do
       expect(results).to eq([response_with(**one_of, nullable: true)])
     end
 
+    it 'leaves the enum a null carries to a type list that includes array, whichever example runs first' do
+      array_or_string = { type: ['array', 'string'], items: { type: 'string' } }
+
+      results = merge_in_every_order(array_or_string, { nullable: true, enum: ['a'] })
+
+      expect(results).to eq([response_with(**array_or_string, nullable: true)])
+    end
+
     it 'keeps a null enum already written beside a oneOf of scalars' do
       scalars = [{ type: 'integer' }, { type: 'string' }]
 
