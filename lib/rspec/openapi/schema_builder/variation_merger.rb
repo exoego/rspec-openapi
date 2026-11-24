@@ -129,7 +129,7 @@ class << RSpec::OpenAPI::SchemaBuilder
     end
 
     def null_schema(schemas)
-      schemas.find { |schema| schema.is_a?(Hash) && nullable_only?(schema) }&.dup || { nullable: true }
+      schemas.find { |schema| schema.is_a?(Hash) && nullable_only?(schema) }.dup
     end
 
     def merge_single_property(prop_variations, has_nullable, variations_total:, allow_recursive_merge:)
