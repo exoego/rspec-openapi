@@ -34,7 +34,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@be3c7df29b3349ec6bcfc6b4792f1cf9f5237d18 # v1.343.0
         with:
-          ruby-version: '4.0.9'
+          ruby-version: '4.0.10'
 
       # No bundler cache here. A poisoned cache must not reach the published gem.
       - name: bundle install
