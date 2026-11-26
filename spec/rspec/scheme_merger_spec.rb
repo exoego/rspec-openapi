@@ -486,6 +486,12 @@ RSpec.describe 'schema merger spec' do
       expect(result).to eq(response_with(oneOf: scalars, nullable: true, enum: [1, 'x']))
     end
 
+    it 'keeps the enum of a null merged with a string that declares none, whichever example runs first' do
+      results = merge_in_every_order({ type: 'string' }, { nullable: true, enum: ['a', 'b'] })
+
+      expect(results).to eq([response_with(type: 'string', nullable: true, enum: ['a', 'b'])])
+    end
+
     it 'keeps the enum of a string merged with a null in another example' do
       results = merge_in_every_order({ type: 'string', enum: ['a', 'b'] }, { nullable: true, enum: ['a', 'b'] })
 

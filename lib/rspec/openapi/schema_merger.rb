@@ -139,7 +139,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   end
 
   def leave_null_enum_to_typed!(base, spec)
-    return spec.reject { |key, _| key == :enum } if null_only?(spec) && typed?(base)
+    return spec.reject { |key, _| key == :enum } if null_only?(spec) && (base.key?(:oneOf) || structured?(base))
 
     base.delete(:enum) if null_only?(base) && structured?(spec)
     spec
