@@ -16,14 +16,14 @@ class << RSpec::OpenAPI::SchemaBuilder
       return {} if non_empty.empty?
 
       typed = non_empty.reject { |v| nullable_only?(v) }
-      return { nullable: true } if typed.empty?
+      return null_schema(non_empty) if typed.empty?
 
       with_nullable_from(non_empty, merge_typed_variations(widen_integers(typed)))
     end
 
     def merge_non_object_item_variations(schemas)
       typed = schemas.reject { |schema| nullable_only?(schema) }
-      return { nullable: true } if typed.empty?
+      return null_schema(schemas) if typed.empty?
 
       merged = typed.size == 1 ? typed.first.dup : merge_multi(typed)
       merged[:nullable] = true if typed.size < schemas.size
@@ -42,9 +42,13 @@ class << RSpec::OpenAPI::SchemaBuilder
 
         next if prop_variations.empty? && !has_nullable
 
-        merged = merge_single_property(prop_variations, has_nullable,
-                                       variations_total: variations.size,
-                                       allow_recursive_merge: allow_recursive_merge,)
+        merged = if prop_variations.empty?
+                   null_schema(all)
+                 else
+                   merge_single_property(prop_variations, has_nullable,
+                                         variations_total: variations.size,
+                                         allow_recursive_merge: allow_recursive_merge,)
+                 end
         merged[:readOnly] = read_only unless read_only.nil?
         merged_props[key] = merged
       end
@@ -124,9 +128,11 @@ class << RSpec::OpenAPI::SchemaBuilder
       schema[:nullable] == true && !schema.key?(:type) && !schema.key?(:oneOf)
     end
 
-    def merge_single_property(prop_variations, has_nullable, variations_total:, allow_recursive_merge:)
-      return { nullable: true } if prop_variations.empty?
+    def null_schema(schemas)
+      schemas.find { |schema| schema.is_a?(Hash) && nullable_only?(schema) }.dup
+    end
 
+    def merge_single_property(prop_variations, has_nullable, variations_total:, allow_recursive_merge:)
       merged =
         if prop_variations.size == 1
           prop_variations.first.dup

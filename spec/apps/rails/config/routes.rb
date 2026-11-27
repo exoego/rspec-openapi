@@ -230,6 +230,7 @@ Rails.application.routes.draw do
     get '/oneof_merge/enum_mixed_items' => one_of_merge.call(mixed: '{"nodes":[{"p":[null,"a"]},{"p":["b",true]}]}')
     get '/oneof_merge/enum_nil_first' => one_of_merge.call(mixed: '{"nodes":[{"p":[null]},{"p":["a"]}]}')
     get '/oneof_merge/enum_null_later' => one_of_merge.call(string: '{"s":"a"}', null: '{"s":null}')
+    get '/oneof_merge/enum_null_only' => one_of_merge.call(null: '{"s":null,"nodes":[{"s":null},{"s":null}]}')
     tags_or_null = one_of_merge.call(tags: '{"tags":["new"]}', null: '{"tags":null}')
     get '/oneof_merge/enum_tags' => tags_or_null
     get '/oneof_merge/enum_sort' => ok

@@ -66,6 +66,11 @@ RSpec.describe 'oneOf merging across examples', type: :request do
     it('records null') { record '/oneof_merge/enum_null_later', 'null' }
   end
 
+  describe 'a property only ever recorded as null whose path has an enum',
+           openapi: { response_enum: { 's' => ['a', 'b'], 'nodes.s' => ['a', 'b'] } } do
+    it('records null') { record '/oneof_merge/enum_null_only', 'null' }
+  end
+
   describe 'an array of strings whose path has an enum', openapi: { response_enum: { 'tags' => ['new', 'sale'] } } do
     it('records an array') { record '/oneof_merge/enum_tags', 'tags' }
     it('records null') { record '/oneof_merge/enum_tags', 'null' }

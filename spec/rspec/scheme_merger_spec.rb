@@ -453,6 +453,58 @@ RSpec.describe 'schema merger spec' do
       expect(results).to eq([response_with(oneOf: [{ type: 'integer' }, { type: 'string' }], nullable: true)])
     end
 
+    it 'leaves the enum a null carries to an array recorded in another example' do
+      tags = { type: 'array', items: { type: 'string', enum: ['new', 'sale'] } }
+
+      results = merge_in_every_order(tags, { nullable: true, enum: ['new', 'sale'] })
+
+      expect(results).to eq([response_with(**tags, nullable: true)])
+    end
+
+    it 'leaves the enum a null carries to a oneOf with an array alternative, whichever example runs first' do
+      one_of = { oneOf: [{ type: 'array', items: { type: 'string' } }, { type: 'boolean' }] }
+
+      results = merge_in_every_order(one_of, { nullable: true, enum: ['a'] })
+
+      expect(results).to eq([response_with(**one_of, nullable: true)])
+    end
+
+    it 'leaves the enum a null carries to a type list that includes array, whichever example runs first' do
+      array_or_string = { type: ['array', 'string'], items: { type: 'string' } }
+
+      results = merge_in_every_order(array_or_string, { nullable: true, enum: ['a'] })
+
+      expect(results).to eq([response_with(**array_or_string, nullable: true)])
+    end
+
+    it 'keeps a null enum already written beside a oneOf of scalars' do
+      scalars = [{ type: 'integer' }, { type: 'string' }]
+
+      result = RSpec::OpenAPI::SchemaMerger.merge!(response_with(nullable: true, enum: [1, 'x']),
+                                                   response_with(oneOf: scalars),)
+
+      expect(result).to eq(response_with(oneOf: scalars, nullable: true, enum: [1, 'x']))
+    end
+
+    it 'keeps the enum of a null merged with a string that declares none, whichever example runs first' do
+      results = merge_in_every_order({ type: 'string' }, { nullable: true, enum: ['a', 'b'] })
+
+      expect(results).to eq([response_with(type: 'string', nullable: true, enum: ['a', 'b'])])
+    end
+
+    it 'keeps the enum of a string merged with a null in another example' do
+      results = merge_in_every_order({ type: 'string', enum: ['a', 'b'] }, { nullable: true, enum: ['a', 'b'] })
+
+      expect(results).to eq([response_with(type: 'string', enum: ['a', 'b'], nullable: true)])
+    end
+
+    it 'puts the type first when a string merges into a null' do
+      result = RSpec::OpenAPI::SchemaMerger.merge!(response_with(nullable: true, enum: ['a']),
+                                                   response_with(type: 'string', enum: ['a']),)
+
+      expect(result.dig(:content, :'application/json', :schema).keys.first).to eq(:type)
+    end
+
     it 'combines an existing oneOf with a new type instead of replacing it' do
       results = merge_in_every_order({ oneOf: [{ type: 'string' }, { type: 'integer' }] }, { type: 'boolean' })
 

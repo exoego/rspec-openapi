@@ -38,6 +38,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
   SCHEMA_KEYS = [:schema, :schemas, :itemSchema].freeze
   DATA_KEYS = [:example, :examples, :default, :enum].freeze
   NUMERIC_TYPES = ['integer', 'number'].freeze
+  STRUCTURED_TYPES = ['array', 'object'].freeze
   ANNOTATION_KEYS = [
     :title, :description, :deprecated, :readOnly, :writeOnly, :example, :examples, :default, :externalDocs, :xml,
     :discriminator,
@@ -129,11 +130,33 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
     normalize_example_fields!(base[key], value)
     return if base[key].key?(:$ref)
 
+    value = leave_null_enum_to_typed!(base[key], value) if in_schema
     if in_schema && one_of_needed?(base[key], value)
       merge_one_of!(base[key], value)
     else
       merge_schema!(base[key], value, in_schema: in_schema)
     end
+  end
+
+  def leave_null_enum_to_typed!(base, spec)
+    return spec.reject { |key, _| key == :enum } if null_only?(spec) && (base.key?(:oneOf) || structured?(base))
+
+    base.delete(:enum) if null_only?(base) && structured?(spec)
+    base.replace({ type: spec[:type] }.merge(base)) if null_only?(base) && spec.key?(:type)
+    spec
+  end
+
+  def structured?(schema)
+    alternatives = schema[:oneOf] || [schema]
+    alternatives.any? { |alternative| alternative.is_a?(Hash) && (STRUCTURED_TYPES & Array(alternative[:type])).any? }
+  end
+
+  def null_only?(schema)
+    !typed?(schema) && (schema[:nullable] == true || Array(schema[:enum]).include?(nil))
+  end
+
+  def typed?(schema)
+    schema.key?(:type) || schema.key?(:oneOf)
   end
 
   def one_of_needed?(base, spec)

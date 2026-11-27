@@ -36,6 +36,34 @@ RSpec.describe 'nullable oneOf per OpenAPI version' do
       .to eq(oneOf: [annotated_null, { type: 'string' }])
   end
 
+  describe 'an enum recorded only as null' do
+    let(:null_enum) { { nullable: true, enum: ['a', 'b'] } }
+
+    it 'is written without a type, since its enum already lists null' do
+      expect(written_schema('3.1.0', null_enum)).to eq(enum: ['a', 'b', nil])
+    end
+
+    it 'reads back nullable, so a string recorded by the next run still allows null' do
+      read_back = RSpec::OpenAPI::NullableConverter.normalize!(written_schema('3.1.0', null_enum))
+      document = { content: { 'application/json': { schema: read_back } } }
+
+      RSpec::OpenAPI::SchemaMerger.merge!(
+        document, { content: { 'application/json': { schema: { type: 'string', enum: ['a', 'b'] } } } },
+      )
+
+      expect(written_schema('3.1.0', document.dig(:content, :'application/json', :schema)))
+        .to eq(type: ['string', 'null'], enum: ['a', 'b', nil])
+    end
+
+    it 'leaves a typeless enum that lists null as written in 3.0' do
+      RSpec::OpenAPI.openapi_version = '3.0.3'
+      response = { content: { 'application/json': { schema: { enum: ['a', nil] } } } }
+
+      expect(RSpec::OpenAPI::NullableConverter.normalize!(response).dig(:content, :'application/json', :schema))
+        .to eq(enum: ['a', nil])
+    end
+  end
+
   it 'reads a null variant back as nullable so the next run merges it as before' do
     written = written_schema('3.2.0', nullable_one_of)
 
