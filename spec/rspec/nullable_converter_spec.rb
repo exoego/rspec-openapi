@@ -54,6 +54,14 @@ RSpec.describe 'nullable oneOf per OpenAPI version' do
       expect(written_schema('3.1.0', document.dig(:content, :'application/json', :schema)))
         .to eq(type: ['string', 'null'], enum: ['a', 'b', nil])
     end
+
+    it 'leaves a typeless enum that lists null as written in 3.0' do
+      RSpec::OpenAPI.openapi_version = '3.0.3'
+      response = { content: { 'application/json': { schema: { enum: ['a', nil] } } } }
+
+      expect(RSpec::OpenAPI::NullableConverter.normalize!(response).dig(:content, :'application/json', :schema))
+        .to eq(enum: ['a', nil])
+    end
   end
 
   it 'reads a null variant back as nullable so the next run merges it as before' do

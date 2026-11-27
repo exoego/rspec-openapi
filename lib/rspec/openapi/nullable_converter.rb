@@ -55,7 +55,7 @@ class << RSpec::OpenAPI::NullableConverter = Object.new
   # builder and merger keep nullable.
   def type_null_to_nullable!(schema)
     schema[:nullable] = true if !schema.key?(:type) && schema[:oneOf]&.delete(NULLABLE_VARIANT)
-    schema[:nullable] = true if null_enum?(schema)
+    schema[:nullable] = true if RSpec::OpenAPI.json_schema_based? && null_enum?(schema)
 
     case (type = schema[:type])
     when 'null'
