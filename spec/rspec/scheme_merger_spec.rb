@@ -498,6 +498,13 @@ RSpec.describe 'schema merger spec' do
       expect(results).to eq([response_with(type: 'string', enum: ['a', 'b'], nullable: true)])
     end
 
+    it 'puts the type first when a string merges into a null' do
+      result = RSpec::OpenAPI::SchemaMerger.merge!(response_with(nullable: true, enum: ['a']),
+                                                   response_with(type: 'string', enum: ['a']),)
+
+      expect(result.dig(:content, :'application/json', :schema).keys.first).to eq(:type)
+    end
+
     it 'combines an existing oneOf with a new type instead of replacing it' do
       results = merge_in_every_order({ oneOf: [{ type: 'string' }, { type: 'integer' }] }, { type: 'boolean' })
 

@@ -142,6 +142,7 @@ class << RSpec::OpenAPI::SchemaMerger = Object.new
     return spec.reject { |key, _| key == :enum } if null_only?(spec) && (base.key?(:oneOf) || structured?(base))
 
     base.delete(:enum) if null_only?(base) && structured?(spec)
+    base.replace({ type: spec[:type] }.merge(base)) if null_only?(base) && spec.key?(:type)
     spec
   end
 
